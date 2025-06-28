@@ -13,7 +13,12 @@
 
 @font-face {
     font-family: open-sans;
-    src: url(./assets/fonts/Open_Sans/OpenSans-VariableFont_wdth\,wght.ttf);
+    src: url(./assets/fonts/InterOpenSans/Open_Sans/OpenSans-VariableFont_wdth\,wght.ttf);
+}
+
+@font-face {
+    font-family: inter;
+    src: url(./assets/fonts/InterOpenSans/Inter/Inter-VariableFont_opsz\,wght.ttf);
 }
 
 body {
