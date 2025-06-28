@@ -1,0 +1,16 @@
+:root {
+    --main-color: #4589FF;
+    --light-blue: #005DFF;
+    --dark-blue: #091931;
+    --light-gray: #647188;
+    --menu-color: #42526E;
+    --urgent-color: #FF3D00;
+    --medium-color: #FFA800;
+    --low-color: #7AE229;
+    --label-orange: #FF7A00;
+    --label-blue: #0038FF;
+}
+
+body {
+    margin: 0;
+}
