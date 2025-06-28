@@ -11,6 +11,75 @@
     --label-blue: #0038FF;
 }
 
+@font-face {
+    font-family: open-sans;
+    src: url(./assets/fonts/Open_Sans/OpenSans-VariableFont_wdth\,wght.ttf);
+}
+
 body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
+    font-family: open-sans;
+    font-size: 23px;
+}
+
+/*
+<button class="base-button button-blue button-small">Button</button>
+*/
+
+.base-button {
+    font-size: 23px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    animation: translate;
+    transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.button-blue {
+    color: #fff;
+    background-color: var(--main-color);
+}
+
+.button-blue:hover {
+    background-color: var(--light-blue);
+    box-shadow: 0px 4px 8px rgba(83, 83, 83, 0.44);
+}
+
+.button-blue:active {
+    background-color: #fff;
+    color: var(--main-color);
+}
+
+.button-hollow {
+    border: 1px solid var(--light-gray);
+    background-color: #fff;
+    color: var(--light-gray);
+    border-radius: 8px;
+    padding: 10px 18px;
+}
+
+.button-hollow:hover {
+    color: var(--main-color);
+    border: 2px solid;
+    border-color: var(--main-color);
+    box-shadow: 0px 4px 8px rgba(83, 83, 83, 0.44);
+}
+
+.button-hollow:active {
+    border: 1px solid var(--light-blue);
+    color: var(--light-blue);
+}
+
+.button-small {
+    border-radius: 8px;
+    padding: 10px 18px;
+}
+
+.button-regular {
+    border-radius: 10px;
+    padding: 16px 10px;
 }
