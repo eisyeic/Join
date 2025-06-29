@@ -51,7 +51,7 @@ body {
 
 .button-blue:hover {
     background-color: var(--light-blue);
-    box-shadow: 0px 4px 8px rgba(83, 83, 83, 0.44);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .button-blue:active {
@@ -71,7 +71,7 @@ body {
     color: var(--main-color);
     border: 2px solid;
     border-color: var(--main-color);
-    box-shadow: 0px 4px 8px rgba(83, 83, 83, 0.44);
+    box-shadow: 0px 4px 8px #53535333;
 }
 
 .button-hollow:active {
@@ -87,4 +87,65 @@ body {
 .button-regular {
     border-radius: 10px;
     padding: 16px 10px;
+}
+
+.priority-button {
+    display: flex;
+    align-items: center;
+    font-size: 19px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    background-color: #fff;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.16);
+}
+
+.priority-button:hover {
+    border: 0px 2px;
+}   
+
+h1 {
+    font-size: 61px;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 48px;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 47px;
+    font-weight: 500;
+}
+
+h4 {
+    font-size: 33px;
+    font-weight: 700;
+}
+
+h5 {
+    font-size: 19px;
+}
+
+h6 {
+    font-size: 16px;
+}
+
+.text-main-color {
+    color: var(--main-color);
+}
+
+.text-light-color {
+    color: var(--label-blue);
+}
+
+span {
+    font-size: 16px;
+}
+
+* {
+    outline: 0px solid red;
 }
