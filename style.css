@@ -1,31 +1,31 @@
 :root {
-    --main-color: #4589FF;
-    --light-blue: #005DFF;
-    --dark-blue: #091931;
-    --light-gray: #647188;
-    --menu-color: #42526E;
-    --urgent-color: #FF3D00;
-    --medium-color: #FFA800;
-    --low-color: #7AE229;
-    --label-orange: #FF7A00;
-    --label-blue: #0038FF;
+  --main-color: #4589ff;
+  --light-blue: #005dff;
+  --dark-blue: #091931;
+  --light-gray: #647188;
+  --menu-color: #42526e;
+  --urgent-color: #ff3d00;
+  --medium-color: #ffa800;
+  --low-color: #7ae229;
+  --label-orange: #ff7a00;
+  --label-blue: #0038ff;
 }
 
 @font-face {
-    font-family: open-sans;
-    src: url(./assets/fonts/InterOpenSans/Open_Sans/OpenSans-VariableFont_wdth\,wght.ttf);
+  font-family: open-sans;
+  src: url(./assets/fonts/InterOpenSans/Open_Sans/OpenSans-VariableFont_wdth\,wght.ttf);
 }
 
 @font-face {
-    font-family: inter;
-    src: url(./assets/fonts/InterOpenSans/Inter/Inter-VariableFont_opsz\,wght.ttf);
+  font-family: inter;
+  src: url(./assets/fonts/InterOpenSans/Inter/Inter-VariableFont_opsz\,wght.ttf);
 }
 
 body {
-    height: 100vh;
-    margin: 0;
-    font-family: open-sans;
-    font-size: 23px;
+  height: 100vh;
+  margin: 0;
+  font-size: 23px;
+  font-family: open-sans;
 }
 
 /*
@@ -33,121 +33,187 @@ body {
 */
 
 .base-button {
-    font-size: 23px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    animation: translate;
-    transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
-}
-
-.button-blue {
-    color: #fff;
-    background-color: var(--main-color);
-}
-
-.button-blue:hover {
-    background-color: var(--light-blue);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.button-blue:active {
-    background-color: #fff;
-    color: var(--main-color);
-}
-
-.button-hollow {
-    border: 1px solid var(--light-gray);
-    background-color: #fff;
-    color: var(--light-gray);
-    border-radius: 8px;
-    padding: 10px 18px;
-}
-
-.button-hollow:hover {
-    color: var(--main-color);
-    border: 2px solid;
-    border-color: var(--main-color);
-    box-shadow: 0px 4px 8px #53535333;
-}
-
-.button-hollow:active {
-    border: 1px solid var(--light-blue);
-    color: var(--light-blue);
+  font-size: 23px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  animation: translate;
+  transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 .button-small {
-    border-radius: 8px;
-    padding: 10px 18px;
+  border-radius: 8px;
+  padding: 10px 18px;
 }
 
 .button-regular {
-    border-radius: 10px;
-    padding: 16px 10px;
+  border-radius: 10px;
+  padding: 16px 10px;
 }
 
+.button-blue {
+  color: #fff;
+  background-color: var(--main-color);
+}
+
+.button-blue:hover {
+  background-color: var(--light-blue);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button-blue:active {
+  background-color: #fff;
+  color: var(--main-color);
+}
+
+.button-hollow {
+  border: 1px solid var(--light-gray);
+  background-color: #fff;
+  color: var(--light-gray);
+}
+
+.button-hollow:hover {
+  color: var(--main-color);
+  border: 2px solid;
+  border-color: var(--main-color);
+  box-shadow: 0px 4px 8px #53535333;
+}
+
+.button-hollow:active {
+  border: 1px solid var(--light-blue);
+  color: var(--light-blue);
+}
+
+/* priority button root */
 .priority-button {
-    display: flex;
-    align-items: center;
-    font-size: 19px;
-    gap: 10px;
-    cursor: pointer;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 18px;
-    transition: background-color 0.2s;
-    background-color: #fff;
-    color: black;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.16);
+  display: flex;
+  align-items: center;
+  font-size: 19px;
+  gap: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  transition: background-color 0.2s;
+  background-color: #fff;
+  color: black;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.16);
 }
 
+.priority-button img {
+  width: 20px;
+  height: auto;
+}
+
+/* Urgent button
+      <button class="priority-button urgent-button">
+        <span>Urgent</span>
+        <img src="urgent_arrow.svg" alt="urgent" />
+      </button>
+      */
+
+.urgent-button:hover {
+  border-bottom: 2px solid var(--urgent-color);
+}
+
+.urgent-button:active {
+  background-color: var(--urgent-color);
+  color: #fff;
+}
+
+.urgent-button:active img {
+  content: url("default_urgent.svg");
+  width: 20px;
+}
+
+/* Medium button
+      <button class="priority-button medium-button">
+        <span>Medium</span>
+        <img src="priority_equal.svg" alt="medium" />
+      </button>
+      */
+
+.medium-button:hover {
+  border-bottom: 2px solid var(--medium-color);
+}
+
+.medium-button:active {
+  background-color: var(--medium-color);
+  color: #fff;
+}
+
+.low-button:active img {
+  width: 20px;
+  content: url("default_low.svg");
+}
+
+/* Low button 
+      <button class="priority-button low-button">
+        <span>Low</span>
+        <img src="low_arrow.svg" alt="low" />
+      </button>
+      */
+
+.low-button:hover {
+  border-bottom: 2px solid var(--low-color);
+}
+
+.low-button:active {
+  background-color: var(--low-color);
+  color: #fff;
+}
+
+.low-button:active img {
+  width: 20px;
+  content: url("default_low.svg");
+}
 
 h1 {
-    font-size: 61px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 61px;
+  font-weight: 700;
+  margin: 0;
 }
 
 h2 {
-    font-size: 48px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 48px;
+  font-weight: 700;
+  margin: 0;
 }
 
 h3 {
-    font-size: 47px;
-    font-weight: 500;
-    margin: 0;
+  font-size: 47px;
+  font-weight: 500;
+  margin: 0;
 }
 
 h4 {
-    font-size: 33px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 33px;
+  font-weight: 700;
+  margin: 0;
 }
 
 h5 {
-    font-size: 19px;
-    margin: 0;
+  font-size: 19px;
+  margin: 0;
 }
 
 h6 {
-    font-size: 16px;
-    margin: 0;
+  font-size: 16px;
+  margin: 0;
 }
 
 .text-main-color {
-    color: var(--main-color);
+  color: var(--main-color);
 }
 
 .text-light-color {
-    color: var(--light-blue);
+  color: var(--light-blue);
 }
 
 span {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 * {
-    outline: 0px solid red;
+  outline: 0px solid red;
 }
