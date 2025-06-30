@@ -1,0 +1,11 @@
+.legal-notice-content {
+    padding: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.legal-notice-a-tag-style {
+    text-decoration: none;
+    color: var(--main-color);
+}
