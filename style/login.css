@@ -5,15 +5,11 @@
   width: 100%;
   height: 100%;
   background-color: #4589ff;
-  animation: bgFade 0.5s ease-in-out forwards;
-  animation-delay: 0.5s;
+  transition: background-color 0.5s ease-in-out;
 }
 
-/* change bg-color */
-@keyframes bgFade {
-  to {
-    background-color: #fff;
-  }
+.page-wrapper.bg-white {
+  background-color: #fff;
 }
 
 main {
@@ -49,7 +45,6 @@ main {
   animation: moveLogo 0.5s ease-in-out forwards;
   animation-delay: 0.5s;
   z-index: 2;
-  transition: top 0.5s ease, left 0.5s ease, transform 0.5s ease;
 }
 
 /* moving logo */
@@ -103,7 +98,7 @@ main {
   align-items: center;
   justify-content: center;
   position: absolute;
-
+  background-color: #fff;
   gap: 39px;
   width: 652px;
   height: 448px;

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Join App</title>
+    <script src="./scripts/login.js" defer></script>
     <link
       rel="shortcut icon"
       href="./assets/general_elements/icons/logo_blue_icon.svg"
@@ -13,15 +14,15 @@
     <link rel="stylesheet" href="./style/login.css" />
   </head>
   <body>
-    <div class="page-wrapper">
+    <div class="page-wrapper" id="layout">
       <div class="logo-wrapper">
         <img
-          class="logo-white"
+          class="logo logo-white"
           src="./assets/general_elements/icons/logo_big_white.svg"
           alt="logo"
         />
         <img
-          class="logo-blue"
+          class="logo logo-blue"
           src="./assets/general_elements/icons/logo_blue_icon.svg"
           alt="logo"
         />
@@ -29,7 +30,7 @@
       <main>
         <div class="sign-up-box">
           Not a join user?
-          <button class="base-button button-blue button-small">Sign up</button>
+          <button id="sign-up" class="base-button button-blue button-small">Sign up</button>
         </div>
         <div class="login-box"></div>
         <div class="sign-up-box-mobile">
