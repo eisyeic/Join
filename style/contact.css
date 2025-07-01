@@ -1,0 +1,74 @@
+.contact-add-new-contact-container {
+    width: 350px;
+    height: 100vh;
+    padding: 30px;
+}
+
+.button-add-new-contact-container {
+    width: 100%;
+    gap: 10px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.button-add-new-contact-container img {
+    margin-top: -5px;
+}
+
+.contact-abc-box {
+    padding-left: 36px;
+    padding-right: 36px;
+    padding-top: 17px;
+    padding-bottom: 17px;
+    font-size: 18px;
+}
+
+.contact-placeholder {
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contact-placeholder img {
+    width: 100%;
+}
+
+.contact-person {
+    padding-left: 24px;
+    padding-bottom: 15px;
+    padding-right: 24px;
+    padding-top: 15px;
+    display: flex;
+    gap: 35px;
+}
+
+.contact-person p {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 400;
+    color: white;
+}
+
+.contact-person img {
+    position: absolute;
+}
+
+.contact-person-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+    width: 42px;
+}
+
+.contact-person-name a {
+    text-decoration: none;
+    color: var(--main-color);
+    font-size: 16px;
+}
+
+.contact-person-name h5 {
+    font-weight: 400;
+}
