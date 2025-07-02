@@ -10,20 +10,20 @@
       href="./assets/general_elements/icons/logo_blue_icon.svg"
       type="image/x-icon"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./style/login.css" />
   </head>
   <body>
     <div class="page-wrapper" id="layout">
       <div class="logo-wrapper" id="logo-wrapper">
         <img
-        id="logo-white"
+          id="logo-white"
           class="logo-white"
           src="./assets/general_elements/icons/logo_big_white.svg"
           alt="logo"
         />
         <img
-        id="logo-blue"
+          id="logo-blue"
           class="logo-blue"
           src="./assets/general_elements/icons/logo_blue_icon.svg"
           alt="logo"
@@ -36,9 +36,52 @@
             Sign up
           </button>
         </div>
-        <div class="login-box">
-          <img class="back-arrow" src="" alt="">
+        <div class="login-box" id="login-box">
+          <img id="go-back" class="back-arrow" src="" alt="" />
+          <div class="login-title-box">
+            <div class="login-title">Log in</div>
+          </div>
+          <div class="input-wrapper-box">
+            <div>
+              <div class="input-wrapper">
+                <input type="email" placeholder="Email" id="email" />
+                <img src="./assets/log_in_sign_up/icons/mail.svg" alt="" />
+              </div>
+              <div class="spacebox"></div>
+            </div>
+            <div>
+              <div class="input-wrapper">
+                <input id="password" type="password" placeholder="Password" />
+                <img
+                  id="togglePassword"
+                  src="./assets/log_in_sign_up/icons/lock.svg"
+                  alt="password"
+                />
+              </div>
+              <div id="errorMessage"></div>
+            </div>
+          </div>
+          <div class="login-button-wrapper">
+            <button
+              class="base-button button-blue button-small"
+              onclick="logIn()"
+              id="login-button"
+            >
+              Log in
+            </button>
+            <button
+              class="base-button button-hollow button-small"
+              id="guest-button"
+            >
+              Guest log in
+            </button>
+          </div>
         </div>
+        <div class="links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./legal-notice.html">Legal Notice</a>
+        </div>
+
         <!-- <div class="login-box">
           <h2>Log in</h2>
           <form>

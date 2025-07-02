@@ -75,12 +75,14 @@ body {
 .button-hollow:hover {
   color: var(--main-color);
   border: 2px solid;
+  margin: -1px;
   border-color: var(--main-color);
   box-shadow: 0px 4px 8px #53535333;
 }
 
 .button-hollow:active {
   border: 1px solid var(--light-blue);
+  margin: 0;
   color: var(--light-blue);
 }
 
