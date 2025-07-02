@@ -12,7 +12,7 @@
   background-color: #fff;
 }
 
-main {
+.login-main {
   display: flex;
   width: 100%;
   max-width: 1920px;
@@ -83,15 +83,6 @@ main {
   align-items: center;
 }
 
-.sign-up-box-mobile {
-  display: none;
-  position: fixed;
-  bottom: 10%;
-  gap: 35px;
-  align-items: center;
-  margin: 0;
-}
-
 .login-box {
   display: flex;
   flex-direction: column;
@@ -143,16 +134,14 @@ Important, Please don´t touch this section, never!
       transform: translate(0, 0) scale(0.24);
     }
   }
-  .sign-up-box {
-    display: none;
-  }
-  .sign-up-box-mobile {
-    display: flex;
-  }
   .login-box {
     height: 469px;
     width: 396px;
   }
+  .sign-up-box {
+  top: 75%;
+  justify-self: center;
+}
 }
 
 
