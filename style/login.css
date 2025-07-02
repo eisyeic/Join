@@ -154,3 +154,73 @@ Important, Please don´t touch this section, never!
     width: 396px;
   }
 }
+
+
+/*Login Box*/
+.login-box {
+  
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  font-size: 47px;
+  font-weight: bold;
+  border-bottom: 3px solid #1a73e8;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.input-group {
+  position: relative;
+  margin: 15px 0;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 35px 10px 10px;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+}
+
+.input-group .icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #888;
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #1a73e8;
+  color: white;
+  margin-right: 10px;
+}
+
+.btn-secondary {
+  background-color: white;
+  border: 1px solid #ccc;
+  color: #333;
+}
