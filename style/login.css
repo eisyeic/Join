@@ -27,6 +27,10 @@
   animation-delay: 0.5s;
 }
 
+.d-none {
+  display: none;
+}
+
 /* display main */
 @keyframes fadeIn {
   to {
@@ -74,6 +78,25 @@
   }
 }
 
+.logo-white, .logo-blue {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: auto;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+/* Startzustand: Weiß sichtbar, Blau unsichtbar */
+.logo-white {
+  opacity: 1;
+  z-index: 2;
+}
+.logo-blue {
+  opacity: 0;
+  z-index: 1;
+}
+
 .sign-up-box {
   display: flex;
   position: absolute;
@@ -107,7 +130,6 @@ Important, Please don´t touch this section, never!
 
 */
 
-
 /* Tablet */
 @media (max-width: 1024px) {
   .logo-wrapper {
@@ -139,15 +161,20 @@ Important, Please don´t touch this section, never!
     width: 396px;
   }
   .sign-up-box {
-  top: 75%;
-  justify-self: center;
+    position: absolute;
+    top: calc(50% + 275px); /* Höhe der login-box + Abstand */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 316px;
+    right: auto;
+  }
 }
-}
+
+
 
 
 /*Login Box*/
 .login-box {
-  
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background-color: white;
   font-family: sans-serif;
