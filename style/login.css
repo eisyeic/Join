@@ -27,10 +27,6 @@
   animation-delay: 0.5s;
 }
 
-.d-none {
-  display: none;
-}
-
 /* display main */
 @keyframes fadeIn {
   to {
@@ -121,6 +117,25 @@
   transition: 0.1s;
 }
 
+.back-arrow {
+  position: absolute;
+  top: 64px;
+  left: 48px;
+  cursor: pointer;
+  content: url(../assets/general_elements/icons/arrow_left.svg);
+}
+
+.back-arrow:hover img {
+  height: 32px;
+  width: 32px;
+  content: url(../assets/general_elements/icons/arrow_left_hover.svg);
+}
+
+.d-none {
+  display: none;
+}
+
+
 /*
 
 
@@ -169,8 +184,6 @@ Important, Please don´t touch this section, never!
     right: auto;
   }
 }
-
-
 
 
 /*Login Box*/
