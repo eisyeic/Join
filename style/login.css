@@ -124,10 +124,9 @@
   top: 64px;
   left: 48px;
   cursor: pointer;
-  content: url(../assets/general_elements/icons/arrow_left.svg);
 }
 
-.back-arrow:hover img {
+.back-arrow:hover {
   height: 32px;
   width: 32px;
   content: url(../assets/general_elements/icons/arrow_left_hover.svg);
@@ -247,6 +246,20 @@
 }
 
 .links a:hover {
+  color: var(--main-color);
+}
+
+.page-wrapper.bg-blue .links a {
+  color: #fff;
+}
+.page-wrapper.bg-blue .links a:hover {
+  color: var(--light-blue);
+}
+
+.page-wrapper.bg-white .links a {
+  color: var(--menu-color);
+}
+.page-wrapper.bg-white .links a:hover {
   color: var(--main-color);
 }
 

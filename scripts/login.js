@@ -16,16 +16,16 @@ let isVisible = false;
 
 // onload background and icon animation
 setTimeout(() => {
-  layout.classList.add("bg-white");
+  layout.classList.add('bg-white');
   logoWhite.style.opacity = "0";
   logoBlue.style.opacity = "1";
   goBack.classList.add('d-none');
-}, 300);
+}, 500);
 
 // change background and icon animation
 button.addEventListener("click", () => {
-  const isNowBlue = layout.classList.toggle("bg-blue");
-  layout.classList.toggle("bg-white", !isNowBlue);
+  const isNowBlue = layout.classList.toggle('bg-blue');
+  layout.classList.toggle('bg-white', !isNowBlue);
 
   if (isNowBlue) {
     logoWhite.style.opacity = "1";
