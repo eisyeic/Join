@@ -21,11 +21,14 @@
   src: url(./assets/fonts/InterOpenSans/Inter/Inter-VariableFont_opsz\,wght.ttf);
 }
 
+* {
+  font-family: open-sans;
+  font-size: 23px;
+}
+
 body {
   height: 100vh;
   margin: 0;
-  font-size: 23px;
-  font-family: open-sans;
 }
 
 /*
@@ -214,8 +217,4 @@ h6 {
 
 span {
   font-size: 16px;
-}
-
-* {
-  outline: 0px solid red;
 }
