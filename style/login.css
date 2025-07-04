@@ -94,7 +94,7 @@
   z-index: 1;
 }
 
-.sign-up-box {
+.sign-up-button-box {
   display: flex;
   position: absolute;
   top: 67px;
@@ -116,7 +116,24 @@
   height: 448px;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
-  transition: 0.1s;
+  overflow: hidden;
+  transition: height 0.4s ease;
+
+}
+
+.sign-up-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  background-color: #fff;
+  gap: 39px;
+  width: 652px;
+  height: 607px;
+  border-radius: 30px;
+  box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
+
 }
 
 .back-arrow {
@@ -151,6 +168,7 @@
   font-size: 48px;
   margin-bottom: 16px;
   font-weight: 700;
+  color: #000;
 }
 
 .login-title-box:after {
@@ -164,7 +182,6 @@
 
 .input-wrapper-box {
   width: 422px;
-  height: 152px;
   transition: 0.1s;
 }
 
@@ -203,7 +220,7 @@
 }
 
 .spacebox {
-  height: 32px;
+  height: 28px;
 }
 
 .login-button-wrapper {
@@ -267,6 +284,23 @@
   transition: 0.1s;
 }
 
+.confirm-box {
+  margin-top: -40px;
+  margin-bottom: -15px;
+  font-size: 16px;
+}
+
+.confirm-box a {
+  font-size: 16px;
+  text-decoration: none;
+  color: var(--menu-color);
+}
+
+* {
+  outline: 0px solid red;
+  color: var(--light-blue);
+}
+
 /*
 
 
@@ -306,7 +340,7 @@ Important, Please don´t touch this section, never!
     height: 469px;
     width: 396px;
   }
-  .sign-up-box {
+  .sign-up-button-box {
     position: absolute;
     top: calc(50% + 275px); /* Höhe der login-box + Abstand */
     left: 50%;

@@ -2,13 +2,14 @@ const layout = document.getElementById('layout');
 const signUpButton = document.getElementById('sign-up');
 const logoBlue = document.getElementById('logo-blue');
 const logoWhite = document.getElementById('logo-white');
-const signUpBox = document.getElementById('sign-up-box');
+const signUpButtonBox  = document.getElementById('sign-up-button-box');
 const goBack = document.getElementById('go-back');
 const loginBox = document.getElementById('login-box');
 const passwordInput = document.getElementById("password");
 const toggleIcon = document.getElementById('togglePassword');
 const emailInput = document.getElementById('email');
 const error = document.getElementById('errorMessage');
+const signUpBox = document.getElementById('sign-up-box');
 
 let isVisible = false;
 
@@ -18,7 +19,6 @@ setTimeout(() => {
   layout.classList.add('bg-white');
   logoWhite.style.opacity = "0";
   logoBlue.style.opacity = "1";
-  goBack.classList.add('d-none');
 }, 500);
 
 // change background and icon animation
@@ -33,9 +33,9 @@ signUpButton.addEventListener("click", () => {
     logoWhite.style.opacity = "0";
     logoBlue.style.opacity = "1";
   }
-  signUpBox.classList.add('d-none');
-  goBack.classList.remove('d-none');
-  loginBox.style.height = "607px";
+  signUpButtonBox.classList.add('d-none');
+  loginBox.classList.add('d-none');
+  signUpBox.classList.remove('d-none');
 });
 
 // left arrow button, change bg and icon animation
@@ -50,9 +50,9 @@ goBack.addEventListener("click", () => {
     logoWhite.style.opacity = "0";
     logoBlue.style.opacity = "1";
   }
-  signUpBox.classList.remove('d-none');
-  goBack.classList.add('d-none'); 
-  loginBox.style.height = "448px";
+  signUpButtonBox.classList.remove('d-none');
+  loginBox.classList.remove('d-none');
+  signUpBox.classList.add('d-none');
 });
 
 
