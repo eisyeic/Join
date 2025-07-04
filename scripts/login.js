@@ -1,5 +1,5 @@
 const layout = document.getElementById('layout');
-const button = document.getElementById('sign-up');
+const signUpButton = document.getElementById('sign-up');
 const logoBlue = document.getElementById('logo-blue');
 const logoWhite = document.getElementById('logo-white');
 const signUpBox = document.getElementById('sign-up-box');
@@ -9,7 +9,6 @@ const passwordInput = document.getElementById("password");
 const toggleIcon = document.getElementById('togglePassword');
 const emailInput = document.getElementById('email');
 const error = document.getElementById('errorMessage');
-const signUp = document.getElementById('signup-button');
 
 let isVisible = false;
 
@@ -23,7 +22,7 @@ setTimeout(() => {
 }, 500);
 
 // change background and icon animation
-button.addEventListener("click", () => {
+signUpButton.addEventListener("click", () => {
   const isNowBlue = layout.classList.toggle('bg-blue');
   layout.classList.toggle('bg-white', !isNowBlue);
 

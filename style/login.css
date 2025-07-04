@@ -101,7 +101,7 @@
   right: 86px;
   gap: 35px;
   align-items: center;
-  transition: 0.2s;
+  transition: 0.1s;
 }
 
 .login-box {
@@ -116,7 +116,7 @@
   height: 448px;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
-  transition: 0.2s;
+  transition: 0.1s;
 }
 
 .back-arrow {
@@ -135,7 +135,7 @@
 .d-none {
   opacity: 0;
   pointer-events: none;
-  transition: 0.2s;
+  transition: 0.1s;
 }
 
 .login-title-box {
@@ -165,7 +165,7 @@
 .input-wrapper-box {
   width: 422px;
   height: 152px;
-  transition: 0.2s;
+  transition: 0.1s;
 }
 
 .input-wrapper {
@@ -175,7 +175,7 @@
   height: 48px;
   padding: 0px 21px;
   border-bottom: 1px solid #d1d1d1;
-  transition: border-color 0.3s;
+  transition: border-color 0.1s;
 }
 
 .input-wrapper input {
@@ -251,16 +251,20 @@
 
 .page-wrapper.bg-blue .links a {
   color: #fff;
+  transition: 0.5s;
 }
 .page-wrapper.bg-blue .links a:hover {
   color: var(--light-blue);
+  transition: 0.1s;
 }
 
 .page-wrapper.bg-white .links a {
   color: var(--menu-color);
+  transition: 0.1s;
 }
 .page-wrapper.bg-white .links a:hover {
   color: var(--main-color);
+  transition: 0.1s;
 }
 
 /*
