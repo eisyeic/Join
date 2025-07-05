@@ -1,10 +1,33 @@
+.contact-body {
+    overflow: hidden;
+}
+
+.contact-content {
+    display: flex;
+    height: calc(100vh - 96px);
+    margin-top: 4px;
+}
+
 .contact-add-new-contact-container {
     width: 350px;
-    height: 100vh;
-    padding: 30px;
+    height: calc(100vh - 130px);
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    overflow-y: scroll;
+    scrollbar-color: rgba(0, 0, 0, 0);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .button-add-new-contact-container {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    padding-top: 30px;
+    padding-bottom: 10px;
+}
+
+.button-add-new-contact-box {
     width: 100%;
     gap: 10px;
     align-items: center;
@@ -13,7 +36,7 @@
 }
 
 .button-add-new-contact-container img {
-    margin-top: -5px;
+    margin-top: -2px;
 }
 
 .contact-abc-box {
@@ -42,25 +65,44 @@
     padding-top: 15px;
     display: flex;
     gap: 35px;
+    border-radius: 10px;
+}
+
+.contact-person:hover {
+    background-color: #D2E3FF;
+
+}
+
+.contact-person:active {
+    background-color: var(--main-color);
+    color: white;
+
+    a {
+        color: white;
+
+    }
 }
 
 .contact-person p {
-    position: absolute;
+    margin-top: -30px;
     font-size: 12px;
     font-weight: 400;
     color: white;
 }
 
 .contact-person img {
-    position: absolute;
+    height: 42px;
+    width: 42px;
 }
 
 .contact-person-icon {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    text-align: center;
     height: 42px;
     width: 42px;
+    border: solid white;
+    border-radius: 45px;
 }
 
 .contact-person-name a {
@@ -71,4 +113,78 @@
 
 .contact-person-name h5 {
     font-weight: 400;
+}
+
+.contact-single-person-content {
+    padding: 60px;
+}
+
+.contact-single-person-content-head {
+    gap: 54px;
+    display: flex;
+}
+
+.contact-person-icon-big {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    width: 120px;
+}
+
+.contact-person-icon-big h3 {
+    position: absolute;
+    color: white;
+    font-family: Inter;
+}
+
+.contact-single-person-content-head-name h3 {
+    font-family: Inter;
+    padding-bottom: 8px;
+}
+
+.contact-person-icon-big img {
+    position: absolute;
+    height: 120px;
+    width: 120px;
+    border: 3px solid white;
+    border-radius: 70px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+.contact-single-person-content-head-edit-container {
+    display: flex;
+}
+
+.contact-single-person-content-head-edit-box {
+    gap: 6px;
+    display: flex;
+    padding-right: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-single-person-content-head-edit-box p {
+    font-size: 16px;
+}
+
+.contact-single-person-content-head-edit-box img {
+    height: 24px;
+    width: 24px;
+}
+
+.contact-single-person-content-head-trash-box {
+    gap: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-single-person-content-head-trash-box p {
+    font-size: 16px;
+}
+
+.contact-single-person-content-head-trash-box img {
+    height: 24px;
+    width: 24px;
 }
