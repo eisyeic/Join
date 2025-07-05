@@ -18,7 +18,6 @@
   max-width: 1920px;
   height: 100%;
   max-height: 1440px;
-  position: fixed;
   pointer-events: none;
   align-items: center;
   justify-content: center;
@@ -101,7 +100,6 @@
   right: 86px;
   gap: 35px;
   align-items: center;
-  transition: 0.1s;
 }
 
 .login-box {
@@ -118,7 +116,6 @@
   box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
   overflow: hidden;
   transition: height 0.4s ease;
-
 }
 
 .sign-up-box {
@@ -195,8 +192,8 @@
   height: 48px;
   width: 100%;
   padding: 0px 21px;
-  border-bottom: 1px solid #d1d1d1;
-  transition: border-color 0.1s;
+  border-bottom: 1px solid var(--style-color);
+  transition: border-color 0.2s;
 }
 
 .input-wrapper input {
@@ -243,7 +240,7 @@
 
 #errorMessage {
   justify-self: flex-start;
-  color: #ff8190;
+  color: var(--error-color);
   font-family: inter;
   font-size: 13px;
   font-weight: 400;
@@ -256,7 +253,6 @@
   position: absolute;
   bottom: 43px;
   display: flex;
-  min-height: 120px;
   gap: 35px;
   align-items: center;
   justify-content: center;
@@ -293,6 +289,7 @@
 .confirm-box {
   display: flex;
   justify-content: center;
+  cursor: pointer;
   gap: 16px;
   height: 24px;
   width: 100%;
@@ -301,11 +298,19 @@
 }
 
 .confirm-box img {
-  content: url(../assets/log_in_sign_up/icons/checkbox.svg);
+  content: url(../assets/log_in_sign_up/icons/checkbox_default.svg);
 }
 
 .confirm-box:hover img {
-  content: url(../assets/log_in_sign_up/icons/ckeckbox_checked.svg);
+  content: url(../assets/log_in_sign_up/icons/checkbox_hover.svg);
+}
+
+.confirm-box.checked img {
+  content: url(../assets/log_in_sign_up/icons/checkbox_checked.svg);
+}
+
+.confirm-box.checked:hover img {
+  content: url(../assets/log_in_sign_up/icons/check_hover_checked.svg);
 }
 
 .confirm-box a {
@@ -316,7 +321,6 @@
 
 * {
   outline: 0px solid red;
-  
 }
 
 /*
@@ -358,6 +362,9 @@ Important, Please don´t touch this section, never!
     height: 469px;
     width: 396px;
   }
+  .login-title-box:after {
+    width: 88px;
+  }
   .sign-up-box {
     height: 608px;
     width: 396px;
@@ -369,10 +376,13 @@ Important, Please don´t touch this section, never!
     transform: translateX(-50%);
     width: 320px;
     right: auto;
+    font-size: 19px;
+  }
+  .sign-up-button-box button {
+    font-size: 19px;
   }
   .input-wrapper-box {
     width: 364px;
-    height: 152px;
   }
   .input-wrapper {
     width: 90%;
@@ -380,14 +390,20 @@ Important, Please don´t touch this section, never!
   .login-button-wrapper {
     flex-direction: column;
     width: 100%;
+    gap: 21px;
+  }
+  .login-button-wrapper button {
+    font-size: 19px;
+    width: 180px;
+  }
+  .links {
+    position: absolute;
+    bottom: 26px;
   }
 }
 
 /* Mobile less 428px until 320px */
 @media (max-width: 428px) {
-  .login-title-box:after {
-  width: 88px;
-}
   .login-box {
     width: 90%;
   }
@@ -398,6 +414,6 @@ Important, Please don´t touch this section, never!
     width: 90%;
   }
   .sign-up-box {
-    width: 90;
+    width: 90%;
   }
 }
