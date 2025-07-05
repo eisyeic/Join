@@ -10,6 +10,7 @@ const toggleIcon = document.getElementById('togglePassword');
 const emailInput = document.getElementById('email');
 const error = document.getElementById('errorMessage');
 const signUpBox = document.getElementById('sign-up-box');
+const confirmBox = document.getElementById('confirm');
 
 let isVisible = false;
 
@@ -128,7 +129,12 @@ emailInput.addEventListener('blur', function () {
 
     if (email && !emailPattern.test(email)) {
         error.innerHTML = "Check your email. Please try again.";
+        emailInput.parentElement.style.borderColor = "#FF8190";
     } 
+});
+
+confirmBox.addEventListener('click', function() {
+  confirmBox.classList.toggle('checked');
 });
 
 
