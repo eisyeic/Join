@@ -132,8 +132,9 @@
   width: 652px;
   height: 607px;
   border-radius: 30px;
+  overflow: hidden;
   box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
-
+  transition: height 0.4s ease;
 }
 
 .back-arrow {
@@ -156,7 +157,7 @@
 }
 
 .login-title-box {
-  width: 422px;
+  width: 100%;
   height: 74px;
   justify-items: center;
 }
@@ -168,7 +169,6 @@
   font-size: 48px;
   margin-bottom: 16px;
   font-weight: 700;
-  color: #000;
 }
 
 .login-title-box:after {
@@ -181,6 +181,9 @@
 }
 
 .input-wrapper-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 422px;
   transition: 0.1s;
 }
@@ -190,6 +193,7 @@
   align-items: center;
   gap: 10px;
   height: 48px;
+  width: 100%;
   padding: 0px 21px;
   border-bottom: 1px solid #d1d1d1;
   transition: border-color 0.1s;
@@ -221,6 +225,7 @@
 
 .spacebox {
   height: 28px;
+  width: 100%;
 }
 
 .login-button-wrapper {
@@ -243,6 +248,7 @@
   font-size: 13px;
   font-weight: 400;
   height: 24px;
+  width: 100%;
   padding-top: 8px;
 }
 
@@ -285,20 +291,32 @@
 }
 
 .confirm-box {
-  margin-top: -40px;
-  margin-bottom: -15px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  height: 24px;
+  width: 100%;
   font-size: 16px;
+  color: var(--menu-color);
+}
+
+.confirm-box img {
+  content: url(../assets/log_in_sign_up/icons/checkbox.svg);
+}
+
+.confirm-box:hover img {
+  content: url(../assets/log_in_sign_up/icons/ckeckbox_checked.svg);
 }
 
 .confirm-box a {
   font-size: 16px;
   text-decoration: none;
-  color: var(--menu-color);
+  color: var(--light-blue);
 }
 
 * {
   outline: 0px solid red;
-  color: var(--light-blue);
+  
 }
 
 /*
@@ -340,6 +358,10 @@ Important, Please don´t touch this section, never!
     height: 469px;
     width: 396px;
   }
+  .sign-up-box {
+    height: 608px;
+    width: 396px;
+  }
   .sign-up-button-box {
     position: absolute;
     top: calc(50% + 275px); /* Höhe der login-box + Abstand */
@@ -352,14 +374,24 @@ Important, Please don´t touch this section, never!
     width: 364px;
     height: 152px;
   }
+  .input-wrapper {
+    width: 90%;
+  }
   .login-button-wrapper {
     flex-direction: column;
+    width: 100%;
   }
 }
 
 /* Mobile less 428px until 320px */
 @media (max-width: 428px) {
+  .login-title-box:after {
+  width: 88px;
+}
   .login-box {
+    width: 90%;
+  }
+  .sign-up-box {
     width: 90%;
   }
   .input-wrapper-box {
