@@ -117,11 +117,13 @@
 
 .contact-single-person-content {
     padding: 60px;
+    
 }
 
 .contact-single-person-content-head {
     gap: 54px;
     display: flex;
+    padding-bottom: 21px;
 }
 
 .contact-person-icon-big {
@@ -180,6 +182,10 @@
     justify-content: center;
 }
 
+.contact-single-person-content-head-trash-box:hover {
+
+}
+
 .contact-single-person-content-head-trash-box p {
     font-size: 16px;
 }
@@ -188,3 +194,34 @@
     height: 24px;
     width: 24px;
 }
+
+.contact-single-person-content-info {
+    gap: 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-single-person-content-info a {
+    font-size: 16px;
+    text-decoration: none;
+    color: var(--main-color);
+}
+
+.contact-single-person-content-head-trash-box:hover {
+    color: var(--light-blue);
+    font-weight: 700;
+}
+
+.contact-single-person-content-head-trash-box:hover img {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(7482%) hue-rotate(244deg) brightness(101%) contrast(101%);
+}
+
+.contact-single-person-content-head-edit-box:hover p {
+    color: var(--light-blue);
+    font-weight: 700;
+}
+
+.contact-single-person-content-head-edit-box:hover img {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(7482%) hue-rotate(244deg) brightness(101%) contrast(101%);
+}
+
