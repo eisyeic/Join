@@ -37,7 +37,7 @@
         <section class="top-section">
           <div class="sign-up-button-box" id="sign-up-top-right-box">
             Not a join user?
-            <button id="sign-up" class="base-button button-blue button-small">
+            <button onclick="openSignUpBox()" id="sign-up" class="base-button button-blue button-small">
               Sign up
             </button>
           </div>
@@ -51,6 +51,7 @@
           <div class="login-box" id="login-box">
             <div class="login-title-box">
               <div class="login-title">Log in</div>
+              <div class="title-border"></div>
             </div>
 
             <div class="input-wrapper-box">
@@ -74,7 +75,7 @@
                 />
               </div>
 
-              <div id="errorMessage"></div>
+              <div class="error-message" id="errorMessage"></div>
             </div>
 
             <!-- Log in & Guest buttons-->
@@ -106,6 +107,7 @@
 
             <div class="login-title-box">
               <div class="login-title">Sign up</div>
+              <div class="title-border"></div>
             </div>
 
             <div class="input-wrapper-box">
@@ -117,14 +119,14 @@
               <div class="filler"></div>
 
               <div class="input-wrapper">
-                <input type="email" placeholder="Email" id="email" />
+                <input type="email" placeholder="Email" id="sign-up-email" />
                 <img src="./assets/log_in_sign_up/icons/mail.svg" alt="" />
               </div>
 
               <div class="filler"></div>
 
               <div class="input-wrapper">
-                <input id="password" type="password" placeholder="Password" />
+                <input id="sign-up-password" type="password" placeholder="Password" />
                 <img
                   id="togglePassword"
                   src="./assets/log_in_sign_up/icons/lock.svg"
@@ -136,7 +138,7 @@
 
               <div class="input-wrapper">
                 <input
-                  id="password-second"
+                  id="confirm-password"
                   type="password"
                   placeholder="Confirm Password"
                 />
@@ -147,7 +149,7 @@
                 />
               </div>
 
-              <div id="errorMessage"></div>
+              <div class="error-message" id="error-sign-up"></div>
 
               <div class="confirm-box" id="confirm">
                 <img
@@ -162,7 +164,8 @@
             <!-- Sign up button -->
             <div class="login-button-wrapper">
               <button
-                class="base-button button-blue button-small"
+                onclick="signUp()"
+                class="sign-up-button base-button button-blue button-small"
                 id="sign-up-button"
               >
                 Sign up
@@ -176,7 +179,7 @@
           <!-- sig up button box mobile -->
           <div class="sign-up-bottom-box d-none" id="sign-up-bottom-box">
             Not a join user?
-            <button class="base-button button-blue button-small" id="sign-up-bottom">
+            <button onclick="openSignUpBox()" class="base-button button-blue button-small" id="sign-up-bottom">
               Sign up
             </button>
           </div>
@@ -190,7 +193,9 @@
             <a href="./legal-notice.html">Legal Notice</a>
           </div>
         </section>
+        
       </main>
     </div>
+    <div id="slide-in-banner" class="slide-in-banner">You Signed Up successfully</div>
   </body>
 </html>

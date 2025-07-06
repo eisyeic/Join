@@ -1,7 +1,30 @@
 const layout = document.getElementById('layout');
 const logoBlue = document.getElementById('logo-blue');
 const logoWhite = document.getElementById('logo-white');
+
+const signUpTop = document.getElementById('sign-up');
+const signUpBottom = document.getElementById('sign-up-bottom')
+const signUpButtonBox  = document.getElementById('sign-up-top-right-box');
+const signUpBottomBox = document.getElementById('sign-up-bottom-box')
+
+const loginBox = document.getElementById('login-box');
+const signUpBox = document.getElementById('sign-up-box');
+const confirmBox = document.getElementById('confirm');
+const goBack = document.getElementById('go-back');
+
+const toggleIcon = document.getElementById('togglePassword');
+const error = document.getElementById('errorMessage');
+const errorSignUp = document.getElementById('error-sign-up');
+const passwordInput = document.getElementById("login-password");
+
+const signUpButton = document.getElementById('sign-up-button');
+const slideInMessage = document.getElementById('slide-in-banner');
+
+const emailInput = document.getElementById('login-email');
+const emailSignUpInput = document.getElementById('sign-up-email');
+
 let isVisible = false;
+
 
 // onload background and icon animation
 setTimeout(() => {
@@ -10,11 +33,6 @@ setTimeout(() => {
   logoBlue.style.opacity = "1";
 }, 500);
 
-const signUpTop = document.getElementById('sign-up');
-const signUpBottom = document.getElementById('sign-up-bottom')
-const signUpButtonBox  = document.getElementById('sign-up-top-right-box');
-const signUpBottomBox = document.getElementById('sign-up-bottom-box')
-const signUpBox = document.getElementById('sign-up-box');
 
 // change background and icon animation
 function openSignUpBox() {
@@ -36,15 +54,9 @@ function openSignUpBox() {
 }
 
 
-signUpTop.addEventListener("click", openSignUpBox);
-signUpBottom.addEventListener("click", openSignUpBox);
-
 // back arrow button, change bg and icon animation
-const goBack = document.getElementById('go-back');
-const loginBox = document.getElementById('login-box');
-
 goBack.addEventListener("click", () => {
-  const isNowBlue = layout.classList.toggle("bg-blue");
+  let isNowBlue = layout.classList.toggle("bg-blue");
   layout.classList.toggle("bg-white", !isNowBlue);
 
   if (isNowBlue) {
@@ -63,7 +75,7 @@ goBack.addEventListener("click", () => {
 
 // change the visibility icon on input
 function updateIcon() {
-  const value = passwordInput.value;
+  let value = passwordInput.value;
   if (!value) {
     toggleIcon.src = "./assets/log_in_sign_up/icons/lock.svg";
     toggleIcon.classList.remove("cursor-pointer");
@@ -77,8 +89,6 @@ function updateIcon() {
 }
  
 // onclick eye will show / hide password
-const toggleIcon = document.getElementById('togglePassword');
-
 toggleIcon.addEventListener("click", function () {
   if (!passwordInput.value) return;
   isVisible = !isVisible;
@@ -87,8 +97,6 @@ toggleIcon.addEventListener("click", function () {
 });
 
 // change password visibility icon on input
-const error = document.getElementById('errorMessage');
-
 passwordInput.addEventListener("input", function () {
   if (!passwordInput.value) {
     isVisible = false;
@@ -98,63 +106,73 @@ passwordInput.addEventListener("input", function () {
   updateIcon();
 });
 
-// clear error on input email
-const emailInput = document.getElementById('login-email');
 
+// clear error on input email
 emailInput.addEventListener("input", function () {
   error.innerHTML = "";
 });
+
+
+// change color on click to the inputbox
+const inputs = document.querySelectorAll(".input-wrapper input");
+
+inputs.forEach((input) => {
+  input.addEventListener("focus", () => {
+    inputs.forEach((el) => {
+      el.parentElement.style.borderColor = el === input ? '#4589FF' : '#D1D1D1';
+    });
+  });
+
+  input.addEventListener("blur", () => {
+    input.parentElement.style.borderColor = '#D1D1D1';
+  });
+});
+
 
 //clear error on input password
 passwordInput.addEventListener("input", function () {
   error.innerHTML = "";
 });
 
-// change underline highlight-color on input email and defalut on password
-emailInput.addEventListener("focus", function () {
-  emailInput.parentElement.style.borderColor = "#4589FF";
-  passwordInput.parentElement.style.borderColor = "#D1D1D1";
-});
-
-// change email underline color to default
-emailInput.addEventListener("blur", function () {
-  emailInput.parentElement.style.borderColor = "#D1D1D1";
-});
-
-// change underline highlight-color on input password and defalut on email
-const passwordInput = document.getElementById("login-password");
-
-passwordInput.addEventListener("focus", function () {
-  passwordInput.parentElement.style.borderColor = "#4589FF";
-  emailInput.parentElement.style.borderColor = "#D1D1D1";
-});
-
-// change password under color to default
-passwordInput.addEventListener("blur", function () {
-  passwordInput.parentElement.style.borderColor = "#D1D1D1";
-});
 
 // check email validation
-emailInput.addEventListener('blur', function () {
-    const email = this.value.trim();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ function validation() {
+    let email = this.value.trim();
+    let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (email && !emailPattern.test(email)) {
         error.innerHTML = "Check your email. Please try again.";
+        errorSignUp.innerHTML = "Check your email. Please try again.";
         emailInput.parentElement.style.borderColor = "#FF8190";
     } 
-});
+};
+
+emailInput.addEventListener('blur', validation);
+emailSignUpInput.addEventListener('blur', validation);
 
 // confirm box change icon
-const confirmBox = document.getElementById('confirm');
-
 confirmBox.addEventListener('click', function() {
   confirmBox.classList.toggle('checked');
+  signUpButton.classList.toggle('sign-up-button');
 });
 
 
-
+// to do: anmelden kommt dann hier rein
+function signUp() {
+  layout.style.opacity = "0.5";
+  slideInMessage.classList.add('visible');
+  setTimeout(() => {
+    slideInMessage.classList.remove('visible');
+    layout.style.opacity = "1";
+    goBack.click();
+  }, 1200);
+};
 
 
 // to do: Hier kommt das loginscript rein!
-logIn = () => error.innerHTML = "Check your email and password. <br> Please try again.";
+function logIn() { 
+  error.innerHTML = "Check your email and password. Please try again."
+  emailInput.parentElement.style.borderColor = '#FF8190' 
+  passwordInput.parentElement.style.borderColor = '#FF8190' 
+};
+

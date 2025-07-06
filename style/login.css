@@ -164,9 +164,11 @@
 }
 
 .login-title-box {
-  width: 422px;
-  height: 74px;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+ align-items: center;
+  width: 100%;
+  height: auto
 }
 
 .login-title {
@@ -177,15 +179,12 @@
   font-weight: 700;
 }
 
-.login-title-box:after {
-  content: "";
-  display: block;
-  background: var(--main-color);
+.title-border {
   width: 150px;
   height: 3px;
+  background-color: #4589ff;
   border-radius: 3px;
 }
-
 
 .input-wrapper-box {
   display: flex;
@@ -248,7 +247,7 @@
   cursor: pointer;
 }
 
-#errorMessage {
+.error-message {
   justify-self: flex-start;
   color: var(--error-color);
   font-family: inter;
@@ -300,7 +299,7 @@
   justify-content: center;
   gap: 16px;
   height: 24px;
-  width: 100%;
+  width: auto;
   font-size: 16px;
   color: var(--menu-color);
   cursor: pointer;
@@ -328,12 +327,35 @@
   color: var(--light-blue);
 }
 
+.sign-up-button {
+  pointer-events: none;
+}
+
 .d-none {
   display: none;
 }
 
 .d-none-important {
   display: none !important;
+}
+
+.slide-in-banner {
+  position: fixed;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  padding: 23px;
+  background-color: var(--main-color);
+  border-radius: 20px;
+  opacity: 0;
+  transition: bottom 0.5s ease, opacity 0.5s ease;
+  z-index: 3;
+}
+
+.slide-in-banner.visible {
+  bottom: 50%;  
+  opacity: 1;
 }
 
 * {
@@ -376,7 +398,7 @@ Important, Please don´t touch this section, never!
     height: 469px;
     width: 396px;
   }
-  .login-title-box:after {
+  .title-border {
     width: 88px;
   }
   .sign-up-box {
@@ -404,6 +426,9 @@ Important, Please don´t touch this section, never!
   .back-arrow {
     top: 45px;
     left: 45px;
+  }
+  .links {
+    margin-bottom: 26px;
   }
 }
 
