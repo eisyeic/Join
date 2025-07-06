@@ -1,9 +1,8 @@
 .page-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
+  justify-content: center;
+  height: 100vh;
   background-color: #4589ff;
   transition: background-color 0.3s ease-in-out;
 }
@@ -12,15 +11,16 @@
   background-color: #fff;
 }
 
-.login-main {
+.main-page {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: 1920px;
+  max-width: 2560px;
   height: 100%;
   max-height: 1440px;
   pointer-events: none;
-  align-items: center;
-  justify-content: center;
   opacity: 0;
   animation: fadeIn 0.3s ease-in-out forwards;
   animation-delay: 0.5s;
@@ -50,7 +50,7 @@
 @keyframes moveLogo {
   to {
     top: calc((100vh - min(100vh, 1440px)) / 2 + -20px);
-    left: calc((100vw - min(100vw, 1920px)) / 2 + -5px);
+    left: calc((100vw - min(100vw, 2560px)) / 2 + -5px);
     transform: translate(0, 0) scale(0.38);
   }
 }
@@ -64,6 +64,7 @@
   opacity: 0;
   animation: fadeInBlue 0.3s ease-in-out forwards;
   animation-delay: 0.5s;
+  z-index: 1;
 }
 
 /* change logo color */
@@ -73,8 +74,7 @@
   }
 }
 
-.logo-white,
-.logo-blue {
+.logo-white {
   position: absolute;
   top: 0;
   left: 0;
@@ -82,56 +82,72 @@
   height: auto;
   transition: opacity 0.3s ease-in-out;
   pointer-events: none;
-}
-
-.logo-white {
   opacity: 1;
   z-index: 2;
 }
-.logo-blue {
-  opacity: 0;
-  z-index: 1;
+
+.top-section, .bottom-section {
+  display: flex;
+  width: 100%;
+  height: 115px;
 }
 
-.sign-up-button-box {
+.top-section {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.main-section {
   display: flex;
-  position: absolute;
-  top: 67px;
-  right: 86px;
+  justify-content: center;
+  width: 100%;
+}
+.bottom-section {
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.spacer-box {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign-up-button-box, .sign-up-bottom-box {
+  display: flex;
   gap: 35px;
   align-items: center;
 }
 
-.login-box {
+.sign-up-button-box {
+  margin-right: 86px;
+}
+
+.sign-up-bottom-box {
+  height: 43px;
+}
+
+.sign-up-bottom-box, .sign-up-bottom-box button {
+  font-size: 19px;
+}
+
+.login-box, .sign-up-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  background-color: #fff;
   gap: 39px;
+  background-color: #fff;
   width: 652px;
   height: 448px;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
-  overflow: hidden;
-  transition: height 0.4s ease;
 }
 
 .sign-up-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  background-color: #fff;
-  gap: 39px;
-  width: 652px;
+  position: relative; /* Important, please keep it in */
   height: 607px;
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
-  transition: height 0.4s ease;
 }
 
 .back-arrow {
@@ -147,21 +163,14 @@
   content: url(../assets/general_elements/icons/arrow_left_hover.svg);
 }
 
-.d-none {
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.1s;
-}
-
 .login-title-box {
-  width: 100%;
+  width: 422px;
   height: 74px;
   justify-items: center;
 }
 
 .login-title {
   text-align: center;
-  width: 315px;
   height: 58px;
   font-size: 48px;
   margin-bottom: 16px;
@@ -177,6 +186,7 @@
   border-radius: 3px;
 }
 
+
 .input-wrapper-box {
   display: flex;
   flex-direction: column;
@@ -189,9 +199,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 48px;
-  width: 100%;
-  padding: 0px 21px;
+  width: 90%;
+  padding: 12px 21px;
   border-bottom: 1px solid var(--style-color);
   transition: border-color 0.2s;
 }
@@ -202,17 +211,13 @@
   font-size: 19px;
 }
 
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .input-wrapper input:focus {
   border: none;
   outline: none;
 }
 
 .input-wrapper input::placeholder {
-  color: #d1d1d1;
+  color: var(--style-color);
 }
 
 .input-wrapper img {
@@ -220,7 +225,11 @@
   width: 24px;
 }
 
-.spacebox {
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.filler {
   height: 28px;
   width: 100%;
 }
@@ -229,13 +238,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 48px;
   gap: 35px;
+  width: 422px;
 }
 
 .login-button-wrapper button {
   padding: 10px 35px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 #errorMessage {
@@ -245,17 +255,16 @@
   font-size: 13px;
   font-weight: 400;
   height: 24px;
-  width: 100%;
+  width: 90%;
   padding-top: 8px;
 }
 
 .links {
-  position: absolute;
-  bottom: 43px;
   display: flex;
   gap: 35px;
+  height: 35px;
   align-items: center;
-  justify-content: center;
+  margin-bottom: 42.7px;
 }
 
 .links a {
@@ -289,12 +298,12 @@
 .confirm-box {
   display: flex;
   justify-content: center;
-  cursor: pointer;
   gap: 16px;
   height: 24px;
   width: 100%;
   font-size: 16px;
   color: var(--menu-color);
+  cursor: pointer;
 }
 
 .confirm-box img {
@@ -319,16 +328,21 @@
   color: var(--light-blue);
 }
 
+.d-none {
+  display: none;
+}
+
+.d-none-important {
+  display: none !important;
+}
+
 * {
   outline: 0px solid red;
 }
 
 /*
 
-
 Important, Please don´t touch this section, never!
-
-
 
 */
 
@@ -370,22 +384,13 @@ Important, Please don´t touch this section, never!
     width: 396px;
   }
   .sign-up-button-box {
-    position: absolute;
-    top: calc(50% + 275px); /* Höhe der login-box + Abstand */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 320px;
-    right: auto;
-    font-size: 19px;
+    display: none;
   }
-  .sign-up-button-box button {
-    font-size: 19px;
+  .sign-up-bottom-box {
+    display: flex;
   }
   .input-wrapper-box {
     width: 364px;
-  }
-  .input-wrapper {
-    width: 90%;
   }
   .login-button-wrapper {
     flex-direction: column;
@@ -396,24 +401,21 @@ Important, Please don´t touch this section, never!
     font-size: 19px;
     width: 180px;
   }
-  .links {
-    position: absolute;
-    bottom: 26px;
+  .back-arrow {
+    top: 45px;
+    left: 45px;
   }
 }
 
 /* Mobile less 428px until 320px */
 @media (max-width: 428px) {
-  .login-box {
-    width: 90%;
+  .login-box, .sign-up-box {
+    width: 95%;
   }
-  .sign-up-box {
-    width: 90%;
+  .back-arrow {
+    left: 20px;
   }
   .input-wrapper-box {
-    width: 90%;
-  }
-  .sign-up-box {
     width: 90%;
   }
 }

@@ -15,6 +15,7 @@
   </head>
   <body>
     <div class="page-wrapper" id="layout">
+      <!-- logo box postion absolute -->
       <div class="logo-wrapper" id="logo-wrapper">
         <img
           id="logo-white"
@@ -29,137 +30,166 @@
           alt="logo"
         />
       </div>
-      <main class="login-main">
-        <div class="sign-up-button-box" id="sign-up-button-box">
-          Not a join user?
-          <button id="sign-up" class="base-button button-blue button-small">
-            Sign up
-          </button>
-        </div>
 
-        <!-- Login box template -->
-        <div class="login-box" id="login-box">
-          <div class="login-title-box">
-            <div class="login-title">Log in</div>
-          </div>
-
-          <div class="input-wrapper-box">
-            <div class="input-wrapper">
-              <input type="email" placeholder="Email" id="email" />
-              <img src="./assets/log_in_sign_up/icons/mail.svg" alt="" />
-            </div>
-
-            <div class="spacebox"></div>
-
-            <div class="input-wrapper">
-              <input id="password" type="password" placeholder="Password" />
-              <img
-                id="togglePassword"
-                src="./assets/log_in_sign_up/icons/lock.svg"
-                alt="password"
-              />
-            </div>
-
-            <div id="errorMessage"></div>
-          </div>
-
-          <!-- Log in & Guest buttons-->
-          <div class="login-button-wrapper">
-            <button
-              class="base-button button-blue button-small"
-              onclick="logIn()"
-              id="login-button"
-            >
-              Log in
-            </button>
-            <button
-              class="base-button button-hollow button-small"
-              id="guest-button"
-            >
-              Guest log in
+      <!-- main page -->
+      <main class="main-page">
+        <!-- top section -->
+        <section class="top-section">
+          <div class="sign-up-button-box" id="sign-up-top-right-box">
+            Not a join user?
+            <button id="sign-up" class="base-button button-blue button-small">
+              Sign up
             </button>
           </div>
-        </div>
+        </section>
 
-        <!-- Sign up box template -->
-        <div class="sign-up-box d-none" id="sign-up-box">
-          <img
-            id="go-back"
-            class="back-arrow"
-            src="./assets/general_elements/icons/arrow_left.svg"
-            alt=""
-          />
+        <!-- spacer -->
+        <div class="spacer-box"></div>
 
-          <div class="login-title-box">
-            <div class="login-title">Sign up</div>
-          </div>
-
-          <div class="input-wrapper-box">
-            <div class="input-wrapper">
-              <input type="text" placeholder="Name" id="name" />
-              <img src="./assets/log_in_sign_up/icons/person.svg" alt="" />
+        <section class="main-section">
+          <!-- Login box template -->
+          <div class="login-box" id="login-box">
+            <div class="login-title-box">
+              <div class="login-title">Log in</div>
             </div>
 
-            <div class="spacebox"></div>
+            <div class="input-wrapper-box">
+              <div class="input-wrapper">
+                <input type="email" placeholder="Email" id="login-email" />
+                <img src="./assets/log_in_sign_up/icons/mail.svg" alt="" />
+              </div>
 
-            <div class="input-wrapper">
-              <input type="email" placeholder="Email" id="email" />
-              <img src="./assets/log_in_sign_up/icons/mail.svg" alt="" />
+              <div class="filler"></div>
+
+              <div class="input-wrapper">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  id="login-password"
+                />
+                <img
+                  id="togglePassword"
+                  src="./assets/log_in_sign_up/icons/lock.svg"
+                  alt="password"
+                />
+              </div>
+
+              <div id="errorMessage"></div>
             </div>
 
-            <div class="spacebox"></div>
-
-            <div class="input-wrapper">
-              <input id="password" type="password" placeholder="Password" />
-              <img
-                id="togglePassword"
-                src="./assets/log_in_sign_up/icons/lock.svg"
-                alt="password"
-              />
-            </div>
-
-            <div class="spacebox"></div>
-
-            <div class="input-wrapper">
-              <input
-                id="password-second"
-                type="password"
-                placeholder="Confirm Password"
-              />
-              <img
-                id="togglePassword"
-                src="./assets/log_in_sign_up/icons/lock.svg"
-                alt="password"
-              />
-            </div>
-
-            <div id="errorMessage"></div>
-
-            <div class="confirm-box" id="confirm">
-              <img src="./assets/log_in_sign_up/icons/checkbox_default.svg" alt="">
-                  I accept the 
-                <a href="./privacy-policy.html">
-                  Privacy policy
-                </a>
+            <!-- Log in & Guest buttons-->
+            <div class="login-button-wrapper">
+              <button
+                class="base-button button-blue button-small"
+                onclick="logIn()"
+                id="login-button"
+              >
+                Log in
+              </button>
+              <button
+                class="base-button button-hollow button-small"
+                id="guest-button"
+              >
+                Guest log in
+              </button>
             </div>
           </div>
-          
-          <!-- Sign up button -->
-          <div class="login-button-wrapper">
-            <button
-              class="base-button button-blue button-small"
-              id="sign-up-button"
-            >
+
+          <!-- Sign up box template -->
+          <div class="sign-up-box d-none" id="sign-up-box">
+            <img
+              id="go-back"
+              class="back-arrow"
+              src="./assets/general_elements/icons/arrow_left.svg"
+              alt=""
+            />
+
+            <div class="login-title-box">
+              <div class="login-title">Sign up</div>
+            </div>
+
+            <div class="input-wrapper-box">
+              <div class="input-wrapper">
+                <input type="text" placeholder="Name" id="name" />
+                <img src="./assets/log_in_sign_up/icons/person.svg" alt="" />
+              </div>
+
+              <div class="filler"></div>
+
+              <div class="input-wrapper">
+                <input type="email" placeholder="Email" id="email" />
+                <img src="./assets/log_in_sign_up/icons/mail.svg" alt="" />
+              </div>
+
+              <div class="filler"></div>
+
+              <div class="input-wrapper">
+                <input id="password" type="password" placeholder="Password" />
+                <img
+                  id="togglePassword"
+                  src="./assets/log_in_sign_up/icons/lock.svg"
+                  alt="password"
+                />
+              </div>
+
+              <div class="filler"></div>
+
+              <div class="input-wrapper">
+                <input
+                  id="password-second"
+                  type="password"
+                  placeholder="Confirm Password"
+                />
+                <img
+                  id="togglePassword"
+                  src="./assets/log_in_sign_up/icons/lock.svg"
+                  alt="password"
+                />
+              </div>
+
+              <div id="errorMessage"></div>
+
+              <div class="confirm-box" id="confirm">
+                <img
+                  src="./assets/log_in_sign_up/icons/checkbox_default.svg"
+                  alt=""
+                />
+                I accept the
+                <a href="./privacy-policy.html"> Privacy policy </a>
+              </div>
+            </div>
+
+            <!-- Sign up button -->
+            <div class="login-button-wrapper">
+              <button
+                class="base-button button-blue button-small"
+                id="sign-up-button"
+              >
+                Sign up
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- spacer -->
+        <div class="spacer-box">
+          <!-- sig up button box mobile -->
+          <div class="sign-up-bottom-box d-none" id="sign-up-bottom-box">
+            Not a join user?
+            <button class="base-button button-blue button-small" id="sign-up-bottom">
               Sign up
             </button>
           </div>
         </div>
 
-        <!-- links -->
-        <div class="links" id="links">
-          <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./legal-notice.html">Legal Notice</a>
-        </div>
+        <!-- bottom section -->
+        <section class="bottom-section">
+          <!-- links -->
+          <div class="links" id="links">
+            <a href="./privacy-policy.html">Privacy Policy</a>
+            <a href="./legal-notice.html">Legal Notice</a>
+          </div>
+        </section>
       </main>
     </div>
   </body>

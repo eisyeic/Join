@@ -1,19 +1,7 @@
 const layout = document.getElementById('layout');
-const signUpButton = document.getElementById('sign-up');
 const logoBlue = document.getElementById('logo-blue');
 const logoWhite = document.getElementById('logo-white');
-const signUpButtonBox  = document.getElementById('sign-up-button-box');
-const goBack = document.getElementById('go-back');
-const loginBox = document.getElementById('login-box');
-const passwordInput = document.getElementById("password");
-const toggleIcon = document.getElementById('togglePassword');
-const emailInput = document.getElementById('email');
-const error = document.getElementById('errorMessage');
-const signUpBox = document.getElementById('sign-up-box');
-const confirmBox = document.getElementById('confirm');
-
 let isVisible = false;
-
 
 // onload background and icon animation
 setTimeout(() => {
@@ -22,8 +10,14 @@ setTimeout(() => {
   logoBlue.style.opacity = "1";
 }, 500);
 
+const signUpTop = document.getElementById('sign-up');
+const signUpBottom = document.getElementById('sign-up-bottom')
+const signUpButtonBox  = document.getElementById('sign-up-top-right-box');
+const signUpBottomBox = document.getElementById('sign-up-bottom-box')
+const signUpBox = document.getElementById('sign-up-box');
+
 // change background and icon animation
-signUpButton.addEventListener("click", () => {
+function openSignUpBox() {
   const isNowBlue = layout.classList.toggle('bg-blue');
   layout.classList.toggle('bg-white', !isNowBlue);
 
@@ -34,12 +28,21 @@ signUpButton.addEventListener("click", () => {
     logoWhite.style.opacity = "0";
     logoBlue.style.opacity = "1";
   }
+
   signUpButtonBox.classList.add('d-none');
+  signUpBottomBox.classList.add('d-none-important'); 
   loginBox.classList.add('d-none');
   signUpBox.classList.remove('d-none');
-});
+}
 
-// left arrow button, change bg and icon animation
+
+signUpTop.addEventListener("click", openSignUpBox);
+signUpBottom.addEventListener("click", openSignUpBox);
+
+// back arrow button, change bg and icon animation
+const goBack = document.getElementById('go-back');
+const loginBox = document.getElementById('login-box');
+
 goBack.addEventListener("click", () => {
   const isNowBlue = layout.classList.toggle("bg-blue");
   layout.classList.toggle("bg-white", !isNowBlue);
@@ -52,6 +55,7 @@ goBack.addEventListener("click", () => {
     logoBlue.style.opacity = "1";
   }
   signUpButtonBox.classList.remove('d-none');
+  signUpBottomBox.classList.remove('d-none-important');
   loginBox.classList.remove('d-none');
   signUpBox.classList.add('d-none');
 });
@@ -73,6 +77,8 @@ function updateIcon() {
 }
  
 // onclick eye will show / hide password
+const toggleIcon = document.getElementById('togglePassword');
+
 toggleIcon.addEventListener("click", function () {
   if (!passwordInput.value) return;
   isVisible = !isVisible;
@@ -81,6 +87,8 @@ toggleIcon.addEventListener("click", function () {
 });
 
 // change password visibility icon on input
+const error = document.getElementById('errorMessage');
+
 passwordInput.addEventListener("input", function () {
   if (!passwordInput.value) {
     isVisible = false;
@@ -91,6 +99,8 @@ passwordInput.addEventListener("input", function () {
 });
 
 // clear error on input email
+const emailInput = document.getElementById('login-email');
+
 emailInput.addEventListener("input", function () {
   error.innerHTML = "";
 });
@@ -112,6 +122,8 @@ emailInput.addEventListener("blur", function () {
 });
 
 // change underline highlight-color on input password and defalut on email
+const passwordInput = document.getElementById("login-password");
+
 passwordInput.addEventListener("focus", function () {
   passwordInput.parentElement.style.borderColor = "#4589FF";
   emailInput.parentElement.style.borderColor = "#D1D1D1";
@@ -133,6 +145,9 @@ emailInput.addEventListener('blur', function () {
     } 
 });
 
+// confirm box change icon
+const confirmBox = document.getElementById('confirm');
+
 confirmBox.addEventListener('click', function() {
   confirmBox.classList.toggle('checked');
 });
@@ -142,4 +157,4 @@ confirmBox.addEventListener('click', function() {
 
 
 // to do: Hier kommt das loginscript rein!
-logIn = () => error.innerHTML = "Check your email and password. Please try again.";
+logIn = () => error.innerHTML = "Check your email and password. <br> Please try again.";
