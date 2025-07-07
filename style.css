@@ -207,6 +207,15 @@ h5 {
   margin: 0;
 }
 
+h6 {
+  font-size: 16px;
+  margin: 0;
+}
+
+span {
+  font-size: 16px;
+}
+
 /* Added styles for summary board */
 .main-content {
     padding: 40px;
