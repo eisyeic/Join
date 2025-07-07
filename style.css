@@ -111,8 +111,8 @@ html, body {
 }
 
 .priority-button img {
-  width: 20px;
-  height: auto;
+  width: 76px;
+  height: 76px;
 }
 
 /* Urgent button
@@ -207,19 +207,164 @@ h5 {
   margin: 0;
 }
 
-h6 {
-  font-size: 16px;
-  margin: 0;
+/* Added styles for summary board */
+.main-content {
+    padding: 40px;
 }
 
-.text-main-color {
-  color: var(--main-color);
+.title-container {
+    display: none; /* As per screenshot, the 'Join' title is not visible on this page */
 }
 
-.text-light-color {
-  color: var(--light-blue);
+.content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
 }
 
-span {
-  font-size: 16px;
+.task-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex-grow: 1;
+}
+
+.task-overview {
+    display: flex;
+    gap: 30px;
+}
+
+.task-urgent {
+    display: flex;
+    align-items: center;
+    background-color: var(--main-color);
+    color: white;
+    border-radius: 20px;
+    padding: 25px;
+    gap: 30px;
+    flex-grow: 1;
+    transition: all 0.2s ease-in-out;
+}
+
+.task-urgent:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.task-urgent-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.task-urgent-left img {
+    width: 76px;
+    height: 76px;
+}
+
+.task-urgent-text h3 {
+    font-size: 47px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.task-urgent-text span {
+    font-size: 16px;
+}
+
+.task-urgent-right {
+    border-left: 2px solid white;
+    padding-left: 30px;
+}
+
+.task-urgent-date h4 {
+    font-size: 21px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.task-urgent-date span {
+    font-size: 16px;
+}
+
+.task-board {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+    padding: 25px;
+    gap: 18px;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.task-board:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.task-board img {
+    width: 40px;
+    height: 40px;
+}
+
+.task-board-text h3 {
+    font-size: 47px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.task-board-text span {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.task-status {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.task-status-box {
+    background-color: white;
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.task-status-box:hover {
+    background-color: var(--dark-blue);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.task-status-box img {
+    width: 76px;
+    height: 76px;
+}
+
+.task-status-text h3 {
+    font-size: 47px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.task-status-text span {
+    font-size: 16px;
+}
+
+.summary-container {
+    text-align: right;
+}
+
+.summary-container h2 {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0;
 }
