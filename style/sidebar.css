@@ -6,6 +6,7 @@
   justify-content: space-between;
   border-right: 1px solid #eee;
   padding: 20px;
+  height: 85vh;
 }
 
 .sidebar nav ul {
