@@ -99,8 +99,11 @@ header {
 
 /* Added styles for summary board */
 .main-content {
- margin: 30px;
-  display: flex;
+  padding: 72px;
+    width: 920px;
+    height: 591px;
+    left: 380px;
+    position: absolute;
 }
 
 .title-container {
@@ -112,7 +115,7 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
 }
 
@@ -170,12 +173,11 @@ header {
 
 .task-urgent-right {
   border-left: 2px solid white;
-    padding-left: 30px;
-    height: 156px;
-    align-items: center;
-    justify-content: center;
-    display: flex
-
+  padding-left: 30px;
+  height: 156px;
+  align-items: center;
+  justify-content: center;
+  display: flex
 }
 
 .task-urgent-date h4 {
