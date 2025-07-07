@@ -5,6 +5,10 @@ body {
   background: #f9f9fc;
 }
 
+header {
+  position: relative;
+}
+
 .container {
   display: flex;
 }
@@ -14,6 +18,11 @@ body {
   font-weight: bold;
   color: #1a73e8;
   margin-bottom: 40px;
+}
+
+.sidebar-buttom {
+  width: 186px;
+  height: 205px;
 }
 
 .sidebar-footer a {
@@ -71,7 +80,7 @@ body {
   border-radius: 12px;
   padding: 20px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .card .icon {
@@ -90,215 +99,175 @@ body {
 
 /* Added styles for summary board */
 .main-content {
-    padding: 40px;
+ margin: 30px;
+  display: flex;
 }
 
 .title-container {
-    display: none; /* As per screenshot, the 'Join' title is not visible on this page */
+  display: none;
+  /* As per screenshot, the 'Join' title is not visible on this page */
 }
 
 .content-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
 }
 
 .task-container {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  flex-grow: 1;
 }
 
 .task-overview {
-    display: flex;
-    gap: 35px;
-    width: 912px;
-    height: 191px;
+  display: flex;
+  gap: 35px;
+  width: 912px;
+  height: 191px;
 }
 
 .task-urgent {
-    display: flex;
-    align-items: center;
-    background-color: var(--main-color);
-    color: white;
-    border-radius: 20px;
-    padding: 25px;
-    gap: 30px;
-    flex-grow: 1;
-    transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  background-color: var(--main-color);
+  color: white;
+  border-radius: 20px;
+  padding: 25px;
+  gap: 30px;
+  flex-grow: 1;
+  transition: all 0.2s ease-in-out;
 }
 
 .task-urgent:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .task-urgent-left {
-    display: flex;
-    align-items: center;
-    gap: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
 .task-urgent-left img {
-    width: 76px;
-    height: 76px;
+  width: 76px;
+  height: 76px;
 }
 
 .task-urgent-text h3 {
-    font-size: 47px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 47px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .task-urgent-text span {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .task-urgent-right {
-    border-left: 2px solid white;
+  border-left: 2px solid white;
     padding-left: 30px;
+    height: 156px;
+    align-items: center;
+    justify-content: center;
+    display: flex
+
 }
 
 .task-urgent-date h4 {
-    font-size: 21px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .task-urgent-date span {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .task-board {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    border-radius: 20px;
-    padding: 25px;
-    gap: 18px;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  padding: 25px;
+  gap: 18px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
 }
 
 .task-board:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .task-board img {
-    width: 76px;
-    height: 76px;
+  width: 76px;
+  height: 76px;
 }
 
 .task-board-text h3 {
-    font-size: 47px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 47px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .task-board-text span {
-    font-size: 16px;
-    line-height: 1.2;
+  font-size: 16px;
+  line-height: 1.2;
 }
 
 .task-status {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    width: 672px;
-    height: 191px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  width: 672px;
+  height: 191px;
 }
 
 .task-status-box {
-    background-color: white;
-    border-radius: 20px;
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  width: 204px;
+  height: 219px;
 }
 
 .task-status-box:hover {
-    background-color: var(--dark-blue);
-    color: white;
-    transform: scale(1.05);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: var(--dark-blue);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .task-status-box img {
-    width: 76px;
-    height: 76px;
+  width: 76px;
+  height: 76px;
 }
 
 .task-status-text h3 {
-    font-size: 47px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 47px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .task-status-text span {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .summary-container {
-    text-align: right;
+  text-align: right;
 }
 
 .summary-container h2 {
-    font-size: 48px;
-    font-weight: 700;
-    margin: 0;
-}
-
-
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 10px;
-    border-right: none;
-    border-bottom: 1px solid #eee;
-  }
-
-  .sidebar nav ul {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .sidebar-footer {
-    display: none;
-  }
-
-  .dashboard {
-    padding: 20px;
-  }
-
-  .task-overview {
-    flex-direction: column;
-  }
-
-  .task-urgent, .task-board {
-    width: 100%;
-  }
-
-  .task-status {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .summary-container {
-    text-align: left;
-  }
+  font-size: 48px;
+  font-weight: 700;
+  margin: 0;
 }
