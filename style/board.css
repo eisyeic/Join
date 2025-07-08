@@ -1,0 +1,93 @@
+* {
+  outline: 0px solid red;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  width: 232px;
+  text-align: center;
+  padding-top: 200px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+}
+
+.board {
+  width: 100%;
+}
+
+.board-top {
+  gap: 48px;
+}
+
+.input-button-box {
+  display: flex;
+  align-items: center;
+  margin: 72px 65px;
+  gap: 35px;
+}
+
+.search-input {
+  display: flex;
+  align-items: center;
+  width: 312px;
+  border-radius: 10px;
+  outline: 1px solid var(--icon-gray);
+  gap: 10px;
+}
+
+.search-input:hover,
+.search-input:active {
+  outline-color: var(--main-color);
+}
+
+.search-input {
+  width: 312px;
+  padding: 8px 16px;
+}
+
+.search-input input {
+  border: none;
+  outline: none;
+  border-right: 1px solid var(--icon-gray);
+}
+
+.search-button {
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+}
+
+.bar {
+    display: flex;
+    padding: 18px 64px;
+    gap: 32px;
+}
+
+.column-title {
+    display: flex;
+    width: 244px;
+    justify-content: space-between;
+}
+
+.board-content {
+    padding: 0px 64px;
+    gap: 24px;
+}
+
+#to-do-column {
+    text-align: center;
+    width: 220px;
+    background-color: var(--icon-gray);
+    padding: 16px 12px;
+    border: 1px dashed white;
+    border-radius: 10px;
+}

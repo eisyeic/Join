@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join - Board</title>
+    <link
+      rel="shortcut icon"
+      href="./assets/general_elements/icons/logo_blue_icon.svg"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./style/board.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+  </head>
+  <body>
+    <header>
+      <img src="./assets/general_elements/icons/logo_white_icon.svg" />
+      <nav>
+        <p>Kanban Project Management Tool</p>
+      </nav>
+    </header>
+    <main>
+      <section class="sidebar">sidebar</section>
+
+      <!-- Board -->
+      <section class="board">
+        <div class="board-top">
+          <div class="input-button-box">
+            <div class="search-input">
+              <input type="search" placeholder="Find Task" />
+              <div class="search-button">
+                <img src="./assets/board/icons/default_glass.svg" alt="" />
+              </div>
+            </div>
+            <button class="base-button button-blue button-small">
+              Add Task +
+            </button>
+          </div>
+          <div class="bar">
+            <div class="column-title">To do<img src="./assets/board/icons/default_plus.svg" alt=""></div>
+            <div class="column-title">In progressing <img src="./assets/board/icons/default_plus.svg" alt=""></div>
+            <div class="column-title">Await feedback<img src="./assets/board/icons/default_plus.svg" alt=""></div>
+            <div class="column-title">Done</div>
+          </div>
+        </div>
+        <div class="board-content">
+            <div id="to-do-column">No tasks to do</div>
+            <div id="in-progress-column"></div>
+            <div id="awai-feedback-column"></div>
+            <div id="done-column"></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
