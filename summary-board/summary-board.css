@@ -100,15 +100,14 @@ header {
 /* Added styles for summary board */
 .main-content {
   padding: 72px;
-    width: 920px;
-    height: 591px;
-    left: 380px;
-    position: absolute;
+  width: 920px;
+  height: 591px;
+  left: 380px;
+  position: absolute;
 }
 
 .title-container {
   display: none;
-  /* As per screenshot, the 'Join' title is not visible on this page */
 }
 
 .content-container {
