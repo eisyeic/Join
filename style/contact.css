@@ -1,3 +1,7 @@
+d-none {
+    display: none !important;
+}
+
 .contact-body {
     overflow: hidden;
 }
@@ -182,8 +186,6 @@
     justify-content: center;
 }
 
-.contact-single-person-content-head-trash-box:hover {}
-
 .contact-single-person-content-head-trash-box p {
     font-size: 16px;
 }
@@ -319,7 +321,7 @@
 }
 
 .contact-placeholder-blue {
-    height: 1px;
+    height: 0.5px;
     width: 100%;
     background-color: var(--light-blue);
 }
@@ -328,4 +330,68 @@
     gap: 10px;
     display: flex;
     flex-direction: column;
+}
+
+.contact-overlay-placeholder {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.overlay-edit-contact-delete-save {
+    display: flex;
+    gap: 25px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.overlay-edit-contact-delete {
+    border: solid 1px #647188;
+    border-radius: 8px;
+    height: 60px;
+    width: 106px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay-edit-contact-save {
+    display: flex;
+    gap: 4px;
+    border-radius: 10px;
+    background-color: var(--main-color);
+    height: 60px;
+    width: 174px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.overlay-edit-contact-save p {
+    width: 126px;
+    display: flex;
+    justify-content: center;
+}
+.overlay-edit-contact-save img {
+    filter: brightness(0) saturate(100%) invert(100%);
+}
+
+.overlay-edit-contact-save:hover {
+    background-color: var(--light-blue);
+    box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
+}
+
+.overlay-edit-contact-delete:hover {
+    box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
+    border-color: var(--main-color);
+    color: var(--main-color);
+}
+
+.h5-input {
+    border: none;
+    background: transparent;
+    font-size: 19px;
+    font-weight: inherit;
+    margin: 0;
 }
