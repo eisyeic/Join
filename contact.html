@@ -12,10 +12,13 @@
 </head>
 
 <body class="contact-body">
-    <div class="overlay-edit-contact d-none">
+    <div class="overlay-edit-contact -none">
         <div class="contact-overlay-edit-head">
             <img src="./assets/general_elements/icons/logo_big_white.svg" alt="">
             <h2>Edit contact</h2>
+        </div>
+        <div class="contakt-overlay-close-icon">
+            <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon">
         </div>
         <div class="contact-overlay-edit-content">
             <div class="contact-overlay-person-icon-big">
@@ -24,34 +27,77 @@
             </div>
             <div class="contact-overlay-edit-content-details">
                 <div class="contact-overlay-edit-content-name">
-                    <h5 contenteditable="true">Anton Mayer</h5>
+                    <input contenteditable="true" value="Anton Mayer"></input>
                     <img src="./assets/contacts/icons/person.svg" alt="Icon Person">
                 </div>
                 <div class="contact-placeholder-blue"></div>
             </div>
             <div class="contact-overlay-edit-content-details">
                 <div class="contact-overlay-edit-content-name">
-                    <h5 contenteditable="true">antonm@gmail.com</h5>
+                    <input contenteditable="true" value="antonm@gmail.com"></input>
                     <img src="./assets/contacts/icons/mail.svg" alt="Icon Person">
                 </div>
                 <div class="contact-overlay-placeholder"></div>
             </div>
             <div class="contact-overlay-edit-content-details">
                 <div class="contact-overlay-edit-content-name">
-                    <h5 contenteditable="true">+49 2222 222 22 2</h5>
+                    <input contenteditable="true" value="+49 2222 222 22 2"></input>
                     <img src="./assets/contacts/icons/call.svg" alt="Icon Person">
                 </div>
                 <div class="contact-overlay-placeholder"></div>
             </div>
             <div class="overlay-edit-contact-delete-save">
-            <p class="overlay-edit-contact-delete">Delete</p>
-            <div class="overlay-edit-contact-save">
-                <p>Save</p>
-                <img src="./assets/add_task/icons/check.svg" alt="">
+                <p class="overlay-edit-contact-delete">Delete</p>
+                <div class="overlay-edit-contact-save">
+                    <p>Save</p>
+                    <img src="./assets/add_task/icons/check.svg" alt="">
+                </div>
             </div>
         </div>
+
+    </div>
+    <div class="overlay-add-contact d-none">
+        <div class="contact-overlay-add-head">
+            <img src="./assets/general_elements/icons/logo_big_white.svg" alt="">
+            <h2>Add contact</h2>
+            <p>Tasks are better with a team!</p>
         </div>
-        
+        <div class="contact-overlay-add-content">
+            <div class="contact-overlay-person-icon-big">
+                <img src="./assets/general_elements/icons/color1.svg" alt="Circle of Name">
+                <h3>AM</h3>
+            </div>
+            <div class="contact-overlay-add-content-details">
+                <div class="contact-overlay-add-content-name">
+                    <input contenteditable="true" value="Name"></input>
+                    <img src="./assets/contacts/icons/person.svg" alt="Icon Person">
+                </div>
+                <div class="contact-placeholder-blue"></div>
+            </div>
+            <div class="contact-overlay-add-content-details">
+                <div class="contact-overlay-add-content-name">
+                    <input contenteditable="true" value="Mail"></input>
+                    <img src="./assets/contacts/icons/mail.svg" alt="Icon Person">
+                </div>
+                <div class="contact-overlay-placeholder"></div>
+            </div>
+            <div class="contact-overlay-add-content-details">
+                <div class="contact-overlay-add-content-name">
+                    <input contenteditable="true" value="Phone"></input>
+                    <img src="./assets/contacts/icons/call.svg" alt="Icon Person">
+                </div>
+                <div class="contact-overlay-placeholder"></div>
+            </div>
+            <div class="overlay-add-contact-delete-save">
+                <p class="overlay-add-contact-delete">Cancel</p>
+                <img src="./assets/general_elements/icons/close_white.svg" alt="">
+                <div class="overlay-add-contact-save">
+                    <p>Create contact</p>
+                    <img src="./assets/add_task/icons/check.svg" alt="">
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <header>
