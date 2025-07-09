@@ -21,7 +21,18 @@
       </nav>
     </header>
     <main>
-      <section class="sidebar">sidebar</section>
+      <section class="sidebar">
+        <div class="nav">
+          <img class="nav-bg" src="./assets/icons/sidebar/summery.svg" alt="">
+          <img class="nav-bg" src="./assets/icons/sidebar/add task.svg" alt="">
+          <img class="nav-bg" src="./assets/icons/sidebar/board.svg" alt="">
+          <img class="nav-bg" src="./assets/icons/sidebar/contacts.svg" alt="">
+        </div>
+        <div class="sidebar-links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./legal-notice.html">Legal notice</a>
+        </div>
+      </section>
 
       <!-- Board -->
       <section class="board">
@@ -45,10 +56,45 @@
           </div>
         </div>
         <div class="board-content">
-            <div id="to-do-column">No tasks to do</div>
-            <div id="in-progress-column"></div>
-            <div id="awai-feedback-column"></div>
-            <div id="done-column"></div>
+            <div class="column">
+              <!-- Template -->
+              <div id="no-tasks">
+                No tasks to do
+              </div>
+            </div>
+            <div class="column" id="in-progress-column">
+              <!-- Template -->
+              <div class="ticket">
+                <div class="ticket-content">
+                  <div class="label">
+                    User Story
+                  </div>
+                  <div class="frame">
+                    <div class="ticket-title">Kochwelt Page & Recipe Recommender</div>
+                    <div class="ticket-text">Build start page with recipe recommendation...</div>
+                  </div>
+                  <div class="subtasks-box">
+                    <div class="progressbar">
+                      <div class="progressbar-inlay"></div>
+                    </div>1/2 Subtasks
+                  </div>
+                  <div class="initials-icon-box">
+                    <div class="initials">
+                      <img class="first-initial" src="./assets/board/icons/Property 1=Anton.svg" alt="">
+                      <img class="second-initial" src="./assets/board/icons/Property 1=Benedikt.svg" alt="">
+                      <img class="third-initial" src="./assets/board/icons/Property 1=Eva.svg" alt="">
+                    </div>
+                    <div class="priority-icon"><img src="./assets/board/icons/urgent_arrow.svg" alt=""></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="column" id="awai-feedback-column">
+
+            </div>
+            <div class="column" id="done-column">
+
+            </div>
         </div>
       </section>
     </main>
