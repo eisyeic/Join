@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join - Add Task</title>
+    <link
+      rel="shortcut icon"
+      href="./assets/general_elements/icons/logo_blue_icon.svg"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./style/board.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/addtask.css" />
+  </head>
+  <body>
+    <header>
+      <img src="./assets/general_elements/icons/logo_white_icon.svg" />
+      <nav>
+        <p>Kanban Project Management Tool</p>
+      </nav>
+    </header>
+    <main>
+      <section class="sidebar">
+        <div class="nav">
+          <a href="summary-board/summary-board.html"
+            ><img
+              class="nav-bg"
+              src="./assets/icons/sidebar/summery.svg"
+              alt=""
+          /></a>
+          <a href="addtask.html"
+            ><img
+              class="nav-bg active"
+              class="nav-bg"
+              src="./assets/icons/sidebar/add task.svg"
+              alt=""
+          /></a>
+          <a href="board.html"
+            ><img
+              class="nav-bg"
+              class="nav-bg"
+              src="./assets/icons/sidebar/board.svg"
+              alt=""
+          /></a>
+          <a href="contact.html"
+            ><img
+              class="nav-bg"
+              class="nav-bg"
+              src="./assets/icons/sidebar/contacts.svg"
+              alt=""
+          /></a>
+        </div>
+        <div class="sidebar-links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./legal-notice.html">Legal notice</a>
+        </div>
+      </section>
+      <section class="addtask">
+        <div class="addtask-main-content">
+          <input
+            type="text"
+            placeholder="Enter a title"
+          />
+          <div class="description">
+            Decription (optional)
+            <textarea name="" id="">Enter a Description</textarea>
+          </div>
+          <div class="due-date">
+            <input type="date">
+          </div>
+        </div>
+        <div class="priority">
+            <div></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+* {
+    outline: 0px solid red;
+}
+
+.addtask {
+    width: 488px;
+    height: 100%;
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.addtask-main-content {
+    font-size: 32px;
+    padding-top: 64px;
+    height: 440px;
+    width: 361px;
+    gap: 12px;
+    color: var(--style-color);
+}

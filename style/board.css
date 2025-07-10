@@ -39,12 +39,15 @@ main {
   background-color: var(--navi-buttons-bg);
 }
 
+.nav-bg.active {
+  background-color: var(--navi-buttons-bg);
+  border-radius: 8px;
+}
+
 .sidebar-links {
   display: flex;
   flex-direction: column;
   gap: 35px;
-  height: 35px;
-  align-items: center;
   margin-bottom: 42.7px;
 }
 
@@ -109,6 +112,10 @@ main {
   display: flex;
   padding: 18px 64px;
   gap: 32px;
+}
+
+.bar img {
+  height: 24px;
 }
 
 .column-title {
