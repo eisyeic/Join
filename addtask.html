@@ -57,22 +57,28 @@
           <a href="./legal-notice.html">Legal notice</a>
         </div>
       </section>
-      <section class="addtask">
+      <section class="addtask-wrapper">
         <div class="addtask-main-content">
-          <input
-            type="text"
-            placeholder="Enter a title"
-          />
+          <div class="addtask-title">
+            <input type="text" placeholder="Enter a title" />
+            <div class="addtask-error">
+
+            </div>
+          </div>
           <div class="description">
-            Decription (optional)
-            <textarea name="" id="">Enter a Description</textarea>
+            <b>Decription</b> (optional)
+            <textarea name="" id="" placeholder="Enter a description"></textarea>
+            <div class="addtask-error">
+              
+            </div>
           </div>
           <div class="due-date">
-            <input type="date">
+            <b>Due Date</b>
+            <input type="date" placeholder="dd/mm/yyyy"/>
+            <div class="addtask-error">
+              
+            </div>
           </div>
-        </div>
-        <div class="priority">
-            <div></div>
         </div>
       </section>
     </main>

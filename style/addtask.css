@@ -2,7 +2,7 @@
     outline: 0px solid red;
 }
 
-.addtask {
+.addtask-wrapper {
     width: 488px;
     height: 100%;
     gap: 24px;
@@ -12,10 +12,63 @@
 }
 
 .addtask-main-content {
-    font-size: 32px;
-    padding-top: 64px;
+    box-sizing: border-box;
+    flex-direction: column;
+    margin-top: 64px;
     height: 440px;
     width: 361px;
     gap: 12px;
     color: var(--style-color);
+}
+
+.addtask-main-content input {
+    box-sizing: border-box;
+    font-size: 32px;
+    padding: 13px 16px;
+    border: none;
+    border-bottom: 1px solid var(--style-color);
+    color: var(--style-color);
+    width: 100%;
+}
+
+.addtask-error {
+    height: 16px;
+    font-family: inter;
+    font-size: 13px;
+    width: 100%;
+}
+
+.description, .due-date {
+    height: 154px;
+    font-size: 19px;
+    color: #000;
+}
+
+.description b, .due-date b {
+    font-size: 19px;
+}
+
+.addtask-main-content textarea {
+    width: 100%;
+    height: 103px;
+    font-size: 19px;
+    padding: 16px;
+    color: var(--style-color);
+    box-sizing: border-box;
+    border-radius: 0px 10px 10px 10px;
+}
+
+.due-date input {
+    font-size: 19px;
+    color: #000;
+}
+
+/* Startzustand: Kein Datum ausgewählt */
+.due-date input[type="date"]:placeholder-shown {
+  color: gray;
+}
+
+/* Datum wurde gewählt */
+.due-date input[type="date"]:not(:placeholder-shown) {
+  color: black;
 }
