@@ -4,3 +4,21 @@
     flex-direction: column;
     gap: 16px;
 }
+
+main {
+    display: flex;
+    margin-top: 4px;
+}
+
+body {
+    overflow: hidden;
+}
+
+.privacy-policy-content {
+    padding: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: calc(100vh - 96px);
+    overflow-y: scroll;
+}

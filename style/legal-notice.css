@@ -9,3 +9,21 @@
     text-decoration: none;
     color: var(--main-color);
 }
+
+main {
+    display: flex;
+    margin-top: 4px;
+}
+
+body {
+    overflow: hidden;
+}
+
+.legal-notice-content {
+    padding: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: calc(100vh - 96px);
+    overflow-y: scroll;
+}

@@ -4,22 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Contact</title>
+    <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon">
 
     <link rel="stylesheet" href="./style/header.css">
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./style/contact.css">
+    <link rel="stylesheet" href="./style/board.css">
+    <link rel="stylesheet" href="./style/sidebar.css">
 
 </head>
 
 <body class="contact-body">
     <div class="overlay-edit-contact -none">
         <div class="contact-overlay-edit-head">
+            <div class="contakt-overlay-close-icon">
+                <img src="./assets/general_elements/icons/close_white.svg" alt="Close Icon">
+                <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon Hover">
+            </div>
             <img src="./assets/general_elements/icons/logo_big_white.svg" alt="">
             <h2>Edit contact</h2>
+
         </div>
-        <div class="contakt-overlay-close-icon">
-            <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon">
-        </div>
+
         <div class="contact-overlay-edit-content">
             <div class="contact-overlay-person-icon-big">
                 <img src="./assets/general_elements/icons/color1.svg" alt="Circle of Name">
@@ -58,14 +64,17 @@
     </div>
     <div class="overlay-add-contact d-none">
         <div class="contact-overlay-add-head">
+            <div class="contakt-overlay-close-icon">
+                <img src="./assets/general_elements/icons/close_white.svg" alt="Close Icon">
+                <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon Hover">
+            </div>
             <img src="./assets/general_elements/icons/logo_big_white.svg" alt="">
             <h2>Add contact</h2>
             <p>Tasks are better with a team!</p>
         </div>
         <div class="contact-overlay-add-content">
             <div class="contact-overlay-person-icon-big">
-                <img src="./assets/general_elements/icons/color1.svg" alt="Circle of Name">
-                <h3>AM</h3>
+                <img src="./assets/contacts/img/person-new.svg" alt="Circle of New Person">
             </div>
             <div class="contact-overlay-add-content-details">
                 <div class="contact-overlay-add-content-name">
@@ -77,21 +86,20 @@
             <div class="contact-overlay-add-content-details">
                 <div class="contact-overlay-add-content-name">
                     <input contenteditable="true" value="Mail"></input>
-                    <img src="./assets/contacts/icons/mail.svg" alt="Icon Person">
+                    <img src="./assets/contacts/icons/mail.svg" alt="Icon Mail">
                 </div>
                 <div class="contact-overlay-placeholder"></div>
             </div>
             <div class="contact-overlay-add-content-details">
                 <div class="contact-overlay-add-content-name">
                     <input contenteditable="true" value="Phone"></input>
-                    <img src="./assets/contacts/icons/call.svg" alt="Icon Person">
+                    <img src="./assets/contacts/icons/call.svg" alt="Icon Phone">
                 </div>
                 <div class="contact-overlay-placeholder"></div>
             </div>
             <div class="overlay-add-contact-delete-save">
                 <p class="overlay-add-contact-delete">Cancel</p>
-                <img src="./assets/general_elements/icons/close_white.svg" alt="">
-                <div class="overlay-add-contact-save">
+                <div class="overlay-add-create-contact">
                     <p>Create contact</p>
                     <img src="./assets/add_task/icons/check.svg" alt="">
                 </div>
@@ -108,7 +116,22 @@
     </header>
 
     <main class="contact-content">
-        <nav></nav>
+        <section class="sidebar">
+            <div class="nav">
+                <a href="summary-board/summary-board.html"><img class="nav-bg" src="./assets/icons/sidebar/summery.svg"
+                        alt="" /></a>
+                <a href="addtask.html"><img class="nav-bg active" class="nav-bg"
+                        src="./assets/icons/sidebar/add task.svg" alt="" /></a>
+                <a href="board.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/board.svg"
+                        alt="" /></a>
+                <a href="contact.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/contacts.svg"
+                        alt="" /></a>
+            </div>
+            <div class="sidebar-links">
+                <a href="./privacy-policy.html">Privacy Policy</a>
+                <a href="./legal-notice.html">Legal notice</a>
+            </div>
+        </section>
         <section class="contact-add-new-contact-container">
             <div class="button-add-new-contact-container">
                 <button class="button-regular button-blue base-button button-add-new-contact-box">Add new contact

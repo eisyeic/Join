@@ -2,6 +2,15 @@
     display: none !important;
 }
 
+main {
+    display: flex;
+    margin-top: 4px;
+}
+
+body {
+    overflow: hidden;
+}
+
 .contact-body {
     overflow: hidden;
 }
@@ -240,10 +249,27 @@
 }
 
 .contakt-overlay-close-icon {
-    position: ;
-    top: 10px;
-    right: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
+
+.contakt-overlay-close-icon img:first-child {
+    display: block;
+}
+
+.contakt-overlay-close-icon img:last-child {
+    display: none;
+}
+
+.contakt-overlay-close-icon:hover img:first-child {
+    display: none;
+}
+
+.contakt-overlay-close-icon:hover img:last-child {
+    display: block;
+}
+
 
 .overlay-add-contact {
     background-color: rgba(255, 255, 255, 0.5);
@@ -264,8 +290,8 @@
     position: absolute;
     top: 0;
     left: -100%;
-    height: 200px;
-    background-color: var(--main-color);
+    height: 300px;
+    background-color: var(--light-blue);
     border-radius: 0 30px 0 0;
     animation: slideIn 1s forwards;
     display: flex;
@@ -279,6 +305,10 @@
     width: 55px;
 }
 
+.contakt-overlay-close-icon img {
+    width: 32px;
+}
+
 @keyframes slideIn {
     from {
         left: -100%;
@@ -290,15 +320,14 @@
 }
 
 .contact-overlay-edit-content {
-    width: 575px;
-    height: calc(100vh - 200px);
+    width: 579px;
+    height: calc(100vh - 300px);
     background-color: white;
     border-radius: 0 0 30px 30px;
     position: absolute;
-    top: 200px;
+    top: 300px;
     left: 0;
-    border: solid rgba(0, 0, 0, 0.16);
-    border-top: none;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
     animation: slideIn 1s forwards;
     display: flex;
     justify-content: center;
@@ -419,11 +448,11 @@
     width: 580px;
     position: absolute;
     top: 0;
-    left: -100%;
+    right: -100%;
     height: 300px;
-    background-color: var(--main-color);
-    border-radius: 0 30px 0 0;
-    animation: slideIn 1s forwards;
+    background-color: var(--light-blue);
+    border-radius: 30px 0 0 0;
+    animation: slideInRight 1s forwards;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -435,27 +464,30 @@
     width: 55px;
 }
 
-@keyframes slideIn {
+.contakt-overlay-close-icon img {
+    width: 32px;
+}
+
+@keyframes slideInRight {
     from {
-        left: -100%;
+        right: -100%;
     }
 
     to {
-        left: 0;
+        right: 0;
     }
 }
 
 .contact-overlay-add-content {
-    width: 575px;
+    width: 579px;
     height: calc(100vh - 300px);
     background-color: white;
     border-radius: 0 0 30px 30px;
     position: absolute;
     top: 300px;
-    left: 0;
-    border: solid rgba(0, 0, 0, 0.16);
-    border-top: none;
-    animation: slideIn 1s forwards;
+    right: 0;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+    animation: slideInRight 1s forwards;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -544,4 +576,33 @@
     font-size: 27px;
     font-family: Inter;
     margin: 0;
+}
+
+.overlay-add-create-contact {
+    display: flex;
+    gap: 4px;
+    border-radius: 10px;
+    background-color: var(--main-color);
+    height: 60px;
+    width: 174px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    width: 204px;
+}
+
+.overlay-add-create-contact p {
+    width: 156px;
+    display: flex;
+        text-align: center;
+}
+
+.overlay-add-create-contact img {
+    filter: brightness(0) saturate(100%) invert(100%);
+}
+
+.overlay-add-create-contact:hover {
+    background-color: var(--light-blue);
+    box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
 }
