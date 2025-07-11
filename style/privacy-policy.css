@@ -22,3 +22,7 @@ body {
     height: calc(100vh - 96px);
     overflow-y: scroll;
 }
+
+h4 {
+    color: var(--main-color);
+}
