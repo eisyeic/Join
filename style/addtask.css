@@ -5,6 +5,7 @@
 main {
     height: calc(100vh - 96px);
     display: flex;
+    overflow: hidden;
 }
 
 .addtask-wrapper {
