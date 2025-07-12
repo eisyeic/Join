@@ -3,20 +3,22 @@
 }
 
 .addtask-wrapper {
+    height: calc(100vh - 150px);
     width: 488px;
-    height: 100%;
     gap: 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 64px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-color: #000000;
 }
 
 .addtask-main-content {
     box-sizing: border-box;
     flex-direction: column;
-    margin-top: 64px;
-    height: 440px;
-    width: 361px;
+    width: 440px;
     gap: 12px;
     color: var(--style-color);
 }
@@ -38,8 +40,7 @@
     width: 100%;
 }
 
-.description, .due-date {
-    height: 154px;
+.description, .due-date, .priority-wrapper b {
     font-size: 19px;
     color: #000;
 }
@@ -49,7 +50,8 @@
 }
 
 .addtask-main-content textarea {
-    width: 100%;
+    width: 440px;
+    resize: vertical;
     height: 103px;
     font-size: 19px;
     padding: 16px;
@@ -63,12 +65,15 @@
     color: #000;
 }
 
-/* Startzustand: Kein Datum ausgewählt */
-.due-date input[type="date"]:placeholder-shown {
-  color: gray;
+.priority-wrapper {
+    display: flex;
+    width: 440px;
+    flex-direction: column;
+    gap: 8px;
 }
 
-/* Datum wurde gewählt */
-.due-date input[type="date"]:not(:placeholder-shown) {
-  color: black;
+.prio-buttons {
+    display: flex;
+    justify-content: space-between;
+    height: 51px;
 }

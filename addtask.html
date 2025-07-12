@@ -61,23 +61,38 @@
         <div class="addtask-main-content">
           <div class="addtask-title">
             <input type="text" placeholder="Enter a title" />
-            <div class="addtask-error">
-
-            </div>
+            <div class="addtask-error"></div>
           </div>
           <div class="description">
             <b>Decription</b> (optional)
-            <textarea name="" id="" placeholder="Enter a description"></textarea>
-            <div class="addtask-error">
-              
-            </div>
+            <textarea
+              name=""
+              id=""
+              placeholder="Enter a description"
+            ></textarea>
+            <div class="addtask-error"></div>
           </div>
           <div class="due-date">
             <b>Due Date</b>
-            <input type="date" placeholder="dd/mm/yyyy"/>
-            <div class="addtask-error">
-              
-            </div>
+            <input type="date" />
+            <div class="addtask-error"></div>
+          </div>
+        </div>
+        <div class="priority-wrapper">
+          <b>Priority</b>
+          <div class="prio-buttons">
+            <button class="priority-button urgent-button">
+              <span>Urgent</span>
+              <img src="./assets/icons/add_task/urgent.svg" alt="urgent" />
+            </button>
+            <button class="priority-button medium-button">
+              <span>Medium</span>
+              <img src="./assets/icons/add_task/medium.svg" alt="medium" />
+            </button>
+            <button class="priority-button low-button">
+              <span>Low</span>
+              <img src="./assets/icons/add_task/low.svg" alt="low" />
+            </button>
           </div>
         </div>
       </section>
