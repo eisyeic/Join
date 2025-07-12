@@ -102,8 +102,10 @@ html, body {
 .priority-button {
   display: flex;
   align-items: center;
-  font-size: 19px;
+  justify-content: center;
   gap: 10px;
+  width: 136px;
+  height: 49px;
   cursor: pointer;
   border: none;
   border-radius: 10px;
@@ -115,8 +117,8 @@ html, body {
 }
 
 .priority-button img {
-  width: 76px;
-  height: 76px;
+  width: 20px;
+  height: auto;
 }
 
 /* Urgent button
@@ -128,6 +130,7 @@ html, body {
 
 .urgent-button:hover {
   border-bottom: 2px solid var(--urgent-color);
+  height: 51px;
 }
 
 .urgent-button:active {
@@ -136,7 +139,7 @@ html, body {
 }
 
 .urgent-button:active img {
-  content: url("default_urgent.svg");
+  content: url("./assets/icons/add_task/urgent_defalut.svg");
   width: 20px;
 }
 
@@ -149,6 +152,7 @@ html, body {
 
 .medium-button:hover {
   border-bottom: 2px solid var(--medium-color);
+  height: 51px;
 }
 
 .medium-button:active {
@@ -156,9 +160,9 @@ html, body {
   color: #fff;
 }
 
-.low-button:active img {
+.medium-button:active img {
   width: 20px;
-  content: url("default_low.svg");
+  content: url("./assets/icons/add_task/medium_default.svg");
 }
 
 /* Low button 
@@ -170,6 +174,7 @@ html, body {
 
 .low-button:hover {
   border-bottom: 2px solid var(--low-color);
+  height: 51px;
 }
 
 .low-button:active {
@@ -179,7 +184,7 @@ html, body {
 
 .low-button:active img {
   width: 20px;
-  content: url("default_low.svg");
+  content: url("./assets/icons/add_task/low_default.svg");
 }
 
 h1 {
