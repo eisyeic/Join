@@ -24,9 +24,13 @@
     font-size: 32px;
     padding: 13px 16px;
     border: none;
+    outline: none;
     border-bottom: 1px solid var(--style-color);
-    color: var(--style-color);
     width: 100%;
+}
+
+.addtask-main-content input:focus {
+    border-color: var(--main-color);
 }
 
 .addtask-error {
@@ -36,12 +40,17 @@
     width: 100%;
 }
 
-.description, .due-date, .priority-wrapper b {
+.label-main {
     font-size: 19px;
-    color: #000;
+    font-weight: 700;
+    color: var(--menu-color);
 }
 
-.description b, .due-date b {
+.label-optional {
+    font-size: 19px;
+}
+
+.due-date input {
     font-size: 19px;
 }
 
@@ -51,14 +60,13 @@
     height: 103px;
     font-size: 19px;
     padding: 16px;
-    color: var(--style-color);
     box-sizing: border-box;
+    outline: none;
     border-radius: 0px 10px 10px 10px;
 }
 
-.due-date input {
-    font-size: 19px;
-    color: #000;
+.addtask-main-content textarea:focus {
+    border-color: var(--main-color);
 }
 
 .priority-wrapper {
