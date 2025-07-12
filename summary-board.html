@@ -22,7 +22,7 @@
       <p>Kanban Project Management Tool</p>
     </nav>
   </header>
-  <div class="container">
+  <main>
     <section class="sidebar">
       <div class="nav">
         <a href="./summary-board.html"><img class="nav-bg" src="./assets/icons/sidebar/summery.svg"
@@ -40,73 +40,92 @@
       </div>
     </section>
 
-    <main class="dashboard">
-      <div class="main-content">
-        <div class="content-container">
-          <div class="summary-container">
-            <h2>Good morning, Sofia Müller</h2>
-          </div>
-          <div class="task-container">
-            <div class="task-overview">
-              <div class="task-urgent">
-                <div class="task-urgent-left">
-                  <div class="icon"><img src="../assets/summary/icons/urgent.svg" alt="Board">
-                  </div>
-                  <div class="task-urgent-text">
-                    <h3>1</h3>
-                    <span>Tasks Urgent</span>
-                  </div>
-                </div>
-                <div class="task-urgent-right">
-                  <div class="task-urgent-date">
-                    <h4>October 16, 2022</h4>
-                    <span>Upcoming Deadline</span>
-                  </div>
-                </div>
-              </div>
-              <div class="task-board">
-                <img src="../assets/summary/icons/urgent.svg" alt="Board">
-                <div class="task-board-text">
-                  <h3>5</h3>
-                  <span>Task in <br> Board</span>
-                </div>
-              </div>
-            </div>
-            <div class="task-status">
-              <div class="task-status-box">
-                <img src="../assets/summary/icons/todo.svg" alt="To-do">
-                <div class="task-status-text">
-                  <h3>1</h3>
-                  <span>Tasks To-do</span>
-                </div>
-              </div>
-              <div class="task-status-box">
-                <img src="../assets/summary/icons/in_progress.svg" alt="Progress">
-                <div class="task-status-text">
-                  <h3>2</h3>
-                  <span>Task in Progress</span>
-                </div>
-              </div>
-              <div class="task-status-box">
-                <img src="../assets/summary/icons/afeedback.svg" alt="Feedback">
-                <div class="task-status-text">
-                  <h3>2</h3>
-                  <span>Awaiting Feedback</span>
-                </div>
-              </div>
-              <div class="task-status-box">
-                <img src="../assets/summary/icons/done.svg" alt="Done">
-                <div class="task-status-text">
-                  <h3>1</h3>
-                  <span>Tasks Done</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section class="dashboard">
+      <div class="dashboard-header">
+        <h2>Good morning,</h2>
+        <h1>Sofia Müller</h1>
       </div>
-    </main>
-  </div>
+
+      <div class="task-container">
+        <div class="task-urgent">
+          <div class="task-urgent-left-box">
+            <div class="task-urgent-left-box-top">
+              <div class="task-urgent-left-box-top-img">
+                <img src="../assets/summary/icons/urgent.svg" alt="Board">
+              </div>
+              <h2>1</h2>
+            </div>
+            <p>Tasks Urgent</p>
+          </div>
+          <div class="dashboard-placeholder"></div>
+        </div>
+    </section>
+  </main>
 </body>
 
 </html>
+
+<div class="main-content">
+  <div class="content-container">
+    <div class="summary-container">
+      <h2>Good morning, Sofia Müller</h2>
+    </div>
+    <div class="task-container">
+      <div class="task-overview">
+        <div class="task-urgent">
+          <div class="task-urgent-left">
+            <div class="icon"><img src="../assets/summary/icons/urgent.svg" alt="Board">
+            </div>
+            <div class="task-urgent-text">
+              <h3>1</h3>
+              <span>Tasks Urgent</span>
+            </div>
+          </div>
+          <div class="task-urgent-right">
+            <div class="task-urgent-date">
+              <h4>October 16, 2022</h4>
+              <span>Upcoming Deadline</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-board">
+          <img src="../assets/summary/icons/urgent.svg" alt="Board">
+          <div class="task-board-text">
+            <h3>5</h3>
+            <span>Task in <br> Board</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-status">
+        <div class="task-status-box">
+          <img src="../assets/summary/icons/todo.svg" alt="To-do">
+          <div class="task-status-text">
+            <h3>1</h3>
+            <span>Tasks To-do</span>
+          </div>
+        </div>
+        <div class="task-status-box">
+          <img src="../assets/summary/icons/in_progress.svg" alt="Progress">
+          <div class="task-status-text">
+            <h3>2</h3>
+            <span>Task in Progress</span>
+          </div>
+        </div>
+        <div class="task-status-box">
+          <img src="../assets/summary/icons/afeedback.svg" alt="Feedback">
+          <div class="task-status-text">
+            <h3>2</h3>
+            <span>Awaiting Feedback</span>
+          </div>
+        </div>
+        <div class="task-status-box">
+          <img src="../assets/summary/icons/done.svg" alt="Done">
+          <div class="task-status-text">
+            <h3>1</h3>
+            <span>Tasks Done</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
