@@ -35,9 +35,15 @@
 html, body {
   height: 100%;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-
+main {
+  display: flex;
+  flex: 1;
+}
 
 /*
 <button class="base-button button-blue button-small">Button</button>

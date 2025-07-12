@@ -1,15 +1,5 @@
-* {
-    outline: 0px solid red;
-}
-
-main {
-    height: calc(100vh - 96px);
-    display: flex;
-    overflow: hidden;
-}
-
 .addtask-wrapper {
-    height: calc(100vh - 150px);
+    height: calc(100vh - 96px -64px);
     width: 488px;
     gap: 24px;
     display: flex;

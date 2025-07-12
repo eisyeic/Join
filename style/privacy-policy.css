@@ -5,12 +5,6 @@
     gap: 16px;
 }
 
-main {
-    display: flex;
-    overflow: hidden;
-    height: calc(100vh - 96px);
-}
-
 .privacy-policy-content {
     padding: 100px;
     display: flex;

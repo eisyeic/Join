@@ -10,15 +10,6 @@
     color: var(--main-color);
 }
 
-main {
-    display: flex;
-    height: calc(100vh - 96px);
-}
-
-body {
-    overflow: hidden;
-}
-
 .legal-notice-content {
     padding: 100px;
     display: flex;

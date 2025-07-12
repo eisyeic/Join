@@ -1,9 +1,3 @@
-main {
-    overflow: hidden;
-    display: flex;
-    height: calc(100vh - 96px);
-}
-
 .help-content {
     padding: 100px;
     display: flex;
