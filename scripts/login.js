@@ -171,8 +171,9 @@ function signUp() {
 
 // to do: Hier kommt das loginscript rein!
 function logIn() { 
-  error.innerHTML = "Check your email and password. Please try again."
-  emailInput.parentElement.style.borderColor = '#FF8190' 
-  passwordInput.parentElement.style.borderColor = '#FF8190' 
+  error.innerHTML = "Check your email and password. Please try again.";
+  emailInput.parentElement.style.borderColor = '#FF8190'; 
+  passwordInput.parentElement.style.borderColor = '#FF8190';
+  window.location.href = "summary-board.html"; 
 };
 
