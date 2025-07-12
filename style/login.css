@@ -358,16 +358,6 @@
   opacity: 1;
 }
 
-* {
-  outline: 0px solid red;
-}
-
-/*
-
-Important, Please don´t touch this section, never!
-
-*/
-
 /* Tablet */
 @media (max-width: 1024px) {
   .logo-wrapper {

@@ -19,6 +19,10 @@
   gap: 15px;
 }
 
+.nav-bg{
+  height: 40px;
+}
+
 .nav-bg:hover {
   cursor: pointer;
   border-radius: 8px;

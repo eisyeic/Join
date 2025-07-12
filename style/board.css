@@ -24,7 +24,8 @@
 }
 
 .search-input:hover,
-.search-input:active {
+.search-input:active,
+.search-input:focus {
   outline-color: var(--main-color);
 }
 
