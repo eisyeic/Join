@@ -2,6 +2,11 @@
     outline: 0px solid red;
 }
 
+main {
+    height: calc(100vh - 96px);
+    display: flex;
+}
+
 .addtask-wrapper {
     width: 488px;
     height: 100%;

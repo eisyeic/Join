@@ -1,101 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join - Board</title>
-    <link
-      rel="shortcut icon"
-      href="./assets/general_elements/icons/logo_blue_icon.svg"
-      type="image/x-icon"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="./style/board.css" />
-    <link rel="stylesheet" href="./style/header.css" />
-  </head>
-  <body>
-    <header>
-      <img src="./assets/general_elements/icons/logo_white_icon.svg" />
-      <nav>
-        <p>Kanban Project Management Tool</p>
-      </nav>
-    </header>
-    <main>
-      <section class="sidebar">
-        <div class="nav">
-          <a href="summary-board/summary-board.html"><img class="nav-bg" src="./assets/icons/sidebar/summery.svg" alt=""></a>
-          <a href="addtask.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/add task.svg" alt=""></a>
-          <a href="board.html"><img class="nav-bg active" class="nav-bg" src="./assets/icons/sidebar/board.svg" alt=""></a>
-          <a href="contact.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/contacts.svg" alt=""></a>        </div>
-        <div class="sidebar-links">
-          <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./legal-notice.html">Legal notice</a>
-        </div>
-      </section>
 
-      <!-- Board -->
-      <section class="board">
-        <div class="board-top">
-          <div class="input-button-box">
-            <div class="search-input">
-              <input type="search" placeholder="Find Task" />
-              <div class="search-button">
-                <img src="./assets/board/icons/default_glass.svg" alt="" />
-              </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join - Board</title>
+  <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style/board.css" />
+  <link rel="stylesheet" href="./style/header.css" />
+  <link rel="stylesheet" href="./style/sidebar.css">
+
+
+</head>
+
+<body>
+  <header>
+    <img src="./assets/general_elements/icons/logo_white_icon.svg" />
+    <nav>
+      <p>Kanban Project Management Tool</p>
+    </nav>
+  </header>
+  <main>
+    <section class="sidebar">
+      <div class="nav">
+        <a href="./summary-board.html"><img class="nav-bg" src="./assets/icons/sidebar/summery.svg"
+            alt="Button Summary Board" /></a>
+        <a href="addtask.html"><img class="nav-bg active" class="nav-bg" src="./assets/icons/sidebar/add task.svg"
+            alt="Button Add Task" /></a>
+        <a href="board.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/board.svg"
+            alt="Button-Board" /></a>
+        <a href="contact.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/contacts.svg"
+            alt="Button Contact" /></a>
+      </div>
+      <div class="sidebar-links">
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./legal-notice.html">Legal notice</a>
+      </div>
+    </section>
+
+    <!-- Board -->
+    <section class="board">
+      <div class="board-top">
+        <div class="input-button-box">
+          <div class="search-input">
+            <input type="search" placeholder="Find Task" />
+            <div class="search-button">
+              <img src="./assets/board/icons/default_glass.svg" alt="" />
             </div>
-            <button class="base-button button-blue button-small">
-              Add Task +
-            </button>
           </div>
-          <div class="bar">
-            <div class="column-title">To do<img src="./assets/board/icons/default_plus.svg" alt=""></div>
-            <div class="column-title">In progressing <img src="./assets/board/icons/default_plus.svg" alt=""></div>
-            <div class="column-title">Await feedback<img src="./assets/board/icons/default_plus.svg" alt=""></div>
-            <div class="column-title">Done</div>
+          <button class="base-button button-blue button-small">
+            Add Task +
+          </button>
+        </div>
+        <div class="bar">
+          <div class="column-title">To do<img src="./assets/board/icons/default_plus.svg" alt=""></div>
+          <div class="column-title">In progressing <img src="./assets/board/icons/default_plus.svg" alt=""></div>
+          <div class="column-title">Await feedback<img src="./assets/board/icons/default_plus.svg" alt=""></div>
+          <div class="column-title">Done</div>
+        </div>
+      </div>
+      <div class="board-content">
+        <div class="column">
+          <!-- Template -->
+          <div id="no-tasks">
+            No tasks to do
           </div>
         </div>
-        <div class="board-content">
-            <div class="column">
-              <!-- Template -->
-              <div id="no-tasks">
-                No tasks to do
+        <div class="column" id="in-progress-column">
+          <!-- Template -->
+          <div class="ticket">
+            <div class="ticket-content">
+              <div class="label">
+                User Story
               </div>
-            </div>
-            <div class="column" id="in-progress-column">
-              <!-- Template -->
-              <div class="ticket">
-                <div class="ticket-content">
-                  <div class="label">
-                    User Story
-                  </div>
-                  <div class="frame">
-                    <div class="ticket-title">Kochwelt Page & Recipe Recommender</div>
-                    <div class="ticket-text">Build start page with recipe recommendation...</div>
-                  </div>
-                  <div class="subtasks-box">
-                    <div class="progressbar">
-                      <div class="progressbar-inlay"></div>
-                    </div>1/2 Subtasks
-                  </div>
-                  <div class="initials-icon-box">
-                    <div class="initials">
-                      <img class="first-initial" src="./assets/board/icons/Property 1=Anton.svg" alt="">
-                      <img class="second-initial" src="./assets/board/icons/Property 1=Benedikt.svg" alt="">
-                      <img class="third-initial" src="./assets/board/icons/Property 1=Eva.svg" alt="">
-                    </div>
-                    <div class="priority-icon"><img src="./assets/board/icons/urgent_arrow.svg" alt=""></div>
-                  </div>
+              <div class="frame">
+                <div class="ticket-title">Kochwelt Page & Recipe Recommender</div>
+                <div class="ticket-text">Build start page with recipe recommendation...</div>
+              </div>
+              <div class="subtasks-box">
+                <div class="progressbar">
+                  <div class="progressbar-inlay"></div>
+                </div>1/2 Subtasks
+              </div>
+              <div class="initials-icon-box">
+                <div class="initials">
+                  <img class="first-initial" src="./assets/board/icons/Property 1=Anton.svg" alt="">
+                  <img class="second-initial" src="./assets/board/icons/Property 1=Benedikt.svg" alt="">
+                  <img class="third-initial" src="./assets/board/icons/Property 1=Eva.svg" alt="">
                 </div>
+                <div class="priority-icon"><img src="./assets/board/icons/urgent_arrow.svg" alt=""></div>
               </div>
             </div>
-            <div class="column" id="awai-feedback-column">
-
-            </div>
-            <div class="column" id="done-column">
-
-            </div>
+          </div>
         </div>
-      </section>
-    </main>
-  </body>
+        <div class="column" id="awai-feedback-column">
+
+        </div>
+        <div class="column" id="done-column">
+
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+
 </html>

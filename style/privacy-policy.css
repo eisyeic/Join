@@ -7,11 +7,8 @@
 
 main {
     display: flex;
-    margin-top: 4px;
-}
-
-body {
     overflow: hidden;
+    height: calc(100vh - 96px);
 }
 
 .privacy-policy-content {
@@ -19,7 +16,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    height: calc(100vh - 96px);
     overflow-y: scroll;
 }
 

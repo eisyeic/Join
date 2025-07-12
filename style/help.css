@@ -1,8 +1,24 @@
+main {
+    overflow: hidden;
+    display: flex;
+    height: calc(100vh - 96px);
+}
+
 .help-content {
     padding: 100px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.help-content p {
+    font-size: 16px;
+}
+
+.help-content a {
+    font-size: 16px;
 }
 
 .help-how-to-use-it-box {

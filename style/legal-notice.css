@@ -12,7 +12,7 @@
 
 main {
     display: flex;
-    margin-top: 4px;
+    height: calc(100vh - 96px);
 }
 
 body {
@@ -24,8 +24,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    height: calc(100vh - 96px);
     overflow-y: scroll;
+}
+
+.legal-notice-content p {
+    font-size: 16px;
 }
 
 h4 {

@@ -4,7 +4,6 @@
 
 main {
     display: flex;
-    margin-top: 4px;
 }
 
 body {
@@ -18,7 +17,6 @@ body {
 .contact-content {
     display: flex;
     height: calc(100vh - 96px);
-    margin-top: 4px;
 }
 
 .contact-add-new-contact-container {
@@ -30,6 +28,7 @@ body {
     overflow-y: scroll;
     scrollbar-color: rgba(0, 0, 0, 0);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
 }
 
 .button-add-new-contact-container {

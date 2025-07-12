@@ -1,8 +1,4 @@
-main {
-  display: flex;
-  height: calc(100vh - 96px);
-}
-
+/* board */
 .board {
   width: 100%;
 }

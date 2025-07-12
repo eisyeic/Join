@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Help</title>
+    <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon">
 
     <link rel="stylesheet" href="./style/header.css">
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./style/help.css">
+    <link rel="stylesheet" href="./style/sidebar.css">
 
 </head>
 
@@ -21,15 +23,31 @@
     </header>
 
     <main>
-        <nav></nav>
+        <section class="sidebar">
+            <div class="nav">
+                <a href="./summary-board.html"><img class="nav-bg" src="./assets/icons/sidebar/summery.svg"
+                        alt="Button Summary Board" /></a>
+                <a href="addtask.html"><img class="nav-bg active" class="nav-bg"
+                        src="./assets/icons/sidebar/add task.svg" alt="Button Add Task" /></a>
+                <a href="board.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/board.svg"
+                        alt="Button-Board" /></a>
+                <a href="contact.html"><img class="nav-bg" class="nav-bg" src="./assets/icons/sidebar/contacts.svg"
+                        alt="Button Contact" /></a>
+            </div>
+            <div class="sidebar-links">
+                <a href="./privacy-policy.html">Privacy Policy</a>
+                <a href="./legal-notice.html">Legal notice</a>
+            </div>
+        </section>
+
         <section class="help-content">
-           <div class="help-headline-container"> 
-            <h1>Help</h1>
-            <a class="help-a-tag-back-button" href="javascript:history.back()">
-                <img class="regular-image" src="./assets/general_elements/icons/arrow_left.svg">
-                <img class="hover-image" src="./assets/general_elements/icons/arrow_left_hover.svg">
-            </a>
-        </div>
+            <div class="help-headline-container">
+                <h1>Help</h1>
+                <a class="help-a-tag-back-button" href="javascript:history.back()">
+                    <img class="regular-image" src="./assets/general_elements/icons/arrow_left.svg">
+                    <img class="hover-image" src="./assets/general_elements/icons/arrow_left_hover.svg">
+                </a>
+            </div>
             <span>
                 Welcome to the help page for <a class="help-a-tag-style" href="./index.html">Join</a>, your guide to
                 using our kanban project management tool. Here, we'll

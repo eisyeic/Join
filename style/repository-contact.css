@@ -1,0 +1,14 @@
+@media (max-width: 1250px) {
+    .contact-add-new-contact-container {
+        width: 250px;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .contact-person {
+    padding-left: 5px;
+    padding-right: 5px;
+    gap: 10px;
+}
+}
