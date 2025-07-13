@@ -14,9 +14,10 @@
 .contact-add-new-contact-container {
     width: 350px;
     height: calc(100vh - 130px);
-    padding-bottom: 30px;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-top: 32px;
+    padding-left: 49.5px;
+    padding-bottom: 32px;
+    padding-right: 49.5px;
     overflow-y: scroll;
     scrollbar-color: rgba(0, 0, 0, 0);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -120,7 +121,7 @@
 }
 
 .contact-single-person-content {
-    padding: 60px;
+    padding: 72px 62px;
 
 }
 
