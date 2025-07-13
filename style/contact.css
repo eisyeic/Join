@@ -2,14 +2,6 @@
     display: none !important;
 }
 
-main {
-    display: flex;
-}
-
-body {
-    overflow: hidden;
-}
-
 .contact-body {
     overflow: hidden;
 }

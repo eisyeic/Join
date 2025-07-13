@@ -15,6 +15,7 @@
 .nav {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 186px;
   gap: 15px;
 }
@@ -32,6 +33,7 @@
 .nav-bg.active {
   background-color: var(--navi-buttons-bg);
   border-radius: 8px;
+  pointer-events: none;
 }
 
 .sidebar-links {

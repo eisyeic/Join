@@ -45,6 +45,14 @@ main {
   overflow: hidden;
 }
 
+footer {
+  display: flex;
+  justify-content: center;
+}
+
+.d-none {
+  display: none !important;
+}
 /*
 <button class="base-button button-blue button-small">Button</button>
 */

@@ -1,0 +1,11 @@
+.nav-mobile {
+    display: none;
+    align-items: center;
+    height: 128px;
+}
+
+.nav-box {
+    display: flex;
+    width: 100%;
+    justify-content: space-around
+}
