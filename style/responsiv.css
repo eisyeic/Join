@@ -1,21 +1,28 @@
 @media (max-width: 1024px) {
-    .sidebar {
-        min-width: 150px;
-    }
-    .nav {
-        width: 140px;
-    }
-    .nav-bg, .nav img {
-        width: 140px;
-        height: 30px;
-    }
+  .sidebar {
+    min-width: 150px;
+  }
+  .nav {
+    width: 140px;
+  }
+  .nav-bg,
+  .nav img {
+    width: 140px;
+    height: 30px;
+  }
 }
 
 @media (max-width: 900px) {
-    .sidebar {
-        display: none;
-    }
-    .nav-mobile {
-        display: flex !important;
-    }
+  .sidebar {
+    display: none;
+  }
+  .nav-mobile {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .nav-box img {
+    height: 76px;
+  }
 }
