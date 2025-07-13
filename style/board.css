@@ -22,7 +22,7 @@
 .search-input:hover,
 .search-input:active,
 .search-input:focus {
-  outline-color: var(--main-color);
+  outline: 1px solid var(--main-color);
 }
 
 .search-input input {
