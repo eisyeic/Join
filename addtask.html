@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./style/sidebar.css" />
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
+    <script src="./script.js" defer></script>
   </head>
 
   <body>
@@ -99,14 +100,14 @@
             <div class="category-box">
               <span class="label-main">Category</span>
               <div class="category-select-box">
-                <span>Select contacts to assign</span>
+                <span>Select task category</span>
               </div>
             </div>
             <div class="subtasks-box">
               <span class="label-main">Subtasks</span>
               <span class="label-optional">(optional)</span>
               <div class="asigned-select-box">
-                <span>Select contacts to assign</span>
+                <span>Add new subtask</span>
               </div>
             </div>
           </div>
@@ -114,8 +115,14 @@
       </section>
       <section class="section-addtask-buttons">
         <div class="add-task-button">
-          <img class="instant-button" src="./assets/icons/add_task/cancel_default.svg" alt="">
-          <img class="instant-button" src="./assets/icons/add_task/create_default.svg" alt="">
+          <div class="cancel-button base-button button-hollow button-regular">
+            Clear
+            <img src="./assets/icons/add_task/cancel_default.svg" alt="clear">
+          </div>
+          <div id="create-button" class="create-button base-button button-blue button-regular">
+            Create task
+            <img src="./assets/icons/add_task/check_white.png" alt="create task">
+          </div>
         </div>
       </section>
     </main>
