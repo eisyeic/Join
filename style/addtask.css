@@ -81,3 +81,14 @@
     justify-content: space-between;
     height: 51px;
 }
+
+.select-box {
+    height: 40px;
+    width: 100%;
+    color: #000;
+    border-bottom: 1px solid var(--style-color);
+}
+
+.select-box:hover {
+    cursor: pointer;
+}
