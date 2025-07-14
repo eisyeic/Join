@@ -20,6 +20,11 @@ header {
   margin-bottom: 40px;
 }
 
+.icon-img {
+  border: 3px solid white; /* Weißer, 2 Pixel dicker Rahmen */
+  border-radius: 50%;
+}
+
 .sidebar-buttom {
   width: 186px;
   height: 205px;
@@ -133,26 +138,52 @@ header {
 }
 
 .task-urgent {
+  width: 672px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--main-color);
+  border-radius: 20px;
+  color: white;
+  padding: 25px;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+.task-urgent-inner {
   display: flex;
   align-items: center;
-  background-color: var(--main-color);
-  color: white;
-  border-radius: 20px;
-  padding: 25px;
   gap: 30px;
-  flex-grow: 1;
-  transition: all 0.2s ease-in-out;
+  transition: transform 0.3s ease;
 }
 
 .task-urgent:hover {
+  background-color: white;
+  color: #4589FF;
+  border-top-left-radius: 0;
+}
+
+.task-urgent:hover .task-urgent-inner {
   transform: scale(1.05);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .task-urgent-left {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 9px;
+  flex-direction: column;
+  width: 140px;
+  margin-left: 48px;
+}
+
+.task-urgent-left-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-urgent-text {
+  display: flex;
+  
+  gap: 5px;
 }
 
 .task-urgent-left img {
@@ -170,8 +201,12 @@ header {
   font-size: 16px;
 }
 
+.task-urgent:hover .task-urgent-right {
+  border-left: 2px solid rgba(69, 137, 255, 1);
+}
+
 .task-urgent-right {
-  border-left: 2px solid white;
+  border-left: 3px solid white;
   padding-left: 30px;
   height: 156px;
   align-items: center;
@@ -180,7 +215,7 @@ header {
 }
 
 .task-urgent-date h4 {
-  font-size: 21px;
+  font-size: 33px;
   font-weight: 700;
   margin: 0;
 }
@@ -190,14 +225,17 @@ header {
 }
 
 .task-board {
-  display: flex;
-  align-items: center;
-  background-color: white;
+   background-color: white;
   border-radius: 20px;
-  padding: 25px;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
+  width: 208px;
+  height: 191px;
+  text-align: center;
 }
 
 .task-board:hover {
@@ -224,7 +262,7 @@ header {
 .task-status {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
+  gap: 32px;
   width: 672px;
   height: 191px;
 }
@@ -233,12 +271,14 @@ header {
   background-color: white;
   border-radius: 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 18px;
+  justify-content: center;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
   width: 204px;
   height: 219px;
+  text-align: center;
 }
 
 .task-status-box:hover {
@@ -248,10 +288,31 @@ header {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.task-status-box img {
-  width: 76px;
-  height: 76px;
+.task-status-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
+
+.task-status-top-row img {
+  width: 40px;
+  height: 40px;
+}
+
+.task-status-top-row h3 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.task-status-label {
+  font-size: 16px;
+  line-height: 1.2;
+  color: #1a73e8;
+}
+
+
 
 .task-status-text h3 {
   font-size: 47px;
