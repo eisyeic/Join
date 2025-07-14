@@ -113,22 +113,6 @@ emailInput.addEventListener("input", function () {
 });
 
 
-// change color on click to the inputbox
-const inputs = document.querySelectorAll(".input-wrapper input");
-
-inputs.forEach((input) => {
-  input.addEventListener("focus", () => {
-    inputs.forEach((el) => {
-      el.parentElement.style.borderColor = el === input ? '#4589FF' : '#D1D1D1';
-    });
-  });
-
-  input.addEventListener("blur", () => {
-    input.parentElement.style.borderColor = '#D1D1D1';
-  });
-});
-
-
 //clear error on input password
 passwordInput.addEventListener("input", function () {
   error.innerHTML = "";
@@ -171,8 +155,9 @@ function signUp() {
 
 // to do: Hier kommt das loginscript rein!
 function logIn() { 
-  error.innerHTML = "Check your email and password. Please try again."
-  emailInput.parentElement.style.borderColor = '#FF8190' 
-  passwordInput.parentElement.style.borderColor = '#FF8190' 
+  error.innerHTML = "Check your email and password. Please try again.";
+  emailInput.parentElement.style.borderColor = '#FF8190'; 
+  passwordInput.parentElement.style.borderColor = '#FF8190';
+  window.location.href = "summary-board.html"; 
 };
 

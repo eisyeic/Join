@@ -1,3 +1,7 @@
+.d-none {
+    display: none !important;
+}
+
 .contact-body {
     overflow: hidden;
 }
@@ -5,18 +9,19 @@
 .contact-content {
     display: flex;
     height: calc(100vh - 96px);
-    margin-top: 4px;
 }
 
 .contact-add-new-contact-container {
     width: 350px;
     height: calc(100vh - 130px);
-    padding-bottom: 30px;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-top: 32px;
+    padding-left: 49.5px;
+    padding-bottom: 32px;
+    padding-right: 49.5px;
     overflow-y: scroll;
     scrollbar-color: rgba(0, 0, 0, 0);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
 }
 
 .button-add-new-contact-container {
@@ -116,7 +121,7 @@
 }
 
 .contact-single-person-content {
-    padding: 60px;
+    padding: 72px 62px;
 
 }
 
@@ -182,8 +187,6 @@
     justify-content: center;
 }
 
-.contact-single-person-content-head-trash-box:hover {}
-
 .contact-single-person-content-head-trash-box p {
     font-size: 16px;
 }
@@ -223,109 +226,3 @@
     filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(7482%) hue-rotate(244deg) brightness(101%) contrast(101%);
 }
 
-.overlay-edit-contact {
-    background-color: rgba(255, 255, 255, 0.5);
-    z-index: 1;
-    height: 100vh;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.contact-overlay-edit-head {
-    width: 580px;
-    position: absolute;
-    top: 0;
-    left: -100%;
-    height: 200px;
-    background-color: var(--main-color);
-    border-radius: 0 30px 0 0;
-    animation: slideIn 1s forwards;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: white;
-}
-
-.contact-overlay-edit-head img {
-    width: 55px;
-}
-
-@keyframes slideIn {
-    from {
-        left: -100%;
-    }
-
-    to {
-        left: 0;
-    }
-}
-
-.contact-overlay-edit-content {
-    width: 575px;
-    height: calc(100vh - 200px);
-    background-color: white;
-    border-radius: 0 0 30px 30px;
-    position: absolute;
-    top: 200px;
-    left: 0;
-    border: solid rgba(0, 0, 0, 0.16);
-    border-top: none;
-    animation: slideIn 1s forwards;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 32px;
-}
-
-.contact-overlay-person-icon-big {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 120px;
-    width: 120px;
-}
-
-.contact-overlay-person-icon-big h3 {
-    position: absolute;
-    color: white;
-    font-family: Inter;
-}
-
-.contact-overlay-person-icon-big img {
-    position: absolute;
-    height: 120px;
-    width: 120px;
-}
-
-.contact-overlay-edit-content-name {
-    display: flex;
-    width: 380px;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.contact-overlay-edit-content-name h5 {
-    font-weight: 400;
-}
-
-.contact-placeholder-blue {
-    height: 1px;
-    width: 100%;
-    background-color: var(--light-blue);
-}
-
-.contact-overlay-edit-content-details {
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
-}

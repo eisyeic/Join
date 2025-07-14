@@ -210,6 +210,10 @@
   font-size: 19px;
 }
 
+.input-wrapper:has(input:focus) {
+  border-color: var(--main-color);
+}
+
 .input-wrapper input:focus {
   border: none;
   outline: none;
@@ -357,16 +361,6 @@
   bottom: 50%;  
   opacity: 1;
 }
-
-* {
-  outline: 0px solid red;
-}
-
-/*
-
-Important, Please don´t touch this section, never!
-
-*/
 
 /* Tablet */
 @media (max-width: 1024px) {

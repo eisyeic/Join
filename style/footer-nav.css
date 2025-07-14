@@ -1,0 +1,16 @@
+.nav-mobile {
+    display: none;
+    align-items: center;
+}
+
+.nav-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-around
+}
+
+.nav-box img {
+    height: 96px;
+    width: auto;
+}
