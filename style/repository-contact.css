@@ -57,6 +57,16 @@
         width: 100% !important;
         border-radius: 0 0 30px 30px !important;
     }
+
+    .contact-overlay-person-icon-big {
+        position: absolute;
+        top: -60px;
+    }
+
+    .contact-overlay-person-icon-big img {
+    border: 3px solid white;
+    border-radius: 50%;
+    }
 }
 
 @media (max-width: 720px) {
@@ -65,3 +75,10 @@
         right: 24px;
     }
 }
+
+@media (max-width: 450px) {
+    .contact-overlay-edit-content-details {
+        width: 300px;
+    }
+}
+
