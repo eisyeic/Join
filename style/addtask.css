@@ -19,7 +19,7 @@
     color: var(--style-color);
 }
 
-.addtask-main-content input {
+.addtask-title input {
     box-sizing: border-box;
     font-size: 32px;
     padding: 13px 16px;
@@ -154,20 +154,36 @@
     content: url(../assets/icons/add_task/check_blue.png);
 }
 
-.asigned-select-box {
+.assigned-select-box {
     display: flex;
-    padding: 12px 16px;
     cursor: pointer;
+    padding: 12px 16px;
     justify-content: space-between;
     border-bottom: 1px solid var(--style-color);
 }
 
-.asigned-select-box:hover {
+.assigned-select-box input {
+    border: none;
+    font-size: 19px;
+    border: none;
+    outline: none;
+}
+
+.assigned-select-box:hover, :has(input:focus) {
     border-color: var(--main-color);
 }
 
-.asigned-select-box img:hover {
-    content: url(../assets/icons/add_task/arrow_down_hover.svg);
+.arrow-down {
+  content: url(../assets/icons/add_task/arrow_down_default.svg);
+}
+.arrow-up {
+  content: url(../assets/icons/add_task/arrow_up_default.svg);
+}
+.arrow-down:hover {
+  content: url(../assets/icons/add_task/arrow_down_hover.svg);
+}
+.arrow-up:hover {
+  content: url(../assets/icons/add_task/arrow_up_hover.svg);
 }
 
 .contact-list-box {
@@ -194,4 +210,24 @@ li div {
 
 li:hover {
     background-color: var(--navi-buttons-bg);
+}
+
+.category-select-box {
+    font-size: 19px;
+    color: #000;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--style-color);
+    cursor: pointer;
+}
+
+.category-select-box span {
+    font-size: 19px;
+}
+
+.category-selection li {
+    font-size: 19px;
+}
+
+.category-select-box:hover {
+    border-bottom: 1px solid var(--main-color);
 }

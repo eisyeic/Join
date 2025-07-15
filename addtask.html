@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
     <script src="./script.js" defer></script>
+    <script src="./scripts/addtask.js" defer></script>
   </head>
 
   <body>
@@ -90,41 +91,60 @@
                 <img src="./assets/icons/add_task/low.svg" alt="low" />
               </button>
             </div>
-            <div class="asigned-box">
+            <div class="assigned-box">
               <span class="label-main">Assigned to</span>
               <span class="label-optional">(optional)</span>
-              <div id="asigned-select-box" class="asigned-select-box">
-                <span>Select contacts to assign</span>
-                <img src="./assets/icons/add_task/arrow_down_default.svg" alt="">
+              <div id="assigned-select-box"
+                  class="assigned-select-box">
+                <input
+                  type="text"
+                  placeholder="Select contacts to assign"
+                />
+                <img
+                  id="assigned-icon"
+                  class="arrow-down"
+                  src="./assets/icons/add_task/arrow_down_default.svg"
+                  alt=""
+                />
               </div>
               <div id="contact-list-box" class="contact-list-box d-none">
                 <li>
                   <div>
-                    <img src="./assets/icons/add_task/Property 1=Anton.svg" alt="">
+                    <img
+                      src="./assets/icons/add_task/Property 1=Anton.svg"
+                      alt=""
+                    />
                     Anton Mayer
-                  </div> 
-                  <img src="./assets/icons/add_task/check_defalut.svg" alt="">
+                  </div>
+                  <img src="./assets/icons/add_task/check_defalut.svg" alt="" />
                 </li>
                 <li>
                   <div>
-                    <img src="./assets/icons/add_task/Property 1=Anja.svg" alt="">
+                    <img
+                      src="./assets/icons/add_task/Property 1=Anja.svg"
+                      alt=""
+                    />
                     Anja Schulze
-                  </div> 
-                  <img src="./assets/icons/add_task/check_defalut.svg" alt="">
+                  </div>
+                  <img src="./assets/icons/add_task/check_defalut.svg" alt="" />
                 </li>
               </div>
             </div>
             <div class="category-box">
               <span class="label-main">Category</span>
-              <div class="category-select-box">
+              <div id="category-select" class="category-select-box">
                 <span>Select task category</span>
+              </div>
+              <div id="category-selection" class="category-selection d-none">
+                <li>Technical task</li>
+                <li>User Story</li>
               </div>
             </div>
             <div class="subtasks-box">
               <span class="label-main">Subtasks</span>
               <span class="label-optional">(optional)</span>
               <div class="asigned-select-box">
-                <span>Add new subtask</span>
+                <span>Add new subtask</span><img src="" alt="">
               </div>
             </div>
           </div>
@@ -134,11 +154,17 @@
         <div class="add-task-button">
           <div class="cancel-button base-button button-hollow button-regular">
             Clear
-            <img src="./assets/icons/add_task/cancel_default.svg" alt="clear">
+            <img src="./assets/icons/add_task/cancel_default.svg" alt="clear" />
           </div>
-          <div id="create-button" class="create-button base-button button-blue button-regular">
+          <div
+            id="create-button"
+            class="create-button base-button button-blue button-regular"
+          >
             Create task
-            <img src="./assets/icons/add_task/check_white.png" alt="create task">
+            <img
+              src="./assets/icons/add_task/check_white.png"
+              alt="create task"
+            />
           </div>
         </div>
       </section>
