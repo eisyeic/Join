@@ -67,6 +67,7 @@
     border: 3px solid white;
     border-radius: 50%;
     }
+    
 }
 
 @media (max-width: 720px) {
@@ -79,6 +80,10 @@
 @media (max-width: 450px) {
     .contact-overlay-edit-content-details {
         width: 300px;
+    }
+
+    .contact-person {
+        gap: 10px;
     }
 }
 

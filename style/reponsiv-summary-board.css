@@ -1,0 +1,27 @@
+@media (max-width: 1250px) {
+  .task-task-to-do {
+    padding: 20px;
+  }
+  .task-task-in-board {
+    padding: 20px;
+  }
+  .task-urgent {
+    padding: 20px;
+  }
+  .task-container {
+    width: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
