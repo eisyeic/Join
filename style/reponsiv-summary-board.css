@@ -13,6 +13,18 @@
   }
 }
 
+@media (max-width: 1250px) {
+ .dashboard {
+    padding: 20px;
+ }
+ .task-box-top {
+  gap: 20px;
+ }
+ .task-box-bottom {
+  gap: 20px;
+ }
+}
+
 @media (max-width: 900px) {
   .dashboard {
     position: relative;
@@ -23,5 +35,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+  .task-container {
+    display: none;
+  }
+
+  .task-container-mobile {
+    display: flex;
+    flex-direction: column;
   }
 }
