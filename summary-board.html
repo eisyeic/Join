@@ -1,193 +1,252 @@
 <!DOCTYPE html>
 <html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="./assets/general_elements/icons/logo_blue_icon.svg"
+      type="image/x-icon"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
+    <title>Summary Board</title>
+    <link rel="stylesheet" href="./style/summary-board.css" />
+    <link rel="stylesheet" href="./style/sidebar.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style/footer-nav.css" />
+    <link rel="stylesheet" href="./style/responsiv.css" />
+    <link rel="stylesheet" href="./style/reponsiv-summary-board.css" />
+  </head>
 
-  <title>Summary Board</title>
-  <link rel="stylesheet" href="./style/summary-board.css" />
-  <link rel="stylesheet" href="./style/sidebar.css" />
-  <link rel="stylesheet" href="./style/header.css" />
-  <link rel="stylesheet" href="./style.css" />
-  <link rel="stylesheet" href="./style/footer-nav.css" />
-  <link rel="stylesheet" href="./style/responsiv.css" />
-  <link rel="stylesheet" href="./style/reponsiv-summary-board.css" />
-</head>
+  <body>
+    <header>
+      <a href="./index.html"
+        ><img src="./assets/general_elements/icons/logo_white_icon.svg"
+      /></a>
+      <nav>
+        <p>Kanban Project Management Tool</p>
+        <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="" /></a>
+        <img src="./assets/icons/header/guest_icon.svg" alt="" />
+      </nav>
+    </header>
+    <main>
+      <section class="sidebar">
+        <div class="nav">
+          <a href="./summary-board.html" class="nav-bg active"
+            ><img
+              src="./assets/icons/sidebar/summery.svg"
+              alt="Button Summary Board"
+          /></a>
+          <a href="addtask.html" class="nav-bg"
+            ><img
+              class="nav-bg"
+              src="./assets/icons/sidebar/add task.svg"
+              alt="Button Add Task"
+          /></a>
+          <a href="board.html" class="nav-bg"
+            ><img src="./assets/icons/sidebar/board.svg" alt="Button-Board"
+          /></a>
+          <a href="contact.html" class="nav-bg"
+            ><img
+              src="./assets/icons/sidebar/contacts.svg"
+              alt="Button Contact"
+          /></a>
+        </div>
+        <div class="sidebar-links">
+          <a href="./privacy-policy.html">Privacy Policy</a>
+          <a href="./legal-notice.html">Legal notice</a>
+        </div>
+      </section>
 
-<body>
-  <header>
-    <img src="../assets/general_elements/icons/logo_white_icon.svg" />
-    <nav>
-      <p>Kanban Project Management Tool</p>
-    </nav>
-  </header>
-  <main>
-    <section class="sidebar">
-      <div class="nav">
-        <a href="./summary-board.html" class="nav-bg active"><img src="./assets/icons/sidebar/summery.svg"
-            alt="Button Summary Board" /></a>
-        <a href="addtask.html" class="nav-bg"><img class="nav-bg" src="./assets/icons/sidebar/add task.svg"
-            alt="Button Add Task" /></a>
-        <a href="board.html" class="nav-bg"><img src="./assets/icons/sidebar/board.svg" alt="Button-Board" /></a>
-        <a href="contact.html" class="nav-bg"><img src="./assets/icons/sidebar/contacts.svg" alt="Button Contact" /></a>
-      </div>
-      <div class="sidebar-links">
-        <a href="./privacy-policy.html">Privacy Policy</a>
-        <a href="./legal-notice.html">Legal notice</a>
-      </div>
-    </section>
-
-    <section class="dashboard">
-      <div class="dashboard-header">
-        <h2>Good morning,</h2>
-        <h1>Sofia Müller</h1>
-      </div>
-
-      <div class="task-container">
-        <div class="task-box-top">
-          <div class="task-urgent">
-            <div class="task-urgent-left-box">
-              <div class="task-urgent-left-box-top">
-                <div class="task-urgent-left-box-top-img">
-                  <img src="./assets/summary/icons/urgent.svg" alt="Icon Task Urgent" />
-                  <div class="task-urgent-left-box-top-ring"></div>
-                </div>
-                <h2>1</h2>
-              </div>
-              <p>Tasks Urgent</p>
-            </div>
-            <div class="dashboard-placeholder"></div>
-            <div class="task-urgent-right-box">
-              <h4>Oktober 16, 2022</h4>
-              <h5>Upcoming Deadline</h5>
-            </div>
-          </div>
-          <div class="task-task-in-board">
-            <div class="task-task-in-board-top-box">
-              <img src="./assets/summary/icons/default.svg" alt="Icon Task in Board" />
-              <h2>5</h2>
-            </div>
-            <h5>Task on Board</h5>
-          </div>
+      <section class="dashboard">
+        <div class="dashboard-header">
+          <h2>Good morning,</h2>
+          <h1>Sofia Müller</h1>
         </div>
 
-        <div class="task-box-bottom">
-          <div class="task-task-to-do">
-            <div class="task-task-in-board-top-box">
-              <img src="./assets/summary/icons/todo.svg" alt="Icon Task in Board" />
-              <h2>1</h2>
-            </div>
-            <h5>Task To-do</h5>
-          </div>
-          <div class="task-task-to-do">
-            <div class="task-task-in-board-top-box">
-              <img src="./assets/summary/icons/in_progress.svg" alt="Icon Task in Progress" />
-              <h2>2</h2>
-            </div>
-            <h5>Task in Progress</h5>
-          </div>
-          <div class="task-task-to-do">
-            <div class="task-task-in-board-top-box">
-              <img src="./assets/summary/icons/afeedback.svg" alt="Icon Awaiting Feedback" />
-              <h2>1</h2>
-            </div>
-            <h5>Awaiting Feedback</h5>
-          </div>
-          <div class="task-task-to-do">
-            <div class="task-task-in-board-top-box">
-              <img src="./assets/summary/icons/done.svg" alt="Icon Task Done" />
-              <h2>3</h2>
-            </div>
-            <h5>Task Done</h5>
-          </div>
-        </div>
-      </div>
-
-      <div class="task-container-mobile">
-
-        <div class="task-box-top-mobile">
-
-          <div class="task-urgent-mobile">
-            <div class="task-urgent-mobile-box">
-              <div class="task-urgent-left-box-mobile">
-                <div class="task-urgent-left-box-top-mobile">
-                  <div class="task-urgent-left-box-top-img-mobile">
-                    <img src="./assets/summary/icons/urgent.svg" alt="Icon Task Urgent" />
-                    <div class="task-urgent-left-box-top-ring-mobile"></div>
+        <div class="task-container">
+          <div class="task-box-top">
+            <div class="task-urgent">
+              <div class="task-urgent-left-box">
+                <div class="task-urgent-left-box-top">
+                  <div class="task-urgent-left-box-top-img">
+                    <img
+                      src="./assets/summary/icons/urgent.svg"
+                      alt="Icon Task Urgent"
+                    />
+                    <div class="task-urgent-left-box-top-ring"></div>
                   </div>
                   <h2>1</h2>
                 </div>
                 <p>Tasks Urgent</p>
               </div>
-              <div class="dashboard-placeholder-mobile"></div>
-              <div class="task-urgent-right-box-mobile">
+              <div class="dashboard-placeholder"></div>
+              <div class="task-urgent-right-box">
                 <h4>Oktober 16, 2022</h4>
                 <h5>Upcoming Deadline</h5>
               </div>
             </div>
-          </div>
-
-          <div class="task-task-to-do-mobile">
-            <div class="task-task-to-do-box-mobile">
-              <img src="./assets/summary/icons/todo.svg" alt="Icon Task in Board" />
-              <h2>1</h2>
-              <h5>Task To-do</h5>
-            </div>
-          </div>
-        </div>
-
-        <div class="task-box-bottom-mobile">
-
-          <div class="task-box-bottom-top-mobile">
-            <div class="task-task-in-board-mobile">
-              <div class="task-task-in-board-top-box-mobile">
-                <img src="./assets/summary/icons/default.svg" alt="Icon Task in Board" />
+            <div class="task-task-in-board">
+              <div class="task-task-in-board-top-box">
+                <img
+                  src="./assets/summary/icons/default.svg"
+                  alt="Icon Task in Board"
+                />
                 <h2>5</h2>
               </div>
-              <h5>Task on<br>Board</h5>
-            </div>
-
-            <div class="task-task-in-board-mobile">
-              <div class="task-task-in-board-top-box-mobile">
-                <img src="./assets/summary/icons/in_progress.svg" alt="Icon Task in Progress" />
-                <h2>2</h2>
-              </div>
-              <h5>Task in<br>Progress</h5>
+              <h5>Task on Board</h5>
             </div>
           </div>
 
-          <div class="task-box-bottom-bottom-mobile">
-
-            <div class="task-task-to-do-mobile">
-              <div class="task-task-in-board-top-box-mobile">
-                <img src="./assets/summary/icons/afeedback.svg" alt="Icon Awaiting Feedback" />
+          <div class="task-box-bottom">
+            <div class="task-task-to-do">
+              <div class="task-task-in-board-top-box">
+                <img
+                  src="./assets/summary/icons/todo.svg"
+                  alt="Icon Task in Board"
+                />
+                <h2>1</h2>
+              </div>
+              <h5>Task To-do</h5>
+            </div>
+            <div class="task-task-to-do">
+              <div class="task-task-in-board-top-box">
+                <img
+                  src="./assets/summary/icons/in_progress.svg"
+                  alt="Icon Task in Progress"
+                />
+                <h2>2</h2>
+              </div>
+              <h5>Task in Progress</h5>
+            </div>
+            <div class="task-task-to-do">
+              <div class="task-task-in-board-top-box">
+                <img
+                  src="./assets/summary/icons/afeedback.svg"
+                  alt="Icon Awaiting Feedback"
+                />
                 <h2>1</h2>
               </div>
               <h5>Awaiting Feedback</h5>
             </div>
-
-            <div class="task-task-to-do-mobile">
-              <div class="task-task-in-board-top-box-mobile">
-                <img src="./assets/summary/icons/done.svg" alt="Icon Task Done" />
+            <div class="task-task-to-do">
+              <div class="task-task-in-board-top-box">
+                <img
+                  src="./assets/summary/icons/done.svg"
+                  alt="Icon Task Done"
+                />
                 <h2>3</h2>
               </div>
               <h5>Task Done</h5>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
-  <footer class="nav-mobile">
-    <div class="nav-box">
-      <a href="./summary-board.html"><img src="./assets/icons_mobile/summary_active.svg" alt="" /></a>
-      <a href="./addtask.html"><img src="./assets/icons_mobile/add_taks_default.svg" alt="" /></a>
-      <a href="./board.html"><img src="./assets/icons_mobile/board_default.svg" alt="" /></a>
-      <a href="./contact.html"><img src="./assets/icons_mobile/contacts_default.svg" alt="" /></a>
-    </div>
-  </footer>
-</body>
 
+        <div class="task-container-mobile">
+          <div class="task-box-top-mobile">
+            <div class="task-urgent-mobile">
+              <div class="task-urgent-mobile-box">
+                <div class="task-urgent-left-box-mobile">
+                  <div class="task-urgent-left-box-top-mobile">
+                    <div class="task-urgent-left-box-top-img-mobile">
+                      <img
+                        src="./assets/summary/icons/urgent.svg"
+                        alt="Icon Task Urgent"
+                      />
+                      <div class="task-urgent-left-box-top-ring-mobile"></div>
+                    </div>
+                    <h2>1</h2>
+                  </div>
+                  <p>Tasks Urgent</p>
+                </div>
+                <div class="dashboard-placeholder-mobile"></div>
+                <div class="task-urgent-right-box-mobile">
+                  <h4>Oktober 16, 2022</h4>
+                  <h5>Upcoming Deadline</h5>
+                </div>
+              </div>
+            </div>
+
+            <div class="task-task-to-do-mobile">
+              <div class="task-task-to-do-box-mobile">
+                <img
+                  src="./assets/summary/icons/todo.svg"
+                  alt="Icon Task in Board"
+                />
+                <h2>1</h2>
+                <h5>Task To-do</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-box-bottom-mobile">
+            <div class="task-box-bottom-top-mobile">
+              <div class="task-task-in-board-mobile">
+                <div class="task-task-in-board-top-box-mobile">
+                  <img
+                    src="./assets/summary/icons/default.svg"
+                    alt="Icon Task in Board"
+                  />
+                  <h2>5</h2>
+                </div>
+                <h5>Task on<br />Board</h5>
+              </div>
+
+              <div class="task-task-in-board-mobile">
+                <div class="task-task-in-board-top-box-mobile">
+                  <img
+                    src="./assets/summary/icons/in_progress.svg"
+                    alt="Icon Task in Progress"
+                  />
+                  <h2>2</h2>
+                </div>
+                <h5>Task in<br />Progress</h5>
+              </div>
+            </div>
+
+            <div class="task-box-bottom-bottom-mobile">
+              <div class="task-task-to-do-mobile">
+                <div class="task-task-in-board-top-box-mobile">
+                  <img
+                    src="./assets/summary/icons/afeedback.svg"
+                    alt="Icon Awaiting Feedback"
+                  />
+                  <h2>1</h2>
+                </div>
+                <h5>Awaiting Feedback</h5>
+              </div>
+
+              <div class="task-task-to-do-mobile">
+                <div class="task-task-in-board-top-box-mobile">
+                  <img
+                    src="./assets/summary/icons/done.svg"
+                    alt="Icon Task Done"
+                  />
+                  <h2>3</h2>
+                </div>
+                <h5>Task Done</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="nav-mobile">
+      <div class="nav-box">
+        <a href="./summary-board.html"
+          ><img src="./assets/icons_mobile/summary_active.svg" alt=""
+        /></a>
+        <a href="./addtask.html"
+          ><img src="./assets/icons_mobile/add_taks_default.svg" alt=""
+        /></a>
+        <a href="./board.html"
+          ><img src="./assets/icons_mobile/board_default.svg" alt=""
+        /></a>
+        <a href="./contact.html"
+          ><img src="./assets/icons_mobile/contacts_default.svg" alt=""
+        /></a>
+      </div>
+    </footer>
+  </body>
 </html>

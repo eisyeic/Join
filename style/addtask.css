@@ -29,6 +29,14 @@
   width: 100%;
 }
 
+* {
+    font-size: 19px;
+}
+
+.addtask-title input:hover {
+    border-color: var(--main-color);
+}
+
 .addtask-main-content input:focus {
   border-color: var(--main-color);
 }
@@ -41,13 +49,8 @@
 }
 
 .label-main {
-  font-size: 19px;
   font-weight: 700;
   color: var(--menu-color);
-}
-
-.label-optional {
-  font-size: 19px;
 }
 
 .due-date {
@@ -58,10 +61,6 @@
 
 .due-date img {
   height: 24px;
-}
-
-.due-date input {
-  font-size: 19px;
 }
 
 .date-input {
@@ -79,7 +78,6 @@
   width: 440px;
   resize: vertical;
   height: 103px;
-  font-size: 19px;
   padding: 16px;
   box-sizing: border-box;
   outline: none;
@@ -186,7 +184,6 @@
 
 .assigned-select-box input {
   border: none;
-  font-size: 19px;
   width: 90%;
   border: none;
   outline: none;
@@ -237,19 +234,10 @@ li:hover {
 }
 
 .category-select-box {
-  font-size: 19px;
   color: #000;
   padding: 12px 16px;
   border-bottom: 1px solid var(--style-color);
   cursor: pointer;
-}
-
-.category-select-box span {
-  font-size: 19px;
-}
-
-.category-selection li {
-  font-size: 19px;
 }
 
 .category-select-box:hover {
@@ -273,8 +261,11 @@ li:hover {
   outline: none;
 }
 
+.subtask-select ::placeholder {
+    color: var(--style-color);
+}
+
 .subtask-select span {
-  font-size: 19px;
   color: #000;
 }
 
@@ -296,7 +287,6 @@ textarea,
 li,
 .cancel-button,
 .create-button,
-.priority-button
-.subtask-select {
+.priority-button {
   transition: all 0.2s ease-in-out;
 }

@@ -8,13 +8,37 @@ header {
     align-items: center;
     background-color: var(--main-color);
     min-height: 96px;
-    size: 19px;
     color: white;
     padding-left: 39px;
     padding-right: 39px;
     box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.1);
 }
 
+p {
+    font-size: 19px;
+}
+
 header img {
     height: 56px;
+}
+
+header a {
+    display: flex;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    width: 433px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.help {
+    cursor: pointer;
+    height: 32px;
+}
+
+.help:hover {
+    content: url(../assets/icons/header/help_hover.svg);
 }
