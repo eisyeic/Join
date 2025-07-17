@@ -18,22 +18,3 @@
 h4 {
     color: var(--main-color);
 }
-
-.nav-login-box {
-    display: flex;
-    width: 186px;
-}
-
-.nav-login-box img {
-    height: 24px;
-}
-
-.nav-login-box a {
-    display: flex;
-    align-items: center;
-    width: 186px;
-    padding: 0 30px;
-    gap: 8px;
-    text-decoration: none;
-    color: var(--navi-button-bg);
-}

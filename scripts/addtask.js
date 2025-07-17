@@ -19,4 +19,8 @@ assignedSelect.addEventListener("click", function() {
 
 categorySelect.addEventListener("click", function() {
     categorySelection.classList.toggle('d-none');
-})
+});
+
+flatpickr("#datepicker", {
+      dateFormat: "d.m.Y",
+    });

@@ -189,6 +189,10 @@
   outline: none;
 }
 
+input::placeholder {
+  color: #000;
+}
+
 .assigned-select-box:hover,
 :has(input:focus) {
   border-color: var(--main-color);
@@ -240,6 +244,10 @@ li:hover {
   cursor: pointer;
 }
 
+span {
+  font-size: 19px;
+}
+
 .category-select-box:hover {
   border-bottom: 1px solid var(--main-color);
 }
@@ -265,10 +273,6 @@ li:hover {
     color: var(--style-color);
 }
 
-.subtask-select span {
-  color: #000;
-}
-
 .subtask-select img:hover {
   content: url(../assets/icons/add_task/add\ hover.svg);
 }
@@ -285,8 +289,6 @@ textarea,
 .category-select-box,
 .assigned-select-box,
 li,
-.cancel-button,
-.create-button,
-.priority-button {
+.subtask-select {
   transition: all 0.2s ease-in-out;
 }

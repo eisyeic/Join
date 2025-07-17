@@ -15,6 +15,12 @@
     <link rel="stylesheet" href="./style/sidebar.css" />
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/de.js"></script>
     <script src="./script.js" defer></script>
     <script src="./scripts/addtask.js" defer></script>
   </head>
@@ -26,7 +32,9 @@
       /></a>
       <nav>
         <p>Kanban Project Management Tool</p>
-        <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="" /></a>
+        <a href="help.html"
+          ><img class="help" src="./assets/icons/header/help.svg" alt=""
+        /></a>
         <img src="./assets/icons/header/guest_icon.svg" alt="" />
       </nav>
     </header>
@@ -76,7 +84,9 @@
           </div>
           <div class="due-date">
             <span class="label-main">Due Date</span>
-            <div class="date-input">dd/mm/yyyy<img src="./assets/icons/add_task/event.svg" alt=""></div>
+            <div class="date-input" id="datepicker">
+              <input type="text" placeholder="dd/mm/yyyy"><img src="./assets/icons/add_task/event.svg" alt="" />
+            </div>
             <div class="addtask-error"></div>
           </div>
           <div class="priority-wrapper">
@@ -98,12 +108,8 @@
             <div class="assigned-box">
               <span class="label-main">Assigned to</span>
               <span class="label-optional">(optional)</span>
-              <div id="assigned-select-box"
-                  class="assigned-select-box">
-                <input
-                  type="text"
-                  placeholder="Select contacts to assign"
-                />
+              <div id="assigned-select-box" class="assigned-select-box">
+                <input type="text" placeholder="Select contacts to assign" />
                 <img
                   id="assigned-icon"
                   class="arrow-down"
@@ -148,7 +154,10 @@
               <span class="label-main">Subtasks</span>
               <span class="label-optional">(optional)</span>
               <div class="subtask-select">
-                <input type="text" placeholder="Add new subtask"><img src="./assets/icons/add_task/add.svg" alt="">
+                <input type="text" placeholder="Add new subtask" /><img
+                  src="./assets/icons/add_task/add.svg"
+                  alt=""
+                />
               </div>
             </div>
           </div>
