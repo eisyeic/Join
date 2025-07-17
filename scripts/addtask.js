@@ -21,6 +21,12 @@ categorySelect.addEventListener("click", function() {
     categorySelection.classList.toggle('d-none');
 });
 
-flatpickr("#datepicker", {
-      dateFormat: "d.m.Y",
-    });
+const input = document.getElementById("datepicker");
+
+const picker = flatpickr(input, {
+  dateFormat: "d/m/Y",
+});
+
+document.getElementById("datepicker-wrapper").addEventListener("click", () => {
+  picker.open();
+});

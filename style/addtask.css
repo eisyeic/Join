@@ -53,6 +53,8 @@
   color: var(--menu-color);
 }
 
+
+/* Datepicker */
 .due-date {
   display: flex;
   flex-direction: column;
@@ -70,8 +72,10 @@
   border-bottom: 1px solid var(--style-color);
 }
 
-.date-input:hover {
-  border-color: var(--main-color);
+.date-input input {
+  border: none;
+  outline: none;
+  width: 100%;
 }
 
 .addtask-main-content textarea {
@@ -187,10 +191,6 @@
   width: 90%;
   border: none;
   outline: none;
-}
-
-input::placeholder {
-  color: #000;
 }
 
 .assigned-select-box:hover,

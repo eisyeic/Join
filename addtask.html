@@ -15,14 +15,10 @@
     <link rel="stylesheet" href="./style/sidebar.css" />
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/de.js"></script>
-    <script src="./script.js" defer></script>
+    <link rel="stylesheet" href="./style/flatpickr.min.css">
     <script src="./scripts/addtask.js" defer></script>
+    <script src="./scripts/flatpickr.min.js"></script>
+    <script src="./script.js" defer></script>
   </head>
 
   <body>
@@ -84,8 +80,8 @@
           </div>
           <div class="due-date">
             <span class="label-main">Due Date</span>
-            <div class="date-input" id="datepicker">
-              <input type="text" placeholder="dd/mm/yyyy"><img src="./assets/icons/add_task/event.svg" alt="" />
+            <div class="date-input" id="datepicker-wrapper">
+              <input type="text" id="datepicker" placeholder="dd/mm/yyyy"><img onclick="flatpickr()" src="./assets/icons/add_task/event.svg" alt="" />
             </div>
             <div class="addtask-error"></div>
           </div>
