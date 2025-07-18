@@ -6,6 +6,7 @@ const contanctDropDown = document.getElementById('contact-list-box');
 
 const categorySelect = document.getElementById('category-select');
 const categorySelection = document.getElementById('category-selection');
+const datePicker = document.getElementById("datepicker-wrapper");
 
 createButton.addEventListener("mouseover", function() {
     createButton.classList.toggle('button-toggle');    
@@ -27,6 +28,6 @@ const picker = flatpickr(input, {
   dateFormat: "d/m/Y",
 });
 
-document.getElementById("datepicker-wrapper").addEventListener("click", () => {
+datePicker.addEventListener("click", () => {
   picker.open();
 });

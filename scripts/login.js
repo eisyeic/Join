@@ -25,8 +25,18 @@ const emailSignUpInput = document.getElementById('sign-up-email');
 const loginButton = document.getElementById('login-button');
 const signupPageButton = document.getElementById('sign-up-page-button');
 const signUpButton = document.getElementById('sign-up-button');
+const passwordSignupInput = document.getElementById('sign-up-password');
+const confirmPasswordInput = document.getElementById('confirm-password');
+const togglePasswordSignup = document.getElementById('togglePasswordSignup');
+const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
 
+let isVisibleSignup = false;
+let isVisibleConfirm = false;
 let isVisible = false;
+
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 
 // onload background and icon animation
@@ -144,19 +154,49 @@ confirmBox.addEventListener('click', function() {
   signUpButton.classList.toggle('sign-up-button');
 });
 
-import { auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-// to do: registrieren kommt dann hier rein
 function signUp() {
-  layout.style.opacity = "0.5";
-  slideInMessage.classList.add('visible');
-  setTimeout(() => {
-    slideInMessage.classList.remove('visible');
-    layout.style.opacity = "1";
-    goBack.click();
-  }, 1200);
-};
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("sign-up-email").value.trim();
+  const password = document.getElementById("sign-up-password").value;
+  const confirmPassword = document.getElementById("confirm-password").value;
+  const acceptedPrivacy = confirmBox.classList.contains("checked");
+
+  errorSignUp.innerHTML = "";
+
+  if (!name || !email || !password || !confirmPassword) {
+    errorSignUp.innerHTML = "Please fill out all fields.";
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    errorSignUp.innerHTML = "Passwords do not match.";
+    return;
+  }
+
+  if (!acceptedPrivacy) {
+    errorSignUp.innerHTML = "You must accept the privacy policy.";
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      console.log("Benutzer registriert:", user.email);
+
+      layout.style.opacity = "0.5";
+      slideInMessage.classList.add("visible");
+
+      setTimeout(() => {
+        slideInMessage.classList.remove("visible");
+        layout.style.opacity = "1";
+        goBack.click(); 
+      }, 1200);
+    })
+    .catch((error) => {
+      console.error("Registrierungsfehler:", error);
+      errorSignUp.innerHTML = error.message;
+    });
+}
 
 
 // login function
