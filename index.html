@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Join App</title>
-    <script src="./scripts/login.js" defer></script>
+    <script type="module" src="./scripts/firebase.js"></script>
+    <script type="module" src="./scripts/login.js"></script>
     <script src="./script.js"></script>
+    
+
     <link
       rel="shortcut icon"
       href="./assets/general_elements/icons/logo_blue_icon.svg"
@@ -38,7 +41,7 @@
         <section class="top-section">
           <div class="sign-up-button-box" id="sign-up-top-right-box">
             Not a join user?
-            <button onclick="openSignUpBox()" id="sign-up" class="base-button button-blue button-small">
+            <button id="sign-up-page-button" class="base-button button-blue button-small">
               Sign up
             </button>
           </div>
@@ -83,7 +86,6 @@
             <div class="login-button-wrapper">
               <button
                 class="base-button button-blue button-small"
-                onclick="logIn()"
                 id="login-button"
               >
                 Log in
@@ -165,7 +167,6 @@
             <!-- Sign up button -->
             <div class="login-button-wrapper">
               <button
-                onclick="signUp()"
                 class="sign-up-button base-button button-blue button-small"
                 id="sign-up-button"
               >

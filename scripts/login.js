@@ -17,11 +17,14 @@ const error = document.getElementById('errorMessage');
 const errorSignUp = document.getElementById('error-sign-up');
 const passwordInput = document.getElementById("login-password");
 
-const signUpButton = document.getElementById('sign-up-button');
 const slideInMessage = document.getElementById('slide-in-banner');
 
 const emailInput = document.getElementById('login-email');
 const emailSignUpInput = document.getElementById('sign-up-email');
+
+const loginButton = document.getElementById('login-button');
+const signupPageButton = document.getElementById('sign-up-page-button');
+const signUpButton = document.getElementById('sign-up-button');
 
 let isVisible = false;
 
@@ -52,6 +55,7 @@ function openSignUpBox() {
   loginBox.classList.add('d-none');
   signUpBox.classList.remove('d-none');
 }
+
 
 
 // back arrow button, change bg and icon animation
@@ -112,11 +116,11 @@ emailInput.addEventListener("input", function () {
   error.innerHTML = "";
 });
 
-
 //clear error on input password
 passwordInput.addEventListener("input", function () {
   error.innerHTML = "";
 });
+
 
 
 // check email validation
@@ -140,8 +144,10 @@ confirmBox.addEventListener('click', function() {
   signUpButton.classList.toggle('sign-up-button');
 });
 
+import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// to do: anmelden kommt dann hier rein
+// to do: registrieren kommt dann hier rein
 function signUp() {
   layout.style.opacity = "0.5";
   slideInMessage.classList.add('visible');
@@ -153,11 +159,30 @@ function signUp() {
 };
 
 
-// to do: Hier kommt das loginscript rein!
-function logIn() { 
-  error.innerHTML = "Check your email and password. Please try again.";
-  emailInput.parentElement.style.borderColor = '#FF8190'; 
-  passwordInput.parentElement.style.borderColor = '#FF8190';
-  window.location.href = "summary-board.html"; 
-};
+// login function
+function logIn() {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
 
+  signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      console.log("Eingeloggt:", userCredential.user.email);
+      window.location.href = "summary-board.html";
+    })
+    .catch(err => {
+      error.innerHTML = "Check your email and password. Please try again.";
+      emailInput.parentElement.style.borderColor = '#FF8190'; 
+      passwordInput.parentElement.style.borderColor = '#FF8190';
+    });
+}
+
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    logIn();
+  }
+});
+
+loginButton.addEventListener("click", logIn);
+signupPageButton.addEventListener("click", openSignUpBox);
+signUpButton.addEventListener("click", signUp);
