@@ -2,27 +2,32 @@
   .task-task-to-do {
     padding: 20px;
   }
+
   .task-task-in-board {
     padding: 20px;
   }
+
   .task-urgent {
     padding: 20px;
   }
+
   .task-container {
     width: auto;
   }
 }
 
 @media (max-width: 1250px) {
- .dashboard {
+  .dashboard {
     padding: 20px;
- }
- .task-box-top {
-  gap: 20px;
- }
- .task-box-bottom {
-  gap: 20px;
- }
+  }
+
+  .task-box-top {
+    gap: 20px;
+  }
+
+  .task-box-bottom {
+    gap: 20px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -36,20 +41,21 @@
     gap: 0;
   }
 
-  .dashboard-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    width: 100%;
-    animation: slideUpAndHide 3s forwards;
-    background: white;
-    z-index: 2;
-    height: calc(100vh - 203px);
-    position: relative;
-    top: 50%;;
-  }
+.dashboard-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  animation: slideUpAndHide 2.5s forwards;
+  animation-delay: 3s;
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  z-index: 1;
+}
 
   .task-container {
     display: none;
@@ -59,45 +65,75 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     height: 100%;
     width: 100%;
     opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 1s forwards;
+    animation: fadeInUp 0.5s forwards;
     animation-delay: 3s;
-    z-index: 1;
+    z-index: 2;
     padding-bottom: 74px;
     padding-top: 64px;
+    overflow: scroll;
+    overflow-x: hidden;
+    background-color: white;
   }
 
-  @keyframes slideUpAndHide {
-    0% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    80% {
-      transform: translateY(-100%);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100%);
-      opacity: 0;
-      visibility: hidden;
-      height: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
+ @keyframes slideUpAndHide {
+  0% {
+    transform: translate(-50%, -50%);
   }
+
+  100% {
+    transform: translate(-50%, -100vh);
+    opacity: 0;
+  }
+}
 
   @keyframes fadeInUp {
     0% {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(100%);
     }
+
+    70% {
+      opacity: 1;
+      transform: translateY(100%);
+    }
+
     100% {
       opacity: 1;
       transform: translateY(0);
     }
   }
+
+
+}
+
+.task-box-bottom-mobile {
+  width: 396px;
+}
+
+.task-box-bottom-bottom-mobile {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  width: 396px;
+}
+
+.task-box-top-mobile {
+  width: 396px;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.task-urgent-mobile {
+  height: 150px;
+  width: 396px;
+}
+
+.task-task-to-do-mobile {
+  height: 106px;
+  width: 396px;
 }

@@ -9,6 +9,7 @@
 .legal-notice-a-tag-style {
     text-decoration: none;
     color: var(--main-color);
+    font-size: 19px;
 }
 
 .legal-notice-content p {
