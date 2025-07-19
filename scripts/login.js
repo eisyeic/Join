@@ -1,3 +1,4 @@
+// import necessary Firebase functions
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth } from "./firebase.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -112,7 +113,8 @@ function validation() {
     if (this.id === 'login-email') {
       error.innerHTML = "Check your email. Please try again.";
       this.parentElement.style.borderColor = "var(--error-color)";
-    } else if (this.id === 'sign-up-email') {
+    } 
+    else if (this.id === 'sign-up-email') {
       errorSignUp.innerHTML = "Check your email. Please try again.";
       this.parentElement.style.borderColor = "var(--error-color)";
     }

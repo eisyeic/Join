@@ -1,3 +1,4 @@
+/* Section add task */
 .addtask-wrapper {
   height: calc(100vh - 96px -64px);
   gap: 24px;
@@ -8,18 +9,22 @@
   overflow-y: scroll;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: var(--style-color) #fff;
+  scrollbar-color: #fff;
 }
 
+/* Upper box of add task */
 .addtask-main-content {
   box-sizing: border-box;
+  display: flex;
   flex-direction: column;
+  align-items: space-between;
   width: 440px;
   gap: 12px;
   color: var(--style-color);
 }
 
-.addtask-title input {
+/* add task title input */
+.addtask-title {
   box-sizing: border-box;
   font-size: 32px;
   padding: 13px 16px;
@@ -27,14 +32,15 @@
   outline: none;
   border-bottom: 1px solid var(--style-color);
   width: 100%;
+  gap: 4px;
 }
 
 * {
-    font-size: 19px;
+  font-size: 19px;
 }
 
 .addtask-title input:hover {
-    border-color: var(--main-color);
+  border-color: var(--main-color);
 }
 
 .addtask-main-content input:focus {
@@ -46,13 +52,13 @@
   font-family: inter;
   font-size: 13px;
   width: 100%;
+  color: var(--error-color);
 }
 
 .label-main {
   font-weight: 700;
   color: var(--menu-color);
 }
-
 
 /* Datepicker */
 .due-date {
@@ -124,12 +130,12 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--style-color);
+  background: #fff;
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 6px;
-  border: 2px solid var(--style-color);
+  border: 2px solid #fff;
 }
 
 .section-addtask-buttons {
@@ -188,7 +194,7 @@
 
 .assigned-select-box input {
   border: none;
-  width: 90%;
+  width: 100%;
   border: none;
   outline: none;
 }
@@ -238,6 +244,8 @@ li:hover {
 }
 
 .category-select-box {
+  display: flex;
+  justify-content: space-between;
   color: #000;
   padding: 12px 16px;
   border-bottom: 1px solid var(--style-color);
@@ -261,7 +269,7 @@ span {
 }
 
 .subtask-select:hover {
-    border-color: var(--main-color);
+  border-color: var(--main-color);
 }
 
 .subtask-select input {
@@ -270,7 +278,7 @@ span {
 }
 
 .subtask-select ::placeholder {
-    color: var(--style-color);
+  color: var(--style-color);
 }
 
 .subtask-select img:hover {
