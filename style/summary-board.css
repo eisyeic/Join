@@ -14,6 +14,7 @@ h5 {
   display: flex;
   flex-direction: column;
   width: 100%;
+  background-color: white;
 }
 
 .dashboard-header {
@@ -34,6 +35,7 @@ h5 {
 
 .dashboard h5 {
   font-weight: 400;
+  text-align: center;
 }
 
 .task-container {
@@ -58,6 +60,14 @@ h5 {
   display: flex;
   gap: 35px;
   width: 100%;
+}
+
+.task-urgent-area {
+display: flex;
+width: 100%;
+gap: 35px;
+justify-content: center;
+align-items: center;
 }
 
 .task-urgent-left-box {
@@ -118,6 +128,25 @@ h5 {
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
   border-radius: 30px;
 }
+
+.task-task-in-board:hover {
+  transform: scale(1.1);
+  transform-origin: top right;
+  color: white;
+  background-color: var(--light-blue);
+  transition: all 0.3s ease;
+}
+
+.task-task-in-board:hover h5 {
+  color: white;
+}
+
+.task-task-in-board:hover img {
+  border: white solid 3px;
+  border-radius: 50%;
+  box-sizing: border-box; /* Verhindert, dass der Border die Größe verändert */
+}
+
 
 .task-task-in-board-top-box {
   display: flex;
@@ -207,6 +236,27 @@ h5 {
   gap: 16px;
   width: 396px;
 }
+
+.task-urgent:hover {
+  background-color: white;
+  color: var(--main-color);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 0 30px 30px 30px;
+  transition: all 0.3s ease;
+  transform: scale(1.02);
+  transform-origin: left;
+}
+
+.task-urgent:hover .task-urgent-area {
+   transform: scale(1.1);
+   transition: transform 0.3s ease-in-out;
+}
+
+.task-urgent:hover .dashboard-placeholder {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+
 
 .task-urgent-left-box-mobile {
   gap: 9px;
