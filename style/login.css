@@ -331,10 +331,6 @@
   color: var(--light-blue);
 }
 
-.sign-up-button {
-  pointer-events: none;
-}
-
 .d-none {
   display: none;
 }
