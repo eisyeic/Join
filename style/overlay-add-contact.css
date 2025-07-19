@@ -40,7 +40,7 @@
 
 @keyframes slideInRight {
     from {
-        right: -100%;
+        right: -580%;
     }
     to {
         right: 0;

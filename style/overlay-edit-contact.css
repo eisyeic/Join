@@ -60,7 +60,7 @@
 
 @keyframes slideIn {
     from {
-        left: -100%;
+        left: -580px;
     }
     to {
         left: 0;
