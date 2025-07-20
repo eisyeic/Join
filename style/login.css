@@ -210,6 +210,10 @@
   font-size: 19px;
 }
 
+.input-wrapper:has(input:hover) {
+  border-color: var(--main-color);
+}
+
 .input-wrapper:has(input:focus) {
   border-color: var(--main-color);
 }
