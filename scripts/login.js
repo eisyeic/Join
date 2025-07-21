@@ -1,303 +1,248 @@
-// import necessary Firebase functions
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+// Firebase Imports
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// Utility
+let currentMode = "login";
 
-// onload background and icon animation
-let layout = document.getElementById('layout');
-let logoBlue = document.getElementById('logo-blue');
-let logoWhite = document.getElementById('logo-white');
+// Init 
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => setThemeWhite(true), 500);
+  setupEmailValidation();
+  initializePasswordFields("login");
 
-setTimeout(() => {
-  layout.classList.add('bg-white');
-  logoWhite.style.opacity = "0";
-  logoBlue.style.opacity = "1";
-}, 500);
+  $("guest-button").addEventListener("click", handleGuestLogin);
+  $("sign-up-page-button").addEventListener("click", showSignUpForm);
+  $("sign-up-bottom-button").addEventListener("click", showSignUpForm);
+  $("sign-up-button").addEventListener("click", handleSignUp);
+  $("login-button").addEventListener("click", handleLogin);
+  $("go-back").addEventListener("click", showLoginForm);
 
-
-// change background and icon animation by clicking on sign up button
-let signUpButtonBox  = document.getElementById('sign-up-top-right-box');
-let signUpBottomBox = document.getElementById('sign-up-bottom-box')
-let loginBox = document.getElementById('login-box');
-let signUpBox = document.getElementById('sign-up-box');
-
-function openSignUpBox() {
-  let isNowBlue = layout.classList.toggle('bg-blue');
-  layout.classList.toggle('bg-white', !isNowBlue);
-  if (isNowBlue) {
-    logoWhite.style.opacity = "1";
-    logoBlue.style.opacity = "0";
-  } else {
-    logoWhite.style.opacity = "0";
-    logoBlue.style.opacity = "1";
-  }
-  signUpButtonBox.classList.add('d-none');
-  signUpBottomBox.classList.add('d-none-important'); 
-  loginBox.classList.add('d-none');
-  signUpBox.classList.remove('d-none');
-}
-
-
-// back arrow functionality
-let goBack = document.getElementById('go-back');
-
-goBack.addEventListener("click", () => {
-  let isNowBlue = layout.classList.toggle('bg-blue');
-  layout.classList.toggle('bg-white', !isNowBlue);
-
-  if (isNowBlue) {
-    logoWhite.style.opacity = "1";
-    logoBlue.style.opacity = "0";
-  } else {
-    logoWhite.style.opacity = "0";
-    logoBlue.style.opacity = "1";
-  }
-  signUpButtonBox.classList.remove('d-none');
-  signUpBottomBox.classList.remove('d-none-important');
-  loginBox.classList.remove('d-none');
-  signUpBox.classList.add('d-none');
-})
-
-
-// change the visibility icon on input password
-let toggleIcon = document.getElementById('togglePassword');
-let error = document.getElementById('errorMessage');
-let errorSignUp = document.getElementById('error-sign-up');
-let passwordInput = document.getElementById("login-password");
-let isVisible = false;
-
-function updateIcon() {
-  let value = passwordInput.value;
-  if (!value) {
-    toggleIcon.src = "./assets/log_in_sign_up/icons/lock.svg";
-    toggleIcon.classList.remove('cursor-pointer');
-  } else if (isVisible) {
-    toggleIcon.src = "./assets/log_in_sign_up/icons/visibility.svg";
-    toggleIcon.classList.add('cursor-pointer');
-  } else {
-    toggleIcon.src = "./assets/log_in_sign_up/icons/visibility_off.svg";
-    toggleIcon.classList.add('cursor-pointer');
-  }
-}
-
-// onclick eye will show / hide password text
-toggleIcon.addEventListener("click", function () {
-  if (!passwordInput.value) return;
-  isVisible = !isVisible;
-  passwordInput.type = isVisible ? "text" : "password";
-  updateIcon();
+  $("confirm").addEventListener("click", () => {
+    $("confirm").classList.toggle("checked");
+    $("sign-up-button").classList.toggle("sign-up-button");
+  });
+  document.addEventListener("keydown", handleKeyDown);
 });
 
+window.addEventListener("resize", () => {
+  let isLogin = !$("login-box").classList.contains("d-none");
+  updateSignUpBoxDisplay(isLogin ? "login" : "signup");
+});
 
-// change password visibility icon on input
-passwordInput.addEventListener("input", function () {
-  if (!passwordInput.value) {
-    isVisible = false;
-    passwordInput.type = "password";
-    error.innerHTML = "";
-  }
-  updateIcon();
-})
+// Background and Logo animation 
+function setThemeWhite(isWhite) {
+  $("layout").classList.toggle("bg-white", isWhite);
+  $("layout").classList.toggle("bg-blue", !isWhite);
+  $("logo-white").style.opacity = isWhite ? "0" : "1";
+  $("logo-blue").style.opacity = isWhite ? "1" : "0";
+}
+
+// Show Sign Up view 
+function showSignUpForm() {
+  currentMode = "signup";
+  setThemeWhite(false);
+  updateSignUpBoxDisplay();
+
+  $("sign-up-box").classList.remove("d-none");
+  $("login-box").classList.add("d-none");
+
+  clearFormInputs(["login-email", "login-password"], $("errorMessage"));
+  initializePasswordFields("sign-up");
+}
+
+// show Login view
+function showLoginForm() {
+  currentMode = "login";
+  setThemeWhite(true);
+  updateSignUpBoxDisplay();
+
+  $("login-box").classList.remove("d-none");
+  $("sign-up-box").classList.add("d-none");
+
+  clearFormInputs(["name", "sign-up-email", "sign-up-password", "confirm-password"], $("error-sign-up"));
+  initializePasswordFields("login");
+}
 
 
-// check email validation
-let emailInput = document.getElementById('login-email');
-let emailSignUpInput = document.getElementById('sign-up-email');
-
-function validation() {
-  let email = this.value.trim();
-  let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (email && !emailPattern.test(email)) {
-    if (this.id === 'login-email') {
-      error.innerHTML = "Check your email. Please try again.";
-      this.parentElement.style.borderColor = "var(--error-color)";
-    } 
-    else if (this.id === 'sign-up-email') {
-      errorSignUp.innerHTML = "Check your email. Please try again.";
-      this.parentElement.style.borderColor = "var(--error-color)";
+// Update Sign Up box display based on current mode
+function updateSignUpBoxDisplay() {
+  if (currentMode === "signup") {
+    $("sign-up-top-right-box").classList.add("d-none");
+    $("sign-up-bottom-box").classList.add("d-none");
+  } else {
+    if (window.innerWidth <= 768) {
+      $("sign-up-top-right-box").classList.add("d-none");
+      $("sign-up-bottom-box").classList.remove("d-none");
+    } else {
+      $("sign-up-top-right-box").classList.remove("d-none");
+      $("sign-up-bottom-box").classList.add("d-none");
     }
   }
 }
 
+// Password Logic 
+function initializePasswordFields(context) {
+  let fields = {
+    login: [["login-password", "togglePassword"]],
+    "sign-up": [
+      ["sign-up-password", "toggle-sign-up-password"],
+      ["confirm-password", "toggle-confirm-password"]
+    ]
+  };
+  fields[context].forEach(([inputId, toggleId]) =>
+    setupPasswordToggle(inputId, toggleId, context === "login" ? $("errorMessage") : $("error-sign-up"))
+  );
+}
 
-// check email validation on blur event / leave input field
-emailInput.addEventListener("blur", validation);
-emailSignUpInput.addEventListener("blur", validation);
+// Setup password icon toggle functionality
+function setupPasswordToggle(inputId, toggleId, errorBox) {
+  let input = $(inputId);
+  let toggle = $(toggleId);
+  if (!input || !toggle) return;
 
+  let isVisible = false;
+  toggle.onclick = () => togglePasswordVisibility(input, toggle, isVisible = !isVisible);
+  input.oninput = () => resetPasswordField(input, toggle, errorBox);
+  updatePasswordIcon(input, toggle, isVisible);
+}
 
-// clear error on input email
-emailInput.addEventListener("input", function () {
-  error.innerHTML = "";
-  this.parentElement.style.borderColor = "";
-});
+// Toggle password visibility
+function togglePasswordVisibility(input, toggle, visible) {
+  if (!input.value) return;
+  input.type = visible ? "text" : "password";
+  updatePasswordIcon(input, toggle, visible);
+}
 
+// Reset password field to default state
+function resetPasswordField(input, toggle, errorBox) {
+  input.type = "password";
+  updatePasswordIcon(input, toggle, false);
+  clearFieldError(input, errorBox);
+}
 
-//clear error on input password
-passwordInput.addEventListener("input", function () {
-  error.innerHTML = "";
-  this.parentElement.style.borderColor = "";
-});
+// Update the password icon based on visibility
+function updatePasswordIcon(input, toggle, isVisible) {
+  toggle.src = input.value
+    ? isVisible
+      ? "./assets/log_in_sign_up/icons/visibility.svg"
+      : "./assets/log_in_sign_up/icons/visibility_off.svg"
+    : "./assets/log_in_sign_up/icons/lock.svg";
+  toggle.classList.toggle("cursor-pointer", !!input.value);
+}
 
+// Email Validation functionality
+function setupEmailValidation() {
+  [["login-email", "errorMessage"], ["sign-up-email", "error-sign-up"]].forEach(([inputId, errorId]) => {
+    let input = $(inputId);
+    let errorBox = $(errorId);
+    input.addEventListener("blur", () => validateEmailFormat(input, errorBox));
+    input.addEventListener("input", () => clearFieldError(input, errorBox));
+  });
+}
 
-// clear error on input email sign up
-emailSignUpInput.addEventListener("input", function () {
-  errorSignUp.innerHTML = "";
-  this.parentElement.style.borderColor = "";
-});
-
-
-// confirm box change icon
-let confirmBox = document.getElementById('confirm');
-
-confirmBox.addEventListener('click', function() {
-  this.classList.toggle('checked');
-  signUpButton.classList.toggle('sign-up-button');
-})
-
-
-// login function
-let loginButton = document.getElementById('login-button');
-
-function logIn() {
-  let email = emailInput.value.trim();
-  let password = passwordInput.value;
-  if (password.length < 6) {
-    error.innerHTML = "Check your email and password. Please try again.";
-    passwordInput.parentElement.style.borderColor = 'var(--error-color)';
-    return;
+// Validate Email Format
+function validateEmailFormat(input, errorBox) {
+  let email = input.value.trim();
+  let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !pattern.test(email)) {
+    showError(errorBox, "Check your email. Please try again.");
+    input.parentElement.style.borderColor = "var(--error-color)";
   }
+}
+
+// Auth functions
+function handleLogin() {
+  let email = $("login-email").value.trim();
+  let password = $("login-password").value;
+  if (password.length < 6) return displayAuthError($("errorMessage"), $("login-password"));
   signInWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      console.log("Eingeloggt:", userCredential.user.email);
-      window.location.href = "summary-board.html";
-    })
-    .catch(err => {
-      error.innerHTML = "Check your email and password. Please try again.";
-      emailInput.parentElement.style.borderColor = 'var(--error-color)'; 
-      passwordInput.parentElement.style.borderColor = 'var(--error-color)';
-    });
-};
+    .then(() => (window.location.href = "summary-board.html"))
+    .catch(() => displayAuthError($("errorMessage"), $("login-password"), $("login-email")));
+}
 
+// Sign Up button handler
+function handleSignUp() {
+  let name = $("name").value.trim();
+  let email = $("sign-up-email").value.trim();
+  let password = $("sign-up-password").value;
+  let confirm = $("confirm-password").value;
+  let accepted = $("confirm").classList.contains("checked");
 
-// event listener for Enter key
-document.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    if (!loginBox.classList.contains("d-none")) {
-      logIn();
-    } else if (!signUpBox.classList.contains("d-none")) {
-      signUp();
-    }
-  }
-});
-
-
-// event listener for login button
-loginButton.addEventListener("click", logIn);
-
-
-// sign up function
-let slideInMessage = document.getElementById('slide-in-banner');
-let signupPageButton = document.getElementById('sign-up-page-button');
-let signUpButton = document.getElementById('sign-up-button');
-
-function signUp() {
-  const name = document.getElementById("name").value.trim();
-  const email = emailSignUpInput.value.trim();
-  const password = document.getElementById("sign-up-password").value;
-  const confirm = document.getElementById("confirm-password").value;
-  const accepted = confirmBox.classList.contains("checked");
-
-  resetSignUpErrors();
-
-  if (!allFieldsFilled(name, email, password, confirm)) return;
-  if (!isValidEmail(email)) return;
-  if (!isValidPassword(password, "signup")) return;
-  if (password !== confirm) {
-    showError(errorSignUp, "Passwords do not match.");
-    return;
-  }
-  if (!accepted) {
-    showError(errorSignUp, "You must accept the privacy policy.");
-    return;
-  }
+  if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
   registerUser(email, password);
 }
 
-
-// check if all fields are filled
-function allFieldsFilled(name, email, pw, confirmPw) {
-  if (!name || !email || !pw || !confirmPw) {
-    showError(errorSignUp, "Please fill out all fields.");
-    return false;
-  }
+// Validate Sign Up inputs
+function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
+  if (!name || !email || !pw || !confirmPw) return showError($("error-sign-up"), "Please fill out all fields.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError($("error-sign-up"), "Invalid email.");
+  if (pw.length < 6) return showError($("error-sign-up"), "Password must be at least 6 characters.");
+  if (pw !== confirmPw) return showError($("error-sign-up"), "Passwords do not match.");
+  if (!accepted) return showError($("error-sign-up"), "You must accept the privacy policy.");
   return true;
 }
 
 
-// email validation function
-function isValidEmail(email) {
-  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!pattern.test(email)) {
-    showError(errorSignUp, "Check your email. Please try again.");
-    emailSignUpInput.parentElement.style.borderColor = "var(--error-color)";
-    return false;
-  }
-  return true;
-}
-
-
-// password validation function
-function isValidPassword(password, context = "signup") {
-  if (password.length < 6) {
-    const msg = "Password must be at least 6 characters.";
-    if (context === "signup") {
-      showError(errorSignUp, msg);
-      document.getElementById("sign-up-password").parentElement.style.borderColor = "#FF8190";
-    } else {
-      showError(error, msg);
-      passwordInput.parentElement.style.borderColor = "#FF8190";
-    }
-    return false;
-  }
-  return true;
-}
-
-
-// show error message function
-function showError(element, message) {
-  element.innerHTML = message;
-}
-
-
-// reset sign up errors
-function resetSignUpErrors() {
-  errorSignUp.innerHTML = "";
-  emailSignUpInput.parentElement.style.borderColor = "";
-}
-
-
-// register user function
+// Register new User
 function registerUser(email, password) {
   createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
-      console.log("Benutzer registriert:", userCredential.user.email);
-      layout.style.opacity = "0.5";
-      slideInMessage.classList.add("visible");
+    .then(() => {
+      $("layout").style.opacity = "0.5";
+      $("slide-in-banner").classList.add("visible");
       setTimeout(() => {
-        slideInMessage.classList.remove("visible");
-        layout.style.opacity = "1";
-        goBack.click();
+        $("slide-in-banner").classList.remove("visible");
+        $("layout").style.opacity = "1";
+        showLoginForm();
       }, 1200);
     })
-    .catch(error => {
-      console.error("Registrierungsfehler:", error);
-      showError(errorSignUp, error.message);
+    .catch(err => showError($("error-sign-up"), err.message));
+}
+
+// Guewst login handler
+function handleGuestLogin() {
+  signInWithEmailAndPassword(auth, "guest@login.de", "guestpassword")
+    .then(() => (window.location.href = "./summary-board.html"))
+    .catch(err => {
+      $("errorMessage").innerHTML = "Guest login failed.";
     });
 }
 
-// event listeners for sign up button and sign up page button
-signupPageButton.addEventListener("click", openSignUpBox);
-signUpButton.addEventListener("click", signUp);
+// showError function
+function showError(el, msg) {
+  el.innerHTML = msg;
+  return false;
+}
+
+// Clear field text error
+function clearFieldError(input, el) {
+  el.innerHTML = "";
+  input.parentElement.style.borderColor = "";
+}
+
+// Display authentication error and border color
+function displayAuthError(el, pwInput, emailInput) {
+  showError(el, "Check your email and password. Please try again.");
+  pwInput.parentElement.style.borderColor = "var(--error-color)";
+  if (emailInput) emailInput.parentElement.style.borderColor = "var(--error-color)";
+}
+
+// Keydown Enter Handler
+function handleKeyDown(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    $("login-box").classList.contains("d-none") ? handleSignUp() : handleLogin();
+  }
+}
+
+// Clear form inputs and error messages
+function clearFormInputs(inputs, errorBox) {
+  inputs.forEach(id => {
+    let input = $(id);
+    if (input) {
+      input.value = "";
+      input.parentElement.style.borderColor = "";
+    }
+  });
+  if (errorBox) errorBox.innerHTML = "";
+}

@@ -284,15 +284,36 @@ span {
 .subtask-select input {
   border: none;
   outline: none;
+  width: 100%;
 }
 
 .subtask-select ::placeholder {
   color: var(--style-color);
 }
 
-.subtask-select img:hover {
+.subtask-plus-box img:hover {
   content: url(../assets/icons/add_task/add\ hover.svg);
 }
+
+.subtask-func-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+} 
+
+.sub-spacer {
+  border: 1px solid var(--style-color);
+  height: 18px;
+}
+
+.sub-clear:hover {
+  content: url(../assets/icons/add_task/sub_clear_hvr.svg);
+}
+
+.sub-check:hover {
+  content: url(../assets/icons/add_task/sub_check_hvr.svg);
+}
+
 
 a,
 input[type="submit"],

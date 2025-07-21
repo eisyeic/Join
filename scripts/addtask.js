@@ -1,108 +1,153 @@
 // clear error message when user starts typing
-let addtaskTitle = document.getElementById("addtask-title");
-let addtaskError = document.getElementById("addtask-error");
-
-addtaskTitle.addEventListener("input", function () {
+$("addtask-title").addEventListener("input", function () {
   this.style.borderColor = "";
-  addtaskError.innerHTML = "";
+  $("addtask-error").innerHTML = "";
 });
 
 // datepicker dropdown menu
-let datePicker = document.getElementById("datepicker-wrapper");
-let input = document.getElementById("datepicker");
-
-let picker = flatpickr(input, {
+let picker = flatpickr($("datepicker"), {
   minDate: "today",
   dateFormat: "d/m/Y",
 });
 
-// Open date picker
-let dueDate = document.getElementById("datepicker");
-let dueDateError = document.getElementById("due-date-error");
-
-datePicker.addEventListener("click", () => {
+// open date picker
+$("datepicker-wrapper").addEventListener("click", () => {
   picker.open();
-  dueDate.style.borderColor = "";
-  dueDateError.innerHTML = "";
+  $("datepicker").style.borderColor = "";
+  $("due-date-error").innerHTML = "";
 });
 
 // dropdown for assigned contacts
-let assignedSelect = document.getElementById("assigned-select-box");
-let assignedIcon = document.getElementById("assigned-icon");
-let contanctDropDown = document.getElementById("contact-list-box");
-
-assignedSelect.addEventListener("click", function () {
-  contanctDropDown.classList.toggle("d-none");
-  assignedIcon.classList.toggle("arrow-down");
-  assignedIcon.classList.toggle("arrow-up");
+$("assigned-select-box").addEventListener("click", function () {
+  $("contact-list-box").classList.toggle("d-none");
+  $("assigned-icon").classList.toggle("arrow-down");
+  $("assigned-icon").classList.toggle("arrow-up");
 });
 
 // dropdown for category selection
-let categorySelect = document.getElementById("category-select");
-let categoryIcon = document.getElementById("category-icon");
-let categoryDropDown = document.getElementById("category-selection");
-
-categorySelect.addEventListener("click", function () {
-  categoryDropDown.classList.toggle("d-none");
-  categoryIcon.classList.toggle("arrow-down");
-  categoryIcon.classList.toggle("arrow-up");
+$("category-select").addEventListener("click", function () {
+  $("category-selection").classList.toggle("d-none");
+  $("category-icon").classList.toggle("arrow-down");
+  $("category-icon").classList.toggle("arrow-up");
 });
 
 // category selection functionality
-let categoryPlaceholder = categorySelect.querySelector("span");
-let categoryItems = categoryDropDown.querySelectorAll("li");
-
-categoryItems.forEach((item) => {
-  item.addEventListener("click", () => {
-    let value = item.getAttribute("data-value");
-    categoryPlaceholder.textContent = value;
-    categoryDropDown.classList.toggle("d-none");
-    categoryIcon.classList.remove("arrow-up");
-    categoryIcon.classList.add("arrow-down");
+$("category-selection")
+  .querySelectorAll("li")
+  .forEach((item) => {
+    item.addEventListener("click", () => {
+      let value = item.getAttribute("data-value");
+      $("category-select").querySelector("span").textContent = value;
+      $("category-selection").classList.toggle("d-none");
+      $("category-icon").classList.remove("arrow-up");
+      $("category-icon").classList.add("arrow-down");
+    });
   });
-});
 
-// Close dropdowns when clicking outside
+// close dropdowns when clicking outside
 document.addEventListener("click", function (event) {
-  const isClickInsideCategory = categorySelect.contains(event.target) || categoryDropDown.contains(event.target);
-  const isClickInsideAssigned = assignedSelect.contains(event.target) || contanctDropDown.contains(event.target);
+  let isClickInsideCategory =
+    $("category-select").contains(event.target) ||
+    $("category-selection").contains(event.target);
+  let isClickInsideAssigned =
+    $("assigned-select-box").contains(event.target) ||
+    $("contact-list-box").contains(event.target);
 
   if (!isClickInsideCategory) {
-    categoryDropDown.classList.add("d-none");
-    categoryIcon.classList.remove("arrow-up");
-    categoryIcon.classList.add("arrow-down");
+    $("category-selection").classList.add("d-none");
+    $("category-icon").classList.remove("arrow-up");
+    $("category-icon").classList.add("arrow-down");
   }
 
   if (!isClickInsideAssigned) {
-    contanctDropDown.classList.add("d-none");
-    assignedIcon.classList.remove("arrow-up");
-    assignedIcon.classList.add("arrow-down");
+    $("contact-list-box").classList.add("d-none");
+    $("assigned-icon").classList.remove("arrow-up");
+    $("assigned-icon").classList.add("arrow-down");
   }
 });
 
 // clear button functionality
-let cancelButton = document.getElementById("cancel-button");
+$("cancel-button").addEventListener("click", function () {
+  $("addtask-title").value = "";
+  $("addtask-title").style.borderColor = "";
+  $("addtask-error").innerHTML = "";
+  $("addtask-textarea").value = "";
+  $("datepicker").value = "";
+  $("datepicker").style.borderColor = "";
+  $("due-date-error").innerHTML = "";
+  $("category-select").querySelector("span").textContent =
+    "Select task category";
 
-cancelButton.addEventListener("click", function () {
-  addtaskTitle.value = "";
-  addtaskTitle.style.borderColor = "";
-  addtaskError.innerHTML = "";
-  dueDate.value = "";
-  dueDate.style.borderColor = "";
-  dueDateError.innerHTML = "";
-  categoryPlaceholder.textContent = "Select task category";
+  document
+    .querySelectorAll(".priority-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  selectedPriority = null;
 });
 
 // create button check necessary fields filled
-let createButton = document.getElementById("create-button");
+$("create-button").addEventListener("click", function () {
+  if (!$("addtask-title").value) {
+    $("addtask-error").innerHTML = "This field is required";
+    $("addtask-title").style.borderColor = "var(--error-color)";
+  }
+  if (!$("datepicker").value) {
+    $("due-date-error").innerHTML = "Please select a due date";
+    $("datepicker").style.borderColor = "var(--error-color)";
+  }
+});
 
-createButton.addEventListener("click", function () {
-  if (!addtaskTitle.value) {
-    addtaskError.innerHTML = "Thies field is required";
-    addtaskTitle.style.borderColor = "var(--error-color)";
+// priority buttons functionality
+let selectedPriority = null;
+
+document.querySelectorAll(".priority-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".priority-button").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    button.classList.add("active");
+    selectedPriority = button.classList.contains("urgent-button")
+      ? "urgent"
+      : button.classList.contains("medium-button")
+      ? "medium"
+      : "low";
+  });
+});
+
+// subtasks functionality
+$("sub-input").addEventListener("input", function () {
+  if (this.value !== "") {
+    $("subtask-plus-box").classList.add("d-none");
+    $("subtask-func-btn").classList.remove("d-none");
+  } else {
+    $("subtask-plus-box").classList.remove("d-none");
+    $("subtask-func-btn").classList.add("d-none");
   }
-  if (!dueDate.value) {
-    dueDateError.innerHTML = "Please select a due date";
-    dueDate.style.borderColor = "var(--error-color)";
+});
+
+// subtasks list
+let subtasks = [];
+
+// add subtask to the list
+$("sub-check").addEventListener("click", function () {
+  let subtaskText = $("sub-input").value.trim();
+  if (subtaskText) {
+    subtasks.push(subtaskText);
+    $("sub-input").value = "";
+    $("subtask-func-btn").classList.add("d-none");
+    $("subtask-plus-box").classList.remove("d-none");
   }
+});
+
+// Clear subtask input
+$("sub-clear").addEventListener("click", function () {
+  $("sub-input").value = "";
+  $("subtask-func-btn").classList.add("d-none");
+  $("subtask-plus-box").classList.remove("d-none");
+});
+
+// subtask list display
+$("sub-plus").addEventListener("click", function () {
+  $("subtask-list").innerHTML = subtasks
+    .map((subtask, index) => `<div class="subtask-item">${subtask} <span class="remove-subtask" data-index="${index}">x</span></div>`)
+    .join("");
 });

@@ -210,6 +210,10 @@
   font-size: 19px;
 }
 
+.input-wrapper:has(input:hover) {
+  border-color: var(--main-color);
+}
+
 .input-wrapper:has(input:focus) {
   border-color: var(--main-color);
 }
@@ -302,12 +306,16 @@
   display: flex;
   justify-content: center;
   gap: 16px;
-  height: 24px;
-  width: auto;
   font-size: 16px;
   color: var(--menu-color);
   cursor: pointer;
 }
+
+.confirm-box img {
+  height: 24px;
+  width: 24px;
+  transition: content 0.2s ease-in-out;
+} 
 
 .confirm-box img {
   content: url(../assets/log_in_sign_up/icons/checkbox_default.svg);
@@ -329,14 +337,6 @@
   font-size: 16px;
   text-decoration: none;
   color: var(--light-blue);
-}
-
-.d-none {
-  display: none;
-}
-
-.d-none-important {
-  display: none !important;
 }
 
 .slide-in-banner {
