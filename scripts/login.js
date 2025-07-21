@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
     $("confirm").classList.toggle("checked");
     $("sign-up-button").classList.toggle("sign-up-button");
   });
-
   document.addEventListener("keydown", handleKeyDown);
 });
 

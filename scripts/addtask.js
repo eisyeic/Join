@@ -64,8 +64,8 @@ categoryItems.forEach((item) => {
 
 // Close dropdowns when clicking outside
 document.addEventListener("click", function (event) {
-  const isClickInsideCategory = categorySelect.contains(event.target) || categoryDropDown.contains(event.target);
-  const isClickInsideAssigned = assignedSelect.contains(event.target) || contanctDropDown.contains(event.target);
+  let isClickInsideCategory = categorySelect.contains(event.target) || categoryDropDown.contains(event.target);
+  let isClickInsideAssigned = assignedSelect.contains(event.target) || contanctDropDown.contains(event.target);
 
   if (!isClickInsideCategory) {
     categoryDropDown.classList.add("d-none");
@@ -91,6 +91,9 @@ cancelButton.addEventListener("click", function () {
   dueDate.style.borderColor = "";
   dueDateError.innerHTML = "";
   categoryPlaceholder.textContent = "Select task category";
+
+  priorityButtons.forEach(btn => btn.classList.remove('active'));
+  selectedPriority = null;
 });
 
 // create button check necessary fields filled
@@ -105,4 +108,20 @@ createButton.addEventListener("click", function () {
     dueDateError.innerHTML = "Please select a due date";
     dueDate.style.borderColor = "var(--error-color)";
   }
+});
+
+// priority buttons functionality
+let priorityButtons = document.querySelectorAll('.priority-button');
+let selectedPriority = null;
+
+priorityButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    priorityButtons.forEach(btn => {
+      btn.classList.remove('active');
+    });
+    button.classList.add('active');
+    selectedPriority = button.classList.contains('urgent-button') ? 'urgent'
+                      : button.classList.contains('medium-button') ? 'medium'
+                      : 'low';
+  });
 });

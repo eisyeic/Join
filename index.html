@@ -7,8 +7,22 @@
     <script type="module" src="./scripts/firebase.js"></script>
     <script type="module" src="./scripts/login.js"></script>
     <script src="./script.js"></script>
-    
-
+    <!-- Checkbox images preload -->
+    <link
+      rel="prefetch"
+      href="./assets/log_in_sign_up/icons/checkbox_hover.svg"
+      as="image"
+    />
+    <link
+      rel="prefetch"
+      href="./assets/log_in_sign_up/icons/checkbox_checked.svg"
+      as="image"
+    />
+    <link
+      rel="prefetch"
+      href="./assets/log_in_sign_up/icons/check_hover_checked.svg"
+      as="image"
+    />
     <link
       rel="shortcut icon"
       href="./assets/general_elements/icons/logo_blue_icon.svg"
@@ -41,7 +55,10 @@
         <section class="top-section">
           <div class="sign-up-button-box" id="sign-up-top-right-box">
             Not a join user?
-            <button id="sign-up-page-button" class="base-button button-blue button-small">
+            <button
+              id="sign-up-page-button"
+              class="base-button button-blue button-small"
+            >
               Sign up
             </button>
           </div>
@@ -129,7 +146,11 @@
               <div class="filler"></div>
 
               <div class="input-wrapper">
-                <input id="sign-up-password" type="password" placeholder="Password" />
+                <input
+                  id="sign-up-password"
+                  type="password"
+                  placeholder="Password"
+                />
                 <img
                   id="toggle-sign-up-password"
                   src="./assets/log_in_sign_up/icons/lock.svg"
@@ -181,7 +202,11 @@
           <!-- sig up button box mobile -->
           <div class="sign-up-bottom-box d-none" id="sign-up-bottom-box">
             Not a join user?
-            <button onclick="openSignUpBox()" class="base-button button-blue button-small" id="sign-up-bottom">
+            <button
+              onclick="openSignUpBox()"
+              class="base-button button-blue button-small"
+              id="sign-up-bottom"
+            >
               Sign up
             </button>
           </div>
@@ -195,9 +220,10 @@
             <a href="./legal-notice.html">Legal Notice</a>
           </div>
         </section>
-        
       </main>
     </div>
-    <div id="slide-in-banner" class="slide-in-banner">You Signed Up successfully</div>
+    <div id="slide-in-banner" class="slide-in-banner">
+      You Signed Up successfully
+    </div>
   </body>
 </html>

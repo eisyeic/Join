@@ -149,12 +149,12 @@ footer {
   height: 51px;
 }
 
-.urgent-button:active {
+.urgent-button.active {
   background-color: var(--urgent-color);
   color: #fff;
 }
 
-.urgent-button:active img {
+.urgent-button.active img {
   content: url("./assets/icons/add_task/urgent_defalut.svg");
   width: 20px;
 }
@@ -171,12 +171,12 @@ footer {
   height: 51px;
 }
 
-.medium-button:active {
+.medium-button.active {
   background-color: var(--medium-color);
   color: #fff;
 }
 
-.medium-button:active img {
+.medium-button.active img {
   width: 20px;
   content: url("./assets/icons/add_task/medium_default.svg");
 }
@@ -193,12 +193,12 @@ footer {
   height: 51px;
 }
 
-.low-button:active {
+.low-button.active {
   background-color: var(--low-color);
   color: #fff;
 }
 
-.low-button:active img {
+.low-button.active img {
   width: 20px;
   content: url("./assets/icons/add_task/low_default.svg");
 }
