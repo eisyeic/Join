@@ -4,6 +4,7 @@ import { auth } from "./firebase.js";
 
 // Utility
 let $ = id => document.getElementById(id);
+let currentMode = "login";
 
 // Init 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $("guest-button").addEventListener("click", handleGuestLogin);
   $("sign-up-page-button").addEventListener("click", showSignUpForm);
+  $("sign-up-bottom-button").addEventListener("click", showSignUpForm);
   $("sign-up-button").addEventListener("click", handleSignUp);
   $("login-button").addEventListener("click", handleLogin);
   $("go-back").addEventListener("click", showLoginForm);
@@ -22,6 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
     $("sign-up-button").classList.toggle("sign-up-button");
   });
   document.addEventListener("keydown", handleKeyDown);
+});
+
+window.addEventListener("resize", () => {
+  const isLogin = !$("login-box").classList.contains("d-none");
+  updateSignUpBoxDisplay(isLogin ? "login" : "signup");
 });
 
 // Background and Logo animation 
@@ -34,22 +41,22 @@ function setThemeWhite(isWhite) {
 
 // Show Sign Up view 
 function showSignUpForm() {
+  currentMode = "signup";
   setThemeWhite(false);
-  $("sign-up-top-right-box").classList.add("d-none");
-  $("sign-up-bottom-box").classList.add("d-none-important");
-  $("login-box").classList.add("d-none");
+  updateSignUpBoxDisplay();
+
   $("sign-up-box").classList.remove("d-none");
+  $("login-box").classList.add("d-none");
 
   clearFormInputs(["login-email", "login-password"], $("errorMessage"));
   initializePasswordFields("sign-up");
 }
 
-
-// Show Login view 
 function showLoginForm() {
+  currentMode = "login";
   setThemeWhite(true);
-  $("sign-up-top-right-box").classList.remove("d-none");
-  $("sign-up-bottom-box").classList.remove("d-none-important");
+  updateSignUpBoxDisplay();
+
   $("login-box").classList.remove("d-none");
   $("sign-up-box").classList.add("d-none");
 
@@ -57,6 +64,20 @@ function showLoginForm() {
   initializePasswordFields("login");
 }
 
+function updateSignUpBoxDisplay() {
+  if (currentMode === "signup") {
+    $("sign-up-top-right-box").classList.add("d-none");
+    $("sign-up-bottom-box").classList.add("d-none");
+  } else {
+    if (window.innerWidth <= 768) {
+      $("sign-up-top-right-box").classList.add("d-none");
+      $("sign-up-bottom-box").classList.remove("d-none");
+    } else {
+      $("sign-up-top-right-box").classList.remove("d-none");
+      $("sign-up-bottom-box").classList.add("d-none");
+    }
+  }
+}
 
 // Password Logic 
 function initializePasswordFields(context) {
