@@ -3,7 +3,6 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "http
 import { auth } from "./firebase.js";
 
 // Utility
-let $ = id => document.getElementById(id);
 let currentMode = "login";
 
 // Init 
@@ -27,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("resize", () => {
-  const isLogin = !$("login-box").classList.contains("d-none");
+  let isLogin = !$("login-box").classList.contains("d-none");
   updateSignUpBoxDisplay(isLogin ? "login" : "signup");
 });
 
@@ -52,6 +51,7 @@ function showSignUpForm() {
   initializePasswordFields("sign-up");
 }
 
+// show Login view
 function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
@@ -64,6 +64,8 @@ function showLoginForm() {
   initializePasswordFields("login");
 }
 
+
+// Update Sign Up box display based on current mode
 function updateSignUpBoxDisplay() {
   if (currentMode === "signup") {
     $("sign-up-top-right-box").classList.add("d-none");

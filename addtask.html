@@ -16,9 +16,9 @@
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
     <link rel="stylesheet" href="./style/flatpickr.min.css" />
+    <script src="./script.js"></script>
     <script src="./scripts/addtask.js" defer></script>
     <script src="./scripts/flatpickr.min.js"></script>
-    <script src="./script.js" defer></script>
   </head>
 
   <body>
@@ -67,15 +67,19 @@
       <section class="addtask-wrapper">
         <div class="addtask-main-content">
           <div>
-            <input type="text" class="addtask-title" id="addtask-title" placeholder="Enter a title" />
+            <input
+              type="text"
+              class="addtask-title"
+              id="addtask-title"
+              placeholder="Enter a title"
+            />
             <div class="addtask-error" id="addtask-error"></div>
           </div>
           <div class="description">
             <span class="label-main">Decription</span>
             <span class="label-optional">(optional)</span>
             <textarea
-              name=""
-              id=""
+              id="addtask-textarea"
               placeholder="Enter a description"
             ></textarea>
             <div class="addtask-error"></div>
@@ -166,11 +170,17 @@
             <span class="label-main">Subtasks</span>
             <span class="label-optional">(optional)</span>
             <div class="subtask-select">
-              <input type="text" placeholder="Add new subtask" /><img
-                src="./assets/icons/add_task/add.svg"
-                alt=""
-              />
+              <input id="sub-input" type="text" placeholder="Add new subtask" />
+              <div id="subtask-func-btn" class="subtask-func-btn  d-none">
+                <img id="sub-clear" class="sub-clear" src="./assets/icons/add_task/sub_clear_def.svg" alt="">
+                <div class="sub-spacer"></div>
+                <img id="sub-check" class="sub-check" src="./assets/icons/add_task/sub_check_def.svg" alt="" />
+              </div>
+              <div id="subtask-plus-box" class="subtask-plus-box" id="subtask-plus-box">
+                <img id="sub-plus" src="./assets/icons/add_task/add.svg" alt="" />
+              </div>
             </div>
+            <div id="subtask-list"></div>
           </div>
         </div>
       </section>
@@ -178,8 +188,9 @@
       <section class="section-addtask-buttons">
         <div class="add-task-button">
           <div
-          id="cancel-button" 
-            class="cancel-button base-button button-hollow button-regular">
+            id="cancel-button"
+            class="cancel-button base-button button-hollow button-regular"
+          >
             Clear
             <img src="./assets/icons/add_task/cancel_default.svg" alt="clear" />
           </div>
