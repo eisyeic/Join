@@ -2,9 +2,11 @@
   .sidebar {
     min-width: 150px;
   }
+
   .nav {
     width: 140px;
   }
+
   .nav-bg,
   .nav img {
     width: 140px;
@@ -16,8 +18,25 @@
   .sidebar {
     display: none;
   }
+
   .nav-mobile {
     display: flex !important;
+  }
+
+  header {
+    min-height: 80px;
+  }
+
+  nav p {
+    display: none;
+  }
+
+  nav a {
+    display: none;
+  }
+
+  nav {
+    display: contents;
   }
 }
 

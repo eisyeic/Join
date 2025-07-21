@@ -12,29 +12,30 @@
     align-items: center;
 }
 
-.contakt-overlay-close-icon {
+.contact-overlay-close-icon {
     position: absolute;
     top: 20px;
     right: 20px;
+    cursor: pointer;
 }
 
-.contakt-overlay-close-icon img {
+.contact-overlay-close-icon img {
     width: 32px;
 }
 
-.contakt-overlay-close-icon img:first-child {
+.contact-overlay-close-icon img:first-child {
     display: block;
 }
 
-.contakt-overlay-close-icon img:last-child {
+.contact-overlay-close-icon img:last-child {
     display: none;
 }
 
-.contakt-overlay-close-icon:hover img:first-child {
+.contact-overlay-close-icon:hover img:first-child {
     display: none;
 }
 
-.contakt-overlay-close-icon:hover img:last-child {
+.contact-overlay-close-icon:hover img:last-child {
     display: block;
 }
 

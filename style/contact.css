@@ -75,6 +75,7 @@
 
 .contact-person:hover {
     background-color: #D2E3FF;
+    cursor: pointer;
 
 }
 
@@ -169,6 +170,7 @@
     padding-right: 10px;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .contact-single-person-content-head-edit-box p {
@@ -185,6 +187,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .contact-single-person-content-head-trash-box p {
@@ -206,6 +209,7 @@
     font-size: 16px;
     text-decoration: none;
     color: var(--main-color);
+    cursor: default;
 }
 
 .contact-single-person-content-head-trash-box:hover {
@@ -225,4 +229,3 @@
 .contact-single-person-content-head-edit-box:hover img {
     filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(7482%) hue-rotate(244deg) brightness(101%) contrast(101%);
 }
-

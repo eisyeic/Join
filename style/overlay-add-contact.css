@@ -42,6 +42,7 @@
     from {
         right: -580%;
     }
+
     to {
         right: 0;
     }
@@ -90,14 +91,14 @@
     flex-direction: column;
 }
 
-.overlay-add-contact-delete-save {
+.overlay-add-contact-cancel-save {
     display: flex;
     gap: 25px;
     justify-content: space-between;
     align-items: center;
 }
 
-.overlay-add-contact-delete {
+.overlay-add-contact-cancel {
     border: solid 1px #647188;
     border-radius: 8px;
     height: 60px;
@@ -107,7 +108,7 @@
     justify-content: center;
 }
 
-.overlay-add-contact-delete:hover {
+.overlay-add-contact-cancel:hover {
     box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
     border-color: var(--main-color);
     color: var(--main-color);
