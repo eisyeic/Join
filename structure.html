@@ -2,10 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Structure</title>
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./style/header.css" />
     <link rel="stylesheet" href="./style/sidebar.css" />
+    <script src="script.js"></script>
+    <script type="module" src="./scripts/firebase.js"></script>
   </head>
 
   <body>
@@ -17,7 +20,7 @@
     </header>
 
     <main>
-      /* Sidebar */
+      <!-- Sidebar -->
       <section class="sidebar">
         <div class="nav">
         <a href="./summary-board.html" class="nav-bg"><img src="./assets/icons/sidebar/summery.svg"
@@ -34,7 +37,77 @@
           <a href="./legal-notice.html">Legal notice</a>
         </div>
       </section>
-      <section></section>
+      <section>
+         <h2>JSON in Firebase speichern</h2>
+
+<input type="text" id="name" placeholder="Name" />
+<input type="number" id="alter" placeholder="Alter" />
+<input type="email" id="email" placeholder="E-Mail" />
+<button onclick="datenSpeichern()">Speichern</button>
+
+<div id="status"></div>
+
+<h3>Gespeicherte Nutzer:</h3>
+<div id="alleDaten"></div>
+
+
+<script type="module">
+  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { app } from "./scripts/firebase.js";
+
+  const db = getDatabase(app);
+  const datenRef = ref(db, "nutzer");
+
+  function zeigeAlleDaten() {
+    onValue(datenRef, (snapshot) => {
+      const datenContainer = $("alleDaten");
+      datenContainer.innerHTML = "";
+
+      const daten = snapshot.val();
+      if (!daten) {
+        datenContainer.innerText = "Noch keine Daten vorhanden.";
+        return;
+      }
+
+      // Durch alle Datensätze iterieren
+      Object.entries(daten).forEach(([id, eintrag]) => {
+        const div = document.createElement("div");
+        div.classList.add("eintrag");
+        div.innerText = `👤 ${eintrag.name} | 🕓 ${eintrag.alter} Jahre | 📧 ${eintrag.email}`;
+        datenContainer.appendChild(div);
+      });
+    });
+  }
+
+
+  
+  // daten speichern
+  window.datenSpeichern = () => {
+    const name = $("name").value;
+    const alter = $("alter").value;
+    const email = $("email").value;
+
+    const daten = { name, alter, email };
+
+    push(datenRef, daten)
+      .then(() => {
+        $("status").innerText = "✅ Daten gespeichert!";
+        console.log("Gespeichert:", daten);
+        zeigeAlleDaten(); // Daten nach dem Speichern laden
+      })
+      .catch((error) => {
+        $("status").innerText = "❌ Fehler beim Speichern!";
+        console.error(error);
+      });
+  };
+
+  // Direkt beim Laden alle Daten anzeigen
+  zeigeAlleDaten();
+</script>
+
+
+</script>
+      </section>
       <section></section>
     </main>
   </body>
