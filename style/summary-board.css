@@ -180,14 +180,6 @@ h5 {
   height: 66px;
 }
 
-.task-urgent:hover .dashboard-placeholder {
-  background-color: var(--main-color);
-  border-color: var(--main-color);
-  transform: scale(0.909);
-  transform-origin: center;
-}
-
-
 .task-task-in-board-top-box {
   display: flex;
   gap: 20px;
@@ -198,11 +190,53 @@ h5 {
   font-weight: 400;
 }
 
+/* Task To Do Section*/
+.task-to-do {
+  background-color: #e6f0ff;
+  padding: 40px;
+  gap: 7px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px;
+  transition: all 0.2s ease;
+}
+
+.task-to-do-top-box {
+  display: flex;
+  gap: 20px;
+}
+
+.task-to-do-top-box img {
+  width: 76px;
+  height: 76px;
+}
+
+.task-to-do h5 {
+  color: var(--main-color);
+  font-weight: 400;
+}
+
+.task-to-do:hover {
+  transform: scale(0.95);
+  transform-origin: top right;
+  color: white;
+  background-color: var(--white);
+  border-radius: 0 30px 30px 30px;
+  margin-right: -50px;
+  width: 210px;
+}
+
+.task-to-do:hover h5,
+.task-to-do:hover h2 {
+  color: var(--light-blue);
+}
+
+/*Task Section*/
 .task-task-to-do {
   padding: 40px;
   gap: 7px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
   border-radius: 30px;
+  transition: all 0.2s ease;
 }
 
 .task-task-to-do-top-box {
@@ -224,6 +258,23 @@ h5 {
   display: flex;
   gap: 32px;
 }
+
+.task-task-to-do:hover {
+  background-color: rgba(69, 137, 255, 1);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 0 30px 30px 30px;
+  transform: scale(1.02);
+  transform-origin: left;
+  margin-bottom: -10px;
+  
+}
+
+.task-task-to-do:hover h2,
+.task-task-to-do:hover h5 {
+  color: white;
+}
+
+/* Mobile Styles */
 
 .task-container-mobile {
   display: none;
