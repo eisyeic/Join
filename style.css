@@ -55,6 +55,11 @@ footer {
 .d-none {
   display: none !important;
 }
+
+.nav-without-profil {
+  justify-content: end;
+}
+
 /*
 <button class="base-button button-blue button-small">Button</button>
 */

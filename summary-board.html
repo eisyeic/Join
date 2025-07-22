@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
 
+  <script src="./script.js" defer></script>
+
   <title>Summary Board</title>
   <link rel="stylesheet" href="./style/summary-board.css" />
   <link rel="stylesheet" href="./style/sidebar.css" />
@@ -18,12 +20,19 @@
 
 <body>
   <header>
-    <a href="./index.html"><img src="./assets/general_elements/icons/logo_white_icon.svg" /></a>
+    <a href="./index.html"><img src="./assets/general_elements/icons/logo_white_icon.svg" alt="Logo Join" /></a>
     <nav>
       <p>Kanban Project Management Tool</p>
-      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="" /></a>
-      <img src="./assets/icons/header/guest_icon.svg" alt="" />
+      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="Help Icon" /></a>
+      <img src="./assets/icons/header/guest_icon.svg" alt="Guest Icon" onclick="toggleProfileNavbar()" />
     </nav>
+    <div class="profile-navbar d-none" id="profile-navbar">
+      <div class="profile-navbar-box">
+        <a href="./legal-notice.html">Legal Notice</a>
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./index.html">Log out</a>
+      </div>
+    </div>
   </header>
   <main>
     <section class="sidebar">
@@ -55,7 +64,7 @@
                 <div class="task-urgent-left-box-top">
                   <div class="task-ring-img-container">
                     <img src="./assets/summary/icons/urgent.svg" alt="Icon Task Urgent" />
-                   <svg viewBox="0 0 300 300">
+                    <svg viewBox="0 0 300 300">
                       <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
                     </svg>
                   </div>

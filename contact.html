@@ -116,12 +116,19 @@
   </div>
 
   <header>
-    <a href="./index.html"><img src="./assets/general_elements/icons/logo_white_icon.svg" /></a>
+    <a href="./index.html"><img src="./assets/general_elements/icons/logo_white_icon.svg" alt="Logo Join" /></a>
     <nav>
       <p>Kanban Project Management Tool</p>
-      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="" /></a>
-      <img src="./assets/icons/header/guest_icon.svg" alt="" />
+      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="Help Icon" /></a>
+      <img src="./assets/icons/header/guest_icon.svg" alt="Guest Icon" onclick="toggleProfileNavbar()" />
     </nav>
+    <div class="profile-navbar d-none" id="profile-navbar">
+      <div class="profile-navbar-box">
+        <a href="./legal-notice.html">Legal Notice</a>
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./index.html">Log out</a>
+      </div>
+    </div>
   </header>
 
   <main class="contact-content">

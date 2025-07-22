@@ -1,228 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join - Add Task</title>
-    <link
-      rel="shortcut icon"
-      href="./assets/general_elements/icons/logo_blue_icon.svg"
-      type="image/x-icon"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="./style/header.css" />
-    <link rel="stylesheet" href="./style/addtask.css" />
-    <link rel="stylesheet" href="./style/sidebar.css" />
-    <link rel="stylesheet" href="./style/footer-nav.css" />
-    <link rel="stylesheet" href="./style/responsiv.css" />
-    <link rel="stylesheet" href="./style/flatpickr.min.css" />
-    <script src="./script.js"></script>
-    <script src="./scripts/addtask.js" defer></script>
-    <script src="./scripts/flatpickr.min.js"></script>
-  </head>
 
-  <body>
-    <header>
-      <a href="./index.html"
-        ><img src="./assets/general_elements/icons/logo_white_icon.svg"
-      /></a>
-      <nav>
-        <p>Kanban Project Management Tool</p>
-        <a href="help.html"
-          ><img class="help" src="./assets/icons/header/help.svg" alt=""
-        /></a>
-        <img src="./assets/icons/header/guest_icon.svg" alt="" />
-      </nav>
-    </header>
-    <main>
-      <!-- section sidebar -->
-      <section class="sidebar">
-        <div class="nav">
-          <a href="./summary-board.html" class="nav-bg"
-            ><img
-              src="./assets/icons/sidebar/summery.svg"
-              alt="Button Summary Board"
-          /></a>
-          <a href="addtask.html" class="nav-bg active"
-            ><img
-              class="nav-bg"
-              src="./assets/icons/sidebar/add task.svg"
-              alt="Button Add Task"
-          /></a>
-          <a href="board.html" class="nav-bg"
-            ><img src="./assets/icons/sidebar/board.svg" alt="Button-Board"
-          /></a>
-          <a href="contact.html" class="nav-bg"
-            ><img
-              src="./assets/icons/sidebar/contacts.svg"
-              alt="Button Contact"
-          /></a>
-        </div>
-        <div class="sidebar-links">
-          <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./legal-notice.html">Legal notice</a>
-        </div>
-      </section>
-      <!-- section addtask -->
-      <section class="addtask-wrapper">
-        <div class="addtask-main-content">
-          <div>
-            <input
-              type="text"
-              class="addtask-title"
-              id="addtask-title"
-              placeholder="Enter a title"
-            />
-            <div class="addtask-error" id="addtask-error"></div>
-          </div>
-          <div class="description">
-            <span class="label-main">Decription</span>
-            <span class="label-optional">(optional)</span>
-            <textarea
-              id="addtask-textarea"
-              placeholder="Enter a description"
-            ></textarea>
-            <div class="addtask-error"></div>
-          </div>
-          <div class="due-date">
-            <span class="label-main">Due Date</span>
-            <div class="date-input" id="datepicker-wrapper">
-              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img
-                onclick="flatpickr()"
-                src="./assets/icons/add_task/event.svg"
-                alt=""
-              />
-            </div>
-            <div class="addtask-error" id="due-date-error"></div>
-          </div>
-        </div>
-        <div class="priority-wrapper">
-          <span class="label-main">Priority</span>
-          <div class="prio-buttons">
-            <button class="priority-button urgent-button">
-              <span>Urgent</span>
-              <img src="./assets/icons/add_task/urgent.svg" alt="urgent" />
-            </button>
-            <button class="priority-button medium-button">
-              <span>Medium</span>
-              <img src="./assets/icons/add_task/medium.svg" alt="medium" />
-            </button>
-            <button class="priority-button low-button">
-              <span>Low</span>
-              <img src="./assets/icons/add_task/low.svg" alt="low" />
-            </button>
-          </div>
-          <!-- assigned container -->
-          <div class="assigned-box">
-            <span class="label-main">Assigned to</span>
-            <span class="label-optional">(optional)</span>
-            <div id="assigned-select-box" class="assigned-select-box">
-              <input type="text" placeholder="Select contacts to assign" />
-              <img
-                id="assigned-icon"
-                class="arrow-down"
-                src="./assets/icons/add_task/arrow_down_default.svg"
-                alt=""
-              />
-            </div>
-            <div id="contact-list-box" class="contact-list-box d-none">
-              <li>
-                <div>
-                  <img
-                    src="./assets/icons/add_task/Property 1=Anton.svg"
-                    alt=""
-                  />
-                  Anton Mayer
-                </div>
-                <img src="./assets/icons/add_task/check_defalut.svg" alt="" />
-              </li>
-              <li>
-                <div>
-                  <img
-                    src="./assets/icons/add_task/Property 1=Anja.svg"
-                    alt=""
-                  />
-                  Anja Schulze
-                </div>
-                <img src="./assets/icons/add_task/check_defalut.svg" alt="" />
-              </li>
-            </div>
-          </div>
-          <!-- category container -->
-          <div class="category-box">
-            <span class="label-main">Category</span>
-            <div id="category-select" class="category-select-box">
-              <span>Select task category</span>
-              <img
-                id="category-icon"
-                class="arrow-down"
-                src="./assets/icons/add_task/arrow_down_default.svg"
-                alt=""
-              />
-            </div>
-            <div id="category-selection" class="category-selection d-none">
-              <li data-value="Technical task">Technical task</li>
-              <li data-value="User Story">User Story</li>
-            </div>
-          </div>
-          <!-- subtask container -->
-          <div class="subtasks-box">
-            <span class="label-main">Subtasks</span>
-            <span class="label-optional">(optional)</span>
-            <div class="subtask-select">
-              <input id="sub-input" type="text" placeholder="Add new subtask" />
-              <div id="subtask-func-btn" class="subtask-func-btn  d-none">
-                <img id="sub-clear" class="sub-clear" src="./assets/icons/add_task/sub_clear_def.svg" alt="">
-                <div class="sub-spacer"></div>
-                <img id="sub-check" class="sub-check" src="./assets/icons/add_task/sub_check_def.svg" alt="" />
-              </div>
-              <div id="subtask-plus-box" class="subtask-plus-box" id="subtask-plus-box">
-                <img id="sub-plus" src="./assets/icons/add_task/add.svg" alt="" />
-              </div>
-            </div>
-            <div id="subtask-list"></div>
-          </div>
-        </div>
-      </section>
-      <!-- section addtask buttons -->
-      <section class="section-addtask-buttons">
-        <div class="add-task-button">
-          <div
-            id="cancel-button"
-            class="cancel-button base-button button-hollow button-regular"
-          >
-            Clear
-            <img src="./assets/icons/add_task/cancel_default.svg" alt="clear" />
-          </div>
-          <div
-            id="create-button"
-            class="create-button base-button button-blue button-regular"
-          >
-            Create task
-            <img
-              src="./assets/icons/add_task/check_white.png"
-              alt="create task"
-            />
-          </div>
-        </div>
-      </section>
-    </main>
-    <!-- section footer -->
-    <footer class="nav-mobile">
-      <div class="nav-box">
-        <a href="./summary-board.html"
-          ><img src="./assets/icons_mobile/summary_default.svg" alt=""
-        /></a>
-        <a href="./addtask.html"
-          ><img src="./assets/icons_mobile/add_task_active.svg" alt=""
-        /></a>
-        <a href="./board.html"
-          ><img src="./assets/icons_mobile/board_default.svg" alt=""
-        /></a>
-        <a href="./contact.html"
-          ><img src="./assets/icons_mobile/contacts_default.svg" alt=""
-        /></a>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join - Add Task</title>
+  <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style/header.css" />
+  <link rel="stylesheet" href="./style/addtask.css" />
+  <link rel="stylesheet" href="./style/sidebar.css" />
+  <link rel="stylesheet" href="./style/footer-nav.css" />
+  <link rel="stylesheet" href="./style/responsiv.css" />
+  <link rel="stylesheet" href="./style/flatpickr.min.css" />
+  <script src="./script.js"></script>
+  <script src="./scripts/addtask.js" defer></script>
+  <script src="./scripts/flatpickr.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <a href="./index.html"><img src="./assets/general_elements/icons/logo_white_icon.svg" alt="Logo Join" /></a>
+    <nav>
+      <p>Kanban Project Management Tool</p>
+      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="Help Icon" /></a>
+      <img src="./assets/icons/header/guest_icon.svg" alt="Guest Icon" onclick="toggleProfileNavbar()" />
+    </nav>
+    <div class="profile-navbar d-none" id="profile-navbar">
+      <div class="profile-navbar-box">
+        <a href="./legal-notice.html">Legal Notice</a>
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./index.html">Log out</a>
       </div>
-    </footer>
-  </body>
+    </div>
+  </header>
+  <main>
+    <!-- section sidebar -->
+    <section class="sidebar">
+      <div class="nav">
+        <a href="./summary-board.html" class="nav-bg"><img src="./assets/icons/sidebar/summery.svg"
+            alt="Button Summary Board" /></a>
+        <a href="addtask.html" class="nav-bg active"><img class="nav-bg" src="./assets/icons/sidebar/add task.svg"
+            alt="Button Add Task" /></a>
+        <a href="board.html" class="nav-bg"><img src="./assets/icons/sidebar/board.svg" alt="Button-Board" /></a>
+        <a href="contact.html" class="nav-bg"><img src="./assets/icons/sidebar/contacts.svg" alt="Button Contact" /></a>
+      </div>
+      <div class="sidebar-links">
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./legal-notice.html">Legal notice</a>
+      </div>
+    </section>
+    <!-- section addtask -->
+    <section class="addtask-wrapper">
+      <div class="addtask-main-content">
+        <div>
+          <input type="text" class="addtask-title" id="addtask-title" placeholder="Enter a title" />
+          <div class="addtask-error" id="addtask-error"></div>
+        </div>
+        <div class="description">
+          <span class="label-main">Decription</span>
+          <span class="label-optional">(optional)</span>
+          <textarea id="addtask-textarea" placeholder="Enter a description"></textarea>
+          <div class="addtask-error"></div>
+        </div>
+        <div class="due-date">
+          <span class="label-main">Due Date</span>
+          <div class="date-input" id="datepicker-wrapper">
+            <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img onclick="flatpickr()"
+              src="./assets/icons/add_task/event.svg" alt="" />
+          </div>
+          <div class="addtask-error" id="due-date-error"></div>
+        </div>
+      </div>
+      <div class="priority-wrapper">
+        <span class="label-main">Priority</span>
+        <div class="prio-buttons">
+          <button class="priority-button urgent-button">
+            <span>Urgent</span>
+            <img src="./assets/icons/add_task/urgent.svg" alt="urgent" />
+          </button>
+          <button class="priority-button medium-button">
+            <span>Medium</span>
+            <img src="./assets/icons/add_task/medium.svg" alt="medium" />
+          </button>
+          <button class="priority-button low-button">
+            <span>Low</span>
+            <img src="./assets/icons/add_task/low.svg" alt="low" />
+          </button>
+        </div>
+        <!-- assigned container -->
+        <div class="assigned-box">
+          <span class="label-main">Assigned to</span>
+          <span class="label-optional">(optional)</span>
+          <div id="assigned-select-box" class="assigned-select-box">
+            <input type="text" placeholder="Select contacts to assign" />
+            <img id="assigned-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="" />
+          </div>
+          <div id="contact-list-box" class="contact-list-box d-none">
+            <li>
+              <div>
+                <img src="./assets/icons/add_task/Property 1=Anton.svg" alt="" />
+                Anton Mayer
+              </div>
+              <img src="./assets/icons/add_task/check_defalut.svg" alt="" />
+            </li>
+            <li>
+              <div>
+                <img src="./assets/icons/add_task/Property 1=Anja.svg" alt="" />
+                Anja Schulze
+              </div>
+              <img src="./assets/icons/add_task/check_defalut.svg" alt="" />
+            </li>
+          </div>
+        </div>
+        <!-- category container -->
+        <div class="category-box">
+          <span class="label-main">Category</span>
+          <div id="category-select" class="category-select-box">
+            <span>Select task category</span>
+            <img id="category-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="" />
+          </div>
+          <div id="category-selection" class="category-selection d-none">
+            <li data-value="Technical task">Technical task</li>
+            <li data-value="User Story">User Story</li>
+          </div>
+        </div>
+        <!-- subtask container -->
+        <div class="subtasks-box">
+          <span class="label-main">Subtasks</span>
+          <span class="label-optional">(optional)</span>
+          <div class="subtask-select">
+            <input id="sub-input" type="text" placeholder="Add new subtask" />
+            <div id="subtask-func-btn" class="subtask-func-btn  d-none">
+              <img id="sub-clear" class="sub-clear" src="./assets/icons/add_task/sub_clear_def.svg" alt="">
+              <div class="sub-spacer"></div>
+              <img id="sub-check" class="sub-check" src="./assets/icons/add_task/sub_check_def.svg" alt="" />
+            </div>
+            <div id="subtask-plus-box" class="subtask-plus-box" id="subtask-plus-box">
+              <img id="sub-plus" src="./assets/icons/add_task/add.svg" alt="" />
+            </div>
+          </div>
+          <div id="subtask-list"></div>
+        </div>
+      </div>
+    </section>
+    <!-- section addtask buttons -->
+    <section class="section-addtask-buttons">
+      <div class="add-task-button">
+        <div id="cancel-button" class="cancel-button base-button button-hollow button-regular">
+          Clear
+          <img src="./assets/icons/add_task/cancel_default.svg" alt="clear" />
+        </div>
+        <div id="create-button" class="create-button base-button button-blue button-regular">
+          Create task
+          <img src="./assets/icons/add_task/check_white.png" alt="create task" />
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- section footer -->
+  <footer class="nav-mobile">
+    <div class="nav-box">
+      <a href="./summary-board.html"><img src="./assets/icons_mobile/summary_default.svg" alt="" /></a>
+      <a href="./addtask.html"><img src="./assets/icons_mobile/add_task_active.svg" alt="" /></a>
+      <a href="./board.html"><img src="./assets/icons_mobile/board_default.svg" alt="" /></a>
+      <a href="./contact.html"><img src="./assets/icons_mobile/contacts_default.svg" alt="" /></a>
+    </div>
+  </footer>
+</body>
+
 </html>

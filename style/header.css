@@ -42,3 +42,38 @@ nav {
 .help:hover {
     content: url(../assets/icons/header/help_hover.svg);
 }
+
+/* Profile Navbar */
+
+.profile-navbar {
+    position: absolute;
+    top: 100px;
+    right: 2px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), -4px 0 8px rgba(0, 0, 0, 0.3);
+    border-radius: 30px 0 30px 30px;
+    background-color: white;
+    width: 180px;
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+    gap: 8px;
+}
+
+.profile-navbar-box {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 8px;
+}
+
+.profile-navbar-box * {
+    font-size: 19px !important;
+}
+
+
+.profile-navbar a {
+    text-decoration: none;
+    color: var(--menu-color);
+}
