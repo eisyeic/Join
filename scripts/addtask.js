@@ -135,6 +135,7 @@ $("sub-check").addEventListener("click", function () {
     $("sub-input").value = "";
     $("subtask-func-btn").classList.add("d-none");
     $("subtask-plus-box").classList.remove("d-none");
+    renderSubtasks();
   }
 });
 
@@ -145,9 +146,72 @@ $("sub-clear").addEventListener("click", function () {
   $("subtask-plus-box").classList.remove("d-none");
 });
 
-// subtask list display
 $("sub-plus").addEventListener("click", function () {
+  if (subtasks.length == "") {
+    $("sub-input").value = "Contact Form";
+    $("subtask-plus-box").classList.add("d-none");
+    $("subtask-func-btn").classList.remove("d-none");
+  }
+});
+
+// subtask list display
+function renderSubtasks() {
   $("subtask-list").innerHTML = subtasks
-    .map((subtask, index) => `<div class="subtask-item">${subtask} <span class="remove-subtask" data-index="${index}">x</span></div>`)
+    .map(
+      (subtask, index) => `
+      <li class="subtask-item" data-index="${index}">
+        <span class="subtask-text">${subtask}</span>
+        <input class="subtask-edit-input d-none" type="text" value="${subtask}" />
+        <div class="subtask-func-btn d-none">
+          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit" />
+          <div class="sub-spacer"></div>
+          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
+          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
+        </div>
+      </li>
+    `
+    )
     .join("");
+
+  // Events für bearbeiten und speichern hinzufügen
+  addEditEvents();
+}
+
+function addEditEvents() {
+  document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
+    editBtn.addEventListener("click", () => {
+      const item = editBtn.closest(".subtask-item");
+      item.querySelector(".subtask-text").classList.add("d-none");
+      item.querySelector(".subtask-edit-input").classList.remove("d-none");
+      item.querySelector(".subtask-edit-icon").classList.add("d-none");
+      item.querySelector(".subtask-save-icon").classList.remove("d-none");
+    });
+  });
+
+  document.querySelectorAll(".subtask-save-icon").forEach((saveBtn) => {
+    saveBtn.addEventListener("click", () => {
+      const item = saveBtn.closest(".subtask-item");
+      const index = item.getAttribute("data-index");
+      const newValue = item.querySelector(".subtask-edit-input").value.trim();
+      if (newValue) {
+        subtasks[index] = newValue;
+        renderSubtasks(); // Neu rendern nach dem Speichern
+      }
+    });
+  });
+}
+
+  // Event Delegation: auf dem Container lauschen
+$("subtask-list").addEventListener("mouseover", function (event) {
+  let item = event.target.closest(".subtask-item");
+  if (item) {
+    item.querySelector(".subtask-func-btn").classList.remove("d-none");
+  }
+});
+
+$("subtask-list").addEventListener("mouseout", function (event) {
+  let item = event.target.closest(".subtask-item");
+  if (item) {
+    item.querySelector(".subtask-func-btn").classList.add("d-none");
+  }
 });

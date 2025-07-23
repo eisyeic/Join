@@ -295,7 +295,7 @@ span {
   content: url(../assets/icons/add_task/add\ hover.svg);
 }
 
-.subtask-func-btn {
+.subtask-func-btn, .subtask-plus-box {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -314,6 +314,20 @@ span {
   content: url(../assets/icons/add_task/sub_check_hvr.svg);
 }
 
+.sub-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.subtask-edit-icon:hover {
+  content: url(../assets/icons/add_task/edit_hover.svg);
+}
+
+.subtask-delete-icon:hover {
+  content: url(../assets/icons/add_task/delete_hover.svg);
+} 
 
 a,
 input[type="submit"],
