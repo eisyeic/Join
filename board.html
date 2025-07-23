@@ -12,10 +12,21 @@
   <link rel="stylesheet" href="./style/sidebar.css" />
   <link rel="stylesheet" href="./style/footer-nav.css" />
   <link rel="stylesheet" href="./style/responsiv.css" />
+  <link rel="stylesheet" href="./style/overlay-add-task-board.css">
+
   <script src="script.js"></script>
+  <script src="./scripts/board.js"></script>
+
 </head>
 
-<body>
+<body onclick="closeProfileNavbar()">
+  <!-- Overlay Add Task  -->
+  <div class="overlay-add-task d-none" id="overlay-add-task" onclick="toggleAddTaskBoard()">
+<div class="add-task-overlay-content" onclick="toggleAddTaskBoard(event)">
+  <div><h2>Add Task</h2></div>
+</div>
+  </div>
+
   <header>
     <a href="./index.html"><img src="./assets/general_elements/icons/logo_white_icon.svg" /></a>
     <nav>
@@ -56,20 +67,21 @@
               <img src="./assets/board/icons/default_glass.svg" alt="" />
             </div>
           </div>
-          <button class="base-button button-blue button-small">
+          <button class="base-button button-blue button-small" onclick="toggleAddTaskBoard()">
             Add Task +
           </button>
         </div>
         <div class="bar">
           <div class="column-title">
-            To do<img src="./assets/board/icons/default_plus.svg" alt="" />
+            To do<img src="./assets/board/icons/default_plus.svg" alt="Plus Icon" onclick="toggleAddTaskBoard()" />
           </div>
           <div class="column-title">
             In progressing
-            <img src="./assets/board/icons/default_plus.svg" alt="" />
+            <img src="./assets/board/icons/default_plus.svg" alt="Plus Icon" onclick="toggleAddTaskBoard()" />
           </div>
           <div class="column-title">
-            Await feedback<img src="./assets/board/icons/default_plus.svg" alt="" />
+            Await feedback<img src="./assets/board/icons/default_plus.svg" alt="Plus Icon"
+              onclick="toggleAddTaskBoard()" />
           </div>
           <div class="column-title">Done</div>
         </div>

@@ -76,4 +76,12 @@ nav {
 .profile-navbar a {
     text-decoration: none;
     color: var(--menu-color);
+    padding: 5px 10px;
+    width: 120px;
+    justify-content: end;
+    border-radius: 10px;
+}
+
+.profile-navbar a:hover {
+  background-color: var(--navi-buttons-bg);
 }
