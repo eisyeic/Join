@@ -77,6 +77,8 @@ $("cancel-button").addEventListener("click", function () {
   $("due-date-error").innerHTML = "";
   $("category-select").querySelector("span").textContent =
     "Select task category";
+  subtasks = [];
+  renderSubtasks();
 
   document
     .querySelectorAll(".priority-button")
@@ -164,44 +166,65 @@ function renderSubtasks() {
         <input class="subtask-edit-input d-none" type="text" value="${subtask}" />
         <div class="subtask-func-btn d-none">
           <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit" />
-          <div class="sub-spacer"></div>
+          <div class="sub-spacer first-spacer"></div>
           <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
+          <div class="sub-spacer second-spacer d-none"></div>
           <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
         </div>
-      </li>
-    `
+      </li>`
     )
     .join("");
-
-  // Events für bearbeiten und speichern hinzufügen
   addEditEvents();
+  deleteEvent();
 }
 
+// edit subtask functionality
 function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
     editBtn.addEventListener("click", () => {
-      const item = editBtn.closest(".subtask-item");
+      let item = editBtn.closest(".subtask-item");
+      let input = item.querySelector(".subtask-edit-input");
+      let firstSpacer = item.querySelector(".first-spacer");
+      let secondSpacer = item.querySelector(".second-spacer");
       item.querySelector(".subtask-text").classList.add("d-none");
-      item.querySelector(".subtask-edit-input").classList.remove("d-none");
+      input.classList.remove("d-none");
+      input.classList.add("active");
+      item.classList.add("editing");
+      firstSpacer.classList.add("d-none");
+      secondSpacer.classList.remove("d-none");
       item.querySelector(".subtask-edit-icon").classList.add("d-none");
       item.querySelector(".subtask-save-icon").classList.remove("d-none");
     });
   });
 
+  // save subtask changes
   document.querySelectorAll(".subtask-save-icon").forEach((saveBtn) => {
     saveBtn.addEventListener("click", () => {
-      const item = saveBtn.closest(".subtask-item");
-      const index = item.getAttribute("data-index");
-      const newValue = item.querySelector(".subtask-edit-input").value.trim();
+      let item = saveBtn.closest(".subtask-item");
+      let index = item.getAttribute("data-index");
+      let input = item.querySelector(".subtask-edit-input");
+      let newValue = input.value.trim();
       if (newValue) {
         subtasks[index] = newValue;
-        renderSubtasks(); // Neu rendern nach dem Speichern
+        renderSubtasks();
       }
     });
   });
 }
 
-  // Event Delegation: auf dem Container lauschen
+// delete subtask functionality
+function deleteEvent() {
+  document.querySelectorAll(".subtask-delete-icon").forEach((deleteBtn) => {
+    deleteBtn.addEventListener("click", () => {
+      let item = deleteBtn.closest(".subtask-item");
+      let index = item.getAttribute("data-index");
+      subtasks.splice(index, 1);
+      renderSubtasks();
+    });
+  });
+}
+
+// hover effect for subtask buttons
 $("subtask-list").addEventListener("mouseover", function (event) {
   let item = event.target.closest(".subtask-item");
   if (item) {
@@ -209,6 +232,7 @@ $("subtask-list").addEventListener("mouseover", function (event) {
   }
 });
 
+// leave hover effect for subtask buttons
 $("subtask-list").addEventListener("mouseout", function (event) {
   let item = event.target.closest(".subtask-item");
   if (item) {

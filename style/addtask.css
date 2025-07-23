@@ -252,6 +252,11 @@ li:hover {
   background-color: var(--navi-buttons-bg);
 }
 
+li:active {
+  background-color: var(--light-blue);
+  color: #fff;
+}
+
 .category-select-box {
   display: flex;
   justify-content: space-between;
@@ -321,13 +326,45 @@ span {
   padding: 0 16px;
 }
 
+.subtask-edit-input {
+  width: 100%;
+  border: none;
+  outline: none;
+}
+
 .subtask-edit-icon:hover {
   content: url(../assets/icons/add_task/edit_hover.svg);
 }
 
 .subtask-delete-icon:hover {
   content: url(../assets/icons/add_task/delete_hover.svg);
-} 
+}
+
+.subtask-save-icon:hover {
+  content: url(../assets/icons/add_task/sub_check_hvr.svg);
+}
+
+.subtask-edit-input.active {
+  background-color: white;
+  border: none;
+  outline: none;
+  width: 100%; 
+  box-sizing: border-box; /
+}
+
+.subtask-item.editing {
+  background-color: white;
+  border-radius: 0;
+  border-bottom: 1px solid var(--main-color);
+}
+
+.subtask-item.editing .subtask-func-btn {
+  display: flex !important;
+}
+
+.subtask-item:active {
+  background-color: #fff;
+}
 
 a,
 input[type="submit"],
