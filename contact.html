@@ -22,10 +22,10 @@
 
 </head>
 
-<body class="contact-body">
-
-  <div class="overlay-edit-contact d-none" id="contact-overlay-close-edit">
-    <div class="contact-overlay-edit-head">
+<body class="contact-body" onclick="closeProfileNavbar()">
+  <!-- Overlay Edit Contact  -->
+  <div class="overlay-edit-contact d-none" id="contact-overlay-close-edit" onclick="toggleEditContact()">
+    <div class="contact-overlay-edit-head" onclick="toggleEditContact(event)">
       <div class="contact-overlay-close-icon">
         <img src="./assets/general_elements/icons/close_white.svg" alt="Close Icon" onclick="toggleEditContact()" />
         <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon Hover"
@@ -35,7 +35,7 @@
       <h2>Edit contact</h2>
     </div>
 
-    <div class="contact-overlay-edit-content">
+    <div class="contact-overlay-edit-content" onclick="toggleEditContact(event)">
       <div class="contact-overlay-person-icon-big">
         <img src="./assets/general_elements/icons/color1.svg" alt="Circle of Name" />
         <h3>AM</h3>
@@ -70,17 +70,18 @@
       </div>
     </div>
   </div>
-  <div class="overlay-add-contact d-none" id="contact-overlay-close-add">
-    <div class="contact-overlay-add-head">
+  <!-- Overlay Add Contact  -->
+  <div class="overlay-add-contact d-none" id="contact-overlay-close-add" onclick="toggleAddContact()">
+    <div class="contact-overlay-add-head" onclick="toggleAddContact(event)">
       <div class="contact-overlay-close-icon" onclick="toggleAddContact()">
         <img src="./assets/general_elements/icons/close_white.svg" alt="Close Icon" />
         <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon Hover" />
       </div>
-      <img src="./assets/general_elements/icons/logo_big_white.svg" alt="" />
+      <img src="./assets/general_elements/icons/logo_big_white.svg" alt="Join Logo" />
       <h2>Add contact</h2>
       <p>Tasks are better with a team!</p>
     </div>
-    <div class="contact-overlay-add-content">
+    <div class="contact-overlay-add-content" onclick="toggleAddContact(event)">
       <div class="contact-overlay-person-icon-big">
         <img src="./assets/contacts/img/person-new.svg" alt="Circle of New Person" />
       </div>
@@ -109,7 +110,7 @@
         <p class="overlay-add-contact-cancel">Cancel</p>
         <div class="overlay-add-create-contact">
           <p>Create contact</p>
-          <img src="./assets/add_task/icons/check.svg" alt="" />
+          <img src="./assets/add_task/icons/check.svg" alt="Check Icon" />
         </div>
       </div>
     </div>
