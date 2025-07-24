@@ -229,6 +229,10 @@
   width: 32px;
 }
 
+.overlay-exit-button:hover {
+  content: url(../assets/icons/board/exit_hover.svg);
+}
+
 .task-overlay-title {
   font-size: 61px;
   font-weight: 700;
@@ -296,6 +300,8 @@
   padding: 6px 16px;
   gap: 16px;
 }
+
+
 
 * {
   outline: 0px solid red

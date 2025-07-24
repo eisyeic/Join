@@ -23,25 +23,38 @@
 
   <body onclick="closeProfileNavbar()">
     <!-- Overlay Add Task  -->
-  <div class="overlay-add-task d-none" id="overlay-add-task" onclick="toggleAddTaskBoard()">
-    <div class="add-task-overlay-content" onclick="toggleAddTaskBoard(event)">
-      <div class="add-task-overlay-head">
-        <div class="close-button" onclick="toggleAddTaskBoard()">
-          <img class="regular-close-image" src="./assets/general_elements/icons/close.svg" alt="Close Icon">
-          <img class="hover-close-image" src="./assets/general_elements/icons/close_hover_blue.svg"
-            alt="Close Icon Hover">
+    <div
+      class="overlay-add-task d-none"
+      id="overlay-add-task"
+      onclick="toggleAddTaskBoard()"
+    >
+      <div class="add-task-overlay-content" onclick="toggleAddTaskBoard(event)">
+        <div class="add-task-overlay-head">
+          <div class="close-button" onclick="toggleAddTaskBoard()">
+            <img
+              class="regular-close-image"
+              src="./assets/general_elements/icons/close.svg"
+              alt="Close Icon"
+            />
+            <img
+              class="hover-close-image"
+              src="./assets/general_elements/icons/close_hover_blue.svg"
+              alt="Close Icon Hover"
+            />
+          </div>
+          <h2>Add Task</h2>
         </div>
-        <h2>Add Task</h2>
       </div>
     </div>
-  </div>
-  </div>
+
     <!-- Overlay Task -->
-    <div class="task-overlay-bg d-none">
+    <div id="task-overlay-bg" class="task-overlay-bg d-none">
       <div class="task-overlay">
         <div class="label-exit-box">
           <span>User Story</span>
           <img
+            onclick="hideTaskOverlay()"
+            id="task-overlay-exit-button"
             class="overlay-exit-button"
             src="./assets/icons/board/exit_default.svg"
             alt=""
@@ -79,11 +92,19 @@
         <div class="subtasks-ckeck-box">
           <b>Subtasks:</b>
           <div class="subtask">
-            <img id="subtask1" src="./assets/add_task/icons/check_box_check.svg" alt="">
+            <img
+              id="subtask1"
+              src="./assets/add_task/icons/check_box_check.svg"
+              alt=""
+            />
             <label for="subtask1">Create start page</label>
           </div>
           <div class="subtask">
-            <img id="subtask2" src="./assets/add_task/icons/check_box_check.svg" alt="">
+            <img
+              id="subtask2"
+              src="./assets/add_task/icons/check_box_check.svg"
+              alt=""
+            />
             <label for="subtask2">Implement recipe recommendation</label>
           </div>
         </div>
@@ -114,8 +135,9 @@
           <a href="./privacy-policy.html">Privacy Policy</a>
           <a href="./index.html">Log out</a>
         </div>
+      </div>
     </header>
-    
+
     <main>
       <section class="sidebar">
         <div class="nav">
@@ -195,7 +217,7 @@
           </div>
           <div class="column" id="in-progress-column">
             <!-- Template -->
-            <div class="ticket">
+            <div onclick="showTaskOverlay()" class="ticket">
               <div class="ticket-content">
                 <div class="label">User Story</div>
                 <div class="frame">
