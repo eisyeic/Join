@@ -22,9 +22,17 @@
 <body onclick="closeProfileNavbar()">
   <!-- Overlay Add Task  -->
   <div class="overlay-add-task d-none" id="overlay-add-task" onclick="toggleAddTaskBoard()">
-<div class="add-task-overlay-content" onclick="toggleAddTaskBoard(event)">
-  <div><h2>Add Task</h2></div>
-</div>
+    <div class="add-task-overlay-content" onclick="toggleAddTaskBoard(event)">
+      <div class="add-task-overlay-head">
+        <div class="close-button" onclick="toggleAddTaskBoard()">
+          <img class="regular-close-image" src="./assets/general_elements/icons/close.svg" alt="Close Icon">
+          <img class="hover-close-image" src="./assets/general_elements/icons/close_hover_blue.svg"
+            alt="Close Icon Hover">
+        </div>
+        <h2>Add Task</h2>
+      </div>
+    </div>
+  </div>
   </div>
 
   <header>

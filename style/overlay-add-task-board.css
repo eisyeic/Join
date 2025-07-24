@@ -22,7 +22,7 @@
     border-radius: 30px 0 0 30px;
     animation: slideInRight 1s forwards;
     display: flex;
-    justify-content: center;
+    
     align-items: center;
     flex-direction: column;
 }
@@ -36,3 +36,49 @@
         right: 0;
     }
 }
+
+.add-task-overlay-head {
+    padding-top: 49px;
+    width: 100%;
+    height: 156px;
+}
+
+.add-task-overlay-head h2 {
+    padding-left: 40px;
+}
+
+.close-button {
+  display: block;
+  top: 24px;
+  right: 24px;
+  position: absolute;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+}
+
+.regular-close-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+}
+
+.hover-close-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.close-button:hover .regular-close-image {
+  opacity: 0;
+}
+
+.close-button:hover .hover-close-image {
+  opacity: 1;
+}
+
+
+
