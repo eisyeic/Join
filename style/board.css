@@ -234,3 +234,69 @@
   font-weight: 700;
 }
 
+.due-date-box {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  color: var(--menu-color);
+}
+
+.due-date-box span, .priority-box span {
+  font-size: 21px;
+  color: var(--menu-color);
+}
+
+.priority-box {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.priority {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.assigned-to {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.members {
+  display: flex;
+  flex-direction: column;
+  padding: 7px 16px;
+  gap: 4px;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 8px;
+}
+
+.member span {
+  font-size: 21px;
+  color: var(--menu-color);
+}
+
+.subtasks-check-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subtask {
+  display: flex;
+  align-items: center;
+  padding: 6px 16px;
+  gap: 16px;
+}
+
+* {
+  outline: 0px solid red
+}
