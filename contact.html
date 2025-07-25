@@ -19,6 +19,8 @@
 
   <script src="./script.js"></script>
   <script src="./scripts/contact.js"></script>
+  <script type="module" src="./scripts/contact-firebase.js"></script>
+  <script src="./scripts/templates.js"></script>
 
 </head>
 
@@ -87,33 +89,36 @@
       </div>
       <div class="contact-overlay-add-content-details">
         <div class="contact-overlay-add-content-name">
-          <input contenteditable="true" placeholder="Name" />
+          <input contenteditable="true" placeholder="Name" type="text" id="name-new-contact" />
           <img src="./assets/contacts/icons/person.svg" alt="Icon Person" />
         </div>
         <div class="contact-placeholder-blue"></div>
       </div>
       <div class="contact-overlay-add-content-details">
         <div class="contact-overlay-add-content-name">
-          <input contenteditable="true" placeholder="Mail" />
+          <input contenteditable="true" placeholder="Mail" type="email" id="email-new-contact" />
           <img src="./assets/contacts/icons/mail.svg" alt="Icon Mail" />
         </div>
         <div class="contact-overlay-placeholder"></div>
       </div>
       <div class="contact-overlay-add-content-details">
         <div class="contact-overlay-add-content-name">
-          <input contenteditable="true" placeholder="Phone" />
+          <input contenteditable="true" placeholder="Phone" type="number" id="phone-new-contact" />
           <img src="./assets/contacts/icons/call.svg" alt="Icon Phone" />
         </div>
         <div class="contact-overlay-placeholder"></div>
       </div>
       <div class="overlay-add-contact-cancel-save">
         <p class="overlay-add-contact-cancel">Cancel</p>
-        <div class="overlay-add-create-contact">
+        <div class="overlay-add-create-contact" onclick="dataSave()">
           <p>Create contact</p>
           <img src="./assets/add_task/icons/check.svg" alt="Check Icon" />
         </div>
       </div>
     </div>
+  </div>
+  <div class="check-status-add-contact button-regular d-none" id="check-status-add-contact">
+    Contact successfully created
   </div>
 
   <header>
@@ -155,22 +160,8 @@
           Add new contact <img src="./assets/contacts/icons/person_add.svg" />
         </button>
       </div>
-      <div class="contact-book">
-        <div class="contact-abc-box">A</div>
-        <div class="contact-placeholder">
-          <img src="./assets/contacts/img/Vector 10.svg" />
-        </div>
-        <div class="contact-person">
-          <div class="contact-person-icon">
-            <img src="./assets/general_elements/icons/color1.svg" />
-            <p>AM</p>
-          </div>
-          <div class="contact-person-name">
-            <h5>Anton Mayer</h5>
-            <a class="" href="mailto[Contact Email]">antonm@gmail.com</a>
-          </div>
-        </div>
-      </div>
+      
+      <div class="contact-book" id="all-contacts"></div>
 
       <button class="d-none button-mobile-add-new-contact" onclick="toggleAddContact()">
         <img src="./assets/contacts/icons/person_add.svg" alt="Button Add New Contact" />

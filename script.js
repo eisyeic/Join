@@ -10,20 +10,20 @@ function toggleProfileNavbar() {
 
     if (!profileNavbar.classList.contains("d-none")) {
         setTimeout(() => {
-            document.addEventListener('click', closeProfileNavbarOutside);
+            document.addEventListener('click', closeProfileNavbar);
         }, 0);
     } else {
-        document.removeEventListener('click', closeProfileNavbarOutside);
+        document.removeEventListener('click', closeProfileNavbar);
     }
 }
 
 // Close Profile Navbar if clicked outside
-function closeProfileNavbarOutside() {
+function closeProfileNavbar() {
     let profileNavbar = $("profile-navbar");
     let guestIcon = document.querySelector('img[alt="Guest Icon"]');
 
     if (!profileNavbar.contains(event.target) && event.target !== guestIcon) {
         profileNavbar.classList.add("d-none");
-        document.removeEventListener('click', closeProfileNavbarOutside);
+        document.removeEventListener('click', closeProfileNavbar);
     }
 }

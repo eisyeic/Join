@@ -7,3 +7,4 @@ function toggleEditContact() {
 function toggleAddContact() {
     $("contact-overlay-close-add").classList.toggle("d-none");
 }
+
