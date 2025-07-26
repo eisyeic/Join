@@ -4,9 +4,5 @@ function toggleAddTaskBoard() {
 }
 
 function showTaskOverlay() {
-    $("task-overlay-bg").classList.remove("d-none");
-}
-
-function hideTaskOverlay() {
-    $("task-overlay-bg").classList.add("d-none");
+    $("task-overlay-bg").classList.toggle("d-none");
 }

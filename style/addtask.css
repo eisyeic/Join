@@ -1,12 +1,12 @@
 /* Section add task */
 .addtask-wrapper {
   height: calc(100vh - 96px -64px);
-  gap: 24px;
+  gap: 12px;
   min-width: 472px;
   display: flex;
   flex-direction: column;
   padding: 64px 0 0 24px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #fff;
@@ -55,9 +55,13 @@
   color: var(--error-color);
 }
 
-.label-main {
+.lable-main {
   font-weight: 700;
   color: var(--menu-color);
+}
+
+.lable-optional {
+  color: var(--style-color);
 }
 
 /* Datepicker */
@@ -193,6 +197,10 @@
   content: url(../assets/icons/add_task/check_blue.png);
 }
 
+.assigned-box,  .category-box{
+  width: 440px;
+}
+
 .assigned-select-box {
   display: flex;
   cursor: pointer;
@@ -272,6 +280,12 @@ span {
 
 .category-select-box:hover {
   border-bottom: 1px solid var(--main-color);
+}
+
+.subtask-box {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
 }
 
 .subtask-select {

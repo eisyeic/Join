@@ -13,25 +13,22 @@
 }
 
 .add-task-overlay-content {
-    width: 580px;
+    width: 500px;
     position: absolute;
     top: 0;
     right: -100%;
     height: 100vh;
+    gap: 12px;
     background-color: white;
     border-radius: 30px 0 0 30px;
     animation: slideInRight 1s forwards;
     display: flex;
-    
+    box-shadow: rgba(0, 0, 0, 0.16) 0 0 4px 0;
     align-items: center;
     flex-direction: column;
 }
 
 @keyframes slideInRight {
-    from {
-        right: -580px;
-    }
-
     to {
         right: 0;
     }
@@ -40,7 +37,6 @@
 .add-task-overlay-head {
     padding-top: 49px;
     width: 100%;
-    height: 156px;
 }
 
 .add-task-overlay-head h2 {
@@ -55,6 +51,21 @@
   cursor: pointer;
   width: 32px;
   height: 32px;
+}
+
+.addtask-copy {
+  display: flex;
+  height: 100vh;
+  align-items: space-between;
+  overflow-y: auto;
+}
+
+.overlay-create-task {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  padding: 24px;
 }
 
 .regular-close-image {
