@@ -3,6 +3,23 @@
     padding: 20px;
   }
 
+  .task-box:hover,
+  .todo-card:hover,
+  .urgent-card:hover,
+  .task-urgent:hover,
+  .task-urgent:hover .task-urgent-area,
+  .task-urgent:hover .dashboard-placeholder,
+  .task-task-in-board:hover,
+  .task-task-in-board:hover h5,
+  .task-task-to-do:hover,
+  .task-task-to-do:hover h2,
+  .task-task-to-do:hover h5{
+    transform: none !important;
+    background-color: inherit !important;
+    box-shadow: none !important;
+    cursor: default !important;
+  }
+
   .task-task-in-board {
     padding: 20px;
   }
@@ -56,10 +73,6 @@
   width: 100%;
   z-index: 1;
 }
-
-  .task-container {
-    display: none;
-  }
 
   .task-container-mobile {
     display: flex;
