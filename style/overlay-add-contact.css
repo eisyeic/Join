@@ -40,7 +40,7 @@
 
 @keyframes slideInRight {
     from {
-        right: -580%;
+        right: -580px;
     }
 
     to {
@@ -151,6 +151,7 @@
     align-items: center;
     justify-content: center;
     color: white;
+    cursor: pointer;
 }
 
 .overlay-add-create-contact p {
@@ -166,4 +167,42 @@
 .overlay-add-create-contact:hover {
     background-color: var(--light-blue);
     box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
+}
+
+.check-status-add-contact {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 305px;
+    height: 60px; 
+    color: white;
+    background-color: var(--main-color);
+    position: fixed; 
+    z-index: 20;
+    left: 50%;
+    transform: translateX(-50%) translateY(100vh); 
+    border-radius: 20px; 
+    animation: slideUpDown 4s ease-in-out; 
+}
+
+@keyframes slideUpDown {
+    0% {
+        transform: translateX(-50%) translateY(100vh);
+    }
+    25% {
+        transform: translateX(-50%) translateY(50vh);
+    }
+    75% {
+        transform: translateX(-50%) translateY(50vh);
+    }
+    100% {
+        transform: translateX(-50%) translateY(100vh);
+    }
+}
+
+.no-contacts {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
 }

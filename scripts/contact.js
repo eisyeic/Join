@@ -1,11 +1,10 @@
+// Toggle edit contact overlay
 function toggleEditContact() {
- overlayEdit= document.getElementById("contact-overlay-close-edit");
-
- overlayEdit.classList.toggle("d-none");
+    $("contact-overlay-close-edit").classList.toggle("d-none");
 }
 
+// Toggle add contact overlay
 function toggleAddContact() {
- overlayEdit= document.getElementById("contact-overlay-close-add");
-
- overlayEdit.classList.toggle("d-none");
+    $("contact-overlay-close-add").classList.toggle("d-none");
 }
+

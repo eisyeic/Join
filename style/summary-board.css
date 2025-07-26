@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 * {
   
 }
 
+=======
+>>>>>>> e51e10d3b20b0bda5dc7886a5ca08098463b18f8
 h1 {
   color: var(--main-color);
   font-size: 64px;
@@ -47,6 +50,7 @@ h5 {
   flex-direction: column;
   gap: 32px;
   width: 912px;
+  height: 413px;
 }
 
 .task-box-top {
@@ -218,7 +222,7 @@ h5 {
   transform: scale(0.95);
   transform-origin: top right;
   color: white;
-  background-color: var(--white);
+  background-color: white;
   border-radius: 0 30px 30px 30px;
   margin-right: -50px;
   width: 210px;

@@ -55,6 +55,11 @@ footer {
 .d-none {
   display: none !important;
 }
+
+.nav-without-profil {
+  justify-content: end;
+}
+
 /*
 <button class="base-button button-blue button-small">Button</button>
 */
@@ -152,6 +157,7 @@ footer {
 .urgent-button.active {
   background-color: var(--urgent-color);
   color: #fff;
+  pointer-events: none;
 }
 
 .urgent-button.active img {
@@ -174,6 +180,7 @@ footer {
 .medium-button.active {
   background-color: var(--medium-color);
   color: #fff;
+  pointer-events: none;
 }
 
 .medium-button.active img {
@@ -196,6 +203,7 @@ footer {
 .low-button.active {
   background-color: var(--low-color);
   color: #fff;
+  pointer-events: none;
 }
 
 .low-button.active img {

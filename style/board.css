@@ -184,3 +184,164 @@
   transform-origin: left bottom;
   rotate: 5deg;
 }
+
+
+/* Task Overlay */
+.task-overlay-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.task-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #fff;
+  height: 932px;
+  width: 528px;
+  padding: 48px 40px;
+  border-radius: 30px;
+  gap: 24px;
+  box-shadow: rgb(0, 0, 0, 0.16) 0px 0px 4px 0px;
+}
+
+.label-exit-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.label-exit-box span{
+  background-color: var(--label-orange);
+  padding: 4px 24px;
+  border-radius: 8px;
+  font-size: 23px;
+}
+
+.overlay-exit-button {
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+}
+
+.overlay-exit-button:hover {
+  content: url(../assets/icons/board/exit_hover.svg);
+}
+
+.task-overlay-title {
+  font-size: 61px;
+  font-weight: 700;
+}
+
+.due-date-box {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+b {
+  color: var(--menu-color);
+}
+
+.due-date-box span, .priority-box span {
+  font-size: 21px;
+}
+
+.priority-box {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.priority {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.assigned-to {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.members {
+  display: flex;
+  flex-direction: column;
+  padding: 7px 16px;
+  gap: 4px;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 8px;
+}
+
+.member span {
+  font-size: 21px;
+  color: var(--menu-color);
+}
+
+.subtasks-check-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subtask {
+  display: flex;
+  align-items: center;
+  padding: 6px 16px;
+  gap: 16px;
+}
+
+.delete-edit-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.subtask img:hover {
+  content: url(../assets/icons/add_task/check_default_hover.svg);
+}
+
+.subtask img:active {
+  content: url(../assets/icons/add_task/check_checked.svg);
+}
+
+.button-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.icon-hover-filter {
+  transition: filter 0.2s ease;
+}
+
+#delete-task:hover .icon-hover-filter,
+#edit-task:hover .icon-hover-filter {
+  filter: drop-shadow(0 0 0.7px var(--light-blue));
+}
+
+#delete-task:hover span,
+#edit-task:hover span {
+  color: var(--light-blue);
+  font-weight: 700;
+}
+
+* {
+  outline: 0px solid red
+}
