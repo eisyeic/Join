@@ -1,3 +1,4 @@
+/* ===== OVERLAY CONTAINER ===== */
 .overlay-edit-contact {
     background-color: rgba(255, 255, 255, 0.5);
     z-index: 1;
@@ -12,6 +13,7 @@
     align-items: center;
 }
 
+/* ===== CLOSE ICON ===== */
 .contact-overlay-close-icon {
     position: absolute;
     top: 20px;
@@ -39,6 +41,13 @@
     display: block;
 }
 
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+    from { left: -580px; }
+    to { left: 0; }
+}
+
+/* ===== OVERLAY HEADER ===== */
 .contact-overlay-edit-head {
     width: 580px;
     position: absolute;
@@ -59,15 +68,7 @@
     width: 55px;
 }
 
-@keyframes slideIn {
-    from {
-        left: -580px;
-    }
-    to {
-        left: 0;
-    }
-}
-
+/* ===== OVERLAY CONTENT ===== */
 .contact-overlay-edit-content {
     width: 579px;
     height: calc(100vh - 300px);
@@ -85,6 +86,7 @@
     gap: 32px;
 }
 
+/* ===== CONTACT ICON ===== */
 .contact-overlay-person-icon-big {
     display: flex;
     justify-content: center;
@@ -105,17 +107,19 @@
     width: 120px;
 }
 
+/* ===== FORM ELEMENTS ===== */
+.contact-overlay-edit-content-details {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
 .contact-overlay-edit-content-name {
     display: flex;
     width: 380px;
     justify-content: space-between;
     align-items: center;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.contact-overlay-edit-content-name h5 {
-    font-weight: 400;
+    padding: 0 8px;
 }
 
 .contact-overlay-edit-content-name input {
@@ -124,16 +128,11 @@
     outline: none;
 }
 
+/* ===== DIVIDERS ===== */
 .contact-placeholder-blue {
     height: 0.5px;
     width: 100%;
     background-color: var(--light-blue);
-}
-
-.contact-overlay-edit-content-details {
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
 }
 
 .contact-overlay-placeholder {
@@ -142,6 +141,7 @@
     background-color: rgba(0, 0, 0, 0.2);
 }
 
+/* ===== ACTION BUTTONS ===== */
 .overlay-edit-contact-delete-save {
     display: flex;
     gap: 25px;
@@ -149,6 +149,7 @@
     align-items: center;
 }
 
+/* Delete Button */
 .overlay-edit-contact-delete {
     border: solid 1px #647188;
     border-radius: 8px;
@@ -157,6 +158,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .overlay-edit-contact-delete:hover {
@@ -165,6 +167,7 @@
     color: var(--main-color);
 }
 
+/* Save Button */
 .overlay-edit-contact-save {
     display: flex;
     gap: 4px;
@@ -175,6 +178,7 @@
     align-items: center;
     justify-content: center;
     color: white;
+    cursor: pointer;
 }
 
 .overlay-edit-contact-save p {

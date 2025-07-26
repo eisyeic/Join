@@ -1,3 +1,4 @@
+/* ===== OVERLAY CONTAINER ===== */
 .overlay-add-contact {
     background-color: rgba(255, 255, 255, 0.5);
     z-index: 1;
@@ -12,6 +13,18 @@
     align-items: center;
 }
 
+/* ===== ANIMATIONS ===== */
+@keyframes slideInRight {
+    from { right: -580px; }
+    to { right: 0; }
+}
+
+@keyframes slideUpDown {
+    0%, 100% { transform: translateX(-50%) translateY(100vh); }
+    25%, 75% { transform: translateX(-50%) translateY(50vh); }
+}
+
+/* ===== OVERLAY HEADER ===== */
 .contact-overlay-add-head {
     width: 580px;
     position: absolute;
@@ -38,16 +51,7 @@
     margin: 0;
 }
 
-@keyframes slideInRight {
-    from {
-        right: -580px;
-    }
-
-    to {
-        right: 0;
-    }
-}
-
+/* ===== OVERLAY CONTENT ===== */
 .contact-overlay-add-content {
     width: 579px;
     height: calc(100vh - 300px);
@@ -65,17 +69,19 @@
     gap: 32px;
 }
 
+/* ===== FORM ELEMENTS ===== */
+.contact-overlay-add-content-details {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
 .contact-overlay-add-content-name {
     display: flex;
     width: 380px;
     justify-content: space-between;
     align-items: center;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.contact-overlay-add-content-name h5 {
-    font-weight: 400;
+    padding: 0 8px;
 }
 
 .contact-overlay-add-content-name input {
@@ -85,12 +91,7 @@
     color: black;
 }
 
-.contact-overlay-add-content-details {
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
+/* ===== ACTION BUTTONS ===== */
 .overlay-add-contact-cancel-save {
     display: flex;
     gap: 25px;
@@ -98,6 +99,7 @@
     align-items: center;
 }
 
+/* Cancel Button */
 .overlay-add-contact-cancel {
     border: solid 1px #647188;
     border-radius: 8px;
@@ -106,6 +108,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
+    cursor: pointer;
 }
 
 .overlay-add-contact-cancel:hover {
@@ -114,33 +118,7 @@
     color: var(--main-color);
 }
 
-.overlay-add-contact-save {
-    display: flex;
-    gap: 4px;
-    border-radius: 10px;
-    background-color: var(--main-color);
-    height: 60px;
-    width: 174px;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.overlay-add-contact-save p {
-    width: 126px;
-    display: flex;
-    justify-content: center;
-}
-
-.overlay-add-contact-save img {
-    filter: brightness(0) saturate(100%) invert(100%);
-}
-
-.overlay-add-contact-save:hover {
-    background-color: var(--light-blue);
-    box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
-}
-
+/* Create Contact Button */
 .overlay-add-create-contact {
     display: flex;
     gap: 4px;
@@ -169,37 +147,24 @@
     box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
 }
 
+/* ===== SUCCESS STATUS ===== */
 .check-status-add-contact {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 305px;
-    height: 60px; 
+    height: 60px;
     color: white;
     background-color: var(--main-color);
-    position: fixed; 
+    position: fixed;
     z-index: 20;
     left: 50%;
-    transform: translateX(-50%) translateY(100vh); 
-    border-radius: 20px; 
-    animation: slideUpDown 4s ease-in-out; 
+    transform: translateX(-50%) translateY(100vh);
+    border-radius: 20px;
+    animation: slideUpDown 4s ease-in-out;
 }
 
-@keyframes slideUpDown {
-    0% {
-        transform: translateX(-50%) translateY(100vh);
-    }
-    25% {
-        transform: translateX(-50%) translateY(50vh);
-    }
-    75% {
-        transform: translateX(-50%) translateY(50vh);
-    }
-    100% {
-        transform: translateX(-50%) translateY(100vh);
-    }
-}
-
+/* ===== UTILITY CLASSES ===== */
 .no-contacts {
     display: flex;
     justify-content: center;
