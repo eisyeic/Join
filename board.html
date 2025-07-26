@@ -61,8 +61,8 @@
                 <div class="addtask-error" id="addtask-error"></div>
               </div>
               <div class="description">
-                <span class="lable-main">Decription</span>
-                <span class="lable-optional">(optional)</span>
+                <span class="label-main">Decription</span>
+                <span class="label-optional">(optional)</span>
                 <textarea
                   id="addtask-textarea"
                   placeholder="Enter a description"
@@ -70,7 +70,7 @@
                 <div class="addtask-error"></div>
               </div>
               <div class="due-date">
-                <span class="lable-main">Due Date</span>
+                <span class="label-main">Due Date</span>
                 <div class="date-input" id="datepicker-wrapper">
                   <input
                     type="text"
@@ -86,7 +86,7 @@
               </div>
             </div>
             <div class="priority-wrapper">
-              <span class="lable-main">Priority</span>
+              <span class="label-main">Priority</span>
               <div class="prio-buttons">
                 <button class="priority-button urgent-button">
                   <span>Urgent</span>
@@ -104,8 +104,8 @@
             </div>
             <!-- assigned container -->
             <div class="assigned-box">
-              <span class="lable-main">Assigned to</span>
-              <span class="lable-optional">(optional)</span>
+              <span class="label-main">Assigned to</span>
+              <span class="label-optional">(optional)</span>
               <div id="assigned-select-box" class="assigned-select-box">
                 <input type="text" placeholder="Select contacts to assign" />
                 <img
@@ -140,7 +140,7 @@
             </div>
             <!-- category container -->
             <div class="category-box">
-              <span class="lable-main">Category</span>
+              <span class="label-main">Category</span>
               <div id="category-select" class="category-select-box">
                 <span>Select task category</span>
                 <img
@@ -158,8 +158,8 @@
             <!-- subtask container -->
             <div class="subtask-box">
               <div>
-                <span class="lable-main">Subtasks</span>
-                <span class="lable-optional">(optional)</span>
+                <span class="label-main">Subtasks</span>
+                <span class="label-optional">(optional)</span>
               </div>
               <div class="subtask-select">
                 <input
@@ -232,7 +232,7 @@
       class="task-overlay-bg d-none"
     >
       <div onclick="event.stopPropagation()" class="task-overlay">
-        <div class="lable-exit-box">
+        <div class="label-exit-box">
           <span>User Story</span>
           <img
             onclick="showTaskOverlay()"
@@ -279,7 +279,7 @@
               src="./assets/icons/add_task/check_default.svg"
               alt=""
             />
-            <lable for="subtask1">Create start page</lable>
+            <label for="subtask1">Create start page</label>
           </div>
           <div class="subtask">
             <img
@@ -287,7 +287,7 @@
               src="./assets/icons/add_task/check_default.svg"
               alt=""
             />
-            <lable for="subtask2">Implement recipe recommendation</lable>
+            <label for="subtask2">Implement recipe recommendation</label>
           </div>
         </div>
         <div class="delete-edit-box">
@@ -421,7 +421,7 @@
             <!-- Template -->
             <div onclick="showTaskOverlay()" class="ticket">
               <div class="ticket-content">
-                <div class="lable">User Story</div>
+                <div class="label">User Story</div>
                 <div class="frame">
                   <div class="ticket-title">
                     Kochwelt Page & Recipe Recommender

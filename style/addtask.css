@@ -55,12 +55,12 @@
   color: var(--error-color);
 }
 
-.lable-main {
+.label-main {
   font-weight: 700;
   color: var(--menu-color);
 }
 
-.lable-optional {
+.label-optional {
   color: var(--style-color);
 }
 
