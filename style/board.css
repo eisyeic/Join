@@ -185,6 +185,8 @@
   rotate: 5deg;
 }
 
+
+/* Task Overlay */
 .task-overlay-bg {
   position: fixed;
   top: 0;
@@ -201,6 +203,7 @@
 .task-overlay {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   background-color: #fff;
   height: 932px;
   width: 528px;
@@ -242,12 +245,14 @@
   display: flex;
   align-items: center;
   gap: 25px;
+}
+
+b {
   color: var(--menu-color);
 }
 
 .due-date-box span, .priority-box span {
   font-size: 21px;
-  color: var(--menu-color);
 }
 
 .priority-box {
@@ -267,7 +272,6 @@
   flex-direction: column;
   gap: 8px;
 }
-
 
 .members {
   display: flex;
@@ -301,7 +305,42 @@
   gap: 16px;
 }
 
+.delete-edit-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
 
+.subtask img:hover {
+  content: url(../assets/icons/add_task/check_default_hover.svg);
+}
+
+.subtask img:active {
+  content: url(../assets/icons/add_task/check_checked.svg);
+}
+
+.button-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.icon-hover-filter {
+  transition: filter 0.2s ease;
+}
+
+#delete-task:hover .icon-hover-filter,
+#edit-task:hover .icon-hover-filter {
+  filter: drop-shadow(0 0 0.7px var(--light-blue));
+}
+
+#delete-task:hover span,
+#edit-task:hover span {
+  color: var(--light-blue);
+  font-weight: 700;
+}
 
 * {
   outline: 0px solid red

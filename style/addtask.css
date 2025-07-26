@@ -306,7 +306,7 @@ span {
   gap: 4px;
 } 
 
-.sub-spacer {
+.vertical-spacer {
   border: 1px solid var(--style-color);
   height: 18px;
 }
