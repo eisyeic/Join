@@ -161,7 +161,7 @@ footer {
 }
 
 .urgent-button.active img {
-  content: url("./assets/icons/add_task/urgent_defalut.svg");
+  content: url("./assets/icons/add_task/urgent_default.svg");
   width: 20px;
 }
 

@@ -160,7 +160,7 @@
 .back-arrow:hover {
   height: 32px;
   width: 32px;
-  content: url(../assets/general_elements/icons/arrow_left_hover.svg);
+  content: url(../assets/icons/login/back_arrow_hover.svg);
 }
 
 .login-title-box {
@@ -318,19 +318,19 @@
 } 
 
 .confirm-box img {
-  content: url(../assets/log_in_sign_up/icons/checkbox_default.svg);
+  content: url(../assets/icons/login/checkbox_default.svg);
 }
 
 .confirm-box:hover img {
-  content: url(../assets/log_in_sign_up/icons/checkbox_hover.svg);
+  content: url(../assets/icons/login/checkbox_hover.svg);
 }
 
 .confirm-box.checked img {
-  content: url(../assets/log_in_sign_up/icons/checkbox_checked.svg);
+  content: url(../assets/icons/login/checkbox_checked.svg);
 }
 
 .confirm-box.checked:hover img {
-  content: url(../assets/log_in_sign_up/icons/check_hover_checked.svg);
+  content: url(../assets/icons/login/check_hover_checked.svg);
 }
 
 .confirm-box a {

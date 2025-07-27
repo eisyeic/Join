@@ -1,5 +1,5 @@
 // clear error message when user starts typing
-$("addtask-title").addEventListener("input", () => {
+$("addtask-title").addEventListener("input", function() {
   this.style.borderColor = "";
   $("addtask-error").innerHTML = "";
 });
@@ -11,7 +11,7 @@ let picker = flatpickr($("datepicker"), {
 });
 
 // open date picker
-$("datepicker-wrapper").addEventListener("click", () => {
+$("datepicker-wrapper").addEventListener("click", function() {
   picker.open();
   $("datepicker").style.borderColor = "";
   $("due-date-error").innerHTML = "";
@@ -19,7 +19,7 @@ $("datepicker-wrapper").addEventListener("click", () => {
 
 // dropdown for assigned contacts
 let contactInitialsBox = document.querySelector(".contact-initials");
-$("assigned-select-box").addEventListener("click", () => {
+$("assigned-select-box").addEventListener("click", function() {
   $("contact-list-box").classList.toggle("d-none");
   let isListVisible = !$("contact-list-box").classList.contains("d-none");
   if (!isListVisible) {
@@ -74,7 +74,7 @@ function updateContactInitials() {
 }
 
 // dropdown for category selection
-$("category-select").addEventListener("click", () => {
+$("category-select").addEventListener("click", function() {
   $("category-selection").classList.toggle("d-none");
   $("category-icon").classList.toggle("arrow-down");
   $("category-icon").classList.toggle("arrow-up");
@@ -136,7 +136,7 @@ function updateContactInitialsVisibility() {
 }
 
 // clear button functionality
-$("cancel-button").addEventListener("click", () => {
+$("cancel-button").addEventListener("click", function() {
   $("addtask-title").value = "";
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
@@ -202,7 +202,7 @@ document.querySelectorAll(".priority-button").forEach((button) => {
 });
 
 // subtasks functionality
-$("sub-input").addEventListener("input", () => {
+$("sub-input").addEventListener("input", function() {
   if (this.value !== "") {
     $("subtask-plus-box").classList.add("d-none");
     $("subtask-func-btn").classList.remove("d-none");
@@ -216,7 +216,7 @@ $("sub-input").addEventListener("input", () => {
 let subtasks = [];
 
 // add subtask to the list
-$("sub-check").addEventListener("click", () => {
+$("sub-check").addEventListener("click", function() {
   let subtaskText = $("sub-input").value.trim();
   if (subtaskText) {
     subtasks.push(subtaskText);
@@ -228,13 +228,13 @@ $("sub-check").addEventListener("click", () => {
 });
 
 // Clear subtask input
-$("sub-clear").addEventListener("click", () => {
+$("sub-clear").addEventListener("click", function() {
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
 });
 
-$("sub-plus").addEventListener("click", () => {
+$("sub-plus").addEventListener("click", function() {
   if (subtasks.length == "") {
     $("sub-input").value = "Contact Form";
     $("subtask-plus-box").classList.add("d-none");

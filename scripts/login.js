@@ -128,9 +128,9 @@ function resetPasswordField(input, toggle, errorBox) {
 function updatePasswordIcon(input, toggle, isVisible) {
   toggle.src = input.value
     ? isVisible
-      ? "./assets/log_in_sign_up/icons/visibility.svg"
-      : "./assets/log_in_sign_up/icons/visibility_off.svg"
-    : "./assets/log_in_sign_up/icons/lock.svg";
+      ? "./assets/icons/login/visibility.svg"
+      : "./assets/icons/login/visibility_off.svg"
+    : "./assets/icons/login/lock.svg";
   toggle.classList.toggle("cursor-pointer", !!input.value);
 }
 

@@ -18,7 +18,8 @@
     <link rel="stylesheet" href="./style/overlay-add-task-board.css" />
     <link rel="stylesheet" href="./style/addtask.css" />
     <link rel="stylesheet" href="./style/flatpickr.min.css" />
-
+    <link rel="preload" href="./assets/icons/board/search_hover.svg" as="image">
+    <link rel="preload" href="./assets/icons/board/search_click.svg" as="image">
     <script src="script.js"></script>
     <script src="scripts/addtask.js" defer></script>
     <script src="./scripts/board.js"></script>
@@ -50,60 +51,56 @@
         <!-- Copy of addtask -->
         <div class="addtask-copy">
           <section class="addtask-wrapper">
-            <div class="addtask-main-content">
-              <div>
-                <input
-                  type="text"
-                  class="addtask-title"
-                  id="addtask-title"
-                  placeholder="Enter a title"
-                />
-                <div class="addtask-error" id="addtask-error"></div>
-              </div>
-              <div class="description">
-                <span class="label-main">Decription</span>
-                <span class="label-optional">(optional)</span>
-                <textarea
-                  id="addtask-textarea"
-                  placeholder="Enter a description"
-                ></textarea>
-                <div class="addtask-error"></div>
-              </div>
-              <div class="due-date">
-                <span class="label-main">Due Date</span>
-                <div class="date-input" id="datepicker-wrapper">
-                  <input
-                    type="text"
-                    id="datepicker"
-                    placeholder="dd/mm/yyyy"
-                  /><img
-                    onclick="flatpickr()"
-                    src="./assets/icons/add_task/event.svg"
-                    alt=""
-                  />
-                </div>
-                <div class="addtask-error" id="due-date-error"></div>
-              </div>
+        <div class="addtask-main-content">
+          <div>
+            <input
+              type="text"
+              class="addtask-title"
+              id="addtask-title"
+              placeholder="Enter a title"
+            />
+            <div class="addtask-error" id="addtask-error"></div>
+          </div>
+          <div class="description">
+            <span class="label-main">Decription</span>
+            <span class="label-optional">(optional)</span>
+            <textarea
+              id="addtask-textarea"
+              placeholder="Enter a description"
+            ></textarea>
+            <div class="addtask-error"></div>
+          </div>
+          <div class="due-date">
+            <span class="label-main">Due Date</span>
+            <div class="date-input" id="datepicker-wrapper">
+              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img
+                onclick="flatpickr()"
+                src="./assets/icons/add_task/event.svg"
+                alt=""
+              />
             </div>
-            <div class="priority-wrapper">
-              <span class="label-main">Priority</span>
-              <div class="prio-buttons">
-                <button class="priority-button urgent-button">
-                  <span>Urgent</span>
-                  <img src="./assets/icons/add_task/urgent.svg" alt="urgent" />
-                </button>
-                <button class="priority-button medium-button">
-                  <span>Medium</span>
-                  <img src="./assets/icons/add_task/medium.svg" alt="medium" />
-                </button>
-                <button class="priority-button low-button">
-                  <span>Low</span>
-                  <img src="./assets/icons/add_task/low.svg" alt="low" />
-                </button>
-              </div>
-            </div>
-            <!-- assigned container -->
-            <div class="assigned-box">
+            <div class="addtask-error" id="due-date-error"></div>
+          </div>
+        </div>
+        <div class="priority-wrapper">
+          <span class="label-main">Priority</span>
+          <div class="prio-buttons">
+            <button class="priority-button urgent-button">
+              <span>Urgent</span>
+              <img src="./assets/icons/add_task/urgent.svg" alt="urgent" />
+            </button>
+            <button class="priority-button medium-button">
+              <span>Medium</span>
+              <img src="./assets/icons/add_task/medium.svg" alt="medium" />
+            </button>
+            <button class="priority-button low-button">
+              <span>Low</span>
+              <img src="./assets/icons/add_task/low.svg" alt="low" />
+            </button>
+          </div>
+        </div>
+        <!-- assigned container -->
+        <div class="assigned-box">
           <span class="label-main">Assigned to</span>
           <span class="label-optional">(optional)</span>
           <div id="assigned-select-box" class="assigned-select-box">
@@ -138,65 +135,57 @@
 
           </div>
         </div>
-            <!-- category container -->
-            <div class="category-box">
-              <span class="label-main">Category</span>
-              <div id="category-select" class="category-select-box">
-                <span>Select task category</span>
-                <img
-                  id="category-icon"
-                  class="arrow-down"
-                  src="./assets/icons/add_task/arrow_down_default.svg"
-                  alt=""
-                />
-              </div>
-              <div id="category-selection" class="category-selection d-none">
-                <li data-value="Technical task">Technical task</li>
-                <li data-value="User Story">User Story</li>
-              </div>
+        <!-- category container -->
+        <div class="category-box">
+          <span class="label-main">Category</span>
+          <div id="category-select" class="category-select-box">
+            <span>Select task category</span>
+            <img
+              id="category-icon"
+              class="arrow-down"
+              src="./assets/icons/add_task/arrow_down_default.svg"
+              alt=""
+            />
+          </div>
+          <div id="category-selection" class="category-selection d-none">
+            <li data-value="Technical task">Technical task</li>
+            <li data-value="User Story">User Story</li>
+          </div>
+        </div>
+        <!-- subtask container -->
+        <div class="subtask-box">
+          <div>
+            <span class="label-main">Subtasks</span>
+            <span class="label-optional">(optional)</span>
+          </div>
+          <div class="subtask-select">
+            <input id="sub-input" type="text" placeholder="Add new subtask" />
+            <div id="subtask-func-btn" class="subtask-func-btn d-none">
+              <img
+                id="sub-clear"
+                class="sub-clear"
+                src="./assets/icons/add_task/sub_clear_def.svg"
+                alt=""
+              />
+              <div class="vertical-spacer"></div>
+              <img
+                id="sub-check"
+                class="sub-check"
+                src="./assets/icons/add_task/sub_check_def.svg"
+                alt=""
+              />
             </div>
-            <!-- subtask container -->
-            <div class="subtask-box">
-              <div>
-                <span class="label-main">Subtasks</span>
-                <span class="label-optional">(optional)</span>
-              </div>
-              <div class="subtask-select">
-                <input
-                  id="sub-input"
-                  type="text"
-                  placeholder="Add new subtask"
-                />
-                <div id="subtask-func-btn" class="subtask-func-btn d-none">
-                  <img
-                    id="sub-clear"
-                    class="sub-clear"
-                    src="./assets/icons/add_task/sub_clear_def.svg"
-                    alt=""
-                  />
-                  <div class="vertical-spacer"></div>
-                  <img
-                    id="sub-check"
-                    class="sub-check"
-                    src="./assets/icons/add_task/sub_check_def.svg"
-                    alt=""
-                  />
-                </div>
-                <div
-                  id="subtask-plus-box"
-                  class="subtask-plus-box"
-                  id="subtask-plus-box"
-                >
-                  <img
-                    id="sub-plus"
-                    src="./assets/icons/add_task/add.svg"
-                    alt=""
-                  />
-                </div>
-              </div>
-              <div id="subtask-list"></div>
+            <div
+              id="subtask-plus-box"
+              class="subtask-plus-box"
+              id="subtask-plus-box"
+            >
+              <img id="sub-plus" src="./assets/icons/add_task/add.svg" alt="" />
             </div>
-          </section>
+          </div>
+          <div id="subtask-list"></div>
+        </div>
+      </section>
         </div>
         <!-- Add task button -->
         <section class="overlay-create-task">
@@ -414,11 +403,11 @@
         </div>
         <div class="board-content">
           <div class="column" id="to-do-column">
-            <!-- Template -->
+            <!-- Template no tasks -->
             <div id="no-tasks">No tasks to do</div>
           </div>
           <div class="column" id="in-progress-column">
-            <!-- Template -->
+            <!-- Template task overlay -->
             <div onclick="showTaskOverlay()" class="ticket">
               <div class="ticket-content">
                 <div class="label">User Story</div>
@@ -440,22 +429,22 @@
                   <div class="initials">
                     <img
                       class="first-initial"
-                      src="./assets/board/icons/Property 1=Anton.svg"
+                      src="./assets/icons/board/Profile badge.svg"
                       alt=""
                     />
                     <img
                       class="second-initial"
-                      src="./assets/board/icons/Property 1=Benedikt.svg"
+                      src="./assets/icons/board/Profile badge (1).svg"
                       alt=""
                     />
                     <img
                       class="third-initial"
-                      src="./assets/board/icons/Property 1=Eva.svg"
+                      src="./assets/icons/board/Profile badge (2).svg"
                       alt=""
                     />
                   </div>
                   <div class="priority-icon">
-                    <img src="./assets/board/icons/urgent_arrow.svg" alt="" />
+                    <img src="./assets/icons/board/urgent.svg" alt="" />
                   </div>
                 </div>
               </div>
