@@ -232,3 +232,62 @@ main,
     color: var(--main-color);
     cursor: default;
 }
+
+.contact-single-person-content-mobile-headline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.help-a-tag-back-button {
+    display: block;
+    width: 37px;
+    height: 37px;
+    position: relative;
+}
+
+.single-person-content-mobile-bottom {
+    height: 64px;
+    width: 64px;
+    position: fixed;
+    right: 23px;
+    bottom: 127px;
+    color: white;
+    background-color: var(--main-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 10px;
+    gap: 3px;
+}
+
+.white-point {
+    background-color: white;
+    border-radius: 50%;
+    height: 5px;
+    width: 5px;
+}
+
+.single-person-content-mobile-navbar {
+    background-color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 116px;
+    height: 100px;
+    border-radius: 20px 20px 0 20px;
+    box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.3), -4px 4px 8px rgba(0, 0, 0, 0.3);
+
+    .single-person-content-mobile-navbar img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .single-person-content-mobile-navbar-content {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+}
