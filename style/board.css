@@ -93,6 +93,7 @@
   width: 252px;
   border-radius: 24px;
   box-shadow: rgb(0, 0, 0, 0.08) 0px 0px 10px 3px;
+  transition: transform 0.1s ease;
 }
 
 .ticket-content {
@@ -182,7 +183,7 @@
 
 .ticket:active {
   transform-origin: left bottom;
-  rotate: 5deg;
+  transform: rotate(5deg);
 }
 
 
@@ -320,11 +321,19 @@ b {
   content: url(../assets/icons/add_task/check_checked.svg);
 }
 
-.button-box {
+.button-box-delete, .button-box-edit {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+}
+
+.button-box-delete {
+  width: 91px;
+}
+
+.button-box-edit {
+  width: 71px;
 }
 
 .icon-hover-filter {

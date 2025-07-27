@@ -186,7 +186,7 @@
 }
 
 .create-button:hover img {
-  content: url(../assets/icons/add_task/check_white.png);
+  content: url(../assets/icons/add_task/check.svg);
 }
 
 .cancel-button:active img {
@@ -194,7 +194,7 @@
 }
 
 .create-button:active img {
-  content: url(../assets/icons/add_task/check_blue.png);
+  content: url(../assets/icons/add_task/check_blue.svg);
 }
 
 .assigned-box,  .category-box{
@@ -263,6 +263,35 @@ li:hover {
 li:active {
   background-color: var(--light-blue);
   color: #fff;
+}
+
+li.selected {
+  background-color: var(--main-color) !important;
+  color: white;
+}
+
+li.selected:hover {
+  background-color: var(--light-blue) !important;
+}
+
+.contact-initials {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.contact-initials-icon {
+  background-color: var(--main-color);
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
 }
 
 .category-select-box {

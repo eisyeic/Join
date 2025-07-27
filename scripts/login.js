@@ -1,5 +1,8 @@
 // Firebase Imports
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth } from "./firebase.js";
 
 // Utility
@@ -186,7 +189,13 @@ function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
 
 // Register new User
 function registerUser(email, password) {
+  let name = $("name").value.trim(); 
   createUserWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      return updateProfile(userCredential.user, {
+        displayName: name
+      });
+    })
     .then(() => {
       $("layout").style.opacity = "0.5";
       $("slide-in-banner").classList.add("visible");

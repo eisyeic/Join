@@ -1,5 +1,5 @@
 // clear error message when user starts typing
-$("addtask-title").addEventListener("input", function () {
+$("addtask-title").addEventListener("input", () => {
   this.style.borderColor = "";
   $("addtask-error").innerHTML = "";
 });
@@ -18,14 +18,63 @@ $("datepicker-wrapper").addEventListener("click", () => {
 });
 
 // dropdown for assigned contacts
-$("assigned-select-box").addEventListener("click", function () {
+let contactInitialsBox = document.querySelector(".contact-initials");
+$("assigned-select-box").addEventListener("click", () => {
   $("contact-list-box").classList.toggle("d-none");
-  $("assigned-icon").classList.toggle("arrow-down");
-  $("assigned-icon").classList.toggle("arrow-up");
+  let isListVisible = !$("contact-list-box").classList.contains("d-none");
+  if (!isListVisible) {
+    let selectedContacts =
+      $("contact-list-box").querySelectorAll("li.selected");
+    if (selectedContacts.length > 0) {
+      contactInitialsBox.classList.remove("d-none");
+      updateContactInitials();
+    } else {
+      contactInitialsBox.classList.add("d-none");
+    }
+  } else {
+    contactInitialsBox.classList.add("d-none");
+  }
 });
 
+// contact list functionality
+document.querySelectorAll("#contact-list-box li").forEach((li) => {
+  li.addEventListener("click", () => {
+    li.classList.toggle("selected");
+    let images = li.querySelectorAll("img");
+    let checkboxIcon = images[1];
+    let isSelected = li.classList.contains("selected");
+    checkboxIcon.src = isSelected
+      ? "./assets/icons/add_task/check_white.svg"
+      : "./assets/icons/add_task/check_default.svg";
+    updateContactInitials();
+  });
+});
+
+// generate initials
+function getInitials(name) {
+  let parts = name.split(" ");
+  let first = parts[0]?.charAt(0).toUpperCase() || "";
+  let last = parts[1]?.charAt(0).toUpperCase() || "";
+  return first + last;
+}
+
+// Initial icons
+function updateContactInitials() {
+  let container = document.querySelector(".contact-initials");
+  container.innerHTML = "";
+  let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
+  selectedLis.forEach((li) => {
+    let name = li.innerText.trim();
+    let initials = getInitials(name);
+    let span = document.createElement("div");
+    span.classList.add("contact-initials-icon");
+    span.textContent = initials;
+    container.appendChild(span);
+  });
+}
+
 // dropdown for category selection
-$("category-select").addEventListener("click", function () {
+$("category-select").addEventListener("click", () => {
   $("category-selection").classList.toggle("d-none");
   $("category-icon").classList.toggle("arrow-down");
   $("category-icon").classList.toggle("arrow-up");
@@ -44,30 +93,50 @@ $("category-selection")
     });
   });
 
-// close dropdowns when clicking outside
-document.addEventListener("click", function (event) {
+// Main event listener to close dropdowns when clicking outside
+document.addEventListener("click", (event) => {
+  handleCategoryClickOutside(event);
+  handleAssignedClickOutside(event);
+});
+
+// Checks if the click was outside the category dropdown and closes it
+function handleCategoryClickOutside(event) {
   let isClickInsideCategory =
     $("category-select").contains(event.target) ||
     $("category-selection").contains(event.target);
-  let isClickInsideAssigned =
-    $("assigned-select-box").contains(event.target) ||
-    $("contact-list-box").contains(event.target);
-
   if (!isClickInsideCategory) {
     $("category-selection").classList.add("d-none");
     $("category-icon").classList.remove("arrow-up");
     $("category-icon").classList.add("arrow-down");
   }
+}
 
+// Checks if the click was outside the assigned contacts dropdown and closes it
+function handleAssignedClickOutside(event) {
+  let isClickInsideAssigned =
+    $("assigned-select-box").contains(event.target) ||
+    $("contact-list-box").contains(event.target);
   if (!isClickInsideAssigned) {
     $("contact-list-box").classList.add("d-none");
     $("assigned-icon").classList.remove("arrow-up");
     $("assigned-icon").classList.add("arrow-down");
+    updateContactInitialsVisibility();
   }
-});
+}
+
+// Updates visibility of contact initials depending on selection
+function updateContactInitialsVisibility() {
+  let selectedContacts = $("contact-list-box").querySelectorAll("li.selected");
+  if (selectedContacts.length > 0) {
+    contactInitialsBox.classList.remove("d-none");
+    updateContactInitials();
+  } else {
+    contactInitialsBox.classList.add("d-none");
+  }
+}
 
 // clear button functionality
-$("cancel-button").addEventListener("click", function () {
+$("cancel-button").addEventListener("click", () => {
   $("addtask-title").value = "";
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
@@ -87,7 +156,7 @@ $("cancel-button").addEventListener("click", function () {
 });
 
 // create button check necessary fields filled
-$("create-button").addEventListener("click", function () {
+$("create-button").addEventListener("click", () => {
   if (!$("addtask-title").value) {
     $("addtask-error").innerHTML = "This field is required";
     $("addtask-title").style.borderColor = "var(--error-color)";
@@ -116,7 +185,7 @@ document.querySelectorAll(".priority-button").forEach((button) => {
 });
 
 // subtasks functionality
-$("sub-input").addEventListener("input", function () {
+$("sub-input").addEventListener("input", () => {
   if (this.value !== "") {
     $("subtask-plus-box").classList.add("d-none");
     $("subtask-func-btn").classList.remove("d-none");
@@ -130,7 +199,7 @@ $("sub-input").addEventListener("input", function () {
 let subtasks = [];
 
 // add subtask to the list
-$("sub-check").addEventListener("click", function () {
+$("sub-check").addEventListener("click", () => {
   let subtaskText = $("sub-input").value.trim();
   if (subtaskText) {
     subtasks.push(subtaskText);
@@ -142,13 +211,13 @@ $("sub-check").addEventListener("click", function () {
 });
 
 // Clear subtask input
-$("sub-clear").addEventListener("click", function () {
+$("sub-clear").addEventListener("click", () => {
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
 });
 
-$("sub-plus").addEventListener("click", function () {
+$("sub-plus").addEventListener("click", () => {
   if (subtasks.length == "") {
     $("sub-input").value = "Contact Form";
     $("subtask-plus-box").classList.add("d-none");
@@ -227,7 +296,7 @@ function deleteEvent() {
 }
 
 // hover effect for subtask buttons
-$("subtask-list").addEventListener("mouseover", function (event) {
+$("subtask-list").addEventListener("mouseover", (event) => {
   let item = event.target.closest(".subtask-item");
   if (item) {
     item.querySelector(".subtask-func-btn").classList.remove("d-none");
@@ -235,7 +304,7 @@ $("subtask-list").addEventListener("mouseover", function (event) {
 });
 
 // leave hover effect for subtask buttons
-$("subtask-list").addEventListener("mouseout", function (event) {
+$("subtask-list").addEventListener("mouseout", (event) => {
   let item = event.target.closest(".subtask-item");
   if (item) {
     item.querySelector(".subtask-func-btn").classList.add("d-none");
