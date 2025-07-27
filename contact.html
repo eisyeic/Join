@@ -66,17 +66,17 @@
       <div class="overlay-edit-contact-delete-save">
         <p class="overlay-edit-contact-delete">Delete</p>
         <div class="overlay-edit-contact-save" onclick="saveEditedContact()">
-    <p>Save</p>
-    <img src="./assets/add_task/icons/check.svg" alt="" />
-</div>
+          <p>Save</p>
+          <img src="./assets/add_task/icons/check.svg" alt="" />
+        </div>
 
       </div>
     </div>
   </div>
   <!-- Overlay Add Contact  -->
-  <div class="overlay-add-contact d-none" id="contact-overlay-close-add" onclick="toggleAddContact()">
-    <div class="contact-overlay-add-head" onclick="toggleAddContact(event)">
-      <div class="contact-overlay-close-icon" onclick="toggleAddContact()">
+  <div class="overlay-add-contact d-none" id="contact-overlay-close-add" onclick="closeAddContact()">
+    <div class="contact-overlay-add-head" onclick="closeAddContact(event)">
+      <div class="contact-overlay-close-icon" onclick="closeAddContact()">
         <img src="./assets/general_elements/icons/close_white.svg" alt="Close Icon" />
         <img src="./assets/general_elements/icons/close_hover_white.svg" alt="Close Icon Hover" />
       </div>
@@ -84,7 +84,7 @@
       <h2>Add contact</h2>
       <p>Tasks are better with a team!</p>
     </div>
-    <div class="contact-overlay-add-content" onclick="toggleAddContact(event)">
+    <div class="contact-overlay-add-content" onclick="event.stopPropagation()">
       <div class="contact-overlay-person-icon-big">
         <img src="./assets/contacts/img/person-new.svg" alt="Circle of New Person" />
       </div>
@@ -110,7 +110,7 @@
         <div class="contact-overlay-placeholder"></div>
       </div>
       <div class="overlay-add-contact-cancel-save">
-        <p class="overlay-add-contact-cancel" onclick="toggleAddContact()">Cancel</p>
+        <p class="overlay-add-contact-cancel" onclick="closeAddContact()">Cancel</p>
         <div class="overlay-add-create-contact" onclick="dataSave()">
           <p>Create contact</p>
           <img src="./assets/add_task/icons/check.svg" alt="Check Icon" />
@@ -157,14 +157,14 @@
 
     <section class="contact-add-new-contact-container">
       <div class="button-add-new-contact-container">
-        <button onclick="toggleAddContact()" class="button-regular button-blue base-button button-add-new-contact-box">
+        <button onclick="openAddContact()" class="button-regular button-blue base-button button-add-new-contact-box">
           Add new contact <img src="./assets/contacts/icons/person_add.svg" />
         </button>
       </div>
-      
+
       <div class="contact-book" id="all-contacts"></div>
 
-      <button class="d-none button-mobile-add-new-contact" onclick="toggleAddContact()">
+      <button class="d-none button-mobile-add-new-contact" onclick="openAddContact()">
         <img src="./assets/contacts/icons/person_add.svg" alt="Button Add New Contact" />
       </button>
     </section>
