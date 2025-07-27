@@ -1,5 +1,11 @@
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { app } from "./firebase.js";
+
+let db = getDatabase(app);
+
+
 // clear error message when user starts typing
-$("addtask-title").addEventListener("input", function() {
+$("addtask-title").addEventListener("input", function () {
   this.style.borderColor = "";
   $("addtask-error").innerHTML = "";
 });
@@ -11,7 +17,7 @@ let picker = flatpickr($("datepicker"), {
 });
 
 // open date picker
-$("datepicker-wrapper").addEventListener("click", function() {
+$("datepicker-wrapper").addEventListener("click", function () {
   picker.open();
   $("datepicker").style.borderColor = "";
   $("due-date-error").innerHTML = "";
@@ -19,7 +25,7 @@ $("datepicker-wrapper").addEventListener("click", function() {
 
 // dropdown for assigned contacts
 let contactInitialsBox = document.querySelector(".contact-initials");
-$("assigned-select-box").addEventListener("click", function() {
+$("assigned-select-box").addEventListener("click", function () {
   $("contact-list-box").classList.toggle("d-none");
   let isListVisible = !$("contact-list-box").classList.contains("d-none");
   if (!isListVisible) {
@@ -74,7 +80,7 @@ function updateContactInitials() {
 }
 
 // dropdown for category selection
-$("category-select").addEventListener("click", function() {
+$("category-select").addEventListener("click", function () {
   $("category-selection").classList.toggle("d-none");
   $("category-icon").classList.toggle("arrow-down");
   $("category-icon").classList.toggle("arrow-up");
@@ -136,7 +142,7 @@ function updateContactInitialsVisibility() {
 }
 
 // clear button functionality
-$("cancel-button").addEventListener("click", function() {
+$("cancel-button").addEventListener("click", function () {
   $("addtask-title").value = "";
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
@@ -163,7 +169,6 @@ function clearAssignedContacts() {
   contactInitialsBox.innerHTML = "";
 }
 
-
 // reset priority selection
 function resetPrioritySelection() {
   document
@@ -173,16 +178,88 @@ function resetPrioritySelection() {
 }
 
 // create button check necessary fields filled
-$("create-button").addEventListener("click", () => {
-  if (!$("addtask-title").value) {
+$("create-button").addEventListener("click", handleCreateClick);
+function handleCreateClick() {
+  const taskData = collectFormData();
+  const isValid = validateFormData(taskData);
+  if (!isValid) return;
+  sendTaskToFirebase(taskData);
+}
+
+
+// collect form data
+function collectFormData() {
+  const title = $("addtask-title").value.trim();
+  const description = $("addtask-textarea").value.trim();
+  const dueDate = $("datepicker").value.trim();
+  const category = $("category-select").querySelector("span").textContent;
+  const assignedContacts = Array.from(
+    document.querySelectorAll("#contact-list-box li.selected")
+  ).map(li => li.innerText.trim());
+  return {
+    title,
+    description,
+    dueDate,
+    category,
+    priority: selectedPriority,
+    assignedContacts,
+    subtasks,
+  };
+}
+
+
+// validate data befor send
+function validateFormData(data) {
+  let valid = true;
+  $("addtask-error").innerHTML = "";
+  $("due-date-error").innerHTML = "";
+  $("category-selection-error").innerHTML = "";
+  if (!data.title) {
     $("addtask-error").innerHTML = "This field is required";
     $("addtask-title").style.borderColor = "var(--error-color)";
+    valid = false;
   }
-  if (!$("datepicker").value) {
+  if (!data.dueDate) {
     $("due-date-error").innerHTML = "Please select a due date";
     $("datepicker").style.borderColor = "var(--error-color)";
+    valid = false;
   }
-});
+  if (data.category === "Select task category") {
+    $("category-selection-error").innerHTML = "Please choose category";
+    $("category-select").style.borderColor = "var(--error-color)";
+    valid = false;
+  }
+  if (!data.priority) {
+    valid = false;
+  }
+  return valid;
+}
+
+// send to firebase
+function sendTaskToFirebase(taskData) {
+  const db = getDatabase(app);
+  const tasksRef = ref(db, "tasks");
+  const newTaskRef = push(tasksRef);
+
+  const task = {
+    ...taskData,
+    createdAt: new Date().toISOString(),
+  };
+  set(newTaskRef, task)
+    .then(() => {
+      clearForm();
+      window.location.href = "./board.html";
+    })
+    .catch((error) => {
+      console.error("Fehler beim Speichern:", error);
+    });
+}
+
+
+// clear form 
+function clearForm() {
+  $("cancel-button").click(); 
+}
 
 // priority buttons functionality
 let selectedPriority = null;
@@ -202,7 +279,7 @@ document.querySelectorAll(".priority-button").forEach((button) => {
 });
 
 // subtasks functionality
-$("sub-input").addEventListener("input", function() {
+$("sub-input").addEventListener("input", function () {
   if (this.value !== "") {
     $("subtask-plus-box").classList.add("d-none");
     $("subtask-func-btn").classList.remove("d-none");
@@ -216,7 +293,7 @@ $("sub-input").addEventListener("input", function() {
 let subtasks = [];
 
 // add subtask to the list
-$("sub-check").addEventListener("click", function() {
+$("sub-check").addEventListener("click", function () {
   let subtaskText = $("sub-input").value.trim();
   if (subtaskText) {
     subtasks.push(subtaskText);
@@ -228,13 +305,13 @@ $("sub-check").addEventListener("click", function() {
 });
 
 // Clear subtask input
-$("sub-clear").addEventListener("click", function() {
+$("sub-clear").addEventListener("click", function () {
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
 });
 
-$("sub-plus").addEventListener("click", function() {
+$("sub-plus").addEventListener("click", function () {
   if (subtasks.length == "") {
     $("sub-input").value = "Contact Form";
     $("subtask-plus-box").classList.add("d-none");

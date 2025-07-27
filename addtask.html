@@ -81,6 +81,7 @@
       </section>
       <!-- section addtask -->
       <section class="addtask-wrapper">
+        <!-- task title -->
         <div class="addtask-main-content">
           <div>
             <input
@@ -91,6 +92,7 @@
             />
             <div class="addtask-error" id="addtask-error"></div>
           </div>
+          <!-- description -->
           <div class="description">
             <span class="label-main">Decription</span>
             <span class="label-optional">(optional)</span>
@@ -98,8 +100,8 @@
               id="addtask-textarea"
               placeholder="Enter a description"
             ></textarea>
-            <div class="addtask-error"></div>
           </div>
+          <!-- date choose -->
           <div class="due-date">
             <span class="label-main">Due Date</span>
             <div class="date-input" id="datepicker-wrapper">
@@ -112,6 +114,7 @@
             <div class="addtask-error" id="due-date-error"></div>
           </div>
         </div>
+        <!-- priority choose -->
         <div class="priority-wrapper">
           <span class="label-main">Priority</span>
           <div class="prio-buttons">
@@ -177,6 +180,7 @@
               alt=""
             />
           </div>
+          <div class="addtask-error" id="category-selection-error"></div>
           <div id="category-selection" class="category-selection d-none">
             <li data-value="Technical task">Technical task</li>
             <li data-value="User Story">User Story</li>
