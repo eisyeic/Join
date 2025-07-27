@@ -37,10 +37,27 @@
   outline-color: var(--main-color);
 }
 
+.column-title img:hover {
+  cursor: pointer;
+  content: url(../assets/icons/board/plus_hover.svg);
+}
+
+.column-title img:active {
+  content: url(../assets/icons/board/plus_clicked.svg);
+}
+
 .search-button {
   cursor: pointer;
   height: 32px;
   width: 32px;
+}
+
+.search-button img:hover {
+  content: url(../assets/icons/board/search_hover.svg);
+}
+
+.search-button img:active {
+  content: url(../assets/icons/board/search_click.svg);
 }
 
 .bar {

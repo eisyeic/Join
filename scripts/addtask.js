@@ -148,12 +148,29 @@ $("cancel-button").addEventListener("click", () => {
     "Select task category";
   subtasks = [];
   renderSubtasks();
+  clearAssignedContacts();
+  resetPrioritySelection();
+});
 
+// clear assigned contacts
+function clearAssignedContacts() {
+  document.querySelectorAll("#contact-list-box li.selected").forEach((li) => {
+    li.classList.remove("selected");
+    let checkboxIcon = li.querySelectorAll("img")[1];
+    checkboxIcon.src = "./assets/icons/add_task/check_default.svg";
+  });
+  contactInitialsBox.classList.add("d-none");
+  contactInitialsBox.innerHTML = "";
+}
+
+
+// reset priority selection
+function resetPrioritySelection() {
   document
     .querySelectorAll(".priority-button")
     .forEach((btn) => btn.classList.remove("active"));
   selectedPriority = null;
-});
+}
 
 // create button check necessary fields filled
 $("create-button").addEventListener("click", () => {
