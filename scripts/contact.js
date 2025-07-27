@@ -22,16 +22,29 @@ function clearAddFormInputs() {
   $("phone-new-contact").value = "";
 }
 
+// Open add contact overlay
+function openAddContact() {
+  $("contact-overlay-close-add").classList.remove("d-none");
+  clearAddFormInputs();
+}
+
+// Close add contact overlay  
+function closeAddContact() {
+  $("contact-overlay-close-add").classList.add("d-none");
+  clearAddFormInputs();
+}
+
+// Toggle add contact overlay (ohne clearing)
+function toggleAddContact() {
+  $("contact-overlay-close-add").classList.toggle("d-none");
+}
+
 // Toggle edit contact overlay
 function toggleEditContact() {
   $("contact-overlay-close-edit").classList.toggle("d-none");
 }
 
-// Toggle add contact overlay
-function toggleAddContact() {
-  $("contact-overlay-close-add").classList.toggle("d-none");
-  clearAddFormInputs();
-}
+
 
 // ===== EDIT CONTACT FUNCTIONS =====
 
