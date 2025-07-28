@@ -6,7 +6,7 @@ const db = getDatabase(app);
 
 // Toggle Add Task Overlay
 window.toggleAddTaskBoard = function () {
-  $d("overlay-add-task").classList.toggle("d-none");
+  $("overlay-add-task").classList.toggle("d-none");
 }
 
 // task overlay
@@ -23,7 +23,7 @@ function loadTasksFromFirebase() {
 }
 
 function renderToDoTasks(tasks) {
-  const todoColumn = document.getElementById("to-do-column");
+  const todoColumn = $("to-do-column");
   todoColumn.innerHTML = ""; 
   for (let taskId in tasks) {
     const task = tasks[taskId];
@@ -32,49 +32,28 @@ function renderToDoTasks(tasks) {
   }
 }
 
-function createTaskElement(task) {
+function createTaskElement(task, taskId) {
   const labelClass = getLabelClass(task.category);
   const ticket = document.createElement('div');
   ticket.classList.add('ticket');
   ticket.innerHTML = `
-            <div onclick="showTaskOverlay()" class="ticket">
+            <div onclick="showTaskOverlay(${taskId})" class="ticket">
               <div class="ticket-content">
                 <div class="label ${labelClass}">${task.category}</div>
                 <div class="frame">
                   <div class="ticket-title">
-                    Kochwelt Page & Recipe Recommender
+                    ${task.title}
                   </div>
                   <div class="ticket-text">
-                    Build start page with recipe recommendation...
+                    ${task.description}
                   </div>
                 </div>
-                <div class="subtasks-box">
-                  <div class="progressbar">
-                    <div class="progressbar-inlay"></div>
-                  </div>
-                  1/2 Subtasks
-                </div>
+                  ${task.subtasks && task.subtasks.length > 0 ? renderSubtaskProgress(task.subtasks) : ''}
                 <div class="initials-icon-box">
                   <div class="initials">
-                    <img
-                      class="first-initial"
-                      src="./assets/icons/board/Profile badge.svg"
-                      alt=""
-                    />
-                    <img
-                      class="second-initial"
-                      src="./assets/icons/board/Profile badge (1).svg"
-                      alt=""
-                    />
-                    <img
-                      class="third-initial"
-                      src="./assets/icons/board/Profile badge (2).svg"
-                      alt=""
-                    />
+                    ${renderInitials(task.assignedContacts)}
                   </div>
-                  <div class="priority-icon">
-                    <img src="./assets/icons/board/urgent.svg" alt="" />
-                  </div>
+                  <img src="./assets/icons/board/${task.priority.toLowerCase()}.svg" alt="${task.priority}">
                 </div>
               </div>
             </div> `;
@@ -87,41 +66,6 @@ function getLabelClass(category) {
   return '';
 }
 
-/* 
-<div class="ticket-content">
-      <div class="label" style="background-color: ${getCategoryColor(task.category)};">
-        ${task.category}
-      </div>
-      <div class="frame">
-        <span class="ticket-title">${task.title}</span>
-        <span class="ticket-text">${task.description}</span>
-      </div>
-      ${task.subtasks && task.subtasks.length > 0 ? renderSubtaskProgress(task.subtasks) : ''}
-      <div class="initials-icon-box">
-        <div class="initials">
-          ${renderInitials(task.assignedTo)}
-        </div>
-        <img src="./assets/icons/board/${task.priority.toLowerCase()}.svg" alt="${task.priority}">
-      </div>
-    </div>
-*/
-
-function renderInitials(assignedTo = []) {
-  return assignedTo.map((name, index) => {
-    const initials = name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
-    const zIndex = index + 1;
-    const marginLeft = index === 0 ? 0 : -10;
-
-    return `<div class="first-initial" style="z-index: ${zIndex}; margin-left: ${marginLeft}px;">
-              <img src="./assets/icons/profile/profile_icon_${(index % 3) + 1}.svg" alt="${initials}">
-            </div>`;
-  }).join('');
-}
-
 function renderSubtaskProgress(subtasks) {
   const total = subtasks.length;
   const done = subtasks.filter(st => st.done).length;
@@ -132,9 +76,35 @@ function renderSubtaskProgress(subtasks) {
       <div class="progressbar">
         <div class="progressbar-inlay" style="width: ${percentage}%"></div>
       </div>
-      <span>${done}/${total} Subtasks</span>
+      ${done}/${total} Subtasks
     </div>
   `;
+}
+
+function renderInitials(assignedTo = []) {
+  const colors = ["#FFA500", "#00BFFF", "#32CD32", "#9370DB", "#FF69B4"]; // beliebige Farben
+
+  if (!Array.isArray(assignedTo) || assignedTo.length === 0) return '';
+
+  return assignedTo.map((name, index) => {
+    const initials = name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+
+    const zIndex = index + 1;
+    const marginLeft = index === 0 ? 0 : -10;
+    const color = colors[index % colors.length];
+
+    return `
+      <div class="initial-circle" 
+           style="background-color: ${color}; 
+                  z-index: ${zIndex}; 
+                  margin-left: ${marginLeft}px;">
+        ${initials}
+      </div>`;
+  }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
