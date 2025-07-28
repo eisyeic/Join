@@ -85,3 +85,7 @@ nav {
 .profile-navbar a:hover {
   background-color: var(--navi-buttons-bg);
 }
+
+.profile-navbar-help {
+    display: none;
+  }

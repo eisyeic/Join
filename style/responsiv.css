@@ -38,7 +38,21 @@
   nav {
     display: contents;
   }
+
+  .profile-navbar {
+    height: 180px;
+    top: 84px
+  }
+
+  .profile-navbar a {
+    color: var(--main-color);
+  }
+
+  .profile-navbar-help {
+    display: flex;
+  }
 }
+
 
 @media (max-width: 720px) {
   .nav-box img {
