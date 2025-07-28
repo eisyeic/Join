@@ -424,57 +424,32 @@
             <div class="column-title">Done</div>
           </div>
         </div>
+        <!-- tasks templates -->
         <div class="board-content">
-          <div class="column" id="to-do-column">
-            <!-- Template no tasks -->
-            <div id="no-tasks">No tasks to do</div>
-          </div>
-          <div class="column" id="in-progress-column">
-            <!-- Template task overlay -->
-            <div onclick="showTaskOverlay()" class="ticket">
-              <div class="ticket-content">
-                <div class="label">User Story</div>
-                <div class="frame">
-                  <div class="ticket-title">
-                    Kochwelt Page & Recipe Recommender
-                  </div>
-                  <div class="ticket-text">
-                    Build start page with recipe recommendation...
-                  </div>
-                </div>
-                <div class="subtasks-box">
-                  <div class="progressbar">
-                    <div class="progressbar-inlay"></div>
-                  </div>
-                  1/2 Subtasks
-                </div>
-                <div class="initials-icon-box">
-                  <div class="initials">
-                    <img
-                      class="first-initial"
-                      src="./assets/icons/board/Profile badge.svg"
-                      alt=""
-                    />
-                    <img
-                      class="second-initial"
-                      src="./assets/icons/board/Profile badge (1).svg"
-                      alt=""
-                    />
-                    <img
-                      class="third-initial"
-                      src="./assets/icons/board/Profile badge (2).svg"
-                      alt=""
-                    />
-                  </div>
-                  <div class="priority-icon">
-                    <img src="./assets/icons/board/urgent.svg" alt="" />
-                  </div>
-                </div>
-              </div>
+          <!-- to do tasks template -->
+          <div class="column">
+            <div class="task-list" id="to-do-column">
+              <div class="no-tasks">No tasks to do</div>
             </div>
           </div>
-          <div class="column" id="await-feedback-column"></div>
-          <div class="column" id="done-column"></div>
+          <!-- in progressin tasks template -->
+          <div class="column">
+            <div class="task-list" id="in-progress-column">
+              <div class="no-tasks">No tasks in progressing</div>
+            </div>
+          </div>
+          <!-- await feedback tasks template -->
+          <div class="column">
+            <div class="task-list" id="await-feedback-column">
+              <div class="no-tasks">No tasks await feedback</div>
+            </div>
+          </div>
+          <!-- done tasks template -->
+          <div class="column">
+            <div class="task-list" id="done-column">
+              <div class="no-tasks">No tasks done</div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

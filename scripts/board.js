@@ -33,10 +33,62 @@ function renderToDoTasks(tasks) {
 }
 
 function createTaskElement(task) {
+  const labelClass = getLabelClass(task.category);
   const ticket = document.createElement('div');
   ticket.classList.add('ticket');
   ticket.innerHTML = `
-    <div class="ticket-content">
+            <div onclick="showTaskOverlay()" class="ticket">
+              <div class="ticket-content">
+                <div class="label ${labelClass}">${task.category}</div>
+                <div class="frame">
+                  <div class="ticket-title">
+                    Kochwelt Page & Recipe Recommender
+                  </div>
+                  <div class="ticket-text">
+                    Build start page with recipe recommendation...
+                  </div>
+                </div>
+                <div class="subtasks-box">
+                  <div class="progressbar">
+                    <div class="progressbar-inlay"></div>
+                  </div>
+                  1/2 Subtasks
+                </div>
+                <div class="initials-icon-box">
+                  <div class="initials">
+                    <img
+                      class="first-initial"
+                      src="./assets/icons/board/Profile badge.svg"
+                      alt=""
+                    />
+                    <img
+                      class="second-initial"
+                      src="./assets/icons/board/Profile badge (1).svg"
+                      alt=""
+                    />
+                    <img
+                      class="third-initial"
+                      src="./assets/icons/board/Profile badge (2).svg"
+                      alt=""
+                    />
+                  </div>
+                  <div class="priority-icon">
+                    <img src="./assets/icons/board/urgent.svg" alt="" />
+                  </div>
+                </div>
+              </div>
+            </div> `;
+  return ticket;
+}
+
+function getLabelClass(category) {
+  if (category === "User Story") return 'user-story';
+  if (category === "Technical task") return 'technical-task';
+  return '';
+}
+
+/* 
+<div class="ticket-content">
       <div class="label" style="background-color: ${getCategoryColor(task.category)};">
         ${task.category}
       </div>
@@ -52,19 +104,7 @@ function createTaskElement(task) {
         <img src="./assets/icons/board/${task.priority.toLowerCase()}.svg" alt="${task.priority}">
       </div>
     </div>
-  `;
-
-  return ticket;
-}
-
-function getCategoryColor(category) {
-  switch (category.toLowerCase()) {
-    case 'design': return '#FF7A00'; // Orange
-    case 'development': return '#29ABE2'; // Blau
-    case 'marketing': return '#2AD300'; // Grün
-    default: return '#FF7A00'; // Fallback-Farbe
-  }
-}
+*/
 
 function renderInitials(assignedTo = []) {
   return assignedTo.map((name, index) => {
