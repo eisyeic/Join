@@ -74,13 +74,13 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
         <h6>Phone</h6>
         <span>${phone}</span>
     </div>
-    <div class="single-person-content-mobile-bottom" onclick="openDetailsMobileNavbar()">
+    <div class="single-person-content-mobile-bottom" onclick="addDetailsMobileNavbar(), removeDetailsMobileNavbar(event)">
         <div class="white-point"></div>
         <div class="white-point"></div>
         <div class="white-point"></div>
     </div>
-    <div class="single-person-content-mobile-navbar" id="single-person-content-mobile-navbar">
-        <div class="single-person-content-mobile-navbar-content">
+    <div class="single-person-content-mobile-navbar d-none" id="single-person-content-mobile-navbar" onclick="removeDetailsMobileNavbar(event)">
+        <div class="single-person-content-mobile-navbar-content" onclick="toggleEditContact()">
             <img src="./assets/contacts/icons/pen_thin.svg" alt="Edit Icon">
             <p>Edit</p>
         </div>

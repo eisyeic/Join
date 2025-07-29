@@ -28,7 +28,7 @@ function openAddContact() {
   clearAddFormInputs();
 }
 
-// Close add contact overlay  
+// Close add contact overlay
 function closeAddContact() {
   $("contact-overlay-close-add").classList.add("d-none");
   clearAddFormInputs();
@@ -46,31 +46,38 @@ function toggleEditContact() {
 
 // Show contact details
 function showContactDetails(name, email, phone, colorIndex, id) {
-    currentContact = { name, email, phone, colorIndex, id };
-    const detailSection = document.getElementById('contact-details');
+  currentContact = { name, email, phone, colorIndex, id };
+  const detailSection = document.getElementById("contact-details");
 
-    getContactDeteails(name, email, phone, colorIndex, id, detailSection);
-    detailSection.classList.remove('d-none');
+  getContactDeteails(name, email, phone, colorIndex, id, detailSection);
+  detailSection.classList.remove("d-none");
 
-    if (window.innerWidth <= 900) {
+  if (window.innerWidth <= 900) {
     $("contact-details").classList.add("mobile-visible");
     $("add-new-contact-container").style.display = "none";
 
     getNewLayoutDetails(name, email, phone, colorIndex, detailSection);
-    }
+  }
 }
 
 // Remove details mobile Back
 function detailsMobileBack() {
-    $("contact-details").classList.remove("mobile-visible");
-    $("contact-details").style.display = "none";
-    $("add-new-contact-container").style.display = "block";
+  $("contact-details").classList.remove("mobile-visible");
+  $("contact-details").style.display = "none";
+  $("add-new-contact-container").style.display = "block";
 }
 
-function openDetailsMobileNavbar() {
-  
+function addDetailsMobileNavbar() {
+  $("single-person-content-mobile-navbar").classList.remove("d-none");
 }
 
+function removeDetailsMobileNavbar(event) {
+  if (event) {
+    event.stopPropagation();
+  } else {
+    $("single-person-content-mobile-navbar").classList.add("d-none");
+  }
+}
 
 // ===== EDIT CONTACT FUNCTIONS =====
 
