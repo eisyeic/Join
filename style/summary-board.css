@@ -1,7 +1,3 @@
-*{
-  outline: red solid 1px;
-}
-
 h1 {
   color: var(--main-color);
   font-size: 64px;
@@ -42,63 +38,78 @@ h5 {
   text-align: center;
 }
 
-.task-container {
+/* ===== TASK DASHBOARD CONTAINER ===== */
+.task-dashboard-container {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  justify-content: space-between;
   width: 912px;
-  height: 413px;
+  height: 442px;
 }
 
-.task-box-top {
+.task-dashboard-top-row {
   display: flex;
-  gap: 36px;
+  justify-content: space-between;
+  top: 0;
   position: relative;
 }
 
-.task-urgent {
+.task-dashboard-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  bottom: 0;
+  position: relative;
+  height: 219px;
+}
+
+/* ===== TASK TILE: URGENT TASKS ===== */
+.task-tile-urgent {
   justify-content: center;
-  padding: 28px 48px;
   color: white;
   background-color: var(--main-color);
   border-radius: 30px;
   display: flex;
   gap: 35px;
-  width: 520px;
+  width: 672px;
+  height: 191px;
   transition: all 0.3s ease;
   flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  top: 0;
+  left: 0;
 }
 
-.task-urgent-area {
+.task-tile-urgent:hover {
+  width: 692px;
+  height: 221px;
+  background-color: white;
+  color: var(--main-color);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 0 30px 30px 30px;
+  margin-top: -10px;
+}
+
+.task-tile-urgent:hover .task-urgent-area {
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.task-tile-urgent:hover .dashboard-placeholder {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+
+
+.task-tile-urgent-content {
   display: flex;
   width: 100%;
   gap: 35px;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
 }
 
-.task-urgent:hover {
-  background-color: white;
-  color: var(--main-color);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 0 30px 30px 30px;
-  transform: scale(1.02);
-  transform-origin: left;
-  margin-bottom: -10px;
-}
-
-.task-urgent:hover .task-urgent-area {
-  transform: scale(1.1);
-  transition: transform 0.3s ease-in-out;
-}
-
-.task-urgent:hover .dashboard-placeholder {
-  background-color: var(--main-color);
-  border-color: var(--main-color);
-}
-
-.task-urgent-left-box {
+.task-tile-urgent-left-section {
   gap: 9px;
   display: flex;
   flex-direction: column;
@@ -106,35 +117,14 @@ h5 {
   align-items: center;
 }
 
-.task-urgent-left-box-top {
+.task-tile-urgent-icon-row {
   gap: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.task-urgent-left-box-top-img {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 76px;
-  height: 76px;
-}
-
-.task-urgent-left-box-top-img img {
-  width: 100%;
-  height: 100%;
-}
-
-.task-urgent-left-box-top-ring {
-  position: absolute;
-  height: 66px;
-  width: 65px;
-  border: 3px solid white;
-  border-radius: 50%;
-}
-
-.dashboard-placeholder {
+.task-tile-urgent-divider {
   height: 100%;
   border: solid 1px white;
   border-radius: 3px;
@@ -142,7 +132,7 @@ h5 {
   background-color: white;
 }
 
-.task-urgent-right-box {
+.task-tile-urgent-right-section {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -150,41 +140,227 @@ h5 {
   gap: 13px;
 }
 
-.task-task-in-board {
-  padding: 40px;
+/* ===== TASK TILE: BOARD OVERVIEW ===== */
+.task-tile-board-overview {
   gap: 7px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
   border-radius: 30px;
   width: 208px;
+  height: 191px;
   transition: all 0.3s ease;
   cursor: pointer;
   right: 0;
   top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.task-task-in-board:hover {
+.task-tile-board-overview:hover {
   transform: scale(1.1);
   transform-origin: top right;
   color: white;
   background-color: var(--light-blue);
   border-radius: 0 30px 30px 30px;
   margin-left: -50px;
-  width: 210px;
+  width: 250px;
   position: absolute;
   right: 0;
 }
 
-.task-task-in-board:hover h5 {
+.task-tile-board-overview:hover h5 {
   color: white;
 }
 
-.task-ring-img-container {
+.task-tile-board-overview-content {
+  display: flex;
+  gap: 20px;
+}
+
+.task-tile-board-overview h5 {
+  color: var(--main-color);
+  font-weight: 400;
+}
+
+/* ===== TASK TILE: TODO ===== */
+.task-tile-todo {
+  background-color: #e6f0ff;
+  gap: 7px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: absolute;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 204px;
+  height: 219px;
+  z-index: 1;
+}
+
+.task-tile-todo-content {
+  display: flex;
+  gap: 20px;
+}
+
+.task-tile-todo h5 {
+  color: var(--main-color);
+  font-weight: 400;
+}
+
+.task-tile-todo:hover {
+  transform: scale(1.02);
+  color: white;
+  background-color: white;
+  border-radius: 0 30px 30px 30px;
+  width: 250px;
+  height: 200px;
+  z-index: 10;
+}
+
+.task-tile-todo:hover h5,
+.task-tile-todo:hover h2 {
+  color: var(--light-blue);
+}
+
+/* ===== TASK TILE: IN PROGRESS ===== */
+.task-tile-in-progress {
+  gap: 7px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 204px;
+  height: 219px;
+  position: absolute;
+  left: 236px;
+  z-index: 1;
+}
+
+.task-tile-in-progress-content {
+  display: flex;
+  gap: 20px;
+}
+
+.task-tile-in-progress h5 {
+  color: var(--main-color);
+  font-weight: 400;
+  text-align: center;
+}
+
+.task-tile-in-progress:hover {
+  background-color: rgba(69, 137, 255, 1);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 0 30px 30px 30px;
+   transform: scale(1.1);
+  z-index: 10;
+}
+
+.task-tile-in-progress:hover h2,
+.task-tile-in-progress:hover h5 {
+  color: white;
+}
+
+/* ===== TASK TILE: AWAITING FEEDBACK ===== */
+.task-tile-awaiting-feedback {
+  gap: 7px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 204px;
+  height: 219px;
+  position: absolute;
+  left: 472px;
+  z-index: 1;
+}
+
+.task-tile-awaiting-feedback-content {
+  display: flex;
+  gap: 20px;
+}
+
+.task-tile-awaiting-feedback h5 {
+  color: var(--main-color);
+  font-weight: 400;
+  text-align: center;
+}
+
+.task-tile-awaiting-feedback:hover {
+  background-color: rgba(69, 137, 255, 1);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px 30px 30px 0;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+.task-tile-awaiting-feedback:hover h2,
+.task-tile-awaiting-feedback:hover h5 {
+  color: white;
+}
+
+/* ===== TASK TILE: DONE ===== */
+.task-tile-done {
+  gap: 7px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 204px;
+  height: 219px;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
+.task-tile-done-content {
+  display: flex;
+  gap: 20px;
+}
+
+.task-tile-done h5 {
+  color: var(--main-color);
+  font-weight: 400;
+  text-align: center;
+}
+
+.task-tile-done:hover {
+  background-color: rgba(69, 137, 255, 1);
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
+  border-radius: 30px 0 30px 30px;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+.task-tile-done:hover h2,
+.task-tile-done:hover h5 {
+  color: white;
+}
+
+/* ===== TASK TILE ICONS ===== */
+.task-tile-icon-container {
   position: relative;
   width: 76px;
   height: 76px;
 }
 
-.task-ring-img-container img {
+.task-tile-icon-container img {
   position: absolute;
   top: -5px;
   left: -5px;
@@ -192,107 +368,10 @@ h5 {
   height: 76px;
 }
 
-.task-ring-img-container svg {
+.task-tile-icon-container svg {
   position: absolute;
   top: 0;
   left: 0;
   width: 66px;
   height: 66px;
 }
-
-.task-task-in-board-top-box {
-  display: flex;
-  gap: 20px;
-}
-
-.task-task-in-board h5 {
-  color: var(--main-color);
-  font-weight: 400;
-}
-
-/* Task To Do Section*/
-.task-to-do {
-  background-color: #e6f0ff;
-  padding: 40px;
-  gap: 7px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  transition: all 0.2s ease;
-}
-
-.task-to-do-top-box {
-  display: flex;
-  gap: 20px;
-}
-
-.task-to-do-top-box img {
-  width: 76px;
-  height: 76px;
-}
-
-.task-to-do h5 {
-  color: var(--main-color);
-  font-weight: 400;
-}
-
-.task-to-do:hover {
-  transform: scale(0.95);
-  transform-origin: top right;
-  color: white;
-  background-color: white;
-  border-radius: 0 30px 30px 30px;
-  margin-right: -50px;
-  width: 210px;
-  background-color: white;
-}
-
-.task-to-do:hover h5,
-.task-to-do:hover h2 {
-  color: var(--light-blue);
-}
-
-/*Task Section*/
-.task-task-to-do {
-  padding: 40px;
-  gap: 7px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  transition: all 0.2s ease;
-}
-
-.task-task-to-do-top-box {
-  display: flex;
-  gap: 20px;
-}
-
-.task-task-to-do-top-box img {
-  width: 76px;
-  height: 76px;
-}
-
-.task-task-to-do h5 {
-  color: var(--main-color);
-  font-weight: 400;
-}
-
-.task-box-bottom {
-  display: flex;
-  gap: 32px;
-}
-
-.task-task-to-do:hover {
-  background-color: rgba(69, 137, 255, 1);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 0 30px 30px 30px;
-  transform: scale(1.02);
-  transform-origin: left;
-  margin-bottom: -10px;
-  
-}
-
-.task-task-to-do:hover h2,
-.task-task-to-do:hover h5 {
-  color: white;
-}
-
- 
