@@ -23,3 +23,10 @@ function getGreeting() {
   if (hour < 18) return "Good Afternoon";
   return "Good Evening";
 }
+
+// Responsiv Design for Mobile
+function reorganizeTasksForMobile() {
+  if (window.innerWidth <= 900) {
+    
+  }
+}
