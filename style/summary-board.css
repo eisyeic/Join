@@ -1,3 +1,6 @@
+* {
+  outline: red solid 0.1px;
+}
 h1 {
   color: var(--main-color);
   font-size: 64px;
