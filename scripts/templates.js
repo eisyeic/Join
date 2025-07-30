@@ -91,3 +91,37 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
     </div>
     `;
 }
+
+function getMobileTaskTodo() {
+    $("mobile-task-to-do").innerHTML = /*html*/ `
+    <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
+            <div class="task-tile-todo-content">
+              <div class="task-tile-icon-container">
+                <img src="./assets/summary/icons/todo.svg" alt="Icon Task Todo" />
+                <svg viewBox="0 0 300 300">
+                  <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+                </svg>
+              </div>
+              <h2>1</h2>
+            </div>
+            <h5>Task To-do</h5>
+          </div>`;
+
+}
+
+
+function getMobileTaskOnBoard() {
+    $("mobile-task-on-board").innerHTML = /*html*/ `
+    <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
+            <div class="task-tile-board-overview-content">
+              <div class="task-tile-icon-container">
+                <img src="./assets/summary/icons/default.svg" alt="Icon Task in Board" />
+                <svg viewBox="0 0 300 300">
+                  <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+                </svg>
+              </div>
+              <h2>5</h2>
+            </div>
+            <h5>Task on Board</h5>
+          </div>`;
+}

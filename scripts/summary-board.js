@@ -27,6 +27,13 @@ function getGreeting() {
 // Responsiv Design for Mobile
 function reorganizeTasksForMobile() {
   if (window.innerWidth <= 900) {
-    
+    $("task-tile-board-overview").style.display = "none";
+    $("task-tile-todo").style.display = "none";
+
+    getMobileTaskOnBoard();
+    getMobileTaskTodo();
+
   }
 }
+
+reorganizeTasksForMobile();

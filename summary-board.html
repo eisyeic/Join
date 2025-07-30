@@ -7,6 +7,10 @@
   <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
 
   <script src="./script.js" defer></script>
+  <script type="module" src="./scripts/summary-board.js" defer></script>
+  <script type="module" src="./scripts/firebase.js" defer></script>
+  <script src="./scripts/templates.js"></script>
+
 
   <title>Summary Board</title>
   <link rel="stylesheet" href="./style/summary-board.css" />
@@ -16,7 +20,7 @@
   <link rel="stylesheet" href="./style/footer-nav.css" />
   <link rel="stylesheet" href="./style/responsiv.css" />
   <link rel="stylesheet" href="./style/reponsiv-summary-board.css" />
-  <link rel="stylesheet" href="./style/tablet-summary-board.css" />
+
 </head>
 
 <body onclick="closeProfileNavbar()">
@@ -81,7 +85,7 @@
               </div>
             </div>
           </div>
-          <div class="task-tile-board-overview" onclick="location.href='board.html'">
+          <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
             <div class="task-tile-board-overview-content">
               <div class="task-tile-icon-container">
                 <img src="./assets/summary/icons/default.svg" alt="Icon Task in Board" />
@@ -95,8 +99,14 @@
           </div>
         </div>
 
+        <div class="mobile-task-to-do" id="mobile-task-to-do"></div>
+        
+
         <div class="task-dashboard-bottom-row">
-          <div class="task-tile-todo" onclick="location.href='board.html'">
+
+          <div class="mobile-task-on-board" id="mobile-task-on-board"></div>
+          
+          <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
             <div class="task-tile-todo-content">
               <div class="task-tile-icon-container">
                 <img src="./assets/summary/icons/todo.svg" alt="Icon Task Todo" />
