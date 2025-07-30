@@ -1,55 +1,34 @@
 @media (max-width: 1250px) {
-  .task-task-to-do {
-    padding: 20px;
+  .task-dashboard-container {
+    transform: scale(0.9);
   }
 
-  .task-box:hover,
-  .todo-card:hover,
-  .urgent-card:hover,
-  .task-urgent:hover,
-  .task-urgent:hover .task-urgent-area,
-  .task-urgent:hover .dashboard-placeholder,
-  .task-task-in-board:hover,
-  .task-task-in-board:hover h5,
-  .task-task-to-do:hover,
-  .task-task-to-do:hover h2,
-  .task-task-to-do:hover h5{
-    transform: none !important;
-    background-color: inherit !important;
-    box-shadow: none !important;
-    cursor: default !important;
-  }
-
-  .task-task-in-board {
-    padding: 20px;
-  }
-
-  .task-urgent {
-    padding: 20px;
-  }
-
-  .task-container {
-    width: auto;
+  .dashboard-header {
+    transform: scale(0.9);
   }
 }
 
-@media (max-width: 1250px) {
+@media (max-width: 1150px) {
+  .task-dashboard-container {
+    transform: scale(0.8);
+  }
+
+  .dashboard-header {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 1024px) {
   .dashboard {
-    padding: 20px;
-  }
-
-  .task-box-top {
-    gap: 20px;
-  }
-
-  .task-box-bottom {
-    gap: 20px;
+    width: calc(100vw - 150px);
   }
 }
+
 
 @media (max-width: 900px) {
   .dashboard {
     height: calc(100vh - 203px);
+    width: 100vw;
     overflow: hidden;
     position: absolute;
     top: 100px;
@@ -58,59 +37,60 @@
     gap: 0;
   }
 
-.dashboard-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  animation: slideUpAndHide 2.5s forwards;
-  animation-delay: 3s;
-  background: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  z-index: 1;
-}
-
-  .task-container-mobile {
+  .dashboard-header {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    animation: fadeInUp 0.5s forwards;
-    animation-delay: 3s;
-    z-index: 2;
-    padding-bottom: 74px;
-    padding-top: 64px;
-    overflow: scroll;
-    overflow-x: hidden;
-    background-color: white;
-  }
-
- @keyframes slideUpAndHide {
-  0% {
+    flex-direction: column;
+    animation: slideUpAndHide 0.75s forwards;
+    animation-delay: 4.1s;
+    background: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
+    z-index: 2;
   }
 
-  100% {
-    transform: translate(-50%, -100vh);
+  .task-dashboard-container {
     opacity: 0;
+    animation: fadeInUp 2.5s forwards;
+    animation-delay: 2s;
+    position: relative;
+    z-index: 1;
   }
-}
+
+
+  @keyframes slideUpAndHide {
+    0% {
+      transform: translate(-50%, -50%);
+    }
+
+        80% {
+      opacity: 0;
+    }
+
+    100% {
+      transform: translate(-50%, -100vh);
+      opacity: 0;
+    }
+  }
 
   @keyframes fadeInUp {
     0% {
       opacity: 0;
-      transform: translateY(100%);
+      transform: translateY(100vh);
+    }
+
+    30% {
+      opacity: 1;
+      transform: translateY(100vh);
     }
 
     70% {
       opacity: 1;
-      transform: translateY(100%);
+      transform: translateY(100vh);
     }
 
     100% {
@@ -118,33 +98,4 @@
       transform: translateY(0);
     }
   }
-}
-
-.task-box-bottom-mobile {
-  width: 396px;
-}
-
-.task-box-bottom-bottom-mobile {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  align-items: center;
-  width: 396px;
-}
-
-.task-box-top-mobile {
-  width: 396px;
-  justify-content: center;
-  align-items: center;
-
-}
-
-.task-urgent-mobile {
-  height: 150px;
-  width: 396px;
-}
-
-.task-task-to-do-mobile {
-  height: 106px;
-  width: 396px;
 }
