@@ -27,7 +27,9 @@ function initializeContactContainer(data) {
 
 // Sort contacts alphabetically
 function getSortedContacts(data) {
-  return Object.entries(data).sort(([,a], [,b]) => a.name.localeCompare(b.name));
+  return Object.entries(data).sort(([, a], [, b]) =>
+    a.name.localeCompare(b.name)
+  );
 }
 
 // Add letter header if first letter changed
@@ -52,7 +54,7 @@ function createContactElement(id, key, dataContainer) {
 // Render individual contact with letter header if needed
 function renderSingleContact(id, key, dataContainer, currentLetter) {
   const firstLetter = key.name.charAt(0).toUpperCase();
-  
+
   addLetterHeaderIfNeeded(firstLetter, dataContainer, currentLetter);
   createContactElement(id, key, dataContainer);
 }
@@ -60,7 +62,7 @@ function renderSingleContact(id, key, dataContainer, currentLetter) {
 // Render sorted contacts with letter headers
 function renderContactList(data, dataContainer) {
   const sortedEntries = getSortedContacts(data);
-  let currentLetter = { value: '' };
+  let currentLetter = { value: "" };
 
   sortedEntries.forEach(([id, key]) => {
     renderSingleContact(id, key, dataContainer, currentLetter);
@@ -90,14 +92,14 @@ function getNewContactData() {
   return {
     name: $("name-new-contact").value,
     email: $("email-new-contact").value,
-    phone: $("phone-new-contact").value
+    phone: $("phone-new-contact").value,
   };
 }
 
 // Show success status and refresh data
 function handleSaveSuccess(data) {
   const statusElement = $("check-status-add-contact");
-  
+
   if (statusElement) {
     toggleAddContact();
     statusElement.classList.remove("d-none");
@@ -105,7 +107,7 @@ function handleSaveSuccess(data) {
       statusElement.classList.add("d-none");
     }, 4000);
   }
-  
+
   console.log("Saved:", data);
   showAllData();
 }
@@ -121,15 +123,16 @@ function saveToFirebase(data) {
 
 // Delete contact from Firebase
 window.deleteContact = () => {
-  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
-    .then(({ remove }) => {
-      const contactRef = ref(db, `contacts/${currentContact.id}`);
-      
-      remove(contactRef).then(() => {
-        document.getElementById('contact-details').innerHTML = '';
-        console.log("Contact deleted:", currentContact.name);
-      });
+  import(
+    "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  ).then(({ remove }) => {
+    const contactRef = ref(db, `contacts/${currentContact.id}`);
+
+    remove(contactRef).then(() => {
+      document.getElementById("contact-details").innerHTML = "";
+      console.log("Contact deleted:", currentContact.name);
     });
+  });
 };
 
 // Save data

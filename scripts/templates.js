@@ -1,7 +1,7 @@
 function getContactPerson(key, renderContacts, id) {
   colorIndex = (colorIndex % 15) + 1;
 
-  return /*html*/`
+  return /*html*/ `
         <div class="contact-placeholder">
             <img src="./assets/contacts/img/Vector 10.svg" />
         </div>
@@ -21,7 +21,7 @@ function getContactPerson(key, renderContacts, id) {
 let currentContact = {};
 
 function getContactDeteails(name, email, phone, colorIndex, id, detailSection) {
-  detailSection.innerHTML = /*html*/`
+  detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">
             <div class="contact-person-icon-big">
                 <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
@@ -80,11 +80,11 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
         <div class="white-point"></div>
     </div>
     <div class="single-person-content-mobile-navbar d-none" id="single-person-content-mobile-navbar" onclick="removeDetailsMobileNavbar(event)">
-        <div class="single-person-content-mobile-navbar-content" onclick="toggleEditContact()">
+        <div class="single-person-content-mobile-navbar-content" onclick="openEditContact()">
             <img src="./assets/contacts/icons/pen_thin.svg" alt="Edit Icon">
             <p>Edit</p>
         </div>
-        <div class="single-person-content-mobile-navbar-content">
+        <div class="single-person-content-mobile-navbar-content" onclick="deleteContactAndGoBack(event)">
             <img src="./assets/contacts/icons/trash_thin.svg" alt="Delete Icon">
             <p>Delete</p>
         </div>

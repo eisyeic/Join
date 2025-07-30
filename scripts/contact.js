@@ -171,3 +171,10 @@ document.addEventListener("DOMContentLoaded", function () {
   $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
   $("phone-new-contact").addEventListener("keydown", validatePhoneInput);
 });
+
+// Delete contact and return to contact list
+function deleteContactAndGoBack(event) {
+  event.stopPropagation();
+  deleteContact();
+  detailsMobileBack();
+}

@@ -20,7 +20,7 @@
     }
 
     .contact-add-new-contact-container {
-        width: 100vh;
+        width: 100vw;
         padding: 24px;
     }
 
@@ -157,7 +157,7 @@
         height: calc(100vh - 475px) !important;
     }
 
-    .single-person-content-mobile-bottom { 
+    .single-person-content-mobile-bottom {
         bottom: 107px;
     }
 }
