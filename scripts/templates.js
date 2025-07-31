@@ -1,5 +1,8 @@
 function getContactPerson(key, renderContacts, id) {
-  colorIndex = (colorIndex % 15) + 1;
+  let savedColorIndex = key.colorIndex;
+  if (!savedColorIndex) {
+    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
+  }
 
   return /*html*/ `
         <div class="contact-placeholder">
@@ -7,9 +10,9 @@ function getContactPerson(key, renderContacts, id) {
         </div>
         <div class="contact-person" onclick="showContactDetails('${
           key.name
-        }', '${key.email}', '${key.phone}', ${colorIndex}, '${id}')">
+        }', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
             <div class="contact-person-icon">
-                <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
+                <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
                 <p>${getInitials(key.name)}</p>
             </div>
             <div class="contact-person-name">
@@ -18,6 +21,7 @@ function getContactPerson(key, renderContacts, id) {
             </div>
         </div>`;
 }
+
 let currentContact = {};
 
 function getContactDeteails(name, email, phone, colorIndex, id, detailSection) {

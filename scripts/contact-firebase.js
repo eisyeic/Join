@@ -63,11 +63,17 @@ function renderSingleContact(id, key, dataContainer, currentLetter) {
 function renderContactList(data, dataContainer) {
   const sortedEntries = getSortedContacts(data);
   let currentLetter = { value: "" };
+  let contactIndex = 0;
 
   sortedEntries.forEach(([id, key]) => {
+    if (!key.colorIndex) {
+      key.colorIndex = (contactIndex % 15) + 1;
+    }
+    contactIndex++;
     renderSingleContact(id, key, dataContainer, currentLetter);
   });
 }
+
 
 // Process and render contact data
 function processContactData(data) {
@@ -93,8 +99,10 @@ function getNewContactData() {
     name: $("name-new-contact").value,
     email: $("email-new-contact").value,
     phone: $("phone-new-contact").value,
+    colorIndex: colorIndex
   };
 }
+
 
 // Show success status and refresh data
 function handleSaveSuccess(data) {
@@ -137,9 +145,12 @@ window.deleteContact = () => {
 
 // Save data
 window.dataSave = () => {
+  colorIndex = (colorIndex % 15) + 1;
   const data = getNewContactData();
   saveToFirebase(data);
 };
+
+
 
 // ===== INITIALIZATION =====
 
