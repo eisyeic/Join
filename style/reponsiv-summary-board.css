@@ -58,27 +58,28 @@
     z-index: 2;
   }
 
-  .task-dashboard-container {
-    opacity: 0;
-    animation: fadeInUp 2.5s forwards;
-    animation-delay: 2s;
+  .task-container-mobile {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    height: calc(100vh - 187px);
-    justify-content: unset;
-    margin-top: 64px;
-    gap: 24px;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    animation: fadeInUp 0.5s forwards;
+    animation-delay: 3s;
+    z-index: 2;
+    padding-bottom: 74px;
+    padding-top: 64px;
+    overflow: scroll;
+    overflow-x: hidden;
+    background-color: white;
   }
 
 
-  @keyframes slideUpAndHide {
-    0% {
-      transform: translate(-50%, -50%);
-    }
-
-    80% {
-      opacity: 0;
-    }
+ @keyframes slideUpAndHide {
+  0% {
+    transform: translate(-50%, -50%);
+  }
 
     100% {
       transform: translate(-50%, -100vh);
@@ -107,39 +108,33 @@
       transform: translateY(0);
     }
   }
+}
 
-  .dashboard {
-    gap: 24px;
-  }
+.task-box-bottom-mobile {
+  width: 396px;
+}
 
-  .task-dashboard-top-row {
-    justify-content: center;
-    height: 150px;
-    width: 396px;
-  }
+.task-box-bottom-bottom-mobile {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  width: 396px;
+}
 
-  .task-tile-urgent {
-    height: 150px;
-    width: 396px;
-  }
+.task-box-top-mobile {
+  width: 396px;
+  justify-content: center;
+  align-items: center;
 
-  .mobile-task-to-do {
-    display: flex;
-    justify-content: center;
-    height: 106px;
-    width: 396px;
-    position: static;
-  }
+}
 
-  .task-tile-todo {
-    position: static;
-    height: 106px;
-    width: 672px;
-    flex-direction: unset;
-  }
+.task-urgent-mobile {
+  height: 150px;
+  width: 396px;
+}
 
-  .task-dashboard-bottom-row {
-    flex-direction: column;
-        width: 396px;
-  }
+.task-task-to-do-mobile {
+  height: 106px;
+  width: 396px;
 }

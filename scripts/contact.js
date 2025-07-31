@@ -74,8 +74,10 @@ function addDetailsMobileNavbar() {
 function removeDetailsMobileNavbar(event) {
   if (event) {
     event.stopPropagation();
-  } else {
-    $("single-person-content-mobile-navbar").classList.add("d-none");
+  }
+  const element = $("single-person-content-mobile-navbar");
+  if (element) {
+    element.classList.add("d-none");
   }
 }
 
@@ -130,6 +132,7 @@ function updateContactInFirebase() {
         name: currentContact.name,
         email: currentContact.email,
         phone: currentContact.phone,
+        colorIndex: currentContact.colorIndex,
       }).then(() => {
         showContactDetails(
           currentContact.name,
@@ -147,6 +150,7 @@ function updateContactInFirebase() {
 function saveEditedContact() {
   getUpdatedContactData();
   updateContactInFirebase();
+  toggleEditContact();
 }
 
 // ===== INPUT VALIDATION =====
