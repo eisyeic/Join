@@ -1,19 +1,20 @@
+// Get Contact Person
 function getContactPerson(key, renderContacts, id) {
   let savedColorIndex = key.colorIndex;
   if (!savedColorIndex) {
     savedColorIndex = (id.charCodeAt(0) % 15) + 1;
   }
 
+  const initials = key.initials || getInitials(key.name);
+
   return /*html*/ `
         <div class="contact-placeholder">
             <img src="./assets/contacts/img/Vector 10.svg" />
         </div>
-        <div class="contact-person" onclick="showContactDetails('${
-          key.name
-        }', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
+        <div class="contact-person" onclick="showContactDetails('${key.name}', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
             <div class="contact-person-icon">
                 <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
-                <p>${getInitials(key.name)}</p>
+                <p>${initials}</p>
             </div>
             <div class="contact-person-name">
                 <h5>${key.name}</h5>
@@ -24,6 +25,7 @@ function getContactPerson(key, renderContacts, id) {
 
 let currentContact = {};
 
+// Get Contact Details
 function getContactDeteails(name, email, phone, colorIndex, id, detailSection) {
   detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">
@@ -54,6 +56,7 @@ function getContactDeteails(name, email, phone, colorIndex, id, detailSection) {
         </div>`;
 }
 
+// Get New Layout Details
 function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = ``;
   detailSection.innerHTML = /*html*/ `
@@ -96,8 +99,9 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
     `;
 }
 
+// Get Mobile Task Todo
 function getMobileTaskTodo() {
-    $("mobile-task-to-do").innerHTML = /*html*/ `
+  $("mobile-task-to-do").innerHTML = /*html*/ `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
             <div class="task-tile-todo-content">
               <div class="task-tile-icon-container">
@@ -110,12 +114,11 @@ function getMobileTaskTodo() {
             </div>
             <h5>Task To-do</h5>
           </div>`;
-
 }
 
-
+// Get Mobile Task On Board
 function getMobileTaskOnBoard() {
-    $("mobile-task-on-board").innerHTML = /*html*/ `
+  $("mobile-task-on-board").innerHTML = /*html*/ `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
             <div class="task-tile-board-overview-content">
               <div class="task-tile-icon-container">
@@ -128,4 +131,9 @@ function getMobileTaskOnBoard() {
             </div>
             <h5>Task on Board</h5>
           </div>`;
+}
+
+// Get Error Message
+function getErrorMessage(message) {
+  return /*html*/ `<p class="error-message">${message}</p>`;
 }
