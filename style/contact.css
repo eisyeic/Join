@@ -306,3 +306,14 @@ main,
         right: 20px;
     }
 }
+
+.error-message {
+    color: var(--error-color);
+    font-size: 13px;
+    margin: 0;
+    height: 28px;
+}
+
+.error-input-placeholder{
+    background-color: red !important;
+}

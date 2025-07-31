@@ -44,25 +44,32 @@
       </div>
       <div class="contact-overlay-edit-content-details">
         <div class="contact-overlay-edit-content-name">
-          <input contenteditable="true" value="Anton Mayer" id="edit-name-input" />
+          <input oninput="clearFieldError('edit-name-input')" contenteditable="true" value="Anton Mayer"
+            id="edit-name-input" />
+          <div id="edit-name-input-box"></div>
           <img src="./assets/contacts/icons/person.svg" alt="Icon Person" />
         </div>
-        <div class="contact-placeholder-blue"></div>
+        <div class="contact-placeholder-blue" id="edit-name-input-placeholder"></div>
       </div>
       <div class="contact-overlay-edit-content-details">
         <div class="contact-overlay-edit-content-name">
-          <input contenteditable="true" value="antonm@gmail.com" id="edit-email-input" />
+          <input oninput="clearFieldError('edit-email-input')" contenteditable="true" value="antonm@gmail.com"
+            id="edit-email-input" />
+          <div id="edit-email-input-box"></div>
           <img src="./assets/contacts/icons/mail.svg" alt="Icon Person" />
         </div>
-        <div class="contact-overlay-placeholder"></div>
+        <div class="contact-overlay-placeholder" id="edit-email-input-placeholder"></div>
       </div>
       <div class="contact-overlay-edit-content-details">
         <div class="contact-overlay-edit-content-name">
-          <input contenteditable="true" value="+00 0000 000 00 0" type="tel" id="edit-phone-input" />
+          <input oninput="clearFieldError('edit-phone-input')" contenteditable="true" value="+00 0000 000 00 0"
+            type="tel" id="edit-phone-input" />
+          <div id="edit-phone-input-box"></div>
           <img src="./assets/contacts/icons/call.svg" alt="Icon Person" />
         </div>
-        <div class="contact-overlay-placeholder"></div>
+        <div class="contact-overlay-placeholder" id="edit-phone-input-placeholder"></div>
       </div>
+
       <div class="overlay-edit-contact-delete-save" onclick="deleteContact(), toggleEditContact()">
         <p class="overlay-edit-contact-delete">Delete</p>
         <div class="overlay-edit-contact-save" onclick="saveEditedContact()">
@@ -90,24 +97,28 @@
       </div>
       <div class="contact-overlay-add-content-details">
         <div class="contact-overlay-add-content-name">
-          <input contenteditable="true" placeholder="Name" type="text" id="name-new-contact" />
+          <input oninput="clearFieldError('name-new-contact')" placeholder="Name" type="text" id="name-new-contact" />
+          <div id="name-new-contact-box"></div>
           <img src="./assets/contacts/icons/person.svg" alt="Icon Person" />
         </div>
-        <div class="contact-placeholder-blue"></div>
+        <div class="contact-placeholder-blue" id="name-new-contact-placeholder"></div>
       </div>
       <div class="contact-overlay-add-content-details">
         <div class="contact-overlay-add-content-name">
-          <input contenteditable="true" placeholder="Mail" type="email" id="email-new-contact" />
+          <input oninput="clearFieldError('email-new-contact')" placeholder="Mail" type="email"
+            id="email-new-contact" />
+          <div id="email-new-contact-box"></div>
           <img src="./assets/contacts/icons/mail.svg" alt="Icon Mail" />
         </div>
-        <div class="contact-overlay-placeholder"></div>
+        <div class="contact-overlay-placeholder" id="email-new-contact-placeholder"></div>
       </div>
       <div class="contact-overlay-add-content-details">
         <div class="contact-overlay-add-content-name">
-          <input contenteditable="true" placeholder="Phone" type="tel" id="phone-new-contact" />
+          <input oninput="clearFieldError('phone-new-contact')" placeholder="Phone" type="tel" id="phone-new-contact" />
+          <div id="phone-new-contact-box"></div>
           <img src="./assets/contacts/icons/call.svg" alt="Icon Phone" />
         </div>
-        <div class="contact-overlay-placeholder"></div>
+        <div class="contact-overlay-placeholder" id="phone-new-contact-placeholder"></div>
       </div>
       <div class="overlay-add-contact-cancel-save">
         <p class="overlay-add-contact-cancel" onclick="closeAddContact()">Cancel</p>

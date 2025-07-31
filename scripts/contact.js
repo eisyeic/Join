@@ -20,6 +20,9 @@ function clearAddFormInputs() {
   $("name-new-contact").value = "";
   $("email-new-contact").value = "";
   $("phone-new-contact").value = "";
+  clearFieldError("name-new-contact");
+  clearFieldError("email-new-contact");
+  clearFieldError("phone-new-contact");
 }
 
 // Open add contact overlay
@@ -181,4 +184,78 @@ function deleteContactAndGoBack(event) {
   event.stopPropagation();
   deleteContact();
   detailsMobileBack();
+}
+
+// Show error message under input field
+function showFieldError(fieldId, message) {
+  const field = $(fieldId);
+  const placeholder = $(fieldId + "-placeholder");
+
+  if (fieldId === "name-new-contact") {
+    $("name-new-contact-box").innerHTML = `<p class="error-message">${message}</p>`;
+  }
+  if (fieldId === "email-new-contact") {
+    $("email-new-contact-box").innerHTML = `<p class="error-message">${message}</p>`;
+  }
+  if (fieldId === "phone-new-contact") {
+    $("phone-new-contact-box").innerHTML = `<p class="error-message">${message}</p>`;
+  }
+
+  field.style.borderColor = "red";
+  field.classList.add("error-input");
+  if (placeholder) {
+    placeholder.classList.add("error-input-placeholder");
+  }
+}
+
+function clearFieldError(fieldId) {
+  const field = $(fieldId);
+  const placeholder = $(fieldId + "-placeholder");
+
+  if (fieldId === "name-new-contact") {
+    $("name-new-contact-box").innerHTML = "";
+  }
+  if (fieldId === "email-new-contact") {
+    $("email-new-contact-box").innerHTML = "";
+  }
+  if (fieldId === "phone-new-contact") {
+    $("phone-new-contact-box").innerHTML = "";
+  }
+
+  field.style.borderColor = "";
+  field.classList.remove("error-input");
+  if (placeholder) {
+    placeholder.classList.remove("error-input-placeholder");
+  }
+}
+
+
+// Validate form inputs
+function validateAddContactForm() {
+  let isValid = true;
+
+  const name = $("name-new-contact").value.trim();
+  const email = $("email-new-contact").value.trim();
+  const phone = $("phone-new-contact").value.trim();
+
+  clearFieldError("name-new-contact");
+  clearFieldError("email-new-contact");
+  clearFieldError("phone-new-contact");
+
+  if (!name) {
+    showFieldError("name-new-contact", "Name is required");
+    isValid = false;
+  }
+
+  if (!email) {
+    showFieldError("email-new-contact", "E-Mail is required");
+    isValid = false;
+  }
+
+  if (!phone) {
+    showFieldError("phone-new-contact", "Phone is required ");
+    isValid = false;
+  }
+
+  return isValid;
 }

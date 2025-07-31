@@ -145,10 +145,14 @@ window.deleteContact = () => {
 
 // Save data
 window.dataSave = () => {
+  if (!validateAddContactForm()) {
+    return;
+  }
   colorIndex = (colorIndex % 15) + 1;
   const data = getNewContactData();
   saveToFirebase(data);
 };
+
 
 
 
