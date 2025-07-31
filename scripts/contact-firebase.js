@@ -49,7 +49,7 @@ function addLetterHeaderIfNeeded(firstLetter, dataContainer, currentLetter) {
 function createContactElement(id, key, dataContainer) {
   const renderContacts = document.createElement("div");
   renderContacts.classList.add("rendered-contacts");
-  renderContacts.innerHTML = getContactPerson(key, renderContacts, id);
+  renderContacts.innerHTML = getContactPerson(key, id);
   dataContainer.appendChild(renderContacts);
 }
 

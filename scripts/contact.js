@@ -13,7 +13,7 @@ window.getInitials = function (name) {
 
 // ===== OVERLAY TOGGLE FUNCTIONS =====
 
-// Clears all input fields in the add contact form and removes error states
+// Clear Add Form Inputs
 function clearAddFormInputs() {
   $("name-new-contact").value = "";
   $("email-new-contact").value = "";
@@ -23,24 +23,24 @@ function clearAddFormInputs() {
   clearFieldError("phone-new-contact");
 }
 
-// Opens the add contact overlay and clears form inputs
+// Open Add Contact
 function openAddContact() {
   $("contact-overlay-close-add").classList.remove("d-none");
   clearAddFormInputs();
 }
 
-// Closes the add contact overlay and clears form inputs
+// Close Add Contact
 function closeAddContact() {
   $("contact-overlay-close-add").classList.add("d-none");
   clearAddFormInputs();
 }
 
-// Toggles the add contact overlay visibility without clearing inputs
+// Toggle Add Contact
 function toggleAddContact() {
   $("contact-overlay-close-add").classList.toggle("d-none");
 }
 
-// Toggles the edit contact overlay visibility
+// Toggle Edit Contact
 function toggleEditContact() {
   $("contact-overlay-close-edit").classList.toggle("d-none");
 }
@@ -50,7 +50,7 @@ function showContactDetails(name, email, phone, colorIndex, id) {
   currentContact = { name, email, phone, colorIndex, id };
   const detailSection = document.getElementById("contact-details");
 
-  getContactDeteails(name, email, phone, colorIndex, id, detailSection);
+  getContactDetails(name, email, phone, colorIndex, detailSection);
   detailSection.classList.remove("d-none");
 
   if (window.innerWidth <= 900) {
@@ -61,14 +61,14 @@ function showContactDetails(name, email, phone, colorIndex, id) {
   }
 }
 
-// Returns to contact list view on mobile devices
+// Details Mobile Back
 function detailsMobileBack() {
   $("contact-details").classList.remove("mobile-visible");
   $("contact-details").style.display = "none";
   $("add-new-contact-container").style.display = "block";
 }
 
-//Shows the mobile navigation bar for contact details
+// Add Details Mobile Navbar
 function addDetailsMobileNavbar() {
   $("single-person-content-mobile-navbar").classList.remove("d-none");
 }
@@ -106,7 +106,7 @@ function populateEditForm(elements) {
   elements.iconText.textContent = getInitials(currentContact.name);
 }
 
-// Opens the edit contact overlay and populates it with current contact data
+// Open Edit Contact
 function openEditContact() {
   const elements = getEditFormElements();
   populateEditForm(elements);
@@ -115,11 +115,33 @@ function openEditContact() {
 
 // ===== SAVE CONTACT FUNCTIONS =====
 
-// Retrieves updated contact data from the edit form and updates currentContact object
+// Get Updated Contact Data
 function getUpdatedContactData() {
   currentContact.name = $("edit-name-input").value;
   currentContact.email = $("edit-email-input").value;
   currentContact.phone = $("edit-phone-input").value;
+}
+
+// Get Contact Update Data
+function getContactUpdateData() {
+  return {
+    name: currentContact.name,
+    email: currentContact.email,
+    phone: currentContact.phone,
+    colorIndex: currentContact.colorIndex,
+    initials: getInitials(currentContact.name)
+  };
+}
+
+// Handle Update Success
+function handleUpdateSuccess() {
+  showContactDetails(
+    currentContact.name,
+    currentContact.email,
+    currentContact.phone,
+    currentContact.colorIndex
+  );
+  toggleEditContact();
 }
 
 // Update Contact In Firebase
@@ -130,21 +152,10 @@ function updateContactInFirebase() {
     import("./firebase.js").then(({ app }) => {
       const db = getDatabase(app);
       const contactRef = ref(db, `contacts/${currentContact.id}`);
+      const updateData = getContactUpdateData();
 
-      update(contactRef, {
-        name: currentContact.name,
-        email: currentContact.email,
-        phone: currentContact.phone,
-        colorIndex: currentContact.colorIndex,
-        initials: getInitials(currentContact.name)
-      }).then(() => {
-        showContactDetails(
-          currentContact.name,
-          currentContact.email,
-          currentContact.phone,
-          currentContact.colorIndex
-        );
-        toggleEditContact();
+      update(contactRef, updateData).then(() => {
+        handleUpdateSuccess();
       });
     });
   });
@@ -153,7 +164,7 @@ function updateContactInFirebase() {
 
 // ===== INPUT VALIDATION =====
 
-// Validates phone number input to allow only valid characters
+// Validate Phone Input
 function validatePhoneInput(event) {
   const allowedChars = /[0-9+\-() ]/;
   if (
@@ -166,13 +177,13 @@ function validatePhoneInput(event) {
   }
 }
 
-// Validates email format
+// Is Valid Email
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Validates name input to allow only valid characters
+// Validate Name Input
 function validateNameInput(event) {
   const allowedChars = /[a-zA-ZäöüÄÖÜß\s\-']/;
   if (
@@ -187,7 +198,7 @@ function validateNameInput(event) {
 
 // ===== EVENT LISTENERS =====
 
-// Initializes event listeners when DOM is loaded
+// Initialize Event Listeners
 document.addEventListener("DOMContentLoaded", function () {
   $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
   $("phone-new-contact").addEventListener("keydown", validatePhoneInput);
@@ -195,8 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
   $("edit-name-input").addEventListener("keydown", validateNameInput);
 });
 
-// Deletes contact and returns to contact list (mobile view)
-
+// Delete Contact And Go Back
 function deleteContactAndGoBack(event) {
   event.stopPropagation();
   deleteContact();
@@ -205,25 +215,28 @@ function deleteContactAndGoBack(event) {
 
 // ===== ERROR HANDLING =====
 
-// Displays error message for a specific input field
-
-function showFieldError(fieldId, message) {
-  const field = $(fieldId);
-  const placeholder = $(fieldId + "-placeholder");
-
-  const fieldMapping = {
+// Get Field Mapping
+function getFieldMapping() {
+  return {
     "name-new-contact": "name-new-contact-box",
     "email-new-contact": "email-new-contact-box",
-    "phone-new-contact": "phone-new-contact-box", 
+    "phone-new-contact": "phone-new-contact-box",
     "edit-name-input": "edit-name-input-box",
     "edit-email-input": "edit-email-input-box",
     "edit-phone-input": "edit-phone-input-box"
   };
+}
 
+// Set Error Message
+function setErrorMessage(fieldId, message) {
+  const fieldMapping = getFieldMapping();
   if (fieldMapping[fieldId]) {
     $(fieldMapping[fieldId]).innerHTML = getErrorMessage(message);
   }
+}
 
+// Set Field Error Style
+function setFieldErrorStyle(field, placeholder) {
   field.style.borderColor = "red";
   field.classList.add("error-input");
   if (placeholder) {
@@ -231,24 +244,25 @@ function showFieldError(fieldId, message) {
   }
 }
 
-// Clears error state and message for a specific input field
-function clearFieldError(fieldId) {
+// Show Field Error
+function showFieldError(fieldId, message) {
   const field = $(fieldId);
   const placeholder = $(fieldId + "-placeholder");
+  
+  setErrorMessage(fieldId, message);
+  setFieldErrorStyle(field, placeholder);
+}
 
-  const fieldMapping = {
-    "name-new-contact": "name-new-contact-box",
-    "email-new-contact": "email-new-contact-box",
-    "phone-new-contact": "phone-new-contact-box",
-    "edit-name-input": "edit-name-input-box",
-    "edit-email-input": "edit-email-input-box",
-    "edit-phone-input": "edit-phone-input-box",
-  };
-
+// Clear Error Message
+function clearErrorMessage(fieldId) {
+  const fieldMapping = getFieldMapping();
   if (fieldMapping[fieldId]) {
     $(fieldMapping[fieldId]).innerHTML = "";
   }
+}
 
+// Clear Field Error Style
+function clearFieldErrorStyle(field, placeholder) {
   field.style.borderColor = "";
   field.classList.remove("error-input");
   if (placeholder) {
@@ -256,178 +270,140 @@ function clearFieldError(fieldId) {
   }
 }
 
-//Validates the edit contact form inputs
+// Clear Field Error
+function clearFieldError(fieldId) {
+  const field = $(fieldId);
+  const placeholder = $(fieldId + "-placeholder");
+  
+  clearErrorMessage(fieldId);
+  clearFieldErrorStyle(field, placeholder);
+}
 
-function validateEditContactForm() {
-  let isValid = true;
+// Get Edit Form Values
+function getEditFormValues() {
+  return {
+    name: $("edit-name-input").value.trim(),
+    email: $("edit-email-input").value.trim(),
+    phone: $("edit-phone-input").value.trim()
+  };
+}
 
-  const name = $("edit-name-input").value.trim();
-  const email = $("edit-email-input").value.trim();
-  const phone = $("edit-phone-input").value.trim();
-
+// Clear Edit Form Errors
+function clearEditFormErrors() {
   clearFieldError("edit-name-input");
   clearFieldError("edit-email-input");
   clearFieldError("edit-phone-input");
+}
 
+// Validate Edit Name Field
+function validateEditNameField(name) {
   if (!name) {
     showFieldError("edit-name-input", "Name is required");
-    isValid = false;
+    return false;
   }
+  return true;
+}
 
+// Validate Edit Email Field
+function validateEditEmailField(email) {
   if (!email) {
     showFieldError("edit-email-input", "E-Mail is required");
-    isValid = false;
+    return false;
   } else if (!isValidEmail(email)) {
     showFieldError("edit-email-input", "Please enter a valid email address");
-    isValid = false;
+    return false;
   }
+  return true;
+}
 
+// Validate Edit Phone Field
+function validateEditPhoneField(phone) {
   if (!phone) {
     showFieldError("edit-phone-input", "Phone is required");
-    isValid = false;
+    return false;
   }
-
-  return isValid;
+  return true;
 }
 
-// Validates the add contact form inputs
-function validateAddContactForm() {
-  let isValid = true;
-
-  const name = $("name-new-contact").value.trim();
-  const email = $("email-new-contact").value.trim();
-  const phone = $("phone-new-contact").value.trim();
-
-  clearFieldError("name-new-contact");
-  clearFieldError("email-new-contact");
-  clearFieldError("phone-new-contact");
-
-  if (!name) {
-    showFieldError("name-new-contact", "Name is required");
-    isValid = false;
-  }
-
-  if (!email) {
-    showFieldError("email-new-contact", "E-Mail is required");
-    isValid = false;
-  } else if (!isValidEmail(email)) {
-    showFieldError("email-new-contact", "Please enter a valid email address");
-    isValid = false;
-  }
-
-  if (!phone) {
-    showFieldError("phone-new-contact", "Phone is required");
-    isValid = false;
-  }
-
-  return isValid;
+// Validate Edit Form Fields
+function validateEditFormFields(values) {
+  const nameValid = validateEditNameField(values.name);
+  const emailValid = validateEditEmailField(values.email);
+  const phoneValid = validateEditPhoneField(values.phone);
+  
+  return nameValid && emailValid && phoneValid;
 }
 
-// Validates and saves the edited contact data
-function saveEditedContact() {
-  if (!validateEditContactForm()) {
-    return;
-  }
-
-  getUpdatedContactData();
-  updateContactInFirebase();
-  $(fieldId + "-placeholder");
-
-  if (fieldId === "name-new-contact") {
-    $("name-new-contact-box").innerHTML = "";
-  }
-  if (fieldId === "email-new-contact") {
-    $("email-new-contact-box").innerHTML = "";
-  }
-  if (fieldId === "phone-new-contact") {
-    $("phone-new-contact-box").innerHTML = "";
-  }
-  if (fieldId === "edit-name-input") {
-    $("edit-name-input-box").innerHTML = "";
-  }
-  if (fieldId === "edit-email-input") {
-    $("edit-email-input-box").innerHTML = "";
-  }
-  if (fieldId === "edit-phone-input") {
-    $("edit-phone-input-box").innerHTML = "";
-  }
-
-  field.style.borderColor = "";
-  field.classList.remove("error-input");
-  if (placeholder) {
-    placeholder.classList.remove("error-input-placeholder");
-  }
-}
-
-// Validates the edit contact form inputs
-
+// Validate Edit Contact Form
 function validateEditContactForm() {
-  let isValid = true;
-
-  const name = $("edit-name-input").value.trim();
-  const email = $("edit-email-input").value.trim();
-  const phone = $("edit-phone-input").value.trim();
-
-  clearFieldError("edit-name-input");
-  clearFieldError("edit-email-input");
-  clearFieldError("edit-phone-input");
-
-  if (!name) {
-    showFieldError("edit-name-input", "Name is required");
-    isValid = false;
-  }
-
-  if (!email) {
-    showFieldError("edit-email-input", "E-Mail is required");
-    isValid = false;
-  } else if (!isValidEmail(email)) {
-    showFieldError("edit-email-input", "Please enter a valid email address");
-    isValid = false;
-  }
-
-  if (!phone) {
-    showFieldError("edit-phone-input", "Phone is required");
-    isValid = false;
-  }
-
-  return isValid;
+  const values = getEditFormValues();
+  clearEditFormErrors();
+  return validateEditFormFields(values);
 }
 
-// Validates the add contact form inputs
+// Get Add Form Values
+function getAddFormValues() {
+  return {
+    name: $("name-new-contact").value.trim(),
+    email: $("email-new-contact").value.trim(),
+    phone: $("phone-new-contact").value.trim()
+  };
+}
 
-function validateAddContactForm() {
-  let isValid = true;
-
-  const name = $("name-new-contact").value.trim();
-  const email = $("email-new-contact").value.trim();
-  const phone = $("phone-new-contact").value.trim();
-
+// Clear Add Form Errors
+function clearAddFormErrors() {
   clearFieldError("name-new-contact");
   clearFieldError("email-new-contact");
   clearFieldError("phone-new-contact");
-
-  if (!name) {
-    showFieldError("name-new-contact", "Name is required");
-    isValid = false;
-  }
-
-  if (!email) {
-    showFieldError("email-new-contact", "E-Mail is required");
-    isValid = false;
-  } else if (!isValidEmail(email)) {
-    showFieldError("email-new-contact", "Please enter a valid email address");
-    isValid = false;
-  }
-
-  if (!phone) {
-    showFieldError("phone-new-contact", "Phone is required");
-    isValid = false;
-  }
-
-  return isValid;
 }
 
-// Validates and saves the edited contact data
+// Validate Add Name Field
+function validateAddNameField(name) {
+  if (!name) {
+    showFieldError("name-new-contact", "Name is required");
+    return false;
+  }
+  return true;
+}
+
+// Validate Add Email Field
+function validateAddEmailField(email) {
+  if (!email) {
+    showFieldError("email-new-contact", "E-Mail is required");
+    return false;
+  } else if (!isValidEmail(email)) {
+    showFieldError("email-new-contact", "Please enter a valid email address");
+    return false;
+  }
+  return true;
+}
+
+// Validate Add Phone Field
+function validateAddPhoneField(phone) {
+  if (!phone) {
+    showFieldError("phone-new-contact", "Phone is required");
+    return false;
+  }
+  return true;
+}
+
+// Validate Add Form Fields
+function validateAddFormFields(values) {
+  const nameValid = validateAddNameField(values.name);
+  const emailValid = validateAddEmailField(values.email);
+  const phoneValid = validateAddPhoneField(values.phone);
+  
+  return nameValid && emailValid && phoneValid;
+}
+
+// Validate Add Contact Form
+function validateAddContactForm() {
+  const values = getAddFormValues();
+  clearAddFormErrors();
+  return validateAddFormFields(values);
+}
+
+// Save Edited Contact
 function saveEditedContact() {
   if (!validateEditContactForm()) {
     return;

@@ -1,5 +1,5 @@
 // Get Contact Person
-function getContactPerson(key, renderContacts, id) {
+function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
   if (!savedColorIndex) {
     savedColorIndex = (id.charCodeAt(0) % 15) + 1;
@@ -26,7 +26,7 @@ function getContactPerson(key, renderContacts, id) {
 let currentContact = {};
 
 // Get Contact Details
-function getContactDeteails(name, email, phone, colorIndex, id, detailSection) {
+function getContactDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">
             <div class="contact-person-icon-big">
