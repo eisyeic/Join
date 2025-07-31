@@ -44,7 +44,7 @@
       </div>
       <div class="contact-overlay-edit-content-details">
         <div class="contact-overlay-edit-content-name">
-          <input oninput="clearFieldError('edit-name-input')" contenteditable="true" value="Anton Mayer"
+          <input oninput="clearFieldError('edit-name-input')" placeholder="Name" contenteditable="true" value="Anton Mayer"
             id="edit-name-input" />
           <div id="edit-name-input-box"></div>
           <img src="./assets/contacts/icons/person.svg" alt="Icon Person" />
@@ -53,7 +53,7 @@
       </div>
       <div class="contact-overlay-edit-content-details">
         <div class="contact-overlay-edit-content-name">
-          <input oninput="clearFieldError('edit-email-input')" contenteditable="true" value="antonm@gmail.com"
+          <input oninput="clearFieldError('edit-email-input')" placeholder="E-Mail" contenteditable="true" value="antonm@gmail.com"
             id="edit-email-input" />
           <div id="edit-email-input-box"></div>
           <img src="./assets/contacts/icons/mail.svg" alt="Icon Person" />
@@ -62,7 +62,7 @@
       </div>
       <div class="contact-overlay-edit-content-details">
         <div class="contact-overlay-edit-content-name">
-          <input oninput="clearFieldError('edit-phone-input')" contenteditable="true" value="+00 0000 000 00 0"
+          <input oninput="clearFieldError('edit-phone-input')" placeholder="Phone" contenteditable="true" value="+00 0000 000 00 0"
             type="tel" id="edit-phone-input" />
           <div id="edit-phone-input-box"></div>
           <img src="./assets/contacts/icons/call.svg" alt="Icon Person" />
@@ -70,8 +70,8 @@
         <div class="contact-overlay-placeholder" id="edit-phone-input-placeholder"></div>
       </div>
 
-      <div class="overlay-edit-contact-delete-save" onclick="deleteContact(), toggleEditContact()">
-        <p class="overlay-edit-contact-delete">Delete</p>
+      <div class="overlay-edit-contact-delete-save">
+        <p class="overlay-edit-contact-delete" onclick="deleteContact(), toggleEditContact()">Delete</p>
         <div class="overlay-edit-contact-save" onclick="saveEditedContact()">
           <p>Save</p>
           <img src="./assets/icons/contact/check.svg" alt="" />

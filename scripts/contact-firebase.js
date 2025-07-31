@@ -1,3 +1,8 @@
+/**
+ * Contact Firebase Integration
+ * Handles all Firebase database operations for contact management
+ */
+
 // ===== FIREBASE SETUP =====
 import {
   getDatabase,
@@ -8,12 +13,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { app } from "./firebase.js";
 
+// Initialize Firebase database connection
 const db = getDatabase(app);
 const dataRef = ref(db, "contacts");
 
 // ===== CONTACT DISPLAY FUNCTIONS =====
 
-// Clear container and handle empty data
+/**
+ * Initializes the contact container and handles empty data state
+ * @param {Object} data - Contact data from Firebase
+ * @returns {HTMLElement|null} - Container element or null if no data
+ */
 function initializeContactContainer(data) {
   const dataContainer = $("all-contacts");
   dataContainer.innerHTML = "";
@@ -25,14 +35,23 @@ function initializeContactContainer(data) {
   return dataContainer;
 }
 
-// Sort contacts alphabetically
+/**
+ * Sorts contacts alphabetically by name
+ * @param {Object} data - Contact data object
+ * @returns {Array} - Sorted array of [id, contact] pairs
+ */
 function getSortedContacts(data) {
   return Object.entries(data).sort(([, a], [, b]) =>
     a.name.localeCompare(b.name)
   );
 }
 
-// Add letter header if first letter changed
+/**
+ * Adds alphabetical letter header if the first letter changes
+ * @param {string} firstLetter - First letter of contact name
+ * @param {HTMLElement} dataContainer - Container to append header to
+ * @param {Object} currentLetter - Reference object tracking current letter
+ */
 function addLetterHeaderIfNeeded(firstLetter, dataContainer, currentLetter) {
   if (firstLetter !== currentLetter.value) {
     const letterHeader = document.createElement("div");
@@ -43,7 +62,12 @@ function addLetterHeaderIfNeeded(firstLetter, dataContainer, currentLetter) {
   }
 }
 
-// Create and append contact element
+/**
+ * Creates and appends a contact element to the container
+ * @param {string} id - Contact ID
+ * @param {Object} key - Contact data
+ * @param {HTMLElement} dataContainer - Container to append contact to
+ */
 function createContactElement(id, key, dataContainer) {
   const renderContacts = document.createElement("div");
   renderContacts.classList.add("rendered-contacts");
@@ -51,7 +75,13 @@ function createContactElement(id, key, dataContainer) {
   dataContainer.appendChild(renderContacts);
 }
 
-// Render individual contact with letter header if needed
+/**
+ * Renders a single contact with letter header if needed
+ * @param {string} id - Contact ID
+ * @param {Object} key - Contact data
+ * @param {HTMLElement} dataContainer - Container element
+ * @param {Object} currentLetter - Reference object tracking current letter
+ */
 function renderSingleContact(id, key, dataContainer, currentLetter) {
   const firstLetter = key.name.charAt(0).toUpperCase();
 
@@ -59,7 +89,11 @@ function renderSingleContact(id, key, dataContainer, currentLetter) {
   createContactElement(id, key, dataContainer);
 }
 
-// Render sorted contacts with letter headers
+/**
+ * Renders the complete contact list with alphabetical headers
+ * @param {Object} data - Contact data from Firebase
+ * @param {HTMLElement} dataContainer - Container element
+ */
 function renderContactList(data, dataContainer) {
   const sortedEntries = getSortedContacts(data);
   let currentLetter = { value: "" };
@@ -75,7 +109,10 @@ function renderContactList(data, dataContainer) {
 }
 
 
-// Process and render contact data
+/**
+ * Processes and renders contact data from Firebase
+ * @param {Object} data - Contact data from Firebase snapshot
+ */
 function processContactData(data) {
   const dataContainer = initializeContactContainer(data);
   if (dataContainer) {
@@ -83,7 +120,9 @@ function processContactData(data) {
   }
 }
 
-// Listen to Firebase data changes
+/**
+ * Sets up Firebase listener for real-time contact data updates
+ */
 function showAllData() {
   onValue(dataRef, (snapshot) => {
     const data = snapshot.val();
@@ -93,18 +132,23 @@ function showAllData() {
 
 // ===== ADD CONTACT FUNCTIONS =====
 
-// Get form data for new contact
+/**
+ * Retrieves form data for creating a new contact
+ * @returns {Object} - New contact data object
+ */
 function getNewContactData() {
   return {
     name: $("name-new-contact").value,
     email: $("email-new-contact").value,
     phone: $("phone-new-contact").value,
-    colorIndex: colorIndex
+    colorIndex: window.colorIndex
   };
 }
 
-
-// Show success status and refresh data
+/**
+ * Handles successful contact save operation
+ * @param {Object} data - Saved contact data
+ */
 function handleSaveSuccess(data) {
   const statusElement = $("check-status-add-contact");
 
@@ -120,7 +164,10 @@ function handleSaveSuccess(data) {
   showAllData();
 }
 
-// Save data to Firebase
+/**
+ * Saves contact data to Firebase database
+ * @param {Object} data - Contact data to save
+ */
 function saveToFirebase(data) {
   push(dataRef, data)
     .then(() => handleSaveSuccess(data))
@@ -129,7 +176,10 @@ function saveToFirebase(data) {
 
 // ===== GLOBAL FUNCTIONS =====
 
-// Delete contact from Firebase
+/**
+ * Deletes the currently selected contact from Firebase
+ * Global function accessible from HTML onclick events
+ */
 window.deleteContact = () => {
   import(
     "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
@@ -143,20 +193,22 @@ window.deleteContact = () => {
   });
 };
 
-// Save data
+/**
+ * Validates and saves new contact data to Firebase
+ * Global function accessible from HTML onclick events
+ */
 window.dataSave = () => {
   if (!validateAddContactForm()) {
     return;
   }
-  colorIndex = (colorIndex % 15) + 1;
+  window.colorIndex = (window.colorIndex % 15) + 1;
   const data = getNewContactData();
   saveToFirebase(data);
 };
 
-
-
-
 // ===== INITIALIZATION =====
 
-// Show all data immediately on load
+/**
+ * Initialize contact display on page load
+ */
 showAllData();
