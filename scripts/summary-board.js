@@ -23,9 +23,3 @@ function getGreeting() {
   if (hour < 18) return "Good Afternoon";
   return "Good Evening";
 }
-
-function reorganizeTasksForMobile() {
-  if (window.innerWidth <= 900) {
-    $("task-tile-board-overview").style.display = "none";
-    $("task-tile-todo").style.display = "none";
-  }

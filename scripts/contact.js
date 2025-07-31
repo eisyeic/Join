@@ -78,9 +78,8 @@ function removeDetailsMobileNavbar(event) {
   if (event) {
     event.stopPropagation();
   }
-  const element = $("single-person-content-mobile-navbar");
-  if (element) {
-    element.classList.add("d-none");
+  else{
+    $("single-person-content-mobile-navbar").classList.add("d-none");
   }
 }
 

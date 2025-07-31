@@ -64,6 +64,7 @@
 
       <div class="task-dashboard-container">
         <div class="task-dashboard-top-row">
+
           <div class="task-tile-urgent" onclick="location.href='board.html'">
             <div class="task-tile-urgent-content">
               <div class="task-tile-urgent-left-section">
@@ -85,6 +86,7 @@
               </div>
             </div>
           </div>
+
           <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
             <div class="task-tile-board-overview-content">
               <div class="task-tile-icon-container">
@@ -99,13 +101,7 @@
           </div>
         </div>
 
-        <div class="mobile-task-to-do" id="mobile-task-to-do"></div>
-        
-
         <div class="task-dashboard-bottom-row">
-
-          <div class="mobile-task-on-board" id="mobile-task-on-board"></div>
-          
           <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
             <div class="task-tile-todo-content">
               <div class="task-tile-icon-container">
@@ -118,6 +114,7 @@
             </div>
             <h5>Task To-do</h5>
           </div>
+
           <div class="task-tile-in-progress" onclick="location.href='board.html'">
             <div class="task-tile-in-progress-content">
               <div class="task-tile-icon-container">
@@ -130,6 +127,7 @@
             </div>
             <h5>Task in<br>Progress</h5>
           </div>
+
           <div class="task-tile-awaiting-feedback" onclick="location.href='board.html'">
             <div class="task-tile-awaiting-feedback-content">
               <div class="task-tile-icon-container">
@@ -142,6 +140,7 @@
             </div>
             <h5>Awaiting<br>Feedback</h5>
           </div>
+
           <div class="task-tile-done" onclick="location.href='board.html'">
             <div class="task-tile-done-content">
               <div class="task-tile-icon-container">
@@ -154,8 +153,103 @@
             </div>
             <h5>Task<br>Done</h5>
           </div>
+
         </div>
       </div>
+    </section>
+    <div class="task-dashboard-mobile">
+
+      <div class="task-tile-urgent-mobile" onclick="location.href='board.html'">
+        <div class="task-tile-urgent-content">
+          <div class="task-tile-urgent-left-section">
+            <div class="task-tile-urgent-icon-row">
+              <div class="task-tile-icon-container">
+                <img src="./assets/summary/icons/urgent.svg" alt="Icon Task Urgent" />
+                <svg viewBox="0 0 300 300">
+                  <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+                </svg>
+              </div>
+              <h2>1</h2>
+            </div>
+            <div class="task-tile-urgent-title-mobile">Tasks Urgent</div>
+          </div>
+          <div class="task-tile-urgent-divider"></div>
+          <div class="task-tile-urgent-right-section">
+            <h4>Oktober 16, 2022</h4>
+            <h5>Upcoming Deadline</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-tile-todo-mobile" onclick="location.href='board.html'" id="task-tile-todo">
+        <div class="task-tile-todo-content">
+          <img src="./assets/summary/icons/todo.svg" alt="Icon Task Todo" />
+          <h2>1</h2>
+        </div>
+        <h5>Task To-do</h5>
+      </div>
+
+      <div class="task-tile-board-top-row-mobile">
+
+        <div class="task-tile-board-overview-mobile" onclick="location.href='board.html'" id="task-tile-board-overview">
+          <div class="task-tile-board-overview-content">
+            <div class="task-tile-icon-container">
+              <img src="./assets/summary/icons/default.svg" alt="Icon Task in Board" />
+              <svg viewBox="0 0 300 300">
+                <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+              </svg>
+            </div>
+            <h2>5</h2>
+          </div>
+          <h5>Task on<br>Board</h5>
+        </div>
+
+        <div class="task-tile-in-progress-mobile" onclick="location.href='board.html'">
+          <div class="task-tile-in-progress-content">
+            <div class="task-tile-icon-container">
+              <img src="./assets/summary/icons/in_progress.svg" alt="Icon Task In Progress" />
+              <svg viewBox="0 0 300 300">
+                <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+              </svg>
+            </div>
+            <h2>2</h2>
+          </div>
+          <h5>Task in<br>Progress</h5>
+        </div>
+
+      </div>
+
+      <div class="task-tile-board-bottom-row-mobile">
+
+        <div class="task-tile-awaiting-feedback-mobile" onclick="location.href='board.html'">
+          <div class="task-tile-awaiting-feedback-content">
+            <div class="task-tile-icon-container">
+              <img src="./assets/summary/icons/afeedback.svg" alt="Icon Task Awaiting Feedback" />
+              <svg viewBox="0 0 300 300">
+                <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+              </svg>
+            </div>
+            <h2>1</h2>
+          </div>
+          <h5>Awaiting<br>Feedback</h5>
+        </div>
+
+        <div class="task-tile-done-mobile" onclick="location.href='board.html'">
+          <div class="task-tile-done-content">
+            <div class="task-tile-icon-container">
+              <img src="./assets/summary/icons/done.svg" alt="Icon Task Done" />
+              <svg viewBox="0 0 300 300">
+                <circle cx="150" cy="150" r="140" fill="none" stroke="white" stroke-width="10" />
+              </svg>
+            </div>
+            <h2>3</h2>
+          </div>
+          <h5>Task<br>Done</h5>
+        </div>
+
+      </div>
+
+    </div>
 
   </main>
   <footer class="nav-mobile">

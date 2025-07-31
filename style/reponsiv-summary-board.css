@@ -1,4 +1,7 @@
 @media (max-width: 1250px) {
+  .dashboard {
+    width: calc(100vw - 234px);
+  }
   .task-dashboard-container {
     transform: scale(0.9);
   }
@@ -21,6 +24,7 @@
 @media (max-width: 1024px) {
   .dashboard {
     width: calc(100vw - 150px);
+    gap: 0;
   }
 }
 
@@ -28,113 +32,123 @@
 @media (max-width: 900px) {
 
   main {
-    height: calc(100vh - 187px);
-  }
-
-   .dashboard {
-    height: calc(100vh - 203px);
-    width: 100vw;
-    overflow: hidden;
-    position: absolute;
-    top: 84px;
-    bottom: 103px;
-    padding: 0;
-    gap: 0;
-  }
-
-  .dashboard-header {
+    height: calc(100vh - 191px);
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    animation: slideUpAndHide 0.75s forwards;
-    animation-delay: 4.1s;
-    background: white;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    z-index: 2;
   }
 
-  .task-container-mobile {
+   .dashboard {
+    width: 100%;
+    height: calc(100vh - 191px);
+    position: absolute;
+    top: 84px;
+  }
+  
+   .dashboard-header {
+    animation: slideUpAndHide 0.8s forwards;
+    animation-delay: 3.0s;
+    background: white;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    animation: fadeInUp 0.5s forwards;
-    animation-delay: 3s;
-    z-index: 2;
-    padding-bottom: 74px;
-    padding-top: 64px;
-    overflow: scroll;
-    overflow-x: hidden;
-    background-color: white;
   }
 
+  .dashboard-header h2 {
+    font-size: 33px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 47px;
+  }
 
- @keyframes slideUpAndHide {
+   .task-dashboard-container {
+    display: none;
+
+   }
+
+@keyframes slideUpAndHide {
   0% {
-    transform: translate(-50%, -50%);
+    transform: translateY(0);
   }
 
-    100% {
-      transform: translate(-50%, -100vh);
-      opacity: 0;
-    }
+  100% {
+    transform: translateY(-25vh);
   }
+}
 
-  @keyframes fadeInUp {
+.task-tile-urgent-right-section h4 {
+  font-size: 23px !important;
+}
+
+.task-tile-urgent-right-section h5 {
+  font-size: 16px !important;
+  font-weight: 400;
+}
+
+.task-tile-urgent-right-section {
+  gap: 16px;
+  align-items: start;
+}
+.task-tile-urgent-left-section {
+  gap: 0;
+}
+.task-tile-urgent-icon-row {
+  gap: 0;
+  align-items: normal;
+}
+.task-tile-urgent-content {
+  gap: 16px;
+}
+.task-tile-urgent-divider {
+  height: 118px;
+}
+
+.task-tile-in-progress-mobile h5,
+.task-tile-board-overview-mobile h5,
+.task-tile-awaiting-feedback-mobile h5,
+.task-tile-done-mobile h5 {
+  color: var(--main-color);
+  font-weight: 400;
+  text-align: center;
+}
+
+.task-tile-todo-content img {
+  height: 76px;
+  width: 76px;
+}
+
+.task-tile-todo-content {
+  align-items: center;
+}
+}
+
+@media (max-width: 720px) {
+  .dashboard {
+    height: calc(100vh - 171px);
+  }
+}
+
+@media (max-width: 450px) {
+  
+  @keyframes fadeInUp{
     0% {
       opacity: 0;
-      transform: translateY(100vh);
+      transform: translateY(100vh) scale(0.75);
     }
-
-    30% {
-      opacity: 1;
-      transform: translateY(100vh);
-    }
-
-    70% {
-      opacity: 1;
-      transform: translateY(100vh);
-    }
-
     100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(0.75);
     }
   }
+
+  @keyframes slideUpAndHide {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-18vh);
+  }
 }
-
-.task-box-bottom-mobile {
-  width: 396px;
-}
-
-.task-box-bottom-bottom-mobile {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  align-items: center;
-  width: 396px;
-}
-
-.task-box-top-mobile {
-  width: 396px;
-  justify-content: center;
-  align-items: center;
-
-}
-
-.task-urgent-mobile {
-  height: 150px;
-  width: 396px;
-}
-
-.task-task-to-do-mobile {
-  height: 106px;
-  width: 396px;
 }
