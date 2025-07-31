@@ -51,7 +51,7 @@ function createTaskElement(task, taskId) {
                   ${task.subtasks && task.subtasks.length > 0 ? renderSubtaskProgress(task.subtasks) : ''}
                 <div class="initials-icon-box">
                   <div class="initials">
-                    ${renderInitials(task.assignedContacts)}
+                    
                   </div>
                   <img src="./assets/icons/board/${task.priority.toLowerCase()}.svg" alt="${task.priority}">
                 </div>
@@ -79,32 +79,6 @@ function renderSubtaskProgress(subtasks) {
       ${done}/${total} Subtasks
     </div>
   `;
-}
-
-function renderInitials(assignedTo = []) {
-  const colors = ["#FFA500", "#00BFFF", "#32CD32", "#9370DB", "#FF69B4"]; // beliebige Farben
-
-  if (!Array.isArray(assignedTo) || assignedTo.length === 0) return '';
-
-  return assignedTo.map((name, index) => {
-    const initials = name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
-
-    const zIndex = index + 1;
-    const marginLeft = index === 0 ? 0 : -10;
-    const color = colors[index % colors.length];
-
-    return `
-      <div class="initial-circle" 
-           style="background-color: ${color}; 
-                  z-index: ${zIndex}; 
-                  margin-left: ${marginLeft}px;">
-        ${initials}
-      </div>`;
-  }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
