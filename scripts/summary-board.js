@@ -1,16 +1,23 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth } from "./firebase.js";
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, (user) => {
   if (user) {
     const name = user.displayName || "User";
     const greeting = getGreeting();
     console.log(`${greeting}, ${name}!`);
 
- // To Do:  hier noch anpassen damit im HTML angezeigt wird!
+    const usernameElement = document.getElementById("username");
     const greetingElement = document.getElementById("greeting");
-    if (greetingElement) {
-      greetingElement.textContent = `${greeting}, ${name}!`;
+
+    if (usernameElement && name !== "User") {
+      usernameElement.textContent = name;
+      
+      if (greetingElement) {
+        greetingElement.textContent = greeting + ",";
+        greetingElement.style.fontSize = "48px";
+        greetingElement.style.fontWeight = "400";
+      }
     }
   }
 });
@@ -23,3 +30,4 @@ function getGreeting() {
   if (hour < 18) return "Good Afternoon";
   return "Good Evening";
 }
+

@@ -24,7 +24,8 @@ h5 {
 }
 
 .dashboard-header h2 {
-  font-weight: 400;
+  font-weight: 700;
+  font-size: 64px;
 }
 
 .dashboard p {
@@ -481,3 +482,4 @@ h5 {
 .task-tile-urgent-title-mobile {
   font-size: 19px;
 }
+

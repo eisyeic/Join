@@ -28,6 +28,11 @@
   }
 }
 
+@media (min-width: 900px) {
+  .task-dashboard-mobile {
+    display: none;
+  }
+ }
 
 @media (max-width: 900px) {
 
