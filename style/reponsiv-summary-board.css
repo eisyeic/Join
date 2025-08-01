@@ -8,6 +8,7 @@
 
   .dashboard-header {
     transform: scale(0.9);
+    flex-direction: column;
   }
 }
 
@@ -77,8 +78,13 @@
     transform: translateY(0);
   }
 
+  80% {
+    opacity: 1;
+  }
+
   100% {
     transform: translateY(-25vh);
+    opacity: 0;
   }
 }
 

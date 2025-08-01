@@ -256,19 +256,19 @@
 .task-overlay {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   background-color: #fff;
-  height: 932px;
+  max-height: calc(100vh - 200px);
   width: 528px;
+  max-width: 90vw;
   padding: 48px 40px;
   border-radius: 30px;
-  gap: 24px;
+  gap: 16px;
   box-shadow: rgb(0, 0, 0, 0.16) 0px 0px 4px 0px;
+  overflow-y: auto;
 }
 
 .label-exit-box {
   display: flex;
-  align-items: center;
   justify-content: space-between;
 }
 
@@ -290,22 +290,19 @@
 }
 
 .task-overlay-title {
-  font-size: 61px;
+  font-size: 48px;
   font-weight: 700;
-}
-
-.due-date-box {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-}
-
-b {
-  color: var(--menu-color);
+  word-wrap: break-word;
+  line-height: 1.1;
+  flex-shrink: 0;
 }
 
 .due-date-box span, .priority-box span {
   font-size: 21px;
+}
+
+b {
+  color: var(--menu-color);
 }
 
 .priority-box {
@@ -330,7 +327,9 @@ b {
   display: flex;
   flex-direction: column;
   padding: 7px 16px;
-  gap: 4px;
+  gap: 2px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .member {
@@ -348,7 +347,9 @@ b {
 .subtasks-check-box {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .subtask {
