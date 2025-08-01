@@ -1,0 +1,11 @@
+@media (max-width: 900px) {
+    .legal-notice-content {
+        padding: 88px 50px;
+    }
+}
+
+@media (max-width: 400px) {
+    .legal-notice-content {
+        padding: 50px 20px;
+    }
+}

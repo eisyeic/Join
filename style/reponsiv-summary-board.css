@@ -126,6 +126,13 @@
 }
 
 @media (max-width: 450px) {
-  
+  .dashboard-header {
+    zoom: 0.75;
+  }
 
+  .task-dashboard-mobile {
+    zoom: 0.75;
+  }
 }
+
+
