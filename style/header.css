@@ -12,6 +12,8 @@ header {
     padding-left: 39px;
     padding-right: 39px;
     box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.1);
+    isolation: isolate;
+    z-index: 50;
 }
 
 p {
@@ -46,7 +48,7 @@ nav {
 /* Profile Navbar */
 
 .profile-navbar {
-    position: absolute;
+    position: fixed;
     top: 100px;
     right: 2px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), -4px 0 8px rgba(0, 0, 0, 0.3);
@@ -59,6 +61,7 @@ nav {
     flex-direction: column;
     display: flex;
     gap: 8px;
+    z-index: 60;
 }
 
 .profile-navbar-box {
@@ -83,9 +86,39 @@ nav {
 }
 
 .profile-navbar a:hover {
-  background-color: var(--navi-buttons-bg);
+    background-color: var(--navi-buttons-bg);
 }
 
 .profile-navbar-help {
     display: none;
-  }
+}
+
+.circle-badge {
+    cursor: pointer;
+}
+
+.circle-badge .circle-ring {
+    fill: none;
+    stroke: white;
+    stroke-width: 3;
+}
+
+
+.circle-badge .circle-fill {
+    fill: white;
+}
+
+.circle-badge .circle-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 30px;
+    fill: var(--light-blue);
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.person-icon-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
