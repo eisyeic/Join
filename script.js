@@ -2,8 +2,6 @@
 let $ = id => document.getElementById(id);
 
 // Toggle Profile Navbar
-
-// Toggle Profile Navbar
 function toggleProfileNavbar() {
     let profileNavbar = $("profile-navbar");
     profileNavbar.classList.toggle("d-none");
