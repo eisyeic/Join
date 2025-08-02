@@ -1,9 +1,17 @@
 import {  getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { app } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { app, auth } from "./firebase.js";
 
 let db = getDatabase(app);
 let loadedContacts = {};
 let subtasks = [];
+
+// User initials
+onAuthStateChanged(auth, (user) => {
+  if (window.updateUserInitials) {
+    window.updateUserInitials(user);
+  }
+});
 
 loadContactsAndRender();
 
