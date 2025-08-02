@@ -1,4 +1,4 @@
-import { renderSubtasks } from "./templates.js";
+import { renderSubtasks } from "./template.module.js";
 export let subtasks = [];
 
 // datepicker dropdown menu

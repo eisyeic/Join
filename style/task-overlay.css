@@ -10,7 +10,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 100;
 }
 
 .task-overlay {
@@ -92,7 +92,7 @@ b {
 .members {
   display: flex;
   flex-direction: column;
-  padding: 7px 16px;
+  padding: 0 16px;
   gap: 2px;
   max-height: 200px;
   overflow-y: auto;
@@ -101,7 +101,7 @@ b {
 .member {
   display: flex;
   align-items: center;
-  height: 56px;
+  height: 52px;
   gap: 8px;
 }
 
@@ -122,7 +122,6 @@ b {
   display: flex;
   align-items: center;
   padding: 6px 16px;
-  gap: 16px;
 }
 
 .delete-edit-box {
@@ -132,11 +131,18 @@ b {
   gap: 8px;
 }
 
-.subtask img:hover {
+.subtask label {
+  cursor: pointer;
+  display: flex;
+  gap: 16px;
+}
+
+.subtask label:hover img {
+  cursor: pointer;
   content: url(../assets/icons/add_task/check_default_hover.svg);
 }
 
-.subtask img:active {
+.subtask label:active img {
   content: url(../assets/icons/add_task/check_checked.svg);
 }
 

@@ -1,9 +1,9 @@
-import {  getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
 
 import { subtasks, selectedPriority, addEditEvents } from "./addtask.js";
-import { renderSubtasks } from "./templates.js";
+import { renderSubtasks } from "./template.module.js";
 
 let db = getDatabase(app);
 let loadedContacts = {};

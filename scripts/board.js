@@ -6,7 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
-import { renderSubtasks } from "./templates.js";
+import { renderSubtasks } from "./template.module.js";
 
 let db = getDatabase(app);
 
