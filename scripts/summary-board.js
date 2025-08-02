@@ -34,7 +34,7 @@ function loadTaskCounts() {
     const counts = {
       todo: 0,
       inProgress: 0,
-      awaitingFeedback: 0,
+      awaitFeedback: 0,
       done: 0,
       urgent: 0,
       total: 0
@@ -48,8 +48,8 @@ function loadTaskCounts() {
         counts.total++;
         
         if (task.column === 'todo') counts.todo++;
-        if (task.column === 'in-progress') counts.inProgress++;
-        if (task.column === 'awaiting-feedback') counts.awaitingFeedback++;
+        if (task.column === 'inProgress') counts.inProgress++;
+        if (task.column === 'awaitFeedback') counts.awaitFeedback++;
         if (task.column === 'done') counts.done++;
         if (task.priority === 'urgent') counts.urgent++;
       }
@@ -65,34 +65,34 @@ function loadTaskCounts() {
 function updateTaskCountElements(counts) {
   // Desktop elements
   const elements = {
-    todo: document.getElementById("task-to-do-text"),
-    inProgress: document.getElementById("task-in-progress-text"),
-    awaiting: document.getElementById("task-awaiting-feedback-text"),
-    done: document.getElementById("task-done-text"),
-    urgent: document.getElementById("task-urgent-text"),
-    total: document.getElementById("task-on-board-text")
+    todo: $("task-to-do-text"),
+    inProgress: $("task-in-progress-text"),
+    awaitFeedback: $("task-awaiting-feedback-text"),
+    done: $("task-done-text"),
+    urgent: $("task-urgent-text"),
+    total: $("task-on-board-text")
   };
 
   if (elements.todo) elements.todo.innerText = counts.todo;
   if (elements.inProgress) elements.inProgress.innerText = counts.inProgress;
-  if (elements.awaiting) elements.awaiting.innerText = counts.awaitingFeedback;
+  if (elements.awaitFeedback) elements.awaitFeedback.innerText = counts.awaitFeedback;
   if (elements.done) elements.done.innerText = counts.done;
   if (elements.urgent) elements.urgent.innerText = counts.urgent;
   if (elements.total) elements.total.innerText = counts.total;
 
   // Mobile elements
   const mobileElements = {
-    todo: document.getElementById("task-to-do-text-mobile"),
-    inProgress: document.getElementById("task-in-progress-text-mobile"),
-    awaiting: document.getElementById("task-awaiting-feedback-text-mobile"),
-    done: document.getElementById("task-done-text-mobile"),
-    urgent: document.getElementById("task-urgent-text-mobile"),
-    total: document.getElementById("task-on-board-text-mobile")
+    todo: $("task-to-do-text-mobile"),
+    inProgress: $("task-in-progress-text-mobile"),
+    awaiting: $("task-awaiting-feedback-text-mobile"),
+    done: $("task-done-text-mobile"),
+    urgent: $("task-urgent-text-mobile"),
+    total: $("task-on-board-text-mobile")
   };
 
   if (mobileElements.todo) mobileElements.todo.innerText = counts.todo;
   if (mobileElements.inProgress) mobileElements.inProgress.innerText = counts.inProgress;
-  if (mobileElements.awaiting) mobileElements.awaiting.innerText = counts.awaitingFeedback;
+  if (mobileElements.awaiting) mobileElements.awaiting.innerText = counts.awaitFeedback;
   if (mobileElements.done) mobileElements.done.innerText = counts.done;
   if (mobileElements.urgent) mobileElements.urgent.innerText = counts.urgent;
   if (mobileElements.total) mobileElements.total.innerText = counts.total;
