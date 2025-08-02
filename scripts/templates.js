@@ -1,3 +1,5 @@
+import { subtasks, addEditEvents, deleteEvent } from "./addtask.js";
+
 // Get Contact Person
 function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
@@ -140,7 +142,6 @@ function getErrorMessage(message) {
 
 
 // addtask subtasks list display
-import { subtasks, addEditEvents, deleteEvent } from "./addtask.js";
 export function renderSubtasks() {
   $("subtask-list").innerHTML = subtasks
     .map(

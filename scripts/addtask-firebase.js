@@ -8,6 +8,8 @@ import { renderSubtasks } from "./templates.js";
 let db = getDatabase(app);
 let loadedContacts = {};
 
+loadContactsAndRender();
+
 
 // User initials
 onAuthStateChanged(auth, (user) => {
@@ -16,7 +18,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-loadContactsAndRender();
 
 // load contact onload page
 function loadContactsAndRender() {
@@ -30,6 +31,7 @@ function loadContactsAndRender() {
   });
 }
 
+// contact input event listener
 let contactInput = $("contact-input");
 if (contactInput) {
   contactInput.addEventListener("input", function () {
@@ -109,16 +111,6 @@ function renderSelectedContactInitials() {
   });
 }
 
-
-// create button check necessary fields filled
-$("create-button").addEventListener("click", handleCreateClick);
-function handleCreateClick() {
-  let taskData = collectFormData();
-  let isValid = validateFormData(taskData);
-  if (!isValid) return;
-  sendTaskToFirebase(taskData);
-}
-
 // collect form data
 function collectFormData() {
   let column = "todo";
@@ -126,7 +118,6 @@ function collectFormData() {
   let description = $("addtask-textarea").value.trim();
   let dueDate = $("datepicker").value.trim();
   let category = $("category-select").querySelector("span").textContent;
-
 let assignedContacts = Array.from(
   document.querySelectorAll("#contact-list-box li.selected")
 ).map((li) => {
@@ -139,7 +130,6 @@ let assignedContacts = Array.from(
     initials: contact.initials,
   };
 });
-
   return {
     column,
     title,
@@ -152,7 +142,7 @@ let assignedContacts = Array.from(
   };
 }
 
-
+// validate form addtask
 function validateFormData(data) {
   let valid = true;
   $("addtask-error").innerHTML = "";
@@ -179,6 +169,15 @@ function validateFormData(data) {
   return valid;
 } 
 
+// create button check necessary fields filled
+$("create-button").addEventListener("click", handleCreateClick);
+function handleCreateClick() {
+  let taskData = collectFormData();
+  let isValid = validateFormData(taskData);
+  if (!isValid) return;
+  sendTaskToFirebase(taskData);
+}
+
 // send to firebase
 function sendTaskToFirebase(taskData) {
   let tasksRef = ref(db, "tasks");
@@ -202,85 +201,3 @@ function sendTaskToFirebase(taskData) {
 function clearForm() {
   $("cancel-button").click();
 }
-
-
-
-$("sub-input").addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    event.preventDefault(); 
-    let subtaskText = this.value.trim();
-    if (subtaskText) {
-      subtasks.push(subtaskText);
-      this.value = "";
-      $("subtask-func-btn").classList.add("d-none");
-      $("subtask-plus-box").classList.remove("d-none");
-      renderSubtasks();
-    }
-  }
-});
-
-// add subtask to the list
-$("sub-check").addEventListener("click", function () {
-  let subtaskText = $("sub-input").value.trim();
-  if (subtaskText) {
-    subtasks.push(subtaskText);
-    $("sub-input").value = "";
-    $("subtask-func-btn").classList.add("d-none");
-    $("subtask-plus-box").classList.remove("d-none");
-    renderSubtasks();
-  }
-});
-
-// Clear subtask input
-$("sub-clear").addEventListener("click", function () {
-  $("sub-input").value = "";
-  $("subtask-func-btn").classList.add("d-none");
-  $("subtask-plus-box").classList.remove("d-none");
-});
-
-$("sub-plus").addEventListener("click", function () {
-  if (subtasks.length === 0) {
-    $("sub-input").value = "Contact Form";
-    $("subtask-plus-box").classList.add("d-none");
-    $("subtask-func-btn").classList.remove("d-none");
-  }
-});
-
-  // save subtask changes
-  document.querySelectorAll(".subtask-save-icon").forEach((saveBtn) => {
-    saveBtn.addEventListener("click", () => {
-      let item = saveBtn.closest(".subtask-item");
-      let index = item.getAttribute("data-index");
-      let input = item.querySelector(".subtask-edit-input");
-      let newValue = input.value.trim();
-      if (newValue) {
-        subtasks[index] = newValue;
-        renderSubtasks();
-      }
-    });
-  });
-
-
-function saveEditedSubtask(saveBtn) {
-  let item = saveBtn.closest(".subtask-item");
-  let index = item.getAttribute("data-index");
-  let input = item.querySelector(".subtask-edit-input");
-  let newValue = input.value.trim();
-  if (newValue) {
-    subtasks[index] = newValue;
-    renderSubtasks();
-    addEditEvents(); 
-  }
-}
-
-document.addEventListener("click", function (event) {
-  document.querySelectorAll(".subtask-item.editing").forEach((subtaskItem) => {
-    if (!subtaskItem.contains(event.target)) {
-      const saveBtn = subtaskItem.querySelector(".subtask-save-icon");
-      saveEditedSubtask(saveBtn);
-    }
-  });
-});
-
-
-

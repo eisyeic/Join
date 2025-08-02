@@ -202,16 +202,17 @@
 
 .initials {
   display: flex;
-  width: 80px;
+  width: 85px;
 }
 
 .initial-circle {
-  width: 32px;
-  height: 32px;
+  width: 31px;
+  border: 1px solid #fff;
+  height: 31px;
+  background-size: cover;
   border-radius: 50%;
   color: white;
-  font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -225,12 +226,12 @@
 
 .second-initial {
   z-index: 2;
-  margin-left: -10px;
+  margin-left: -6px
 }
 
 .third-initial {
   z-index: 3;
-  margin-left: -10px;
+  margin-left: -6px;
 }
 
 .ticket:active {

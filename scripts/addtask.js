@@ -1,5 +1,4 @@
 import { renderSubtasks } from "./templates.js";
-
 export let subtasks = [];
 
 // datepicker dropdown menu
@@ -18,6 +17,67 @@ let picker = flatpickr("#datepicker", {
 $("datepicker-wrapper").addEventListener("click", function () {
   picker.open();
 });
+
+// priority buttons functionality
+export let selectedPriority = "medium";
+document.querySelectorAll(".priority-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".priority-button").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    button.classList.add("active");
+    selectedPriority = button.classList.contains("urgent-button")
+      ? "urgent"
+      : button.classList.contains("medium-button")
+      ? "medium"
+      : "low";
+  });
+});
+
+// reset priority selection
+function resetPrioritySelection() {
+  document
+    .querySelectorAll(".priority-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  selectedPriority = "medium";
+  const mediumButton = document.querySelector(".medium-button");
+  if (mediumButton) {
+    mediumButton.classList.add("active");
+  }
+}
+
+// dropdown for assigned contacts
+let contactInitialsBox = document.querySelector(".contact-initials");
+$("assigned-select-box").addEventListener("click", function () {
+  $("contact-list-box").classList.toggle("d-none");
+  let isListVisible = !$("contact-list-box").classList.contains("d-none");
+  if (!isListVisible) {
+    let selectedContacts =
+      $("contact-list-box").querySelectorAll("li.selected");
+    if (selectedContacts.length > 0) {
+      contactInitialsBox.classList.remove("d-none");
+    } else {
+      contactInitialsBox.classList.add("d-none");
+    }
+  } else {
+    contactInitialsBox.classList.add("d-none");
+  }
+});
+
+// category selection functionality
+$("category-selection")
+  .querySelectorAll("li")
+  .forEach((item) => {
+    item.addEventListener("click", () => {
+      let value = item.getAttribute("data-value");
+      $("category-select").querySelector("span").textContent = value;
+      $("category-selection").classList.add("d-none");
+      $("category-icon").classList.remove("arrow-up");
+      $("category-icon").classList.add("arrow-down");
+      $("category-select").style.borderColor = "";
+      $("category-selection-error").innerHTML = "";
+    });
+  });
 
 // Main event listener to close dropdowns when clicking outside
 document.addEventListener("click", (event) => {
@@ -127,41 +187,75 @@ function clearAssignedContacts() {
   contactInitialsBox.innerHTML = "";
 }
 
-// reset priority selection
-function resetPrioritySelection() {
-  document
-    .querySelectorAll(".priority-button")
-    .forEach((btn) => btn.classList.remove("active"));
-  selectedPriority = "medium";
-  const mediumButton = document.querySelector(".medium-button");
-  if (mediumButton) {
-    mediumButton.classList.add("active");
-  }
-}
-
 // edit subtask functionality
 export function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
-    editBtn.addEventListener("click", () => {
-      let item = editBtn.closest(".subtask-item");
-      let input = item.querySelector(".subtask-edit-input");
-      let firstSpacer = item.querySelector(".first-spacer");
-      let secondSpacer = item.querySelector(".second-spacer");
-      item.querySelector(".subtask-text").classList.add("d-none");
-      input.classList.remove("d-none");
-      input.classList.add("active");
-      input.focus();
-      input.select();
-      item.classList.add("editing");
-      firstSpacer.classList.add("d-none");
-      secondSpacer.classList.remove("d-none");
-      item.querySelector(".subtask-edit-icon").classList.add("d-none");
-      item.querySelector(".subtask-save-icon").classList.remove("d-none");
-    });
+    editBtn.addEventListener("click", () => enterEditMode(editBtn));
   });
 }
 
-// delete subtask functionality
+// enter sub edit mode
+function enterEditMode(editBtn) {
+  const item = editBtn.closest(".subtask-item");
+  const input = item.querySelector(".subtask-edit-input");
+  showEditFields(item, input);
+  setupEnterKeyToSave(input, item);
+}
+
+// show edit inputs 
+function showEditFields(item, input) {
+  item.querySelector(".subtask-text").classList.add("d-none");
+  input.classList.remove("d-none");
+  input.classList.add("active");
+  input.focus();
+  input.select();
+  item.classList.add("editing");
+  item.querySelector(".first-spacer").classList.add("d-none");
+  item.querySelector(".second-spacer").classList.remove("d-none");
+  item.querySelector(".subtask-edit-icon").classList.add("d-none");
+  item.querySelector(".subtask-save-icon").classList.remove("d-none");
+}
+
+// enter keydown sublist event function
+function setupEnterKeyToSave(input, item) {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const saveBtn = item.querySelector(".subtask-save-icon");
+      if (saveBtn) saveEditedSubtask(saveBtn);
+    }
+  }, { once: true }); 
+}
+
+
+// add subtask to the list
+$("sub-check").addEventListener("click", function () {
+  let subtaskText = $("sub-input").value.trim();
+  if (subtaskText) {
+    subtasks.push(subtaskText);
+    $("sub-input").value = "";
+    $("subtask-func-btn").classList.add("d-none");
+    $("subtask-plus-box").classList.remove("d-none");
+    renderSubtasks();
+  }
+});
+
+
+// enter keydown new subitem add
+$("sub-input").addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    let subtaskText = this.value.trim();
+    if (subtaskText) {
+      subtasks.push(subtaskText);
+      this.value = "";
+      $("subtask-func-btn").classList.add("d-none");
+      $("subtask-plus-box").classList.remove("d-none");
+      renderSubtasks();
+    }
+  }
+});
+
+// subtask delete functionality
 export function deleteEvent() {
   document.querySelectorAll(".subtask-delete-icon").forEach((deleteBtn) => {
     deleteBtn.addEventListener("click", () => {
@@ -174,51 +268,64 @@ export function deleteEvent() {
   });
 }
 
-// dropdown for assigned contacts
-let contactInitialsBox = document.querySelector(".contact-initials");
-$("assigned-select-box").addEventListener("click", function () {
-  $("contact-list-box").classList.toggle("d-none");
-  let isListVisible = !$("contact-list-box").classList.contains("d-none");
-  if (!isListVisible) {
-    let selectedContacts =
-      $("contact-list-box").querySelectorAll("li.selected");
-    if (selectedContacts.length > 0) {
-      contactInitialsBox.classList.remove("d-none");
-    } else {
-      contactInitialsBox.classList.add("d-none");
-    }
-  } else {
-    contactInitialsBox.classList.add("d-none");
+// Clear subtask input
+$("sub-clear").addEventListener("click", function () {
+  $("sub-input").value = "";
+  $("subtask-func-btn").classList.add("d-none");
+  $("subtask-plus-box").classList.remove("d-none");
+});
+
+// add subtask by default
+$("sub-plus").addEventListener("click", function () {
+  if (subtasks.length === 0) {
+    $("sub-input").value = "Contact Form";
+    $("subtask-plus-box").classList.add("d-none");
+    $("subtask-func-btn").classList.remove("d-none");
   }
 });
 
-// priority buttons functionality
-export let selectedPriority = "medium";
-document.querySelectorAll(".priority-button").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".priority-button").forEach((btn) => {
-      btn.classList.remove("active");
-    });
-    button.classList.add("active");
-    selectedPriority = button.classList.contains("urgent-button")
-      ? "urgent"
-      : button.classList.contains("medium-button")
-      ? "medium"
-      : "low";
+// save subtask changes
+document.querySelectorAll(".subtask-save-icon").forEach((saveBtn) => {
+  saveBtn.addEventListener("click", () => {
+    let item = saveBtn.closest(".subtask-item");
+    let index = item.getAttribute("data-index");
+    let input = item.querySelector(".subtask-edit-input");
+    let newValue = input.value.trim();
+    if (newValue) {
+      subtasks[index] = newValue;
+      renderSubtasks();
+    }
   });
 });
 
-// category selection functionality
-$("category-selection")
-  .querySelectorAll("li")
-  .forEach((item) => {
-    item.addEventListener("click", () => {
-      let value = item.getAttribute("data-value");
-      $("category-select").querySelector("span").textContent = value;
-      $("category-selection").classList.add("d-none");
-      $("category-icon").classList.remove("arrow-up");
-      $("category-icon").classList.add("arrow-down");
-      $("category-select").style.borderColor = "";
-      $("category-selection-error").innerHTML = "";
-    });
+// sub save button functionality
+function saveEditedSubtask(saveBtn) {
+  let item = saveBtn.closest(".subtask-item");
+  let index = item.getAttribute("data-index");
+  let input = item.querySelector(".subtask-edit-input");
+  let newValue = input.value.trim();
+  if (newValue) {
+    subtasks[index] = newValue;
+    renderSubtasks();
+    addEditEvents();
+  }
+}
+
+// sub save by click button
+document.addEventListener("click", function (event) {
+  // Speichern per Klick auf das Icon
+  if (event.target.classList.contains("subtask-save-icon")) {
+    saveEditedSubtask(event.target);
+    return;
+  }
+});
+
+// sub save by click outside
+document.addEventListener("click", function (event) {
+  document.querySelectorAll(".subtask-item.editing").forEach((subtaskItem) => {
+    if (!subtaskItem.contains(event.target)) {
+      let saveBtn = subtaskItem.querySelector(".subtask-save-icon");
+      saveEditedSubtask(saveBtn);
+    }
   });
+});
