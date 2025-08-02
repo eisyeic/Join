@@ -4,8 +4,9 @@ import {
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { app } from "./firebase.js";
+import { renderSubtasks } from "./templates.js";
 
-const db = getDatabase(app);
+let db = getDatabase(app);
 
 // Toggle Add Task Overlay
 window.toggleAddTaskBoard = function () {
@@ -18,26 +19,26 @@ window.showTaskOverlay = function () {
 };
 
 function loadTasksFromFirebase() {
-  const tasksRef = ref(db, "tasks");
+  let tasksRef = ref(db, "tasks");
   onValue(tasksRef, (snapshot) => {
-    const tasks = snapshot.val();
+    let tasks = snapshot.val();
     renderToDoTasks(tasks);
   });
 }
 
 function renderToDoTasks(tasks) {
-  const todoColumn = $("to-do-column");
+  let todoColumn = $("to-do-column");
   todoColumn.innerHTML = "";
   for (let taskId in tasks) {
-    const task = tasks[taskId];
-    const taskElement = createTaskElement(task);
+    let task = tasks[taskId];
+    let taskElement = createTaskElement(task);
     todoColumn.appendChild(taskElement);
   }
 }
 
 function createTaskElement(task, taskId) {
-  const labelClass = getLabelClass(task.category);
-  const ticket = document.createElement("div");
+  let labelClass = getLabelClass(task.category);
+  let ticket = document.createElement("div");
   ticket.classList.add("ticket");
   ticket.innerHTML = `
             <div onclick="showTaskOverlay(${taskId})" class="ticket">
@@ -74,9 +75,9 @@ function getLabelClass(category) {
 }
 
 function renderSubtaskProgress(subtasks) {
-  const total = subtasks.length;
-  const done = subtasks.filter((st) => st.done).length;
-  const percentage = total ? Math.round((done / total) * 100) : 0;
+  let total = subtasks.length;
+  let done = subtasks.filter((st) => st.done).length;
+  let percentage = total ? Math.round((done / total) * 100) : 0;
 
   return `
     <div class="subtasks-box">
