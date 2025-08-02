@@ -189,7 +189,6 @@ h5 {
 .task-tile-todo-content {
   display: flex;
   gap: 20px;
-  padding-left: 28px;
 }
 
 .task-tile-todo h5 {

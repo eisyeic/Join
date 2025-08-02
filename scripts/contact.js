@@ -138,10 +138,12 @@ function handleUpdateSuccess() {
     currentContact.name,
     currentContact.email,
     currentContact.phone,
-    currentContact.colorIndex
+    currentContact.colorIndex,
+    currentContact.id
   );
   toggleEditContact();
 }
+
 
 // Update Contact In Firebase
 function updateContactInFirebase() {

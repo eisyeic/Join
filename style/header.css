@@ -122,3 +122,11 @@ nav {
     justify-content: center;
     align-items: center;
 }
+
+.circle-badge:hover .circle-fill {
+    fill: #b5dbff;
+}
+
+.circle-badge:hover {
+    cursor: pointer;
+}

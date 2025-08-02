@@ -6,7 +6,15 @@ import {
   onValue,
   remove,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { app } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { app, auth } from "./firebase.js";
+
+// User initials
+onAuthStateChanged(auth, (user) => {
+  if (window.updateUserInitials) {
+    window.updateUserInitials(user);
+  }
+});
 
 // Initialize Firebase database connection
 const db = getDatabase(app);
