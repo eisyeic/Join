@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join - Summary</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style/header.css" />
+  <link rel="stylesheet" href="./style/sidebar.css" />
+  <link rel="stylesheet" href="./style/footer-nav.css" />
+  <link rel="stylesheet" href="./style/responsiv.css" />
+  <link rel="stylesheet" href="./style/summary.css" />
+</head>
+
+<body>
+  <header>
+    <a href="./index.html"><img src="./assets/icons/header/logo_white.svg" /></a>
+    <nav>
+      <p>Kanban Project Management Tool</p>
+      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="Help Icon" /></a>
+      <img src="./assets/icons/header/guest_icon.svg" alt="Guest Icon" onclick="toggleProfileNavbar()" />
+    </nav>
+    <div class="profile-navbar d-none" id="profile-navbar">
+      <div class="profile-navbar-box">
+        <a class="profile-navbar-help" href="./help.html">Help</a>
+        <a href="./legal-notice.html">Legal Notice</a>
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./index.html">Log out</a>
+      </div>
+    </div>
+<svg width="56" height="56" class="circle-badge">
+  <circle cx="28" cy="28" r="26.5" class="circle-ring"></circle>
+  <circle cx="28" cy="28" r="23.06" class="circle-fill"></circle>
+  <text x="28" y="32" class="circle-text">G</text>
+</svg>
+
+
+
+  </header>
+
+  <main>
+    <!--sidebar section -->
+    <section class="sidebar">
+      <div class="nav">
+        <a href="./summary-board.html" class="nav-bg active"><img src="./assets/icons/sidebar/summery.svg"
+            alt="Button Summary Board" /></a>
+        <a href="addtask.html" class="nav-bg"><img class="nav-bg" src="./assets/icons/sidebar/add task.svg"
+            alt="Button Add Task" /></a>
+        <a href="board.html" class="nav-bg"><img src="./assets/icons/sidebar/board.svg" alt="Button-Board" /></a>
+        <a href="contact.html" class="nav-bg">
+          <img src="./assets/icons/sidebar/contacts.svg" alt="Button Contact" />
+        </a>
+      </div>
+      <div class="sidebar-links">
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="./legal-notice.html">Legal notice</a>
+      </div>
+    </section>
+    <!-- summary board section -->
+    <section class="board">
+      <div class="board-content">
+        <div class="board-title">
+          Good morning,
+          <span>Sofia Müller</span>
+        </div>
+        <div class="badges">
+          <div class="top-badges">
+            <div class="task-urgent-badge">
+              <div class="task-urgent-left">
+                <div class="task-urgent-upper">
+                  <img src="./assets/icons/summary/icon_circel.svg" alt="" />
+                  <h2>1</h2>
+                </div>
+                <span>Tasks Urgent</span>
+              </div>
+              <div class="badge-separator"></div>
+              <div class="date-deadline">
+                <h4>October 16, 2022</h4>
+                <span>Upcomming deadline</span>
+              </div>
+            </div>
+            <div class="task-in-board-badge"></div>
+          </div>
+          <div class="bottom-badges">
+            <div class="task-to-do-badge"></div>
+            <div class="task-in-progress"></div>
+            <div class="awaiting-feedback-badge"></div>
+            <div class="tasks-done-badge"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+
+
+
+  </main>
+
+
+
+  <footer class="nav-mobile">
+    <div class="nav-box">
+      <a href="./summary-board.html"><img src="./assets/icons_mobile/summary_default.svg" alt="" /></a>
+      <a href="./addtask.html"><img src="./assets/icons_mobile/add_taks_default.svg" alt="" /></a>
+      <a href="./board.html"><img src="./assets/icons_mobile/board_active.svg" alt="" /></a>
+      <a href="./contact.html"><img src="./assets/icons_mobile/contacts_default.svg" alt="" /></a>
+    </div>
+  </footer>
+</body>
+
+</html>

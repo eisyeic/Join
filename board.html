@@ -32,6 +32,7 @@
     <script src="./scripts/addtask.js" defer></script>
     <script type="module" src="./scripts/addtask-firebase.js" defer></script>
     <script type="module" src="./scripts/board.js"></script>
+    <script type="module" src="./scripts/user-initials.js" defer></script>
     <script src="./scripts/flatpickr.min.js"></script>
     <script src="./scripts/templates.js"></script>
   </head>
@@ -317,11 +318,13 @@
             src="./assets/icons/header/help.svg"
             alt="Help Icon"
         /></a>
-        <img
-          src="./assets/icons/header/guest_icon.svg"
-          alt="Guest Icon"
-          onclick="toggleProfileNavbar()"
-        />
+        <div id="person-icon-header" class="person-icon-header">
+          <svg width="56" height="56" class="circle-badge" onclick="event.stopPropagation(); toggleProfileNavbar()">
+            <circle cx="28" cy="28" r="26.5" class="circle-ring"></circle>
+            <circle cx="28" cy="28" r="23.06" class="circle-fill"></circle>
+            <text id="person-icon-header-text" x="28" y="31" class="circle-text">G</text>
+          </svg>
+        </div>
       </nav>
       <div class="profile-navbar d-none" id="profile-navbar">
         <div class="profile-navbar-box">
