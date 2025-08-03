@@ -135,7 +135,7 @@ let assignedContacts = Array.from(
     category,
     priority: selectedPriority,
     assignedContacts,
-    subtasks,
+    subtasks: subtasks.map(name => ({ name, checked: false }))
   };
 }
 

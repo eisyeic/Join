@@ -170,8 +170,7 @@ $("cancel-button").addEventListener("click", function () {
     "Select task category";
   $("category-select").style.borderColor = "";
   $("category-selection-error").innerHTML = "";
-  subtasks = [];
-  renderSubtasks();
+  renderSubtasks({subtasks});
   clearAssignedContacts();
   resetPrioritySelection();
 });

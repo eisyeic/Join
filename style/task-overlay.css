@@ -167,14 +167,10 @@ b {
   gap: 16px;
 }
 
-.subtask label:hover img {
+.subtask label:hover {
   cursor: pointer;
-  content: url(../assets/icons/add_task/check_default_hover.svg);
 }
 
-.subtask label:active img {
-  content: url(../assets/icons/add_task/check_checked.svg);
-}
 
 .button-box-delete, .button-box-edit {
   display: flex;

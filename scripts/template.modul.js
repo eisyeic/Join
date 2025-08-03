@@ -4,6 +4,9 @@ import {
   renderAssignedInitials,
 } from "./board.js";
 
+import { updateSubtaskStatus } from "./task-overlay.js";
+
+
 // create task template
 export function createTaskElement(task, taskId) {
   let labelClass = getLabelClass(task.category);
@@ -66,13 +69,20 @@ export function renderSubtasks(task) {
   const container = $("overlay-subtasks");
   container.innerHTML = "<b>Subtasks:</b>";
 
-  task.subtasks?.forEach((title, i) => {
+  task.subtasks?.forEach((subtask, i) => {
+    const checked = subtask.checked ? "checked" : "";
+    const checkboxId = `subtask${i}`;
+    const iconSrc = subtask.checked
+      ? "./assets/icons/add_task/check_checked.svg"
+      : "./assets/icons/add_task/check_default.svg";
+    const labelClass = subtask.checked ? "checked" : "";
+
     container.innerHTML += `
       <div class="subtask">
-        <input type="checkbox" id="subtask${i}" style="display: none"/>
-        <label for="subtask${i}">
-          <img src="./assets/icons/add_task/check_default.svg" />
-          ${title}
+        <input type="checkbox" id="${checkboxId}" ${checked} style="display: none"/>
+        <label for="${checkboxId}" class="${labelClass}">
+          <img src="${iconSrc}" />
+          ${subtask.name}
         </label>
       </div>
     `;

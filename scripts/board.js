@@ -158,7 +158,7 @@ export function getLabelClass(category) {
 // subtask rendering progressbar
 export function renderSubtaskProgress(subtasks) {
   let total = subtasks.length;
-  let done = subtasks.filter((st) => st.done).length;
+  let done = subtasks.filter((st) => st.checked).length;
   let percentage = total ? Math.round((done / total) * 100) : 0;
 
   return `
