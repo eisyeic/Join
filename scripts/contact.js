@@ -77,9 +77,11 @@ function addDetailsMobileNavbar() {
 function removeDetailsMobileNavbar(event) {
   if (event) {
     event.stopPropagation();
-  }
-  else{
-    $("single-person-content-mobile-navbar").classList.add("d-none");
+  } else {
+    const mobileNavbar = document.getElementById("single-person-content-mobile-navbar");
+    if (mobileNavbar) {
+      mobileNavbar.classList.add("d-none");
+    } 
   }
 }
 
