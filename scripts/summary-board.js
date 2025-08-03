@@ -38,6 +38,8 @@ function loadTaskCounts() {
       total: 0
     };
     
+    let earliestUrgentDate = null;
+    
     if (tasks) {
       for (let taskId in tasks) {
         const task = tasks[taskId];
@@ -47,12 +49,50 @@ function loadTaskCounts() {
         if (task.column === 'inProgress') counts.inProgress++;
         if (task.column === 'awaitFeedback') counts.awaitFeedback++;
         if (task.column === 'done') counts.done++;
-        if (task.priority === 'urgent') counts.urgent++;
+        if (task.priority === 'urgent') {
+          counts.urgent++;
+          if (task.dueDate) {
+            const [day, month, year] = task.dueDate.split('/');
+            const correctedDate = `${month}/${day}/${year}`;
+            const taskDate = new Date(correctedDate);
+            if (!earliestUrgentDate || taskDate < earliestUrgentDate) {
+              earliestUrgentDate = taskDate;
+            }
+          }
+        }
       }
-    } 
+    }
+    
     updateTaskCountElements(counts);
+    updateUrgentDeadline(earliestUrgentDate);
   });
 }
+
+function updateUrgentDeadline(earliestDate) {
+  const desktopDeadline = $("urgent-deadline");
+  const mobileDeadline = $("urgent-deadline-mobile");
+  
+  let displayDate = "Nothing";
+  
+  if (earliestDate) {
+    const dateStr = earliestDate.toString();
+    const parsedDate = new Date(dateStr);
+    
+    const month = parsedDate.toLocaleDateString('en-US', { month: 'long' });
+    const day = parsedDate.getDate();
+    const year = parsedDate.getFullYear();
+    displayDate = `${month} ${day}, ${year}`;
+  }
+  
+  if (desktopDeadline) desktopDeadline.textContent = displayDate;
+  if (mobileDeadline) mobileDeadline.textContent = displayDate;
+}
+
+
+
+
+
+
 
 function updateTaskCountElements(counts) {
   // Desktop elements
