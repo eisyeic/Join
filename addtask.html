@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join - Add Task</title>
-    <link
-      rel="shortcut icon"
-      href="./assets/general_elements/icons/logo_blue_icon.svg"
-      type="image/x-icon"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="./style/header.css" />
-    <link rel="stylesheet" href="./style/addtask.css" />
-    <link rel="stylesheet" href="./style/sidebar.css" />
-    <link rel="stylesheet" href="./style/footer-nav.css" />
-    <link rel="stylesheet" href="./style/responsiv.css" />
-    <link rel="stylesheet" href="./style/flatpickr.min.css" />
-    <script src="./script.js" defer></script>
-    <script src="./scripts/flatpickr.min.js"></script>
-    <script type="module" src="./scripts/addtask-firebase.js"></script>
-    <script src="./scripts/addtask.js" defer></script>
-    <script src="./scripts/templates.js"></script>
-   
-  </head>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join - Add Task</title>
+  <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style/header.css" />
+  <link rel="stylesheet" href="./style/addtask.css" />
+  <link rel="stylesheet" href="./style/sidebar.css" />
+  <link rel="stylesheet" href="./style/footer-nav.css" />
+  <link rel="stylesheet" href="./style/responsiv.css" />
+  <link rel="stylesheet" href="./style/flatpickr.min.css" />
+  <link rel="stylesheet" href="./style/reponsiv-addtask.css">
+
+  <script src="./script.js" defer></script>
+  <script src="./scripts/flatpickr.min.js"></script>
+  <script type="module" src="./scripts/addtask-firebase.js"></script>
+  <script src="./scripts/addtask.js" defer></script>
+  <script src="./scripts/templates.js"></script>
+
+
+</head>
 
 <body onclick="closeProfileNavbar()">
   <header>
@@ -73,8 +73,10 @@
         </div>
         <!-- description -->
         <div class="description">
-          <span class="label-main">Decription</span>
-          <span class="label-optional">(optional)</span>
+          <div class="description-headline">
+            <span class="label-main">Decription</span>
+            <span class="label-optional">(optional)</span>
+          </div>
           <textarea id="addtask-textarea" placeholder="Enter a description"></textarea>
         </div>
         <!-- date choose -->

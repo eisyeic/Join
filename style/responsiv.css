@@ -127,3 +127,8 @@
     gap: 8px;
   }
 }
+@media (max-width: 1250px) {
+    .add-task-button {
+        flex-direction: column-reverse !important;
+    }
+}

@@ -1,0 +1,77 @@
+@media (max-width: 1250px) {
+    .add-task-button {
+        flex-direction: column-reverse !important;
+        align-items: center;
+    }
+
+    .section-addtask-buttons {
+        justify-content: center !important;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 55px;
+    }
+}
+
+@media (max-width: 900px) {
+    main {
+        flex-direction: column;
+    }
+
+    .add-task-button {
+        flex-direction: unset !important;
+    }
+
+    .addtask-wrapper {
+        justify-content: center;
+    }
+
+    .section-addtask-buttons {
+        padding: 20px 0;
+    }
+
+    .addtask-wrapper {
+        height: calc(100vh - 207px - 98px);
+        padding: 24px 32px;
+        justify-content: flex-start;
+    }
+
+    .addtask-main-content {
+        width: 100%;
+    }
+
+    .description {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .addtask-main-content textarea {
+        width: 100%;
+    }
+
+    .priority-wrapper {
+        width: 100%;       
+    }
+
+    .assigned-box {
+        width: 100%;
+    }
+
+    .category-box {
+        width: 100%;
+    }
+
+    .subtask-box {
+        width: 100%;
+    }
+}
+
+@media (max-width: 550px) {
+    .addtask-wrapper {
+        height: calc(100vh - 187px - 98px);
+    }
+}
+
+@media (max-width: 550px) {
+    
+
+}
