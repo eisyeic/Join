@@ -24,11 +24,9 @@ function getGreeting() {
 // ===== TASK MANAGEMENT =====
 
 function loadTaskCounts() {
-  console.log("loadTaskCounts wird aufgerufen");
   const tasksRef = ref(db, "tasks");
   
   onValue(tasksRef, (snapshot) => {
-    console.log("Firebase Daten erhalten:", snapshot.val());
     const tasks = snapshot.val();
     
     const counts = {
@@ -41,8 +39,6 @@ function loadTaskCounts() {
     };
     
     if (tasks) {
-      console.log("Tasks gefunden:", Object.keys(tasks).length);
-      
       for (let taskId in tasks) {
         const task = tasks[taskId];
         counts.total++;
@@ -53,11 +49,7 @@ function loadTaskCounts() {
         if (task.column === 'done') counts.done++;
         if (task.priority === 'urgent') counts.urgent++;
       }
-    } else {
-      console.log("Keine Tasks in Firebase - setze alle auf 0");
-    }
-    
-    console.log("Counts:", counts);
+    } 
     updateTaskCountElements(counts);
   });
 }
@@ -103,8 +95,6 @@ function updateTaskCountElements(counts) {
 function updateUserInterface(user) {
   const name = user.displayName || "User";
   const greeting = getGreeting();
-  console.log(`${greeting}, ${name}!`);
-
   const elements = {
     username: document.getElementById("username"),
     greeting: document.getElementById("greeting"),
@@ -160,7 +150,6 @@ onAuthStateChanged(auth, (user) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOMContentLoaded Event ausgelöst");
   initMobileAnimations();
   loadTaskCounts();
 });

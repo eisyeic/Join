@@ -1,4 +1,4 @@
-import { subtasks, addEditEvents, deleteEvent } from "./addtask.js";
+
 
 // Get Contact Person
 function getContactPerson(key, id) {
@@ -140,9 +140,8 @@ function getErrorMessage(message) {
   return /*html*/ `<p class="error-message">${message}</p>`;
 }
 
-
 // addtask subtasks list display
-export function renderSubtasks() {
+function renderSubtasks() {
   $("subtask-list").innerHTML = subtasks
     .map(
       (subtask, index) => `

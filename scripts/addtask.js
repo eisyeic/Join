@@ -1,5 +1,5 @@
-import { renderSubtasks } from "./templates.js";
-export let subtasks = [];
+
+let subtasks = [];
 
 // datepicker dropdown menu
 let picker = flatpickr("#datepicker", {
@@ -19,7 +19,7 @@ $("datepicker-wrapper").addEventListener("click", function () {
 });
 
 // priority buttons functionality
-export let selectedPriority = "medium";
+let selectedPriority = "medium";
 document.querySelectorAll(".priority-button").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".priority-button").forEach((btn) => {
@@ -188,7 +188,8 @@ function clearAssignedContacts() {
 }
 
 // edit subtask functionality
-export function addEditEvents() {
+
+function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
     editBtn.addEventListener("click", () => enterEditMode(editBtn));
   });
@@ -256,7 +257,7 @@ $("sub-input").addEventListener("keydown", function (event) {
 });
 
 // subtask delete functionality
-export function deleteEvent() {
+function deleteEvent() {
   document.querySelectorAll(".subtask-delete-icon").forEach((deleteBtn) => {
     deleteBtn.addEventListener("click", () => {
       let item = deleteBtn.closest(".subtask-item");

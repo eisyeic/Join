@@ -6,7 +6,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
-import { renderSubtasks } from "./templates.js";
 
 let db = getDatabase(app);
 
@@ -111,7 +110,7 @@ function createTaskElement(task, taskId) {
   ticket.setAttribute("ondragstart", "drag(event)");
 
   ticket.innerHTML = `
-    <div class="ticket-content">
+    <div class="ticket-content" onclick="showTaskOverlay()">
       <div class="label ${labelClass}">${task.category}</div>
       <div class="frame">
         <div class="ticket-title">${task.title}</div>
