@@ -29,11 +29,14 @@
       href="./assets/icons/board/search_click.svg"
       as="image"
     />
+    <link rel="preload" href="./assets/icons/add_task/check_default_hover.svg">
+    <link rel="preload" href="./assets/icons/add_task/checked_hover.svg">
     <script src="script.js"></script>
     <script src="./scripts/flatpickr.min.js"></script>
     <script src="./scripts/addtask.js" defer></script>
     <script type="module" src="./scripts/addtask-firebase.js"></script>
     <script type="module" src="./scripts/board.js"></script>
+    <script type="module" src="./scripts/task-overlay.js"></script>
   </head>
   <body onclick="closeProfileNavbar()">
     <!-- Overlay Add Task  -->
@@ -230,36 +233,36 @@
     </div>
     <!-- Overlay Task -->
     <div
-      onclick="showTaskOverlay()"
+      onclick="hideOverlay()"
       id="task-overlay-bg"
       class="task-overlay-bg d-none"
     >
       <div onclick="event.stopPropagation()" class="task-overlay">
         <div class="label-exit-box">
-          <span>User Story</span>
+          <span id="overlay-user-story">User Story...</span>
           <img
-            onclick="showTaskOverlay()"
+            onclick="hideOverlay()"
             id="task-overlay-exit-button"
             class="overlay-exit-button"
             src="./assets/icons/board/exit_default.svg"
             alt="close overlay"
           />
         </div>
-        <div class="task-overlay-title">Kochwelt Page & Recipe Recommender</div>
-        <div class="task-text">
+        <div class="task-overlay-title" id="overlay-title">Kochwelt Page & Recipe Recommender</div>
+        <div class="task-text" id="overlay-description">
           Build start page with recipe recommendation...
         </div>
-        <div class="due-date-box"><b>Due date:</b><span>23/07/2025</span></div>
+        <div class="due-date-box"><b>Due date:</b><span id="overlay-due-date">23/07/2025</span></div>
         <div class="priority-box">
           <b>Priority:</b>
           <div class="priority">
-            <span>Urgent</span>
-            <img src="./assets/icons/board/urgent.svg" alt="" />
+            <span id="overlay-priority-text">Urgent</span>
+            <img id="overlay-priority-icon" src="./assets/icons/board/urgent.svg" alt="" />
           </div>
         </div>
         <div class="assigned-to">
           <b>Assigned to:</b>
-          <div class="members">
+          <div id="overlay-members" class="members">
             <div class="member">
               <img src="./assets/icons/board/Profile badge.svg" alt="" />
               <span>Anton</span>
@@ -274,7 +277,7 @@
             </div>
           </div>
         </div>
-        <div class="subtasks-ckeck-box">
+        <div id="overlay-subtasks" class="subtasks-ckeck-box">
           <b>Subtasks:</b>
           <div class="subtask">
             <input

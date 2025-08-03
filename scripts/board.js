@@ -21,11 +21,6 @@ window.toggleAddTaskBoard = function () {
   $("overlay-add-task").classList.toggle("d-none");
 };
 
-// task overlay
-window.showTaskOverlay = function () {
-  $("task-overlay-bg").classList.toggle("d-none");
-};
-
 // load data from firebase
 function loadTasksFromFirebase() {
   let tasksRef = ref(db, "tasks");
@@ -110,7 +105,7 @@ function createTaskElement(task, taskId) {
   ticket.setAttribute("ondragstart", "drag(event)");
 
   ticket.innerHTML = `
-    <div class="ticket-content" onclick="showTaskOverlay()">
+    <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
       <div class="label ${labelClass}">${task.category}</div>
       <div class="frame">
         <div class="ticket-title">${task.title}</div>
@@ -125,14 +120,14 @@ function createTaskElement(task, taskId) {
         <div class="initials">
           ${task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : ""}
         </div>
-        <img src="./assets/icons/board/${task.priority.toLowerCase()}.svg" alt="${task.priority}">
+        <img src="./assets/icons/board/${task.priority}.svg" alt="${task.priority}">
       </div>
     </div>
   `;
   return ticket;
 }
 
-
+// drag and drop event listener
 document.querySelectorAll(".board-column").forEach(column => {
   column.addEventListener("dragover", allowDrop);
   column.addEventListener("drop", drop);
@@ -162,13 +157,13 @@ window.drop = function(event) {
     placeholder.remove();
   }
 
-  // Karte anhängen (am Ende)
+  // new task to last index
   newColumn.appendChild(taskElement);
 
   // Update Firebase
   updateTaskColumn(taskId, newColumn.id);
 
-  // Prüfe auf leere Spalten
+  // check empty column
   checkEmptyColumns();
 };
 

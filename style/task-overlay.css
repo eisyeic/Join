@@ -33,10 +33,10 @@
 }
 
 .label-exit-box span{
-  background-color: var(--label-orange);
   padding: 4px 24px;
   border-radius: 8px;
   font-size: 23px;
+  color: #fff;
 }
 
 .overlay-exit-button {
