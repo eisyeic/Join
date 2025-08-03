@@ -11,13 +11,13 @@ main,
 
 .contact-content {
     display: flex;
-    height: calc(100vh - 96px);
+    height: calc(100vh - 100px);
 }
 
 /* ===== CONTACT LIST CONTAINER ===== */
 .contact-add-new-contact-container {
     width: 350px;
-    height: calc(100vh - 130px);
+    height: calc(100vh - 100px);
     padding: 32px 49.5px;
     overflow-y: auto;
     scrollbar-color: rgba(0, 0, 0, 0);
@@ -114,6 +114,11 @@ main,
     text-decoration: none;
     color: var(--main-color);
     font-size: 16px;
+}
+
+.contact-person-name a {
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 /* ===== CONTACT DETAILS SECTION ===== */
