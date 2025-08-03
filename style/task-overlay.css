@@ -15,9 +15,13 @@
 
 .task-overlay {
   display: flex;
+  position: absolute;
+  bottom: -100%;
+  left: 50%;
+  transform: translate(-50%, 50%);
   flex-direction: column;
   background-color: #fff;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 20%);
   width: 528px;
   max-width: 90vw;
   padding: 48px 40px;
@@ -25,6 +29,32 @@
   gap: 16px;
   box-shadow: rgb(0, 0, 0, 0.16) 0px 0px 4px 0px;
   overflow-y: auto;
+}
+
+.task-overlay.animate-in {
+  animation: showTaskOverlay 0.3s ease-in-out forwards;
+}
+
+@keyframes showTaskOverlay {
+  from {
+    bottom: -100%;
+  }
+  to {
+    bottom: 50%;
+  }
+}
+
+.task-overlay.animate-out {
+  animation: hideTaskOverlay 0.3s ease-in-out forwards;
+}
+
+@keyframes hideTaskOverlay {
+  from {
+    bottom: 50%;
+  }
+  to {
+    bottom: -100%;
+  }
 }
 
 .label-exit-box {

@@ -3,86 +3,73 @@ import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { renderAssignedContacts, renderSubtasks } from "./template.modul.js";
+import { getLabelClass } from "./board.js";
 
-window.showTaskOverlay = async function showTaskOverlay(taskId) {
+// show task overlay 
+window.showTaskOverlay = async function (taskId) {
   const db = getDatabase();
   const taskRef = ref(db, `tasks/${taskId}`);
   const snapshot = await get(taskRef);
   const task = snapshot.val();
-
   if (!task) return;
+  const bg = document.getElementById("task-overlay-bg");
+  const overlay = document.getElementById("task-overlay");
+  if (!bg || !overlay) return;
+  bg.classList.remove("d-none");
+  overlay.classList.remove("animate-out");
+  overlay.classList.add("animate-in");
+};
 
-  // show overlay
-  $("task-overlay-bg").classList.toggle("d-none");
+window.hideOverlay = function () {
+  const bg = document.getElementById("task-overlay-bg");
+  const overlay = document.getElementById("task-overlay");
+  if (!bg || !overlay) return;
+  overlay.classList.remove("animate-in");
+  overlay.classList.add("animate-out");
+  setTimeout(() => {
+    bg.classList.add("d-none");
+    overlay.classList.remove("animate-out");
+  }, 300);
+};
 
-  // hide overlay
-  window.hideOverlay = function () {
-    $("task-overlay-bg").classList.toggle("d-none");
-  };
-
-  // fill overlay
-const categoryEl = $("overlay-user-story");
-categoryEl.textContent = task.category || "";
-categoryEl.className = ""; 
-categoryEl.classList.add(getLabelClass(task.category));
-function getLabelClass(category) {
-  if (category === "User Story") return "user-story";
-  if (category === "Technical task") return "technical-task";
-  return "";
+function fillTaskOverlay(task) {
+  renderCategory(task.category);
+  renderTitleDescDate(task);
+  renderPriority(task.priority);
+  renderAssignedContacts(task);
+  renderSubtasks(task);
 }
 
+function renderCategory(category) {
+  let el = $("overlay-user-story");
+  el.textContent = category || "";
+  el.className = "";
+  el.classList.add(getLabelClass(category));
+}
+
+
+// render 
+function renderTitleDescDate(task) {
   $("overlay-title").innerHTML = task.title || "";
   $("overlay-description").textContent = task.description || "";
   $("overlay-due-date").textContent = task.dueDate || "";
+}
 
-  // Priority
-  const priorityIcon =
-    {
-      urgent: "./assets/icons/board/Urgent.svg",
-      medium: "./assets/icons/board/Medium.svg",
-      low: "./assets/icons/board/Low.svg",
-    }[task.priority] || "";
+// render priority in task overlay
+export function renderPriority(priority) {
+  let icons = {
+    urgent: "./assets/icons/board/Urgent.svg",
+    medium: "./assets/icons/board/Medium.svg",
+    low: "./assets/icons/board/Low.svg",
+  };
+  $("overlay-priority-text").textContent = capitalize(priority);
+  $("overlay-priority-icon").src = icons[priority] || "";
+}
 
-  $("overlay-priority-text").textContent = capitalize(task.priority);
-  $("overlay-priority-icon").src = priorityIcon;
 
-  // Assigned contacts
-  const membersContainer = $("overlay-members");
-  membersContainer.innerHTML = "";
-  task.assignedContacts?.forEach((contact) => {
-    membersContainer.innerHTML += `
-      <div class="member">
-        <div class="member">
-            <div class="initial-circle" 
-                style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
-            ${contact.initials}
-         </div>
-            <span>${contact.name}</span>
-        </div>
-      </div>
-    `;
-  });
-
-  // Subtasks
-  const subtasksContainer = $("overlay-subtasks");
-  subtasksContainer.innerHTML = "<b>Subtasks:</b>";
-  task.subtasks?.forEach((title, index) => {
-    subtasksContainer.innerHTML += `
-      <div class="subtask">
-        <input type="checkbox" id="subtask${index}" style="display: none"/>
-        <label for="subtask${index}">
-          <img src="./assets/icons/add_task/check_default.svg" alt="" />
-          ${title}
-        </label>
-      </div>
-    `;
-  });
-};
-
-// capitalaize first letter
+// capitalize first letter function
 function capitalize(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
-

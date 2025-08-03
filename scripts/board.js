@@ -6,8 +6,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
+import { createTaskElement } from "./template.modul.js";
 
 let db = getDatabase(app);
+
+let columnMap = {
+  "todo": "to-do-column",
+  "inProgress": "in-progress-column",
+  "awaitFeedback": "await-feedback-column",
+  "done": "done-column"
+};
 
 // User initials
 onAuthStateChanged(auth, (user) => {
@@ -30,101 +38,48 @@ function loadTasksFromFirebase() {
   });
 }
 
-
+// render tasks in columns
 function renderAllColumns(tasks) {
-  const columnMap = {
-    "todo": "to-do-column",
-    "inProgress": "in-progress-column",
-    "awaitFeedback": "await-feedback-column",
-    "done": "done-column"
-  };
-
-  // Leere alle Spalten
   for (let key in columnMap) {
-    const columnElement = $(columnMap[key]);
-    columnElement.innerHTML = ""; // leeren
+    let columnElement = $(columnMap[key]);
+    columnElement.innerHTML = "";
   }
-
-  // Aufgaben nach Spalte einsortieren
   for (let taskId in tasks) {
-    const task = tasks[taskId];
-    const targetColumnId = columnMap[task.column] || "to-do-column";
-    const columnElement = $(targetColumnId);
-    const taskElement = createTaskElement(task, taskId);
+    let task = tasks[taskId];
+    let targetColumnId = columnMap[task.column] || "to-do-column";
+    let columnElement = $(targetColumnId);
+    let taskElement = createTaskElement(task, taskId);
     columnElement.appendChild(taskElement);
   }
-
-  // Füge "No tasks"-Platzhalter in leere Spalten ein
   for (let key in columnMap) {
-    const column = $(columnMap[key]);
-    if (column.children.length === 0) {
-      const placeholder = document.createElement("div");
-      placeholder.classList.add("no-tasks");
-      placeholder.textContent = "No tasks";
-      column.appendChild(placeholder);
-    }
+    const columnId = columnMap[key];
+    checkAndShowPlaceholder(columnId);
   }
 }
 
-function checkEmptyColumns() {
-  const allColumnIds = ["to-do-column", "in-progress-column", "await-feedback-column", "done-column"];
-  allColumnIds.forEach(id => {
-    const column = $(id);
+// placeholde inner text
+let placeholderTexts = {
+  "to-do-column": "No tasks to do",
+  "in-progress-column": "No tasks in progressing",
+  "await-feedback-column": "No tasks await feedback",
+  "done-column": "No tasks done"
+};
 
-    // Alle echten Tasks (ohne Platzhalter)
-    const taskCards = Array.from(column.children).filter(
-      el => !el.classList.contains("no-tasks")
-    );
-
-    // Wenn leer → Platzhalter anzeigen
-    if (taskCards.length === 0 && !column.querySelector(".no-tasks")) {
-      const placeholder = document.createElement("div");
-      placeholder.classList.add("no-tasks");
-      placeholder.textContent = "No tasks";
-      column.appendChild(placeholder);
-    }
-
-    // Wenn Tasks vorhanden → Platzhalter entfernen
-    if (taskCards.length > 0) {
-      const existingPlaceholder = column.querySelector(".no-tasks");
-      if (existingPlaceholder) {
-        existingPlaceholder.remove();
-      }
-    }
-  });
-}
-
-
-
-function createTaskElement(task, taskId) {
-  let labelClass = getLabelClass(task.category);
-  let ticket = document.createElement("div");
-  ticket.classList.add("ticket");
-  ticket.setAttribute("id", taskId);
-  ticket.setAttribute("draggable", "true");
-  ticket.setAttribute("ondragstart", "drag(event)");
-
-  ticket.innerHTML = `
-    <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
-      <div class="label ${labelClass}">${task.category}</div>
-      <div class="frame">
-        <div class="ticket-title">${task.title}</div>
-        <div class="ticket-text">${task.description}</div>
-      </div>
-      ${
-        task.subtasks && task.subtasks.length > 0
-          ? renderSubtaskProgress(task.subtasks)
-          : ""
-      }
-      <div class="initials-icon-box">
-        <div class="initials">
-          ${task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : ""}
-        </div>
-        <img src="./assets/icons/board/${task.priority}.svg" alt="${task.priority}">
-      </div>
-    </div>
-  `;
-  return ticket;
+// check and show placeholder
+function checkAndShowPlaceholder(columnId) {
+  let column = $(columnId);
+  let taskCards = Array.from(column.children).filter(
+    el => !el.classList.contains("no-tasks")
+  );
+  let existingPlaceholder = column.querySelector(".no-tasks");
+  if (taskCards.length === 0 && !existingPlaceholder) {
+    let placeholder = document.createElement("div");
+    placeholder.classList.add("no-tasks");
+    placeholder.textContent = placeholderTexts[columnId] || "No tasks";
+    column.appendChild(placeholder);
+  } else if (taskCards.length > 0 && existingPlaceholder) {
+    existingPlaceholder.remove();
+  }
 }
 
 // drag and drop event listener
@@ -132,7 +87,6 @@ document.querySelectorAll(".board-column").forEach(column => {
   column.addEventListener("dragover", allowDrop);
   column.addEventListener("drop", drop);
 });
-
 
 // drag and drop prevent default
 window.allowDrop = function(event) {
@@ -147,26 +101,23 @@ window.drag = function(event) {
 // drop functionality
 window.drop = function(event) {
   event.preventDefault();
-  const taskId = event.dataTransfer.getData("text");
-  const taskElement = document.getElementById(taskId);
-  const newColumn = event.currentTarget;
+  let taskId = event.dataTransfer.getData("text");
+  let taskElement = document.getElementById(taskId);
+  let oldColumn = taskElement.parentElement;
+  let newColumn = event.currentTarget;
 
-  // Platzhalter entfernen, falls vorhanden
-  const placeholder = newColumn.querySelector(".no-tasks");
-  if (placeholder) {
-    placeholder.remove();
-  }
-
-  // new task to last index
+  // move task in new column
   newColumn.appendChild(taskElement);
 
-  // Update Firebase
+  // Firebase update
   updateTaskColumn(taskId, newColumn.id);
 
-  // check empty column
-  checkEmptyColumns();
+  // check placeholder in columns need
+  checkAndShowPlaceholder(oldColumn.id);
+  checkAndShowPlaceholder(newColumn.id);
 };
 
+// update task column placeholder
 function updateTaskColumn(taskId, newColumnId) {
   const columnMapReverse = {
     "to-do-column": "todo",
@@ -174,25 +125,18 @@ function updateTaskColumn(taskId, newColumnId) {
     "await-feedback-column": "awaitFeedback",
     "done-column": "done"
   };
-
-  const dbRef = ref(db, `tasks/${taskId}`);
-  const newColumnValue = columnMapReverse[newColumnId] || "todo";
-
-  // Nutze die importierte update-Funktion mit Referenz und Objekt
+  let dbRef = ref(db, `tasks/${taskId}`);
+  let newColumnValue = columnMapReverse[newColumnId] || "todo";
   update(dbRef, { column: newColumnValue })
-    .catch(error => {
-      console.error("Fehler beim Updaten der Spalte:", error);
-    });
+    .catch((error) => console.error("Fehler beim Aktualisieren der Spalte:", error));
 }
 
-
-
-function renderAssignedInitials(contacts) {
-  const maxShown = 3;
-  const shownContacts = contacts.slice(0, maxShown);
-
+// render assigned contacts in task
+export function renderAssignedInitials(contacts) {
+  let maxShown = 3;
+  let shownContacts = contacts.slice(0, maxShown);
   return shownContacts.map((contact, index) => {
-    const positionClass = ['first-initial', 'second-initial', 'third-initial'][index];
+    let positionClass = ['first-initial', 'second-initial', 'third-initial'][index];
     return `
       <div class="initial-circle ${positionClass}" 
            style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
@@ -202,16 +146,17 @@ function renderAssignedInitials(contacts) {
   }).join('');
 }
 
-
 // get label bg color
-function getLabelClass(category) {
-  if (category === "User Story") return "user-story";
-  if (category === "Technical task") return "technical-task";
-  return "";
+export function getLabelClass(category) {
+  return {
+    "User Story": "user-story",
+    "Technical task": "technical-task"
+  }[category] || "";
 }
 
+
 // subtask rendering progressbar
-function renderSubtaskProgress(subtasks) {
+export function renderSubtaskProgress(subtasks) {
   let total = subtasks.length;
   let done = subtasks.filter((st) => st.done).length;
   let percentage = total ? Math.round((done / total) * 100) : 0;
@@ -228,5 +173,59 @@ function renderSubtaskProgress(subtasks) {
 
 // load tasks from firebase
 document.addEventListener("DOMContentLoaded", () => {
-  loadTasksFromFirebase();
+  loadTasksFromFirebase(); 
+  let searchInput = document.getElementById("search-input");
+  let searchButton = document.getElementById("search-btn");
+  if (!searchInput || !searchButton) return;
+  function handleSearch() {
+    let searchTerm = searchInput.value.toLowerCase().trim();
+    filterTasks(searchTerm);
+  }
+  searchInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  });
+  searchButton.addEventListener("click", handleSearch);
 });
+
+// search functionality 
+function filterTasks(searchTerm) {
+  let allTasks = document.querySelectorAll(".ticket");
+  filterTaskVisibility(allTasks, searchTerm);
+  updateAllPlaceholders();
+}
+
+// filter task visibility
+function filterTaskVisibility(tasks, searchTerm) {
+  tasks.forEach(taskEl => {
+    let title = taskEl.querySelector(".ticket-title")?.textContent.toLowerCase() || "";
+    let description = taskEl.querySelector(".ticket-text")?.textContent.toLowerCase() || "";
+    let matches = title.includes(searchTerm) || description.includes(searchTerm);
+    taskEl.style.display = matches || searchTerm === "" ? "" : "none";
+  });
+}
+
+// update placeholder if column empty
+function updateAllPlaceholders() {
+  for (let key in columnMap) {
+    updatePlaceholderForColumn(columnMap[key]);
+  }
+}
+
+// placeholder visibility functionality
+function updatePlaceholderForColumn(columnId) {
+  let column = document.getElementById(columnId);
+  let visibleTasks = Array.from(column.querySelectorAll(".ticket")).filter(
+    el => el.style.display !== "none"
+  );
+  const placeholder = column.querySelector(".no-tasks");
+  if (visibleTasks.length === 0 && !placeholder) {
+    let newPlaceholder = document.createElement("div");
+    newPlaceholder.classList.add("no-tasks");
+    newPlaceholder.textContent = placeholderTexts[columnId] || "No tasks";
+    column.appendChild(newPlaceholder);
+  } else if (visibleTasks.length > 0 && placeholder) {
+    placeholder.remove();
+  }
+}
