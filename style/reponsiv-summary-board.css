@@ -38,7 +38,6 @@
 @media (max-width: 900px) {
 
   main {
-    height: calc(100vh - 191px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -46,9 +45,10 @@
 
    .dashboard {
     width: 100%;
-    height: calc(100vh - 191px);
+    height: calc(100vh - 207px);
     position: absolute;
-    top: 84px;
+    top: 100px;
+    background-color: white;
   }
   
    .dashboard-header {
@@ -122,6 +122,7 @@
 @media (max-width: 720px) {
   .dashboard {
     height: calc(100vh - 171px);
+    top: 84px;
   }
 }
 
