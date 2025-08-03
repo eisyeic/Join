@@ -43,24 +43,22 @@ export function createTaskElement(task, taskId) {
 
 // render contacts in task overlay
 export function renderAssignedContacts(task) {
-  let container = $("overlay-members");
+  const container = $("overlay-members");
   if (!container) return;
   container.innerHTML = "";
-  let maxShown = 3;
-  let contactsToShow = task.assignedContacts?.slice(0, maxShown) || [];
-  contactsToShow.forEach((contact) => {
+  const maxShown = 3;
+  const contacts = task.assignedContacts || [];
+  for (let i = 0; i < Math.min(contacts.length, maxShown); i++) {
+    const contact = contacts[i];
     container.innerHTML += `
       <div class="member">
-        <div class="member">
-          <div class="initial-circle"
-            style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
-            ${contact.initials}
-          </div>
-          <span>${contact.name}</span>
+        <div class="initial-circle" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
+          ${contact.initials}
         </div>
+        <span>${contact.name}</span>
       </div>
     `;
-  });
+  }
 }
 
 // render subtasks in task overlay

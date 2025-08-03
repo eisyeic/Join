@@ -13,6 +13,7 @@ window.showTaskOverlay = async function (taskId) {
   const snapshot = await get(taskRef);
   const task = snapshot.val();
   if (!task) return;
+  fillTaskOverlay(task);
   const bg = document.getElementById("task-overlay-bg");
   const overlay = document.getElementById("task-overlay");
   if (!bg || !overlay) return;
