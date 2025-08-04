@@ -7,31 +7,52 @@ import {
 import { renderAssignedContacts, renderSubtasks } from "./template.modul.js";
 import { getLabelClass } from "./board.js";
 
-// show task overlay animated
-window.showTaskOverlay = async function (taskId) {
-  const db = getDatabase();
-  const taskRef = ref(db, `tasks/${taskId}`);
-  const snapshot = await get(taskRef);
-  const task = snapshot.val();
-  if (!task) return;
+const db = getDatabase();
+const TASK_CATEGORIES = ['toDo', 'inProgress', 'awaitFeedback', 'done'];
 
-  task.id = taskId; // für später
-  await normalizeSubtasks(taskId, task); // neu!
-  fillTaskOverlay(task);
-  
-  const bg = document.getElementById("task-overlay-bg");
-  const overlay = document.getElementById("task-overlay");
-  if (!bg || !overlay) return;
-  bg.classList.remove("d-none");
-  overlay.classList.remove("animate-out");
-  overlay.classList.add("animate-in");
+// Displays the task overlay with detailed information
+window.showTaskOverlay = async function (taskId) {
+  try {
+    const db = getDatabase();
+    const taskRef = ref(db, `tasks/${taskId}`);
+    const snapshot = await get(taskRef);
+    const task = snapshot.val();
+    if (!task) return;
+
+    task.id = taskId;
+    await normalizeSubtasks(taskId, task);
+    fillTaskOverlay(task);
+    
+    // Properly defined delete button reference
+    const deleteBtn = document.getElementById("delete-task-btn");
+    if (deleteBtn) {
+      deleteBtn.onclick = async () => {
+        try {
+          await deleteTaskFromDatabase(taskId);
+          hideOverlay();
+        } catch (error) {
+          console.error("Error deleting task:", error);
+        }
+      };
+    }
+    const bg = document.getElementById("task-overlay-bg");
+    const overlay = document.getElementById("task-overlay");
+    if (!bg || !overlay) return;
+    
+    bg.classList.remove("d-none");
+    overlay.classList.remove("animate-out");
+    overlay.classList.add("animate-in");
+  } catch (error) {
+    console.error("Error showing task overlay:", error);
+  }
 };
 
 // hide task overlay animated
-window.hideOverlay = function () {
-  const bg = document.getElementById("task-overlay-bg");
-  const overlay = document.getElementById("task-overlay");
+window.hideOverlay = function() {
+  const bg = $("task-overlay-bg");
+  const overlay = $("task-overlay");
   if (!bg || !overlay) return;
+  
   overlay.classList.remove("animate-in");
   overlay.classList.add("animate-out");
   setTimeout(() => {
@@ -52,7 +73,7 @@ function fillTaskOverlay(task) {
 
 // render category of task
 function renderCategory(category) {
-  let el = $("overlay-user-story");
+  const el = $("overlay-user-story");
   el.textContent = category || "";
   el.className = "";
   el.classList.add(getLabelClass(category));
@@ -67,7 +88,7 @@ function renderTitleDescDate(task) {
 
 // render priority in task overlay
 export function renderPriority(priority) {
-  let icons = {
+  const icons = {
     urgent: "./assets/icons/board/Urgent.svg",
     medium: "./assets/icons/board/Medium.svg",
     low: "./assets/icons/board/Low.svg",
@@ -78,64 +99,87 @@ export function renderPriority(priority) {
 
 // capitalize first letter function
 function capitalize(str) {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 }
 
+// subtask listener
 function setupSubtaskListeners(task) {
   task.subtasks?.forEach((_, i) => {
     const checkbox = $(`subtask${i}`);
     const label = checkbox?.nextElementSibling;
     const img = label?.querySelector("img");
-    if (!checkbox || !label || !img) return;
-    attachSubtaskEvents(checkbox, label, img, task.id, i);
+    if (checkbox && label && img) {
+      attachSubtaskEvents(checkbox, label, img, task.id, i);
+    }
   });
 }
 
+// subtasks checkbox events
 function attachSubtaskEvents(checkbox, label, img, taskId, i) {
   const updateImage = () => {
     const hover = label.matches(":hover");
-    if (checkbox.checked && hover) img.src = "./assets/icons/add_task/checked_hover.svg";
-    else if (checkbox.checked) img.src = "./assets/icons/add_task/check_checked.svg";
-    else if (hover) img.src = "./assets/icons/add_task/check_default_hover.svg";
-    else img.src = "./assets/icons/add_task/check_default.svg";
+    const basePath = "./assets/icons/add_task/";
+    let icon;
+    if (checkbox.checked) {
+      icon = hover ? "checked_hover.svg" : "check_checked.svg";
+    } else {
+      icon = hover ? "check_default_hover.svg" : "check_default.svg";
+    }
+    img.src = basePath + icon;
   };
 
   checkbox.addEventListener("change", () => {
     label.classList.toggle("checked", checkbox.checked);
     updateImage();
-    if (typeof updateSubtaskStatus === "function") {
-      updateSubtaskStatus(taskId, i, checkbox.checked);
-    }
+    updateSubtaskStatus(taskId, i, checkbox.checked);
   });
-
   label.addEventListener("mouseenter", updateImage);
   label.addEventListener("mouseleave", updateImage);
 }
 
-
+// normalize subtasks
 async function normalizeSubtasks(taskId, task) {
   if (!Array.isArray(task.subtasks)) return;
-  let normalized = task.subtasks.map((st) =>
+  const normalized = task.subtasks.map(st => 
     typeof st === "string" ? { name: st, checked: false } : st
   );
-  let db = getDatabase();
-  let taskRef = ref(db, `tasks/${taskId}`);
-  await update(taskRef, { subtasks: normalized });
+  await update(ref(db, `tasks/${taskId}`), { subtasks: normalized });
   task.subtasks = normalized;
 }
 
+// update subtasks
 export async function updateSubtaskStatus(taskId, subtaskIndex, isChecked) {
-  let db = getDatabase();
-  let taskRef = ref(db, `tasks/${taskId}`);
-  let snapshot = await get(taskRef);
-  let task = snapshot.val();
-  if (!task || !task.subtasks || !task.subtasks[subtaskIndex]) return;
-  let normalized = task.subtasks.map((st) =>
-    typeof st === "string" ? { name: st, checked: false } : st
-  );
-  normalized[subtaskIndex].checked = isChecked;
-  await update(taskRef, { subtasks: normalized });
+  const taskRef = ref(db, `tasks/${taskId}`);
+  const snapshot = await get(taskRef);
+  const task = snapshot.val();
+  
+  if (task?.subtasks?.[subtaskIndex]) {
+    const updatedSubtasks = task.subtasks.map((st, i) => 
+      i === subtaskIndex ? { ...(typeof st === "string" ? { name: st } : st), checked: isChecked } : st
+    );
+    await update(taskRef, { subtasks: updatedSubtasks });
+  }
 }
 
+// Deletes a task from all database locations
+async function deleteTaskFromDatabase(taskId) {
+  const updates = { [`tasks/${taskId}`]: null };
+  TASK_CATEGORIES.forEach(category => {
+    updates[`${category}Tasks/${taskId}`] = null;
+  });
+  await update(ref(db), updates);
+}
 
+export function truncateDescription(text) {
+  const MAX_LENGTH = 50;
+  
+  if (text.length <= MAX_LENGTH) {
+    return text;
+  }
+  let truncated = text.substr(0, MAX_LENGTH);
+  const lastSpace = truncated.lastIndexOf(' ');
+  if (lastSpace > 0) {
+    truncated = truncated.substr(0, lastSpace);
+  }
+  return truncated + '...';
+}
