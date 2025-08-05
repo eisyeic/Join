@@ -340,12 +340,15 @@
 }
 
 .slide-in-banner {
+  display: flex;
+  align-items: center;
   position: fixed;
   bottom: -100px;
   left: 50%;
   transform: translateX(-50%);
   color: #fff;
   padding: 23px;
+  gap: 16px;
   background-color: var(--main-color);
   border-radius: 20px;
   opacity: 0;
