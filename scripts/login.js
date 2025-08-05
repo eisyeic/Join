@@ -1,26 +1,25 @@
 // Firebase Imports
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth } from "./firebase.js";
 
 // Utility
 let currentMode = "login";
 
-// Init 
+// Init
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => setThemeWhite(true), 500);
   setupEmailValidation();
   initializePasswordFields("login");
-
   $("guest-button").addEventListener("click", handleGuestLogin);
   $("sign-up-page-button").addEventListener("click", showSignUpForm);
   $("sign-up-bottom-button").addEventListener("click", showSignUpForm);
   $("sign-up-button").addEventListener("click", handleSignUp);
   $("login-button").addEventListener("click", handleLogin);
   $("go-back").addEventListener("click", showLoginForm);
-
   $("confirm").addEventListener("click", () => {
     $("confirm").classList.toggle("checked");
     $("sign-up-button").classList.toggle("sign-up-button");
@@ -28,12 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", handleKeyDown);
 });
 
+// resize add event listener
 window.addEventListener("resize", () => {
   let isLogin = !$("login-box").classList.contains("d-none");
   updateSignUpBoxDisplay(isLogin ? "login" : "signup");
 });
 
-// Background and Logo animation 
+// Background and Logo animation
 function setThemeWhite(isWhite) {
   $("layout").classList.toggle("bg-white", isWhite);
   $("layout").classList.toggle("bg-blue", !isWhite);
@@ -41,15 +41,13 @@ function setThemeWhite(isWhite) {
   $("logo-blue").style.opacity = isWhite ? "1" : "0";
 }
 
-// Show Sign Up view 
+// Show Sign Up view
 function showSignUpForm() {
   currentMode = "signup";
   setThemeWhite(false);
   updateSignUpBoxDisplay();
-
   $("sign-up-box").classList.remove("d-none");
   $("login-box").classList.add("d-none");
-
   clearFormInputs(["login-email", "login-password"], $("errorMessage"));
   initializePasswordFields("sign-up");
 }
@@ -59,14 +57,14 @@ function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
   updateSignUpBoxDisplay();
-
   $("login-box").classList.remove("d-none");
   $("sign-up-box").classList.add("d-none");
-
-  clearFormInputs(["name", "sign-up-email", "sign-up-password", "confirm-password"], $("error-sign-up"));
+  clearFormInputs(
+    ["name", "sign-up-email", "sign-up-password", "confirm-password"],
+    $("error-sign-up")
+  );
   initializePasswordFields("login");
 }
-
 
 // Update Sign Up box display based on current mode
 function updateSignUpBoxDisplay() {
@@ -84,17 +82,21 @@ function updateSignUpBoxDisplay() {
   }
 }
 
-// Password Logic 
+// Password Logic
 function initializePasswordFields(context) {
   let fields = {
     login: [["login-password", "togglePassword"]],
     "sign-up": [
       ["sign-up-password", "toggle-sign-up-password"],
-      ["confirm-password", "toggle-confirm-password"]
-    ]
+      ["confirm-password", "toggle-confirm-password"],
+    ],
   };
   fields[context].forEach(([inputId, toggleId]) =>
-    setupPasswordToggle(inputId, toggleId, context === "login" ? $("errorMessage") : $("error-sign-up"))
+    setupPasswordToggle(
+      inputId,
+      toggleId,
+      context === "login" ? $("errorMessage") : $("error-sign-up")
+    )
   );
 }
 
@@ -105,7 +107,8 @@ function setupPasswordToggle(inputId, toggleId, errorBox) {
   if (!input || !toggle) return;
 
   let isVisible = false;
-  toggle.onclick = () => togglePasswordVisibility(input, toggle, isVisible = !isVisible);
+  toggle.onclick = () =>
+    togglePasswordVisibility(input, toggle, (isVisible = !isVisible));
   input.oninput = () => resetPasswordField(input, toggle, errorBox);
   updatePasswordIcon(input, toggle, isVisible);
 }
@@ -136,7 +139,10 @@ function updatePasswordIcon(input, toggle, isVisible) {
 
 // Email Validation functionality
 function setupEmailValidation() {
-  [["login-email", "errorMessage"], ["sign-up-email", "error-sign-up"]].forEach(([inputId, errorId]) => {
+  [
+    ["login-email", "errorMessage"],
+    ["sign-up-email", "error-sign-up"],
+  ].forEach(([inputId, errorId]) => {
     let input = $(inputId);
     let errorBox = $(errorId);
     input.addEventListener("blur", () => validateEmailFormat(input, errorBox));
@@ -158,10 +164,13 @@ function validateEmailFormat(input, errorBox) {
 function handleLogin() {
   let email = $("login-email").value.trim();
   let password = $("login-password").value;
-  if (password.length < 6) return displayAuthError($("errorMessage"), $("login-password"));
+  if (password.length < 6)
+    return displayAuthError($("errorMessage"), $("login-password"));
   signInWithEmailAndPassword(auth, email, password)
     .then(() => (window.location.href = "summary-board.html"))
-    .catch(() => displayAuthError($("errorMessage"), $("login-password"), $("login-email")));
+    .catch(() =>
+      displayAuthError($("errorMessage"), $("login-password"), $("login-email"))
+    );
 }
 
 // Sign Up button handler
@@ -171,29 +180,35 @@ function handleSignUp() {
   let password = $("sign-up-password").value;
   let confirm = $("confirm-password").value;
   let accepted = $("confirm").classList.contains("checked");
-
   if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
   registerUser(email, password);
 }
 
 // Validate Sign Up inputs
 function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
-  if (!name || !email || !pw || !confirmPw) return showError($("error-sign-up"), "Please fill out all fields.");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError($("error-sign-up"), "Invalid email.");
-  if (pw.length < 6) return showError($("error-sign-up"), "Password must be at least 6 characters.");
-  if (pw !== confirmPw) return showError($("error-sign-up"), "Passwords do not match.");
-  if (!accepted) return showError($("error-sign-up"), "You must accept the privacy policy.");
+  if (!name || !email || !pw || !confirmPw)
+    return showError($("error-sign-up"), "Please fill out all fields.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return showError($("error-sign-up"), "Invalid email.");
+  if (pw.length < 6)
+    return showError(
+      $("error-sign-up"),
+      "Password must be at least 6 characters."
+    );
+  if (pw !== confirmPw)
+    return showError($("error-sign-up"), "Passwords do not match.");
+  if (!accepted)
+    return showError($("error-sign-up"), "You must accept the privacy policy.");
   return true;
 }
 
-
 // Register new User
 function registerUser(email, password) {
-  let name = $("name").value.trim(); 
+  let name = $("name").value.trim();
   createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => {
+    .then((userCredential) => {
       return updateProfile(userCredential.user, {
-        displayName: name
+        displayName: name,
       });
     })
     .then(() => {
@@ -205,14 +220,14 @@ function registerUser(email, password) {
         showLoginForm();
       }, 1200);
     })
-    .catch(err => showError($("error-sign-up"), err.message));
+    .catch((err) => showError($("error-sign-up"), err.message));
 }
 
 // Guewst login handler
 function handleGuestLogin() {
   signInWithEmailAndPassword(auth, "guest@login.de", "guestpassword")
     .then(() => (window.location.href = "./summary-board.html"))
-    .catch(err => {
+    .catch((err) => {
       $("errorMessage").innerHTML = "Guest login failed.";
     });
 }
@@ -233,20 +248,23 @@ function clearFieldError(input, el) {
 function displayAuthError(el, pwInput, emailInput) {
   showError(el, "Check your email and password. Please try again.");
   pwInput.parentElement.style.borderColor = "var(--error-color)";
-  if (emailInput) emailInput.parentElement.style.borderColor = "var(--error-color)";
+  if (emailInput)
+    emailInput.parentElement.style.borderColor = "var(--error-color)";
 }
 
 // Keydown Enter Handler
 function handleKeyDown(e) {
   if (e.key === "Enter") {
     e.preventDefault();
-    $("login-box").classList.contains("d-none") ? handleSignUp() : handleLogin();
+    $("login-box").classList.contains("d-none")
+      ? handleSignUp()
+      : handleLogin();
   }
 }
 
 // Clear form inputs and error messages
 function clearFormInputs(inputs, errorBox) {
-  inputs.forEach(id => {
+  inputs.forEach((id) => {
     let input = $(id);
     if (input) {
       input.value = "";

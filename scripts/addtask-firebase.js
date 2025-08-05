@@ -15,7 +15,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-
 // load contact onload page
 function loadContactsAndRender() {
   let contactListBox = $("contact-list-box");
@@ -179,19 +178,24 @@ function handleCreateClick() {
 function sendTaskToFirebase(taskData) {
   let tasksRef = ref(db, "tasks");
   let newTaskRef = push(tasksRef);
-
   let task = {
     ...taskData,
     createdAt: new Date().toISOString(),
   };
   set(newTaskRef, task)
-    .then(() => {
+  .then(() => {
+    $("layout").style.opacity = "0.5";
+    $("slide-in-banner").classList.add("visible");
+    setTimeout(() => {
+      $("slide-in-banner").classList.remove("visible");
+      $("layout").style.opacity = "1";
       clearForm();
       window.location.href = "./board.html";
-    })
-    .catch((error) => {
-      console.error("Fehler beim Speichern:", error);
-    });
+    }, 1200);
+  })
+  .catch((error) => {
+    console.error("Fehler beim Speichern:", error);
+  });
 }
 
 // clear form
