@@ -1,0 +1,24 @@
+@media (max-width: 1450px) {
+    .input-button-box {
+        margin: 72px 20px;
+    }
+    .board-content {
+        padding: 0 20px;
+        justify-content: normal;
+        gap: 12px;
+    }
+    .bar {
+        padding: 18px 20px;
+    }
+}
+
+@media (max-width: 1350px) {
+    .board-content {
+        transform: scale(0.92);
+        transform-origin: left top;
+    }
+    .bar {
+        transform: scale(0.92);
+        transform-origin: left top;
+    }
+}
