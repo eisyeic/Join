@@ -95,7 +95,6 @@ function updateUrgentDeadline(earliestDate) {
 
 
 function updateTaskCountElements(counts) {
-  // Desktop elements
   const elements = {
     todo: $("task-to-do-text"),
     inProgress: $("task-in-progress-text"),
@@ -105,29 +104,49 @@ function updateTaskCountElements(counts) {
     total: $("task-on-board-text")
   };
 
-  if (elements.todo) elements.todo.innerText = counts.todo;
-  if (elements.inProgress) elements.inProgress.innerText = counts.inProgress;
-  if (elements.awaitFeedback) elements.awaitFeedback.innerText = counts.awaitFeedback;
-  if (elements.done) elements.done.innerText = counts.done;
-  if (elements.urgent) elements.urgent.innerText = counts.urgent;
-  if (elements.total) elements.total.innerText = counts.total;
-
-  // Mobile elements
   const mobileElements = {
     todo: $("task-to-do-text-mobile"),
     inProgress: $("task-in-progress-text-mobile"),
-    awaiting: $("task-awaiting-feedback-text-mobile"),
+    awaitFeedback: $("task-awaiting-feedback-text-mobile"),
     done: $("task-done-text-mobile"),
     urgent: $("task-urgent-text-mobile"),
     total: $("task-on-board-text-mobile")
   };
 
-  if (mobileElements.todo) mobileElements.todo.innerText = counts.todo;
-  if (mobileElements.inProgress) mobileElements.inProgress.innerText = counts.inProgress;
-  if (mobileElements.awaiting) mobileElements.awaiting.innerText = counts.awaitFeedback;
-  if (mobileElements.done) mobileElements.done.innerText = counts.done;
-  if (mobileElements.urgent) mobileElements.urgent.innerText = counts.urgent;
-  if (mobileElements.total) mobileElements.total.innerText = counts.total;
+  for (const key in counts) {
+    animateCounter(elements[key], counts[key]);
+    animateCounter(mobileElements[key], counts[key]);
+  }
+}
+
+function animateCounter(element, target) {
+  if (!element || isNaN(target)) {
+    console.warn("animateCounter skipped:", { element, target });
+    return;
+  }
+
+  let current = 0;
+  const maxFakeCount = 9;
+  const delay = 25;
+
+  if (element.counterInterval) {
+    clearInterval(element.counterInterval);
+  }
+
+  console.log("Starting counter for", element.id, "target:", target);
+
+  element.counterInterval = setInterval(() => {
+    element.textContent = current;
+    console.log("Element:", element.id, "Current:", current);
+
+    current++;
+
+    if (current > maxFakeCount) {
+      clearInterval(element.counterInterval);
+      element.textContent = target;
+      console.log("Final:", element.id, "→", target);
+    }
+  }, delay);
 }
 
 // ===== USER AUTHENTICATION =====
