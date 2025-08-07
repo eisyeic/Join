@@ -22,3 +22,26 @@
         transform-origin: left top;
     }
 }
+
+@media (min-width: 1250px) {
+    .column-title-mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 1250px) {
+    .board-content {
+        transform: scale(1);
+        transform-origin: left top;
+        flex-direction: column;
+    }
+    .bar {
+        display: none;
+    }
+    .column-title-mobile {
+        display: flex;
+    }
+    .column {
+        height: auto;
+    }
+}

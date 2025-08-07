@@ -209,6 +209,7 @@ export function renderSubtaskProgress(subtasks) {
 // load tasks from firebase
 document.addEventListener("DOMContentLoaded", () => {
   loadTasksFromFirebase();
+  loadBoardMobile();
   let searchInput = $("search-input");
   let searchButton = $("search-btn");
   if (!searchInput || !searchButton) return;

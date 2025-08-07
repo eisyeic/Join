@@ -64,6 +64,7 @@
   display: flex;
   padding: 18px 56px;
   justify-content: space-between;
+  gap: 24px;
 }
 
 .bar img {
@@ -74,6 +75,7 @@
   display: flex;
   width: 252px;
   justify-content: space-between;
+  padding: 0 4px;
 }
 
 .board-content {
@@ -89,6 +91,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 260px;
+  justify-content: center;
 }
 
 .highlight-column {
@@ -104,6 +108,7 @@
   padding:  8px 0 8px 0;
   flex-direction: column;
   gap: 16px;
+  align-items: center;
 }
 
 /* No tasks label */
@@ -245,3 +250,28 @@
   transform: rotate(5deg);
 }
 
+.column-title-mobile {
+  display: none;
+}
+
+.column-title-mobile img {
+  width: 24px;
+  height: 24px;
+}
+
+.column-title-mobile img:hover {
+  cursor: pointer;
+  content: url(../assets/icons/board/plus_hover.svg);
+}
+
+.column-title-mobile img:active {
+  content: url(../assets/icons/board/plus_clicked.svg);
+}
+
+.column-title-mobile {
+  display: flex;
+  width: 252px;
+  justify-content: space-between;
+  padding: 0 4px;
+  flex-direction: column;
+}

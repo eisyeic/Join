@@ -1,5 +1,3 @@
-
-
 // Get Contact Person
 function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
