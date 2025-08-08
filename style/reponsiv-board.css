@@ -2,11 +2,13 @@
     .input-button-box {
         margin: 72px 20px;
     }
+
     .board-content {
         padding: 0 20px;
         justify-content: normal;
         gap: 12px;
     }
+
     .bar {
         padding: 18px 20px;
     }
@@ -17,6 +19,7 @@
         transform: scale(0.92);
         transform-origin: left top;
     }
+
     .bar {
         transform: scale(0.92);
         transform-origin: left top;
@@ -32,16 +35,78 @@
 @media (max-width: 1250px) {
     .board-content {
         transform: scale(1);
-        transform-origin: left top;
+       transform-origin: center top;
         flex-direction: column;
+        overflow-y: auto;
+       gap: 24px;
     }
+
     .bar {
         display: none;
     }
+
     .column-title-mobile {
         display: flex;
     }
+
     .column {
         height: auto;
+    }
+
+    .board {
+        width: 100%;
+    }
+
+    .column {
+        width: 100%;
+    }
+
+
+    .column-title-mobile {
+        width: 100%;
+        padding: 0;
+    }
+
+    .column-title {
+        width: 100%;
+        padding: 0;
+    }
+
+    .no-tasks {
+        width: 100%;
+    }
+
+    .board {
+        width: calc(100vw - 232px);
+    }
+
+    .task-list {
+        flex-direction: row !important;
+        overflow-x: scroll !important;
+        overflow-y: hidden;
+        padding: 8px 0;
+        width: 100%;
+        align-items: flex-start !important;
+        height: 231px;
+    }
+
+    .ticket {
+        flex-shrink: 0;
+        width: 252px;
+    }
+}
+
+@media (max-width: 1025px) {
+    .board {
+        width: calc(100vw - 150px);
+    }
+}
+
+@media (max-width: 900px) {
+    .board {
+        width: 100%;
+    }
+    .board-content {
+       width: 100% !important;
     }
 }
