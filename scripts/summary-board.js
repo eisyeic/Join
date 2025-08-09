@@ -89,11 +89,6 @@ function updateUrgentDeadline(earliestDate) {
 }
 
 
-
-
-
-
-
 function updateTaskCountElements(counts) {
   const elements = {
     todo: $("task-to-do-text"),
@@ -121,30 +116,23 @@ function updateTaskCountElements(counts) {
 
 function animateCounter(element, target) {
   if (!element || isNaN(target)) {
-    console.warn("animateCounter skipped:", { element, target });
     return;
   }
 
   let current = 0;
   const maxFakeCount = 9;
-  const delay = 25;
+  const delay = 10;
 
   if (element.counterInterval) {
     clearInterval(element.counterInterval);
   }
-
-  console.log("Starting counter for", element.id, "target:", target);
-
   element.counterInterval = setInterval(() => {
     element.textContent = current;
-    console.log("Element:", element.id, "Current:", current);
-
     current++;
 
     if (current > maxFakeCount) {
       clearInterval(element.counterInterval);
       element.textContent = target;
-      console.log("Final:", element.id, "→", target);
     }
   }, delay);
 }
