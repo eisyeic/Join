@@ -105,7 +105,7 @@
   flex-grow: 1;
   overflow-y: auto;
   display: flex;
-  padding:  8px 0 8px 0;
+  padding: 8px 0 8px 0;
   flex-direction: column;
   gap: 16px;
   align-items: center;
@@ -274,4 +274,9 @@
   justify-content: space-between;
   padding: 0 4px;
   flex-direction: column;
+}
+
+.task-list::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
 }
