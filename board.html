@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,8 +49,17 @@
       href="./assets/icons/add_task/checked_hover.svg"
       as="image"
     />
+=======
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join - Board</title>
+>>>>>>> 4c2ab8974ff8ae5fead4cb810ac8a2b38b3252b5
 
   <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
+
+<<<<<<< HEAD
   <body onclick="closeProfileNavbar()">
     <!-- Overlay Add Task  -->
     <div class="overlay-add-task d-none" id="overlay-add-task">
@@ -108,6 +118,59 @@
                 </div>
                 <div class="addtask-error" id="due-date-error"></div>
               </div>
+=======
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style/board.css" />
+  <link rel="stylesheet" href="./style/header.css" />
+  <link rel="stylesheet" href="./style/sidebar.css" />
+  <link rel="stylesheet" href="./style/footer-nav.css" />
+  <link rel="stylesheet" href="./style/responsiv.css" />
+  <link rel="stylesheet" href="./style/overlay-add-task-board.css" />
+  <link rel="stylesheet" href="./style/addtask.css" />
+  <link rel="stylesheet" href="./style/flatpickr.min.css" />
+  <link rel="stylesheet" href="./style/task-overlay.css" />
+  <link rel="stylesheet" href="./style/reponsiv-board.css" />
+
+  <link rel="prerender" href="/summary-board.html" />
+  <link rel="prerender" href="./board.html" />
+  <link rel="prerender" href="./addtask.html" />
+  <link rel="prerender" href="./contact.html" />
+
+  <link rel="preload" href="./assets/icons/board/search_hover.svg" as="image" />
+  <link rel="preload" href="./assets/icons/board/search_click.svg" as="image" />
+  <link rel="preload" href="./assets/icons/add_task/check_default_hover.svg" as="image" />
+  <link rel="preload" href="./assets/icons/add_task/checked_hover.svg" as="image" />
+
+  <script src="script.js"></script>
+  <script type="module" src="./scripts/template.modul.js"></script>
+  <script src="./scripts/flatpickr.min.js"></script>
+  <script src="./scripts/addtask.js" defer></script>
+  <script type="module" src="./scripts/addtask-firebase.js"></script>
+  <script type="module" src="./scripts/board.js"></script>
+  <script type="module" src="./scripts/task-overlay.js"></script>
+  <script src="scripts/templates.js" defer></script>
+</head>
+
+<body onclick="closeProfileNavbar()">
+  <!-- Overlay Add Task  -->
+  <div class="overlay-add-task d-none" id="overlay-add-task">
+    <div class="add-task-overlay-content" onclick="toggleAddTaskBoard(event)">
+      <div class="add-task-overlay-head" onclick="event.stopPropagation()">
+        <div class="close-button" onclick="toggleAddTaskBoard()">
+          <img class="regular-close-image" src="./assets/icons/board/close_default.svg" alt="Close Icon" />
+          <img class="hover-close-image" src="./assets/icons/board/close_hover.svg" alt="Close Icon Hover" />
+        </div>
+        <h2>Add Task</h2>
+      </div>
+      <!-- Copy of addtask -->
+      <div class="addtask-copy" onclick="event.stopPropagation()">
+        <section class="addtask-wrapper">
+          <!-- task title -->
+          <div class="addtask-main-content">
+            <div>
+              <input type="text" class="addtask-title" id="addtask-title" placeholder="Enter a title" />
+              <div class="addtask-error" id="addtask-error"></div>
+>>>>>>> 4c2ab8974ff8ae5fead4cb810ac8a2b38b3252b5
             </div>
             <!-- description -->
             <div class="description">
