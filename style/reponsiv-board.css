@@ -36,10 +36,10 @@
 @media (max-width: 1250px) {
     .board-content {
         transform: scale(1);
-       transform-origin: center top;
+        transform-origin: center top;
         flex-direction: column;
         overflow-y: auto;
-       gap: 24px;
+        gap: 24px;
     }
 
     .bar {
@@ -107,7 +107,20 @@
     .board {
         width: 100%;
     }
+
     .board-content {
-       width: 100% !important;
+        width: 100% !important;
+    }
+
+    .button-blue {
+        display: none;
+    }
+
+    .input-wrapper {
+        width: 100%;
+    }
+
+    .input-button-box {
+        margin: 72px 20px 30px 20px;
     }
 }
