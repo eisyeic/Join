@@ -24,9 +24,29 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+const overlay = $("overlay-add-task");
+const overlayContent = document.querySelector(".add-task-overlay-content");
+
 // Toggle Add Task Overlay
 window.toggleAddTaskBoard = function () {
-  $("overlay-add-task").classList.toggle("d-none");
+  overlay.addEventListener("click", (e) => {
+  if (e.target === overlay && !overlay.classList.contains("d-none")) {
+    window.toggleAddTaskBoard();
+  }
+});
+  if (overlay.classList.contains("d-none")) {
+    overlay.classList.remove("d-none");
+    overlayContent.classList.remove("slide-out");
+    overlayContent.classList.add("slide-in");
+  } else {
+    overlayContent.classList.remove("slide-in");
+    overlayContent.classList.add("slide-out");
+    overlayContent.addEventListener("animationend", function handler() {
+      overlay.classList.add("d-none");
+      overlayContent.classList.remove("slide-out");
+      overlayContent.removeEventListener("animationend", handler);
+    });
+  }
 };
 
 // load data from firebase
@@ -209,7 +229,7 @@ export function renderSubtaskProgress(subtasks) {
 // load tasks from firebase
 document.addEventListener("DOMContentLoaded", () => {
   loadTasksFromFirebase();
-  loadBoardMobile();
+
   let searchInput = $("search-input");
   let searchButton = $("search-btn");
   if (!searchInput || !searchButton) return;

@@ -21,17 +21,40 @@
   gap: 12px;
   background-color: white;
   border-radius: 30px 0 0 30px;
-  animation: slideInRight 1s forwards;
   display: flex;
   box-shadow: rgba(0, 0, 0, 0.16) 0 0 4px 0;
   align-items: center;
   flex-direction: column;
+  transition: right 0.5s ease-in-out;
+  z-index: 100;
 }
 
+/* Slide-In: von rechts -100% nach 0 */
 @keyframes slideInRight {
+  from {
+    right: -100%;
+  }
   to {
     right: 0;
   }
+}
+
+/* Slide-Out: von 0 nach rechts -100% */
+@keyframes slideOutRight {
+  from {
+    right: 0;
+  }
+  to {
+    right: -100%;
+  }
+}
+
+.add-task-overlay-content.slide-in {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+.add-task-overlay-content.slide-out {
+  animation: slideOutRight 0.5s ease forwards;
 }
 
 .add-task-overlay-head {

@@ -11,6 +11,7 @@
 
     .bar {
         padding: 18px 20px;
+        gap: 12px;
     }
 }
 
@@ -84,10 +85,10 @@
         flex-direction: row !important;
         overflow-x: scroll !important;
         overflow-y: hidden;
-        padding: 8px 0;
+        padding: 8px;
         width: 100%;
         align-items: flex-start !important;
-        height: 231px;
+        height: 100%;
     }
 
     .ticket {

@@ -172,6 +172,7 @@ function handleCreateClick() {
   let isValid = validateFormData(taskData);
   if (!isValid) return;
   sendTaskToFirebase(taskData);
+  window.toggleAddTaskBoard();
 }
 
 // send to firebase
@@ -183,19 +184,23 @@ function sendTaskToFirebase(taskData) {
     createdAt: new Date().toISOString(),
   };
   set(newTaskRef, task)
-  .then(() => {
-    $("layout").style.opacity = "0.5";
-    $("slide-in-banner").classList.add("visible");
-    setTimeout(() => {
-      $("slide-in-banner").classList.remove("visible");
-      $("layout").style.opacity = "1";
-      clearForm();
-      window.location.href = "./board.html";
-    }, 1200);
-  })
-  .catch((error) => {
-    console.error("Fehler beim Speichern:", error);
-  });
+    .then(() => {
+      const layout = $("layout");
+      const slideInBanner = $("slide-in-banner");
+      if (layout) layout.style.opacity = "0.5";
+      if (slideInBanner) slideInBanner.classList.add("visible");
+      setTimeout(() => {
+        if (slideInBanner) slideInBanner.classList.remove("visible");
+        if (layout) layout.style.opacity = "1";
+        clearForm();
+        if (!window.location.pathname.endsWith("board.html")) {
+          window.location.href = "./board.html";
+        }
+      }, 1200);
+    })
+    .catch((error) => {
+      console.error("Fehler beim Speichern:", error);
+    });
 }
 
 // clear form

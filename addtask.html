@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Join - Add Task</title>
-    <link
-      rel="shortcut icon"
-      href="./assets/general_elements/icons/logo_blue_icon.svg"
-      type="image/x-icon"
-    />
+    
+    <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon"/>
+
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="./style/login.css" />
     <link rel="stylesheet" href="./style/header.css" />
@@ -18,10 +16,12 @@
     <link rel="stylesheet" href="./style/responsiv.css" />
     <link rel="stylesheet" href="./style/reponsiv-addtask.css" />
     <link rel="stylesheet" href="./style/flatpickr.min.css" />
+
     <link rel="prerender" href="/summary-board.html">
     <link rel="prerender" href="./board.html">
     <link rel="prerender" href="./addtask.html">
     <link rel="prerender" href="./contact.html">
+    
     <script src="./script.js" defer></script>
     <script src="./scripts/flatpickr.min.js"></script>
     <script type="module" src="./scripts/addtask-firebase.js"></script>
@@ -32,34 +32,19 @@
   <body onclick="closeProfileNavbar()">
     <div id="layout">
       <header>
-        <a href="./index.html"
-          ><img
-            src="./assets/general_elements/icons/logo_white_icon.svg"
-            alt="Logo Join"
-        /></a>
+        <a href="./index.html">
+          <img src="./assets/general_elements/icons/logo_white_icon.svg" alt="Logo Join"/>
+        </a>
         <nav>
           <p>Kanban Project Management Tool</p>
-          <a href="help.html"
-            ><img
-              class="help"
-              src="./assets/icons/header/help.svg"
-              alt="Help Icon"
-          /></a>
+          <a href="help.html">
+            <img class="help" src="./assets/icons/header/help.svg" alt="Help Icon"/>
+          </a>
           <div id="person-icon-header" class="person-icon-header">
-            <svg
-              width="56"
-              height="56"
-              class="circle-badge"
-              onclick="event.stopPropagation(); toggleProfileNavbar()"
-            >
+            <svg width="56" height="56" class="circle-badge" onclick="event.stopPropagation(); toggleProfileNavbar()">
               <circle cx="28" cy="28" r="26.5" class="circle-ring"></circle>
               <circle cx="28" cy="28" r="23.06" class="circle-fill"></circle>
-              <text
-                id="person-icon-header-text"
-                x="28"
-                y="31"
-                class="circle-text"
-              >
+              <text id="person-icon-header-text" x="28" y="31" class="circle-text">
                 G
               </text>
             </svg>
