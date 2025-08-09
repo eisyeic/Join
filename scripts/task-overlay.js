@@ -24,7 +24,7 @@ window.showTaskOverlay = async function (taskId) {
     fillTaskOverlay(task);
     
     // Properly defined delete button reference
-    const deleteBtn = document.getElementById("delete-task-btn");
+    const deleteBtn = $("delete-task-btn");
     if (deleteBtn) {
       deleteBtn.onclick = async () => {
         try {
@@ -35,8 +35,8 @@ window.showTaskOverlay = async function (taskId) {
         }
       };
     }
-    const bg = document.getElementById("task-overlay-bg");
-    const overlay = document.getElementById("task-overlay");
+    const bg = $("task-overlay-bg");
+    const overlay = $("task-overlay");
     if (!bg || !overlay) return;
     
     bg.classList.remove("d-none");
@@ -46,6 +46,11 @@ window.showTaskOverlay = async function (taskId) {
     console.error("Error showing task overlay:", error);
   }
 };
+
+$("edit-task-btn").addEventListener("click", function() {
+    $("task-overlay-content").classList.add("d-none");
+    $("addtask-copy").classList.remove("d-none");
+});
 
 // hide task overlay animated
 window.hideOverlay = function() {

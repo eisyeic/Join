@@ -192,7 +192,7 @@ function sendTaskToFirebase(taskData) {
       setTimeout(() => {
         if (slideInBanner) slideInBanner.classList.remove("visible");
         if (layout) layout.style.opacity = "1";
-        clearForm();
+        $("cancel-button").click();
         if (!window.location.pathname.endsWith("board.html")) {
           window.location.href = "./board.html";
         }
@@ -201,9 +201,4 @@ function sendTaskToFirebase(taskData) {
     .catch((error) => {
       console.error("Fehler beim Speichern:", error);
     });
-}
-
-// clear form
-function clearForm() {
-  $("cancel-button").click();
 }

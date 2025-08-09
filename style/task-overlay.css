@@ -15,19 +15,25 @@
 
 .task-overlay {
   display: flex;
+  justify-content: center;
   position: absolute;
+  background-color: #fff;
   bottom: -100%;
   left: 50%;
-  transform: translate(-50%, 50%);
-  flex-direction: column;
-  background-color: #fff;
   max-height: calc(100vh - 20%);
+  transform: translate(-50%, 50%);
   width: 528px;
   max-width: 90vw;
-  padding: 48px 40px;
   border-radius: 30px;
-  gap: 16px;
   box-shadow: rgb(0, 0, 0, 0.16) 0px 0px 4px 0px;
+}
+
+.task-overlay-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 48px 40px;
+  gap: 16px;
   overflow-y: auto;
 }
 
@@ -191,13 +197,13 @@ b {
   transition: filter 0.2s ease;
 }
 
-#delete-task:hover .icon-hover-filter,
-#edit-task:hover .icon-hover-filter {
+#delete-task-btn:hover .icon-hover-filter,
+#edit-task-btn:hover .icon-hover-filter {
   filter: drop-shadow(0 0 0.7px var(--light-blue));
 }
 
-#delete-task:hover span,
-#edit-task:hover span {
+#delete-task-btn:hover span,
+#edit-task-btn:hover span {
   color: var(--light-blue);
   font-weight: 700;
 }
