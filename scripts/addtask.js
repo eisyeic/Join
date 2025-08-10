@@ -15,7 +15,7 @@ let picker = flatpickr("#datepicker", {
 
 // open date picker
 $("datepicker-wrapper").addEventListener("click", function () {
-  picker.open();
+  document.querySelector("#datepicker").click();
 });
 
 // priority buttons functionality
@@ -284,19 +284,6 @@ $("sub-plus").addEventListener("click", function () {
   }
 });
 
-// save subtask changes
-document.querySelectorAll(".subtask-save-icon").forEach((saveBtn) => {
-  saveBtn.addEventListener("click", () => {
-    let item = saveBtn.closest(".subtask-item");
-    let index = item.getAttribute("data-index");
-    let input = item.querySelector(".subtask-edit-input");
-    let newValue = input.value.trim();
-    if (newValue) {
-      subtasks[index] = newValue;
-      renderSubtasks();
-    }
-  });
-});
 
 // sub save button functionality
 function saveEditedSubtask(saveBtn) {
@@ -312,13 +299,12 @@ function saveEditedSubtask(saveBtn) {
 }
 
 // sub save by click button
-document.addEventListener("click", function (event) {
-  // Speichern per Klick auf das Icon
+$("subtask-list").addEventListener("click", (event) => {
   if (event.target.classList.contains("subtask-save-icon")) {
     saveEditedSubtask(event.target);
-    return;
   }
 });
+
 
 // sub save by click outside
 document.addEventListener("click", function (event) {

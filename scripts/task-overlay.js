@@ -47,11 +47,6 @@ window.showTaskOverlay = async function (taskId) {
   }
 };
 
-$("edit-task-btn").addEventListener("click", function() {
-    $("task-overlay-content").classList.add("d-none");
-    $("addtask-copy").classList.remove("d-none");
-});
-
 // hide task overlay animated
 window.hideOverlay = function() {
   const bg = $("task-overlay-bg");
@@ -175,9 +170,9 @@ async function deleteTaskFromDatabase(taskId) {
   await update(ref(db), updates);
 }
 
+// max 50 letter length displayed
 export function truncateDescription(text) {
   const MAX_LENGTH = 50;
-  
   if (text.length <= MAX_LENGTH) {
     return text;
   }
@@ -188,3 +183,4 @@ export function truncateDescription(text) {
   }
   return truncated + '...';
 }
+

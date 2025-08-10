@@ -17,6 +17,7 @@
   display: flex;
   justify-content: center;
   position: absolute;
+  gap: 24px;
   background-color: #fff;
   bottom: -100%;
   left: 50%;
@@ -26,6 +27,7 @@
   max-width: 90vw;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.16) 0px 0px 4px 0px;
+  overflow-y: hidden;
 }
 
 .task-overlay-content {
