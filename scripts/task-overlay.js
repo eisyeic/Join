@@ -9,6 +9,7 @@ import { getLabelClass } from "./board.js";
 
 const db = getDatabase();
 const TASK_CATEGORIES = ['toDo', 'inProgress', 'awaitFeedback', 'done'];
+let currentTask = null;
 
 // Displays the task overlay with detailed information
 window.showTaskOverlay = async function (taskId) {
@@ -20,6 +21,7 @@ window.showTaskOverlay = async function (taskId) {
     if (!task) return;
 
     task.id = taskId;
+    currentTask = task;
     await normalizeSubtasks(taskId, task);
     fillTaskOverlay(task);
     
@@ -184,3 +186,70 @@ export function truncateDescription(text) {
   return truncated + '...';
 }
 
+window.toggleEditTaskBoard = function() {
+  if (currentTask) {
+    getEditTaskBoardTemplate(currentTask);
+  }
+}
+
+window.saveEditedTask = async function() {
+  if (!currentTask) return;
+  
+  const categoryText = $("edit-category-select").querySelector('span').textContent;
+  const updatedTask = {
+    title: $("edit-task-title").value,
+    description: $("edit-task-textarea").value,
+    dueDate: $("edit-datepicker").value,
+    priority: document.querySelector('.priority-button.active')?.dataset.priority || currentTask.priority,
+    category: categoryText === 'Select task category' ? currentTask.category : categoryText
+  };
+  
+  if (currentTask.assignedTo) updatedTask.assignedTo = currentTask.assignedTo;
+  if (currentTask.subtasks) updatedTask.subtasks = currentTask.subtasks;
+  
+  try {
+    await update(ref(db, `tasks/${currentTask.id}`), updatedTask);
+    Object.assign(currentTask, updatedTask);
+    createTaskOverlayTemplate();
+    fillTaskOverlay(currentTask);
+  } catch (error) {
+    console.error("Error saving task:", error);
+  }
+}
+
+function createTaskOverlayTemplate() {
+  $("task-overlay-content").innerHTML = /*html*/ `
+    <div class="label-exit-box">
+      <span id="overlay-user-story">User Story...</span>
+      <img onclick="hideOverlay()" id="task-overlay-exit-button" class="overlay-exit-button" src="./assets/icons/board/exit_default.svg" alt="close overlay" />
+    </div>
+    <div class="task-overlay-title" id="overlay-title"></div>
+    <div class="task-text" id="overlay-description"></div>
+    <div class="due-date-box">
+      <b>Due date:</b><span id="overlay-due-date"></span>
+    </div>
+    <div class="priority-box">
+      <b>Priority:</b>
+      <div class="priority">
+        <span id="overlay-priority-text"></span>
+        <img id="overlay-priority-icon" src="" alt="" />
+      </div>
+    </div>
+    <div class="assigned-to">
+      <b>Assigned to:</b>
+      <div id="overlay-members" class="members"></div>
+    </div>
+    <div id="overlay-subtasks" class="subtasks-check-box"></div>
+    <div class="delete-edit-box">
+      <div class="button-box-delete" id="delete-task-btn">
+        <img class="icon-hover-filter" src="./assets/icons/board/delete_default.svg" alt="Delete" />
+        <span>Delete</span>
+      </div>
+      <div class="vertical-spacer"></div>
+      <div class="button-box-edit" id="edit-task-btn" onclick="toggleEditTaskBoard()">
+        <img class="icon-hover-filter" src="./assets/icons/board/edit_default.svg" alt="Edit" />
+        <span>Edit</span>
+      </div>
+    </div>
+  `;
+}

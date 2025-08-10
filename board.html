@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Permissions-Policy" content="unload=*" />
     <title>Join - Board</title>
 
     <link
@@ -28,28 +29,10 @@
     <link rel="prerender" href="./addtask.html" />
     <link rel="prerender" href="./contact.html" />
 
-    <link
-      rel="preload"
-      href="./assets/icons/board/search_hover.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/board/search_click.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/add_task/check_default_hover.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/add_task/checked_hover.svg"
-      as="image"
-    />
+
 
     <script src="script.js"></script>
+    <script src="./scripts/permissions-fix.js"></script>
     <script type="module" src="./scripts/template.modul.js"></script>
     <script src="./scripts/flatpickr.min.js"></script>
     <script src="./scripts/addtask.js" defer></script>
@@ -343,7 +326,7 @@
               <span>Delete</span>
             </div>
             <div class="vertical-spacer"></div>
-            <div class="button-box-edit" id="edit-task-btn" data-task-id="${taskId}">
+            <div class="button-box-edit" id="edit-task-btn" data-task-id="${taskId}" onclick="toggleEditTaskBoard()">
               <img
                 class="icon-hover-filter"
                 src="./assets/icons/board/edit_default.svg"
