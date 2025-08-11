@@ -177,7 +177,7 @@ function getEditTaskBoardTemplate(task) {
           
           <div class="due-date">
             <span class="label-main">Due Date</span>
-            <div class="date-input">
+            <div class="date-input" onclick="document.querySelector('#edit-datepicker')._flatpickr?.open()">
               <input type="text" id="edit-datepicker" value="${task?.dueDate || ''}" placeholder="dd/mm/yyyy" />
               <img src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
             </div>
@@ -211,7 +211,6 @@ function getEditTaskBoardTemplate(task) {
             <img id="edit-assigned-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="Arrow Down Icon" />
           </div>
           <div id="edit-contact-list-box" class="contact-list-box d-none"></div>
-          <div id="edit-contact-initials" class="contact-initials">${renderEditAssignedContacts(task?.assignedTo || [])}</div>
         </div>
         
         <div class="category-box">
@@ -261,6 +260,7 @@ function getEditTaskBoardTemplate(task) {
   setupEditDatePicker();
   setupEditCategoryDropdown();
   setupEditSubtasks();
+  setupEditAssignedContacts();
 }
 
 function setupEditPriorityButtons() {
@@ -278,6 +278,16 @@ function setupEditDatePicker() {
     flatpickr('#edit-datepicker', {
       dateFormat: 'd/m/Y',
       minDate: 'today'
+    });
+  }
+  
+  const dateInput = document.querySelector('.date-input');
+  if (dateInput) {
+    dateInput.addEventListener('click', () => {
+      const datePicker = document.querySelector('#edit-datepicker');
+      if (datePicker && datePicker._flatpickr) {
+        datePicker._flatpickr.open();
+      }
     });
   }
 }
@@ -353,6 +363,8 @@ function addEditSubtask(name) {
   subtaskList.appendChild(li);
 }
 
+
+
 function renderEditSubtasks(subtasks) {
   return subtasks.map((subtask, index) => {
     const name = typeof subtask === 'string' ? subtask : subtask.name;
@@ -377,4 +389,124 @@ function renderEditAssignedContacts(assignedTo) {
     const initials = contact.initials || contact.name?.substring(0, 2).toUpperCase() || 'XX';
     return `<div class="contact-initial">${initials}</div>`;
   }).join('');
+}
+
+function setupEditAssignedContacts() {
+  const assignedSelectBox = $("edit-assigned-select-box");
+  const contactListBox = $("edit-contact-list-box");
+  const assignedIcon = $("edit-assigned-icon");
+  const contactInitials = $("edit-contact-initials");
+  
+  // Add sample contacts with different colored icons
+  contactListBox.innerHTML = `
+    <li>
+      <div>
+        <div class="contact-initial" style="background-color: #FF7A00;">AS</div>
+        Anja Schulze
+      </div>
+      <img src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
+    </li>
+    <li>
+      <div>
+        <div class="contact-initial" style="background-color: #9327FF;">AM</div>
+        Anton Mayer
+      </div>
+      <img src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
+    </li>
+    <li>
+      <div>
+        <div class="contact-initial" style="background-color: #6E52FF;">BZ</div>
+        Benedikt Ziegler
+      </div>
+      <img src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
+    </li>
+  `;
+  
+  // Click event only on arrow icon
+  if (assignedIcon) {
+    assignedIcon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      contactListBox.classList.toggle('d-none');
+      let isListVisible = !contactListBox.classList.contains('d-none');
+      if (!isListVisible) {
+        let selectedContacts = contactListBox.querySelectorAll('li.selected');
+        if (selectedContacts.length > 0) {
+          contactInitials.classList.remove('d-none');
+        } else {
+          contactInitials.classList.add('d-none');
+        }
+      } else {
+        contactInitials.classList.add('d-none');
+      }
+    });
+  }
+  
+  // Search functionality
+  const contactInput = $("edit-contact-input");
+  if (contactInput) {
+    contactInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const contacts = contactListBox.querySelectorAll('li');
+      
+      contacts.forEach(contact => {
+        const contactName = contact.textContent.toLowerCase();
+        if (contactName.includes(searchTerm)) {
+          contact.style.display = 'flex';
+        } else {
+          contact.style.display = 'none';
+        }
+      });
+    });
+    
+    contactInput.addEventListener('focus', function() {
+      contactListBox.classList.remove('d-none');
+      contactInitials.classList.add('d-none');
+    });
+  }
+  
+  // Contact selection
+  contactListBox.addEventListener('click', (e) => {
+    const li = e.target.closest('li');
+    if (li) {
+      e.stopPropagation();
+      const img = li.querySelector('img');
+      
+      if (li.classList.contains('selected')) {
+        li.classList.remove('selected');
+        img.src = './assets/icons/add_task/check_default.svg';
+      } else {
+        li.classList.add('selected');
+        img.src = './assets/icons/add_task/check_white.svg';
+      }
+      
+      updateEditContactInitials();
+    }
+  });
+  
+  function updateEditContactInitials() {
+    const selectedContacts = contactListBox.querySelectorAll('li.selected');
+    if (selectedContacts.length > 0) {
+      contactInitials.innerHTML = Array.from(selectedContacts).map(li => {
+        const initial = li.querySelector('.contact-initial');
+        return initial ? initial.outerHTML : '';
+      }).join('');
+      contactInitials.classList.remove('d-none');
+    } else {
+      contactInitials.innerHTML = '';
+      contactInitials.classList.add('d-none');
+    }
+  }
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!assignedSelectBox.contains(event.target) && !contactListBox.contains(event.target)) {
+      contactListBox.classList.add('d-none');
+      let selectedContacts = contactListBox.querySelectorAll('li.selected');
+      if (selectedContacts.length > 0) {
+        contactInitials.classList.remove('d-none');
+      } else {
+        contactInitials.classList.add('d-none');
+      }
+    }
+  });
 }
