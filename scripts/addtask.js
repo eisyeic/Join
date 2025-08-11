@@ -51,6 +51,8 @@ let contactInitialsBox = document.querySelector(".contact-initials");
 $("assigned-select-box").addEventListener("click", function () {
   $("contact-list-box").classList.toggle("d-none");
   let isListVisible = !$("contact-list-box").classList.contains("d-none");
+  $("assigned-icon").classList.add("arrow-up");
+  $("assigned-icon").classList.remove("arrow-down");
   if (!isListVisible) {
     let selectedContacts =
       $("contact-list-box").querySelectorAll("li.selected");
@@ -58,6 +60,8 @@ $("assigned-select-box").addEventListener("click", function () {
       contactInitialsBox.classList.remove("d-none");
     } else {
       contactInitialsBox.classList.add("d-none");
+      $("assigned-icon").classList.remove("arrow-up");
+      $("assigned-icon").classList.add("arrow-down");
     }
   } else {
     contactInitialsBox.classList.add("d-none");

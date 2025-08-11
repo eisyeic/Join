@@ -95,6 +95,10 @@
         flex-shrink: 0;
         width: 252px;
     }
+    
+    .upandown {
+        display: flex;
+    }
 }
 
 @media (max-width: 1025px) {

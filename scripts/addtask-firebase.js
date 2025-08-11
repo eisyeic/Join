@@ -172,7 +172,9 @@ function handleCreateClick() {
   let isValid = validateFormData(taskData);
   if (!isValid) return;
   sendTaskToFirebase(taskData);
-  window.toggleAddTaskBoard();
+  if (!window.location.pathname.endsWith("addtask.html")) {
+    window.toggleAddTaskBoard();
+  }
 }
 
 // send to firebase
@@ -187,7 +189,7 @@ function sendTaskToFirebase(taskData) {
     .then(() => {
       const layout = $("layout");
       const slideInBanner = $("slide-in-banner");
-      if (layout) layout.style.opacity = "0.5";
+      if (layout) layout.style.opacity = "0.3";
       if (slideInBanner) slideInBanner.classList.add("visible");
       setTimeout(() => {
         if (slideInBanner) slideInBanner.classList.remove("visible");
