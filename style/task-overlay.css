@@ -33,9 +33,14 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 48px 40px;
   gap: 16px;
+  padding: 48px 40px;
   overflow-y: auto;
+}
+
+.task-overlay-content:has(.edit-task-header) {
+  padding: 0;
+  overflow-y: hidden;
 }
 
 .task-overlay.animate-in {
@@ -356,4 +361,87 @@ b {
 
 .task-list {
   scrollbar-width: none;
+}
+
+.close-button-edit {
+
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
+.close-button-edit img {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.regular-close-image-edit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+}
+
+.hover-close-image-edit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  opacity: 0;
+}
+
+.close-button-edit:hover .regular-close-image-edit {
+  opacity: 0;
+}
+
+.close-button-edit:hover .hover-close-image-edit {
+  opacity: 1;
+}
+
+.edit-task-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 10;
+  padding-bottom: 16px;
+  background-color: white;
+}
+
+.edit-task-header {
+  display: flex;
+  justify-content: end;
+}
+
+.edit-task-overlay {
+  padding: 48px 40px;
+}
+
+.addtask-main-content {
+  overflow: scroll;
+  overflow-x: hidden;
+  height: calc(100% - 300px);
+}
+
+.edit-task-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-task-buttons {
+  flex-shrink: 0;
+  padding: 16px 40px 40px 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.edit-task-buttons .add-task-button {
+  justify-content: center;
 }

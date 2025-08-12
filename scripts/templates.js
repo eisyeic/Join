@@ -162,23 +162,46 @@ function renderSubtasks() {
 
 function getEditTaskBoardTemplate(task) {
   $("task-overlay-content").innerHTML = /*html*/ `
-      <div class="edit-task-content">
-        <div class="addtask-main-content">
+    <div class="edit-task-overlay">
+
+      <div class="edit-task-header">
+          <div class="close-button-edit" onclick="closedEditedTaskOverlay()">
+            <img
+              class="regular-close-image-edit"
+              src="./assets/icons/board/close_default.svg"
+              alt="Close Icon"
+            />
+            <img
+              class="hover-close-image-edit"
+              src="./assets/icons/board/close_hover.svg"
+              alt="Close Icon Hover"
+            />
+          </div>
+        </div>
+          
+      <div class="addtask-main-content">
+        <div>
           <div>
-            <input type="text" class="addtask-title" id="edit-task-title" value="${task?.title || ''}" placeholder="Enter a title" />
+            <input type="text" class="addtask-title" id="edit-task-title" value="${
+              task?.title || ""
+            }" placeholder="Enter a title" />
             <div class="addtask-error" id="edit-title-error"></div>
           </div>
           
           <div class="description">
             <span class="label-main">Description</span>
             <span class="label-optional">(optional)</span>
-            <textarea id="edit-task-textarea" placeholder="Enter a description">${task?.description || ''}</textarea>
+            <textarea id="edit-task-textarea" placeholder="Enter a description">${
+              task?.description || ""
+            }</textarea>
           </div>
           
           <div class="due-date">
             <span class="label-main">Due Date</span>
             <div class="date-input" onclick="document.querySelector('#edit-datepicker')._flatpickr?.open()">
-              <input type="text" id="edit-datepicker" value="${task?.dueDate || ''}" placeholder="dd/mm/yyyy" />
+              <input type="text" id="edit-datepicker" value="${
+                task?.dueDate || ""
+              }" placeholder="dd/mm/yyyy" />
               <img src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
             </div>
             <div class="addtask-error" id="edit-due-date-error"></div>
@@ -188,15 +211,21 @@ function getEditTaskBoardTemplate(task) {
         <div class="priority-wrapper">
           <span class="label-main">Priority</span>
           <div class="prio-buttons">
-            <button class="priority-button urgent-button ${task?.priority === 'urgent' ? 'active' : ''}" data-priority="urgent">
+            <button class="priority-button urgent-button ${
+              task?.priority === "urgent" ? "active" : ""
+            }" data-priority="urgent">
               <span>Urgent</span>
               <img src="./assets/icons/add_task/urgent.svg" alt="Urgent Icon" />
             </button>
-            <button class="priority-button medium-button ${task?.priority === 'medium' ? 'active' : ''}" data-priority="medium">
+            <button class="priority-button medium-button ${
+              task?.priority === "medium" ? "active" : ""
+            }" data-priority="medium">
               <span>Medium</span>
               <img src="./assets/icons/add_task/medium.svg" alt="Medium Icon" />
             </button>
-            <button class="priority-button low-button ${task?.priority === 'low' ? 'active' : ''}" data-priority="low">
+            <button class="priority-button low-button ${
+              task?.priority === "low" ? "active" : ""
+            }" data-priority="low">
               <span>Low</span>
               <img src="./assets/icons/add_task/low.svg" alt="Low Icon" />
             </button>
@@ -216,7 +245,7 @@ function getEditTaskBoardTemplate(task) {
         <div class="category-box">
           <span class="label-main">Category</span>
           <div id="edit-category-select" class="category-select-box">
-            <span>${task?.category || 'Select task category'}</span>
+            <span>${task?.category || "Select task category"}</span>
             <img id="edit-category-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="Arrow Down Icon" />
           </div>
           <div class="addtask-error" id="edit-category-selection-error"></div>
@@ -242,10 +271,12 @@ function getEditTaskBoardTemplate(task) {
               <img id="edit-sub-plus" src="./assets/icons/add_task/add.svg" alt="Plus Icon" />
             </div>
           </div>
-          <div id="edit-subtask-list">${renderEditSubtasks(task?.subtasks || [])}</div>
+          <div id="edit-subtask-list">${renderEditSubtasks(
+            task?.subtasks || []
+          )}</div>
         </div>
       </div>
-      
+
       <div class="edit-task-buttons">
         <div class="add-task-button">
           <div class="save-button base-button button-blue button-regular" onclick="saveEditedTask()">
@@ -264,27 +295,29 @@ function getEditTaskBoardTemplate(task) {
 }
 
 function setupEditPriorityButtons() {
-  document.querySelectorAll('.priority-button').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  document.querySelectorAll(".priority-button").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
-      document.querySelectorAll('.priority-button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      document
+        .querySelectorAll(".priority-button")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
     });
   });
 }
 
 function setupEditDatePicker() {
-  if (typeof flatpickr !== 'undefined') {
-    flatpickr('#edit-datepicker', {
-      dateFormat: 'd/m/Y',
-      minDate: 'today'
+  if (typeof flatpickr !== "undefined") {
+    flatpickr("#edit-datepicker", {
+      dateFormat: "d/m/Y",
+      minDate: "today",
     });
   }
-  
-  const dateInput = document.querySelector('.date-input');
+
+  const dateInput = document.querySelector(".date-input");
   if (dateInput) {
-    dateInput.addEventListener('click', () => {
-      const datePicker = document.querySelector('#edit-datepicker');
+    dateInput.addEventListener("click", () => {
+      const datePicker = document.querySelector("#edit-datepicker");
       if (datePicker && datePicker._flatpickr) {
         datePicker._flatpickr.open();
       }
@@ -296,17 +329,21 @@ function setupEditCategoryDropdown() {
   const categorySelect = $("edit-category-select");
   const categorySelection = $("edit-category-selection");
   const categoryIcon = $("edit-category-icon");
-  
-  categorySelect.addEventListener('click', () => {
-    categorySelection.classList.toggle('d-none');
-    categoryIcon.style.transform = categorySelection.classList.contains('d-none') ? 'rotate(0deg)' : 'rotate(180deg)';
+
+  categorySelect.addEventListener("click", () => {
+    categorySelection.classList.toggle("d-none");
+    categoryIcon.style.transform = categorySelection.classList.contains(
+      "d-none"
+    )
+      ? "rotate(0deg)"
+      : "rotate(180deg)";
   });
-  
-  categorySelection.querySelectorAll('li').forEach(item => {
-    item.addEventListener('click', () => {
-      categorySelect.querySelector('span').textContent = item.textContent;
-      categorySelection.classList.add('d-none');
-      categoryIcon.style.transform = 'rotate(0deg)';
+
+  categorySelection.querySelectorAll("li").forEach((item) => {
+    item.addEventListener("click", () => {
+      categorySelect.querySelector("span").textContent = item.textContent;
+      categorySelection.classList.add("d-none");
+      categoryIcon.style.transform = "rotate(0deg)";
     });
   });
 }
@@ -318,38 +355,38 @@ function setupEditSubtasks() {
   const subClear = $("edit-sub-clear");
   const funcBtn = $("edit-subtask-func-btn");
   const plusBox = $("edit-subtask-plus-box");
-  
-  subInput.addEventListener('input', () => {
+
+  subInput.addEventListener("input", () => {
     if (subInput.value.trim()) {
-      funcBtn.classList.remove('d-none');
-      plusBox.classList.add('d-none');
+      funcBtn.classList.remove("d-none");
+      plusBox.classList.add("d-none");
     } else {
-      funcBtn.classList.add('d-none');
-      plusBox.classList.remove('d-none');
+      funcBtn.classList.add("d-none");
+      plusBox.classList.remove("d-none");
     }
   });
-  
-  subCheck.addEventListener('click', () => {
+
+  subCheck.addEventListener("click", () => {
     if (subInput.value.trim()) {
       addEditSubtask(subInput.value.trim());
-      subInput.value = '';
-      funcBtn.classList.add('d-none');
-      plusBox.classList.remove('d-none');
+      subInput.value = "";
+      funcBtn.classList.add("d-none");
+      plusBox.classList.remove("d-none");
     }
   });
-  
-  subClear.addEventListener('click', () => {
-    subInput.value = '';
-    funcBtn.classList.add('d-none');
-    plusBox.classList.remove('d-none');
+
+  subClear.addEventListener("click", () => {
+    subInput.value = "";
+    funcBtn.classList.add("d-none");
+    plusBox.classList.remove("d-none");
   });
 }
 
 function addEditSubtask(name) {
   const subtaskList = $("edit-subtask-list");
   const index = subtaskList.children.length;
-  const li = document.createElement('li');
-  li.className = 'subtask-item';
+  const li = document.createElement("li");
+  li.className = "subtask-item";
   li.dataset.index = index;
   li.innerHTML = `
     <span class="subtask-text">${name}</span>
@@ -363,12 +400,11 @@ function addEditSubtask(name) {
   subtaskList.appendChild(li);
 }
 
-
-
 function renderEditSubtasks(subtasks) {
-  return subtasks.map((subtask, index) => {
-    const name = typeof subtask === 'string' ? subtask : subtask.name;
-    return `
+  return subtasks
+    .map((subtask, index) => {
+      const name = typeof subtask === "string" ? subtask : subtask.name;
+      return `
       <li class="subtask-item" data-index="${index}">
         <span class="subtask-text">${name}</span>
         <input class="subtask-edit-input d-none" type="text" id="edit-sub${index}" value="${name}" />
@@ -380,15 +416,19 @@ function renderEditSubtasks(subtasks) {
           <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
         </div>
       </li>`;
-  }).join('');
+    })
+    .join("");
 }
 
 function renderEditAssignedContacts(assignedTo) {
-  if (!assignedTo || assignedTo.length === 0) return '';
-  return assignedTo.map(contact => {
-    const initials = contact.initials || contact.name?.substring(0, 2).toUpperCase() || 'XX';
-    return `<div class="contact-initial">${initials}</div>`;
-  }).join('');
+  if (!assignedTo || assignedTo.length === 0) return "";
+  return assignedTo
+    .map((contact) => {
+      const initials =
+        contact.initials || contact.name?.substring(0, 2).toUpperCase() || "XX";
+      return `<div class="contact-initial">${initials}</div>`;
+    })
+    .join("");
 }
 
 function setupEditAssignedContacts() {
@@ -400,54 +440,65 @@ function setupEditAssignedContacts() {
   // ... your sample contacts setup ...
 
   if (assignedIcon) {
-    assignedIcon.addEventListener('click', function(e) {
+    assignedIcon.addEventListener("click", function (e) {
       e.stopPropagation();
-      contactListBox.classList.toggle('d-none');
-      const isListVisible = !contactListBox.classList.contains('d-none');
+      contactListBox.classList.toggle("d-none");
+      const isListVisible = !contactListBox.classList.contains("d-none");
       if (!isListVisible && contactInitials) {
-        const selectedContacts = contactListBox.querySelectorAll('li.selected');
-        contactInitials.classList.toggle('d-none', selectedContacts.length === 0);
+        const selectedContacts = contactListBox.querySelectorAll("li.selected");
+        contactInitials.classList.toggle(
+          "d-none",
+          selectedContacts.length === 0
+        );
       } else if (contactInitials) {
-        contactInitials.classList.add('d-none');
+        contactInitials.classList.add("d-none");
       }
     });
   }
 
   // ... search listeners unchanged ...
 
-  contactListBox.addEventListener('click', (e) => {
-    const li = e.target.closest('li');
+  contactListBox.addEventListener("click", (e) => {
+    const li = e.target.closest("li");
     if (!li) return;
     e.stopPropagation();
-    const img = li.querySelector('img');
-    li.classList.toggle('selected');
-    img.src = li.classList.contains('selected')
-      ? './assets/icons/add_task/check_white.svg'
-      : './assets/icons/add_task/check_default.svg';
+    const img = li.querySelector("img");
+    li.classList.toggle("selected");
+    img.src = li.classList.contains("selected")
+      ? "./assets/icons/add_task/check_white.svg"
+      : "./assets/icons/add_task/check_default.svg";
     updateEditContactInitials();
   });
 
   function updateEditContactInitials() {
     if (!contactInitials) return;
-    const selectedContacts = contactListBox.querySelectorAll('li.selected');
+    const selectedContacts = contactListBox.querySelectorAll("li.selected");
     if (selectedContacts.length > 0) {
-      contactInitials.innerHTML = Array.from(selectedContacts).map(li => {
-        const initial = li.querySelector('.contact-initial');
-        return initial ? initial.outerHTML : '';
-      }).join('');
-      contactInitials.classList.remove('d-none');
+      contactInitials.innerHTML = Array.from(selectedContacts)
+        .map((li) => {
+          const initial = li.querySelector(".contact-initial");
+          return initial ? initial.outerHTML : "";
+        })
+        .join("");
+      contactInitials.classList.remove("d-none");
     } else {
-      contactInitials.innerHTML = '';
-      contactInitials.classList.add('d-none');
+      contactInitials.innerHTML = "";
+      contactInitials.classList.add("d-none");
     }
   }
 
-  document.addEventListener('click', (event) => {
-    if (!assignedSelectBox.contains(event.target) && !contactListBox.contains(event.target)) {
-      contactListBox.classList.add('d-none');
+  document.addEventListener("click", (event) => {
+    if (
+      !assignedSelectBox.contains(event.target) &&
+      !contactListBox.contains(event.target)
+    ) {
+      contactListBox.classList.add("d-none");
       if (contactInitials) {
-        const selectedContacts = contactListBox.querySelectorAll('li.selected');
-        contactInitials.classList.toggle('d-none', selectedContacts.length === 0);
+        const selectedContacts = contactListBox.querySelectorAll("li.selected");
+        contactInitials.classList.toggle(
+          "d-none",
+          selectedContacts.length === 0
+        );
       }
     }
   });

@@ -225,6 +225,13 @@ window.saveEditedTask = async function() {
   }
 }
 
+window.closedEditedTaskOverlay = function() {
+  if (!currentTask) return;
+  
+  createTaskOverlayTemplate();
+  fillTaskOverlay(currentTask);
+}
+
 function createTaskOverlayTemplate() {
   $("task-overlay-content").innerHTML = /*html*/ `
     <div class="label-exit-box">
