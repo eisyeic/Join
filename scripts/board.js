@@ -3,12 +3,14 @@ import {
   ref,
   onValue,
   update,
+  get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
 import { createTaskElement } from "./template.modul.js";
 
 let db = getDatabase(app);
+window.loadedContacts = [];
 
 let columnMap = {
   todo: "to-do-column",
@@ -48,6 +50,23 @@ window.toggleAddTaskBoard = function () {
     });
   }
 };
+
+// load contacts from firebase
+async function loadContactsFromFirebase() {
+  try {
+    const contactsRef = ref(db, "contacts");
+    const snapshot = await get(contactsRef);
+    if (snapshot.exists()) {
+      const contactsData = snapshot.val();
+      window.loadedContacts = Object.keys(contactsData).map(id => ({
+        id,
+        ...contactsData[id]
+      }));
+    }
+  } catch (error) {
+    console.error("Error loading contacts:", error);
+  }
+}
 
 // load data from firebase
 function loadTasksFromFirebase() {
@@ -228,6 +247,7 @@ export function renderSubtaskProgress(subtasks) {
 
 // load tasks from firebase
 document.addEventListener("DOMContentLoaded", () => {
+  loadContactsFromFirebase();
   loadTasksFromFirebase();
 
   let searchInput = $("search-input");

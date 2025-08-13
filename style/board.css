@@ -301,12 +301,10 @@
 .addtask-wrapper {
   height: calc(100vh - 128px);
   gap: 12px;
-  min-width: 472px;
+  min-width: 440px;
   display: flex;
   flex-direction: column;
-  padding: 32px 0 0 24px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: #fff;
 }
@@ -316,7 +314,6 @@
   display: flex;
   flex-direction: column;
   align-items: space-between;
-  width: 440px;
   gap: 12px;
   color: var(--style-color);
   padding-right: 8px;

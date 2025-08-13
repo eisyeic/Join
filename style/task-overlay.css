@@ -38,7 +38,7 @@
   overflow-y: auto;
 }
 
-.task-overlay-content:has(.edit-task-header) {
+.task-overlay-content:has(.edit-task-overlay-header) {
   padding: 0;
   overflow-y: hidden;
 }
@@ -281,7 +281,7 @@ b {
   background-color: #888 !important;
 }
 
-.edit-task-content li {
+.edit-task-overlay .edit-task-content li {
   list-style: none;
   cursor: pointer;
   display: flex;
@@ -291,35 +291,35 @@ b {
   color: #000;
 }
 
-.edit-task-content li div {
+.edit-task-overlay .edit-task-content li div {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.edit-task-content li:hover {
+.edit-task-overlay .edit-task-content li:hover {
   background-color: var(--navi-buttons-bg);
 }
 
-.edit-task-content li:active {
+.edit-task-overlay .edit-task-content li:active {
   background-color: var(--light-blue);
   color: #fff;
 }
 
-.edit-task-content li.selected {
+.edit-task-overlay .edit-task-content li.selected {
   background-color: var(--main-color) !important;
   color: white;
 }
 
-.edit-task-content li.selected:hover {
+.edit-task-overlay .edit-task-content li.selected:hover {
   background-color: var(--light-blue) !important;
 }
 
-.edit-task-content li.selected .contact-initial {
+.edit-task-overlay .edit-task-content li.selected .contact-initial {
   color: white !important;
 }
 
-.edit-task-content .contact-initial {
+.edit-task-overlay .edit-task-content .contact-initial {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -331,7 +331,7 @@ b {
   border: 2px solid #fff;
 }
 
-.edit-task-content .contact-initials {
+.edit-task-overlay .edit-task-content .contact-initials {
   display: flex;
   gap: 8px;
   margin-top: 12px;
@@ -363,14 +363,13 @@ b {
   scrollbar-width: none;
 }
 
-.close-button-edit {
-
+.edit-task-overlay-close-button {
   position: relative;
   width: 32px;
   height: 32px;
 }
 
-.close-button-edit img {
+.edit-task-overlay-close-button img {
   width: 32px;
   height: 32px;
   cursor: pointer;
@@ -379,14 +378,14 @@ b {
   right: 0;
 }
 
-.regular-close-image-edit {
+.edit-task-overlay-close-regular {
   position: absolute;
   top: 0;
   left: 0;
   object-fit: cover;
 }
 
-.hover-close-image-edit {
+.edit-task-overlay-close-hover {
   position: absolute;
   top: 0;
   left: 0;
@@ -394,54 +393,63 @@ b {
   opacity: 0;
 }
 
-.close-button-edit:hover .regular-close-image-edit {
+.edit-task-overlay-close-button:hover .edit-task-overlay-close-regular {
   opacity: 0;
 }
 
-.close-button-edit:hover .hover-close-image-edit {
+.edit-task-overlay-close-button:hover .edit-task-overlay-close-hover {
   opacity: 1;
 }
 
-.edit-task-header {
-  position: sticky;
+/* Edit Task Overlay Styles */
+.edit-task-overlay-header {
+  height: 100px;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   background-color: #fff;
   z-index: 10;
-  padding-bottom: 16px;
-  background-color: white;
-}
-
-.edit-task-header {
   display: flex;
   justify-content: end;
+  padding: 9px 40px;
+  align-items: center;
 }
 
 .edit-task-overlay {
-  padding: 48px 40px;
-}
-
-.addtask-main-content {
-  overflow: scroll;
-  overflow-x: hidden;
-  height: calc(100% - 300px);
-}
-
-.edit-task-scrollable {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  height: 100%;
+  padding: 0;
 }
 
-.edit-task-buttons {
-  flex-shrink: 0;
-  padding: 16px 40px 40px 40px;
+.edit-task-overlay .addtask-main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 100px;
+  margin-bottom: 150px;
+  padding: 16px 8px 16px 40px;
+  
+}
+
+.edit-task-overlay {
+  margin-right: 20px;
+}
+
+.edit-task-overlay-buttons {
+  height: 100px;
+  position: fixed;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  padding: 0 40px;
 }
 
-.edit-task-buttons .add-task-button {
+.add-task-button {
   justify-content: center;
 }

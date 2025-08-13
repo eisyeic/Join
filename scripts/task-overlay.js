@@ -417,9 +417,9 @@ function colorIndexFromContact(contact) {
     preselectAssigned(listBox, contacts, task?.assignedTo || []);
     updateEditInitials(listBox, initialsBox);
 
-    // Toggle dropdown on arrow click (like addtask behavior you use)
-    if (arrow) {
-      arrow.addEventListener('click', (e) => {
+    // Toggle dropdown on selectBox click (includes arrow and input)
+    if (selectBox) {
+      selectBox.addEventListener('click', (e) => {
         e.stopPropagation();
         listBox.classList.toggle('d-none');
       });
@@ -434,11 +434,6 @@ function colorIndexFromContact(contact) {
           const text = li.textContent.toLowerCase();
           li.style.display = text.includes(term) ? 'flex' : 'none';
         });
-        // Open list while searching
-        listBox.classList.remove('d-none');
-      });
-      searchInput.addEventListener('focus', function() {
-        listBox.classList.remove('d-none');
       });
     }
 

@@ -164,15 +164,15 @@ function getEditTaskBoardTemplate(task) {
   $("task-overlay-content").innerHTML = /*html*/ `
     <div class="edit-task-overlay">
 
-      <div class="edit-task-header">
-          <div class="close-button-edit" onclick="closedEditedTaskOverlay()">
+      <div class="edit-task-overlay-header">
+          <div class="edit-task-overlay-close-button" onclick="closedEditedTaskOverlay()">
             <img
-              class="regular-close-image-edit"
+              class="edit-task-overlay-close-regular"
               src="./assets/icons/board/close_default.svg"
               alt="Close Icon"
             />
             <img
-              class="hover-close-image-edit"
+              class="edit-task-overlay-close-hover"
               src="./assets/icons/board/close_hover.svg"
               alt="Close Icon Hover"
             />
@@ -277,7 +277,7 @@ function getEditTaskBoardTemplate(task) {
         </div>
       </div>
 
-      <div class="edit-task-buttons">
+      <div class="edit-task-overlay-buttons">
         <div class="add-task-button">
           <div class="save-button base-button button-blue button-regular" onclick="saveEditedTask()">
             OK
