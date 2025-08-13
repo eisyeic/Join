@@ -329,6 +329,21 @@ function colorIndexFromContact(contact) {
     return COLOR_MAP[((String(idx || "X").charCodeAt(0) || 0) % 15) + 1];
   }
 
+  // persistent selection across filtering/re-render
+  const selectedEditContactIds = new Set();
+
+  function getLiId(li){
+    return li.getAttribute('data-id') || (li.dataset && li.dataset.id) || '';
+  }
+
+  function applyEditSelectionVisual(li, isSelected){
+    li.classList.toggle('selected', isSelected);
+    const img = li.querySelector('img');
+    if (img) img.src = isSelected
+      ? './assets/icons/add_task/check_white.svg'
+      : './assets/icons/add_task/check_default.svg';
+  }
+
   function renderEditContactsList(box, contacts) {
     if (!box) return;
     if (!Array.isArray(contacts) || contacts.length === 0) {
@@ -367,6 +382,8 @@ function colorIndexFromContact(contact) {
         li.classList.add('selected');
         const img = li.querySelector('img');
         if (img) img.src = './assets/icons/add_task/check_white.svg';
+        const idSel = getLiId(li);
+        if (idSel) selectedEditContactIds.add(String(idSel));
       }
     });
   }
@@ -391,7 +408,7 @@ function colorIndexFromContact(contact) {
       initialsBox.innerHTML = '';
       return;
     }
-    initialsBox.innerHTML = selectedInitials.map(el => el.outerHTML).join('');
+    initialsBox.innerHTML = selectedInitials.slice(0,5).map(el => el.outerHTML).join('');
     initialsBox.classList.remove('d-none');
   }
 
@@ -417,47 +434,90 @@ function colorIndexFromContact(contact) {
     preselectAssigned(listBox, contacts, task?.assignedTo || []);
     updateEditInitials(listBox, initialsBox);
 
+    function updateArrow(){
+      if (!arrow) return;
+      const isOpen = !listBox.classList.contains('d-none');
+      arrow.classList.toggle('arrow-up', isOpen);
+      arrow.classList.toggle('arrow-down', !isOpen);
+    }
+
     // Toggle dropdown on selectBox click (includes arrow and input)
     if (selectBox) {
       selectBox.addEventListener('click', (e) => {
         e.stopPropagation();
+        // Ensure input click does not toggle
+        if (searchInput && (e.target === searchInput || searchInput.contains(e.target))) return;
         listBox.classList.toggle('d-none');
+        updateArrow();
       });
     }
 
     // Filter by search
     if (searchInput) {
       searchInput.addEventListener('input', function() {
+        listBox.classList.remove('d-none');
+        updateArrow();
         const term = this.value.toLowerCase();
         Array.from(listBox.querySelectorAll('li')).forEach(li => {
           if (li.classList.contains('no-contacts')) return;
           const text = li.textContent.toLowerCase();
           li.style.display = text.includes(term) ? 'flex' : 'none';
         });
+        // Re-apply selection visuals from Set
+        Array.from(listBox.querySelectorAll('li')).forEach(li => {
+          const id = getLiId(li);
+          applyEditSelectionVisual(li, selectedEditContactIds.has(String(id)));
+        });
       });
+      searchInput.addEventListener('focus', () => {
+        listBox.classList.remove('d-none');
+        updateArrow();
+      });
+      searchInput.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') {
+          listBox.classList.add('d-none');
+          updateArrow();
+        }
+      });
+      // Ensure input click doesn’t toggle the selectBox
+      searchInput.addEventListener('click', (ev) => ev.stopPropagation());
     }
 
     // Select / deselect contacts (event delegation)
     listBox.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if (!li || li.classList.contains('no-contacts')) return;
-      li.classList.toggle('selected');
-      const img = li.querySelector('img');
-      if (img) img.src = li.classList.contains('selected')
-        ? './assets/icons/add_task/check_white.svg'
-        : './assets/icons/add_task/check_default.svg';
+      const id = String(getLiId(li));
+      const nowSelected = !li.classList.contains('selected');
+      if (nowSelected) selectedEditContactIds.add(id); else selectedEditContactIds.delete(id);
+      applyEditSelectionVisual(li, nowSelected);
       updateEditInitials(listBox, initialsBox);
       // keep currentTask in sync so saveEditedTask persists it
       if (window.currentTask) {
         window.currentTask.assignedTo = collectSelected(listBox, contacts);
       }
+      if (searchInput) { searchInput.focus(); searchInput.select(); }
     });
 
     // Close dropdown when clicking outside
     document.addEventListener('click', (evt) => {
-      const inside = selectBox.contains(evt.target) || listBox.contains(evt.target);
+      const inside = selectBox.contains(evt.target) || listBox.contains(evt.target) || (searchInput && searchInput.contains(evt.target));
       if (!inside) listBox.classList.add('d-none');
+      updateArrow();
     });
+
+    // Re-apply selection visuals if the list is re-rendered
+    new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (m.type === 'childList') {
+          Array.from(listBox.querySelectorAll('li')).forEach(li => {
+            const id = getLiId(li);
+            applyEditSelectionVisual(li, selectedEditContactIds.has(String(id)));
+          });
+          updateEditInitials(listBox, initialsBox);
+        }
+      }
+    }).observe(listBox, { childList: true, subtree: true });
   }
 })();
 // ========= /Edit Mode: Assigned Contacts =========

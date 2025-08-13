@@ -5,7 +5,45 @@ import { app, auth } from "./firebase.js";
 let db = getDatabase(app);
 let loadedContacts = {};
 
-loadContactsAndRender();
+function waitForElementById(id, timeout = 8000) {
+  return new Promise((resolve, reject) => {
+    const elNow = document.getElementById(id);
+    if (elNow) return resolve(elNow);
+    const obs = new MutationObserver(() => {
+      const el = document.getElementById(id);
+      if (el) { obs.disconnect(); resolve(el); }
+    });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+    if (timeout) setTimeout(() => {
+      obs.disconnect();
+      const el = document.getElementById(id);
+      if (el) resolve(el); else reject(new Error('waitForElementById timeout: #' + id));
+    }, timeout);
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAddTaskContacts);
+} else {
+  initAddTaskContacts();
+}
+
+async function initAddTaskContacts() {
+  try {
+    await waitForElementById('contact-list-box');
+    loadContactsAndRender();
+  } catch (_) {
+    // ignore if the page doesn't have the list (e.g., different view)
+  }
+  // bind search when input appears
+  try {
+    const input = await waitForElementById('contact-input', 2000);
+    if (input && !input._bound) {
+      input._bound = true;
+      input.addEventListener('input', contactInputHandler);
+    }
+  } catch (_) {/* optional */}
+}
 
 
 // User initials
@@ -17,40 +55,45 @@ onAuthStateChanged(auth, (user) => {
 
 // load contact onload page
 function loadContactsAndRender() {
-  let contactListBox = $("contact-list-box");
+  const contactListBox = $("contact-list-box") || document.getElementById("contact-list-box");
+  if (!contactListBox) {
+    console.warn("[addtask-firebase] contact-list-box not found in DOM, skipping render");
+    return;
+  }
   contactListBox.innerHTML = "";
   get(ref(db, "contacts")).then((snapshot) => {
-    if (snapshot.exists()) {
+    if (snapshot && snapshot.exists()) {
       loadedContacts = snapshot.val();
       renderContacts(loadedContacts, contactListBox);
     }
+  }).catch((err) => {
+    console.error("Failed to load contacts:", err);
   });
 }
 
-// contact input event listener
-let contactInput = $("contact-input");
-if (contactInput) {
-  contactInput.addEventListener("input", function () {
-    let searchValue = this.value.trim().toLowerCase();
-    let filtered = {};
-    $("contact-list-box").classList.remove("d-none");
-    if (searchValue.length === 0) {
-      Object.assign(filtered, loadedContacts);
-    } else {
-      for (let id in loadedContacts) {
-        let contact = loadedContacts[id];
-        let nameParts = contact.name.trim().toLowerCase().split(" ");
-        let matches = nameParts.some((part) => part.startsWith(searchValue));
-        if (matches) {
-          filtered[id] = contact;
-        }
-      }
+function contactInputHandler(e) {
+  const value = (e?.target?.value || '').trim().toLowerCase();
+  const box = $("contact-list-box") || document.getElementById('contact-list-box');
+  if (!box) return;
+  box.classList.remove('d-none');
+  let filtered = {};
+  if (!value) {
+    Object.assign(filtered, loadedContacts);
+  } else {
+    for (let id in loadedContacts) {
+      const c = loadedContacts[id];
+      const parts = (c?.name || '').trim().toLowerCase().split(' ');
+      if (parts.some(p => p.startsWith(value))) filtered[id] = c;
     }
-    let contactListBox = $("contact-list-box");
-    contactListBox.innerHTML = "";
-    renderContacts(filtered, contactListBox);
-  });
+  }
+  box.innerHTML = '';
+  renderContacts(filtered, box);
 }
+// bind immediately if input is already present
+(function(){
+  const ci = $("contact-input");
+  if (ci && !ci._bound) { ci._bound = true; ci.addEventListener('input', contactInputHandler); }
+})();
 
 // render contacts
 function renderContacts(contacts, container) {
@@ -68,7 +111,7 @@ function createContactListItem(contact, id) {
   li.id = id;
   li.innerHTML = `
     <div>
-      <div class="contact-initial" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
+      <div class="contact-initial" style="background-image: url(./assets/icons/contact/color${contact.colorIndex}.svg)">
         ${contact.initials}
       </div>
       ${contact.name}

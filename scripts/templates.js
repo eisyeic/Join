@@ -240,6 +240,7 @@ function getEditTaskBoardTemplate(task) {
             <img id="edit-assigned-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="Arrow Down Icon" />
           </div>
           <div id="edit-contact-list-box" class="contact-list-box d-none"></div>
+          <div id="edit-contact-initials" class="contact-initials d-none"></div>
         </div>
         
         <div class="category-box">
@@ -293,6 +294,7 @@ function getEditTaskBoardTemplate(task) {
   setupEditSubtasks();
   setupEditAssignedContacts();
 }
+
 
 function setupEditPriorityButtons() {
   document.querySelectorAll(".priority-button").forEach((btn) => {
@@ -437,69 +439,325 @@ function setupEditAssignedContacts() {
   const assignedIcon = $("edit-assigned-icon");
   const contactInitials = $("edit-contact-initials"); // may be null
 
-  // ... your sample contacts setup ...
+  // Guard: required elements + avoid double-binding
+  if (!assignedSelectBox || !contactListBox || !assignedIcon) return;
+  if (assignedSelectBox._assignedSetupDone) return;
+  assignedSelectBox._assignedSetupDone = true;
+
+  // --- helpers: persistent selection + search for Edit overlay ---
+  const selectedEditContactIds = new Set();
+  const assignedInput = $("edit-contact-input");
+
+  function normalizeText(str) {
+    return (str || "").toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  }
+
+  function getContactIdFromLi(li) {
+    const byData = li.getAttribute("data-id") || (li.dataset && li.dataset.id);
+    if (byData) return String(byData);
+    const nameEl = li.querySelector(".contact-name") || li;
+    return nameEl.textContent.trim();
+  }
+
+  function applySelectionVisual(li, isSelected) {
+    li.classList.toggle("selected", isSelected);
+    const img = li.querySelector("img");
+    if (img) {
+      img.src = isSelected
+        ? "./assets/icons/add_task/check_white.svg"
+        : "./assets/icons/add_task/check_default.svg";
+    }
+  }
+
+  function updateAssignedInitials() {
+    if (!contactInitials) return;
+    const initials = Array.from(contactListBox.querySelectorAll('li.selected .contact-initial'))
+      .slice(0, 5)
+      .map(el => el.outerHTML)
+      .join('');
+    contactInitials.innerHTML = initials;
+    contactInitials.classList.toggle('d-none', initials.length === 0);
+  }
+
+  function filterEditAssignedContacts(query) {
+    const q = normalizeText(query);
+    contactListBox.querySelectorAll('li').forEach(li => {
+      const nameEl = li.querySelector('.contact-name') || li;
+      const txt = normalizeText(nameEl.textContent);
+      const hide = q && !txt.includes(q);
+      li.classList.toggle('d-none', hide);
+      const id = getContactIdFromLi(li);
+      applySelectionVisual(li, selectedEditContactIds.has(String(id)));
+    });
+    updateAssignedInitials();
+  }
+  // --- end helpers ---
+
+  // Keep arrow synced with dropdown state
+function updateAssignedArrow() {
+  if (!assignedIcon || !contactListBox) return;
+  const isListVisible = !contactListBox.classList.contains("d-none");
+  assignedIcon.src = isListVisible
+    ? "./assets/icons/add_task/arrow_up_default.svg"
+    : "./assets/icons/add_task/arrow_down_default.svg";
+  assignedIcon.classList.toggle("arrow-up", isListVisible);
+  assignedIcon.classList.toggle("arrow-down", !isListVisible);
+}
+
+  // Initial sync
+  updateAssignedArrow();
+
+  // Observe class changes on the list box (covers any open/close done elsewhere)
+  const _assignedObserver = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.attributeName === "class") {
+        updateAssignedArrow();
+      }
+    }
+  });
+  _assignedObserver.observe(contactListBox, { attributes: true });
+
+  // Toggle by clicking anywhere on the select box (except the arrow img itself and input)
+  assignedSelectBox.addEventListener('click', (e) => {
+    if (e.target === assignedIcon) return;
+    if (assignedInput && (e.target === assignedInput || assignedInput.contains(e.target))) return;
+    e.stopPropagation();
+    contactListBox.classList.toggle('d-none');
+    updateAssignedArrow();
+    if (!contactListBox.classList.contains('d-none') && assignedInput) {
+      filterEditAssignedContacts(assignedInput.value);
+    }
+  });
+
+  if (assignedInput) {
+    assignedInput.addEventListener('input', (e) => {
+      contactListBox.classList.remove('d-none');
+      updateAssignedArrow();
+      filterEditAssignedContacts(e.target.value);
+    });
+    assignedInput.addEventListener('focus', () => {
+      contactListBox.classList.remove('d-none');
+      updateAssignedArrow();
+      filterEditAssignedContacts(assignedInput.value);
+    });
+    assignedInput.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') {
+        contactListBox.classList.add('d-none');
+        updateAssignedArrow();
+      }
+    });
+    assignedInput.addEventListener('click', (ev) => ev.stopPropagation());
+  }
 
   if (assignedIcon) {
-    assignedIcon.addEventListener("click", function (e) {
+    assignedIcon.addEventListener('click', (e) => {
       e.stopPropagation();
-      contactListBox.classList.toggle("d-none");
-      const isListVisible = !contactListBox.classList.contains("d-none");
-      if (!isListVisible && contactInitials) {
-        const selectedContacts = contactListBox.querySelectorAll("li.selected");
-        contactInitials.classList.toggle(
-          "d-none",
-          selectedContacts.length === 0
-        );
-      } else if (contactInitials) {
-        contactInitials.classList.add("d-none");
-      }
+      contactListBox.classList.toggle('d-none');
+      updateAssignedArrow();
     });
   }
 
-  // ... search listeners unchanged ...
-
-  contactListBox.addEventListener("click", (e) => {
-    const li = e.target.closest("li");
+  contactListBox.addEventListener('click', (e) => {
+    const li = e.target.closest('li');
     if (!li) return;
     e.stopPropagation();
-    const img = li.querySelector("img");
-    li.classList.toggle("selected");
-    img.src = li.classList.contains("selected")
-      ? "./assets/icons/add_task/check_white.svg"
-      : "./assets/icons/add_task/check_default.svg";
-    updateEditContactInitials();
+    const id = getContactIdFromLi(li);
+    const nowSelected = !li.classList.contains('selected');
+    if (nowSelected) selectedEditContactIds.add(String(id));
+    else selectedEditContactIds.delete(String(id));
+    applySelectionVisual(li, nowSelected);
+    updateAssignedInitials();
+    if (assignedInput) { assignedInput.focus(); assignedInput.select(); }
   });
-
-  function updateEditContactInitials() {
-    if (!contactInitials) return;
-    const selectedContacts = contactListBox.querySelectorAll("li.selected");
-    if (selectedContacts.length > 0) {
-      contactInitials.innerHTML = Array.from(selectedContacts)
-        .map((li) => {
-          const initial = li.querySelector(".contact-initial");
-          return initial ? initial.outerHTML : "";
-        })
-        .join("");
-      contactInitials.classList.remove("d-none");
-    } else {
-      contactInitials.innerHTML = "";
-      contactInitials.classList.add("d-none");
-    }
-  }
 
   document.addEventListener("click", (event) => {
-    if (
-      !assignedSelectBox.contains(event.target) &&
-      !contactListBox.contains(event.target)
-    ) {
+    const inside = assignedSelectBox.contains(event.target)
+                || contactListBox.contains(event.target)
+                || (assignedInput && assignedInput.contains(event.target));
+    if (!inside) {
       contactListBox.classList.add("d-none");
-      if (contactInitials) {
-        const selectedContacts = contactListBox.querySelectorAll("li.selected");
-        contactInitials.classList.toggle(
-          "d-none",
-          selectedContacts.length === 0
-        );
-      }
+      updateAssignedArrow();
     }
   });
+
+  new MutationObserver((muts) => {
+    for (const m of muts) {
+      if (m.type === 'childList') {
+        contactListBox.querySelectorAll('li').forEach(li => {
+          const id = getContactIdFromLi(li);
+          applySelectionVisual(li, selectedEditContactIds.has(String(id)));
+        });
+        updateAssignedInitials();
+      }
+    }
+  }).observe(contactListBox, { childList: true, subtree: true });
 }
+
+function getAddTaskTemplate() {
+  return `
+  <section class="addtask-wrapper">
+        <!-- task title -->
+        <div class="addtask-main-content">
+          <div>
+            <input
+              type="text"
+              class="addtask-title"
+              id="addtask-title"
+              placeholder="Enter a title"
+            />
+            <div class="addtask-error" id="addtask-error"></div>
+          </div>
+          
+          <!-- description -->
+          <div class="description">
+            <span class="label-main">Decription</span>
+            <span class="label-optional">(optional)</span>
+            <textarea
+              id="addtask-textarea"
+              placeholder="Enter a description"
+            ></textarea>
+          </div>
+          
+          <!-- date choose -->
+          <div class="due-date">
+            <span class="label-main">Due Date</span>
+            <div class="date-input" id="datepicker-wrapper">
+              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img
+                onclick="flatpickr()"
+                src="./assets/icons/add_task/event.svg"
+                alt="Calendar Icon"
+              />
+            </div>
+            <div class="addtask-error" id="due-date-error"></div>
+          </div>
+        </div>
+        
+        <!-- priority choose -->
+        <div class="priority-wrapper">
+          <span class="label-main">Priority</span>
+          <div class="prio-buttons">
+            <button class="priority-button urgent-button">
+              <span>Urgent</span>
+              <img src="./assets/icons/add_task/urgent.svg" alt="Urgent Icon" />
+            </button>
+            <button class="priority-button medium-button active">
+              <span>Medium</span>
+              <img src="./assets/icons/add_task/medium.svg" alt="Medium Icon" />
+            </button>
+            <button class="priority-button low-button">
+              <span>Low</span>
+              <img src="./assets/icons/add_task/low.svg" alt="Low Icon" />
+            </button>
+          </div>
+        </div>
+       
+        <!-- assigned container -->
+        <div class="assigned-box">
+          <span class="label-main">Assigned to</span>
+          <span class="label-optional">(optional)</span>
+          <div id="assigned-select-box" class="assigned-select-box">
+            <input
+              id="contact-input"
+              type="text"
+              placeholder="Select contacts to assign"
+              autocomplete="off"
+            />
+            <img
+              id="assigned-icon"
+              class="arrow-down"
+              src="./assets/icons/add_task/arrow_down_default.svg"
+              alt="Arrow Down Icon"
+            />
+          </div>
+          <div id="contact-list-box" class="contact-list-box d-none">
+            
+          <!-- contacts template -->
+            <li id="">
+              <div>
+                <div class="contact-initial">AS</div>
+                Anja Schulze
+              </div>
+              <img
+                src="./assets/icons/add_task/check_default.svg"
+                alt="Check Box"
+              />
+            </li>
+          </div>
+          
+          <!-- initials under select contact-box -->
+          <div id="contact-initials" class="contact-initials d-none"></div>
+        </div>
+        <!-- category container -->
+        <div class="category-box">
+          <span class="label-main">Category</span>
+          <div id="category-select" class="category-select-box">
+            <span>Select task category</span>
+            <img
+              id="category-icon"
+              class="arrow-down"
+              src="./assets/icons/add_task/arrow_down_default.svg"
+              alt="Arrow Down Icon"
+            />
+          </div>
+          <div class="addtask-error" id="category-selection-error"></div>
+          <div id="category-selection" class="category-selection d-none">
+            <li data-value="Technical task">Technical task</li>
+            <li data-value="User Story">User Story</li>
+          </div>
+        </div>
+        
+        <!-- subtask container -->
+        <div class="subtask-box">
+          <div>
+            <span class="label-main">Subtasks</span>
+            <span class="label-optional">(optional)</span>
+          </div>
+          <div class="subtask-select">
+            <input id="sub-input" type="text" placeholder="Add new subtask" />
+            <div id="subtask-func-btn" class="subtask-func-btn d-none">
+              <img
+                id="sub-clear"
+                class="sub-clear"
+                src="./assets/icons/add_task/sub_clear_def.svg"
+                alt="Close Icon"
+              />
+              <div class="vertical-spacer"></div>
+              <img
+                id="sub-check"
+                class="sub-check"
+                src="./assets/icons/add_task/sub_check_def.svg"
+                alt="Check Icon"
+              />
+            </div>
+            <div
+              id="subtask-plus-box"
+              class="subtask-plus-box"
+              id="subtask-plus-box"
+            >
+              <img
+                id="sub-plus"
+                src="./assets/icons/add_task/add.svg"
+                alt="Plus Icon"
+              />
+            </div>
+          </div>
+          <div id="subtask-list"></div>
+        </div>
+      </section>
+  `
+}
+
+// Web Component für <addtask-wrapper>, rendert das Template automatisch
+(function () {
+  if (window.customElements && !customElements.get('addtask-wrapper')) {
+    class AddTaskWrapper extends HTMLElement {
+      connectedCallback() {
+        // Template einfügen
+        if (typeof getAddTaskTemplate === 'function') {
+          this.innerHTML = getAddTaskTemplate();
+        }
+      }
+    }
+    customElements.define('addtask-wrapper', AddTaskWrapper);
+  }
+})();

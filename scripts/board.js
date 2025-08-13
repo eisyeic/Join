@@ -31,16 +31,30 @@ const overlayContent = document.querySelector(".add-task-overlay-content");
 
 // Toggle Add Task Overlay
 window.toggleAddTaskBoard = function () {
+  // Close on click outside the content
   overlay.addEventListener("click", (e) => {
-  if (e.target === overlay && !overlay.classList.contains("d-none")) {
-    window.toggleAddTaskBoard();
-  }
-});
-  if (overlay.classList.contains("d-none")) {
+    if (e.target === overlay && !overlay.classList.contains("d-none")) {
+      window.toggleAddTaskBoard();
+    }
+  });
+
+  const isHidden = overlay.classList.contains("d-none");
+  if (isHidden) {
+    // Opening
     overlay.classList.remove("d-none");
     overlayContent.classList.remove("slide-out");
     overlayContent.classList.add("slide-in");
+
+    // Initialize Add‑Task overlay behaviors (assigned-to dropdown + search)
+    if (typeof window.setupBoardAddAssignedContacts === "function") {
+      try {
+        window.setupBoardAddAssignedContacts();
+      } catch (err) {
+        console.error("setupBoardAddAssignedContacts() failed:", err);
+      }
+    }
   } else {
+    // Closing
     overlayContent.classList.remove("slide-in");
     overlayContent.classList.add("slide-out");
     overlayContent.addEventListener("animationend", function handler() {
@@ -263,6 +277,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   searchButton.addEventListener("click", handleSearch);
+
+  // If the Add‑Task overlay is already in the DOM on load, wire it up once
+  if (typeof window.setupBoardAddAssignedContacts === "function") {
+    try { window.setupBoardAddAssignedContacts(); } catch (e) { console.warn(e); }
+  }
 });
 
 // search functionality

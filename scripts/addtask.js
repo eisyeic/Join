@@ -1,4 +1,3 @@
-
 let subtasks = [];
 
 // datepicker dropdown menu

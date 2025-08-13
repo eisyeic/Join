@@ -20,7 +20,6 @@
   align-items: space-between;
   width: 440px;
   gap: 12px;
-  color: var(--style-color);
 }
 
 /* add task title input */
@@ -209,6 +208,11 @@
   border-bottom: 1px solid var(--style-color);
 }
 
+#contact-input::placeholder,
+#edit-contact-input::placeholder {
+  color: #000;
+}
+
 .assigned-select-box input {
   border: none;
   width: 100%;
@@ -311,7 +315,7 @@ li.selected:hover {
 .category-select-box {
   display: flex;
   justify-content: space-between;
-  color: #000;
+  color: var(--style-color);
   padding: 12px 16px;
   border-bottom: 1px solid var(--style-color);
   cursor: pointer;
@@ -319,6 +323,10 @@ li.selected:hover {
 
 span {
   font-size: 19px;
+}
+
+.category-select-box span {
+  color: #000;
 }
 
 .category-select-box:hover {
