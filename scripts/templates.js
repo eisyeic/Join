@@ -264,6 +264,7 @@ function renderSubtasks() {
 }
 
 
+
 (function injectAddTaskTemplate() {
   const render = (root = document) => {
     const container = root.querySelector('.addtask-wrapper');

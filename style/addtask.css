@@ -19,6 +19,7 @@
   align-items: space-between;
   width: 440px;
   gap: 12px;
+  overflow: hidden;
 }
 
 /* add task title input */
