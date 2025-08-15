@@ -158,9 +158,10 @@ function updateUserInterface(user) {
     }
 
     if (elements.initials) {
-      const initials = getInitials(name);
-      elements.initials.textContent = initials;
-      elements.initials.style.fontSize = initials.length === 2 ? "22px" : "30px";
+      // Verwende die globale updateUserInitials Funktion
+      if (window.updateUserInitials) {
+        window.updateUserInitials(user);
+      }
     }
   }
 }

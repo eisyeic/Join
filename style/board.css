@@ -2,6 +2,10 @@
   gap: 48px;
 }
 
+* {
+  font-size: 19px;
+}
+
 .input-button-box {
   display: flex;
   align-items: center;
@@ -145,6 +149,12 @@
   padding: 16px;
 }
 
+.label-move-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .label {
   display: flex;
   justify-content: center;
@@ -155,6 +165,12 @@
   border-radius: 8px;
   color: #fff;
   font-size: 16px;
+}
+
+.upandown {
+  height: 26px;
+  width: 24px;
+  display: none;
 }
 
 .user-story {

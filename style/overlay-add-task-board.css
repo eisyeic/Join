@@ -27,6 +27,22 @@
   flex-direction: column;
   transition: right 0.5s ease-in-out;
   z-index: 100;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: 0px;
+}
+
+.addtask-wrapper {
+  height: auto;
+}
+
+.addtask-main-content {
+  display: flex;
+  justify-content: center;
+  width: 440px;
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Slide-In: von rechts -100% nach 0 */
@@ -78,11 +94,10 @@
 
 .addtask-aside-clone {
   display: flex;
-  height: 100vh;
+  height: 100%;
   align-items: space-between;
   overflow-y: auto;
 }
-
 
 .overlay-create-task {
   display: flex;

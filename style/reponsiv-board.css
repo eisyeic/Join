@@ -95,6 +95,10 @@
         flex-shrink: 0;
         width: 252px;
     }
+
+    .upandown {
+        display: flex;
+    }
 }
 
 @media (max-width: 1025px) {
@@ -112,7 +116,7 @@
         width: 100% !important;
     }
 
-    .button-blue {
+    .input-button-box .button-blue {
         display: none;
     }
 
@@ -122,5 +126,113 @@
 
     .input-button-box {
         margin: 72px 20px 30px 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .add-task-overlay-content {
+        height: calc(100vh - 207px) !important;
+        width: 100vw !important;
+        animation: none !important;
+        position: absolute !important;
+        top: 100px;
+        left: 0 !important;
+        border-radius: 0;
+    }
+
+    .add-task-overlay-head {
+        display: none;
+    }
+
+    .addtask-wrapper {
+        padding: 0;
+    }
+
+    .description {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .addtask-aside-clone {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .addtask-main-content textarea {
+        width: 100%;
+    }
+}
+
+@media (max-width: 720px) {
+    .add-task-overlay-content {
+        height: calc(100vh - 171px) !important;
+        top: 84px;
+    }
+}
+
+@media (max-width: 600px) {
+    .addtask-main-content textarea {
+        width: 100%;
+    }
+
+    .addtask-main-content {
+        padding: 16px 8px 16px 20px;
+    }
+
+    .priority-button {
+        width: 109px;
+    }
+
+    .priority-wrapper {
+        width: calc(100% - 4px);
+    }
+
+    .addtask-main-content {
+        padding: 16px 8px 16px 20px !important;
+    }
+
+    .assigned-box {
+        width: calc(100% - 40px);
+    }
+
+    .category-box {
+        width: calc(100% - 40px);
+    }
+
+    .subtask-box {
+        width: calc(100% - 40px);
+    }
+}
+
+@media (max-width: 470px) {
+    .prio-buttons {
+        transform: scale(0.9);
+    }
+
+    .assigned-select-box input {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 420px) {
+    .prio-buttons {
+        transform: scale(0.8);
+        transform-origin: left;
+    }
+}
+
+@media (max-width: 370px) {
+    .prio-buttons {
+        transform: scale(0.7);
+    }
+
+    .assigned-select-box input {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 330px) {
+    .prio-buttons {
+        transform: scale(0.65);
     }
 }

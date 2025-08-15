@@ -4,11 +4,12 @@ import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { renderAssignedContacts, renderSubtasks } from "./template.modul.js";
+import { renderSubtasks } from "./template.modul.js";
 import { getLabelClass } from "./board.js";
 
 const db = getDatabase();
 const TASK_CATEGORIES = ['toDo', 'inProgress', 'awaitFeedback', 'done'];
+let currentTask = null;
 
 // Displays the task overlay with detailed information
 window.showTaskOverlay = async function (taskId) {
@@ -20,7 +21,10 @@ window.showTaskOverlay = async function (taskId) {
     if (!task) return;
 
     task.id = taskId;
+    currentTask = task;
     await normalizeSubtasks(taskId, task);
+    // Build the overlay DOM before filling values
+    createTaskOverlayTemplate();
     fillTaskOverlay(task);
     
     // Properly defined delete button reference
@@ -66,7 +70,7 @@ function fillTaskOverlay(task) {
   renderCategory(task.category);
   renderTitleDescDate(task);
   renderPriority(task.priority);
-  renderAssignedContacts(task);
+  renderOverlayAssignedContacts(task);
   renderSubtasks(task);
   setupSubtaskListeners(task);
 }
@@ -74,6 +78,10 @@ function fillTaskOverlay(task) {
 // render category of task
 function renderCategory(category) {
   const el = $("overlay-user-story");
+  if (!el) {
+    console.warn("[renderCategory] overlay-user-story not found");
+    return;
+  }
   el.textContent = category || "";
   el.className = "";
   el.classList.add(getLabelClass(category));
@@ -184,3 +192,332 @@ export function truncateDescription(text) {
   return truncated + '...';
 }
 
+window.toggleEditTaskBoard = function() {
+  if (currentTask) {
+    getEditTaskBoardTemplate(currentTask);
+    // Hydrate the edit UI (contacts like in addtask.html)
+    requestAnimationFrame(() => initEditAssignedContacts(currentTask));
+  }
+}
+
+window.saveEditedTask = async function() {
+  if (!currentTask) return;
+  
+  const categoryText = $("edit-category-select").querySelector('span').textContent;
+  const updatedTask = {
+    title: $("edit-task-title").value,
+    description: $("edit-task-textarea").value,
+    dueDate: $("edit-datepicker").value,
+    priority: document.querySelector('.priority-button.active')?.dataset.priority || currentTask.priority,
+    category: categoryText === 'Select task category' ? currentTask.category : categoryText
+  };
+  
+  if (currentTask.assignedTo) updatedTask.assignedTo = currentTask.assignedTo;
+  if (currentTask.subtasks) updatedTask.subtasks = currentTask.subtasks;
+  
+  try {
+    await update(ref(db, `tasks/${currentTask.id}`), updatedTask);
+    Object.assign(currentTask, updatedTask);
+    createTaskOverlayTemplate();
+    fillTaskOverlay(currentTask);
+  } catch (error) {
+    console.error("Error saving task:", error);
+  }
+}
+
+window.closedEditedTaskOverlay = function() {
+  if (!currentTask) return;
+  
+  createTaskOverlayTemplate();
+  fillTaskOverlay(currentTask);
+}
+
+function createTaskOverlayTemplate() {
+  $("task-overlay-content").innerHTML = /*html*/ `
+    <div class="label-exit-box">
+      <span id="overlay-user-story">User Story...</span>
+      <img onclick="hideOverlay()" id="task-overlay-exit-button" class="overlay-exit-button" src="./assets/icons/board/exit_default.svg" alt="close overlay" />
+    </div>
+    <div class="task-overlay-title" id="overlay-title"></div>
+    <div class="task-text" id="overlay-description"></div>
+    <div class="due-date-box">
+      <b>Due date:</b><span id="overlay-due-date"></span>
+    </div>
+    <div class="priority-box">
+      <b>Priority:</b>
+      <div class="priority">
+        <span id="overlay-priority-text"></span>
+        <img id="overlay-priority-icon" src="" alt="" />
+      </div>
+    </div>
+    <div class="assigned-to">
+      <b>Assigned to:</b>
+      <div id="overlay-members" class="members"></div>
+    </div>
+    <div id="overlay-subtasks" class="subtasks-check-box"></div>
+    <div class="delete-edit-box">
+      <div class="button-box-delete" id="delete-task-btn">
+        <img class="icon-hover-filter" src="./assets/icons/board/delete_default.svg" alt="Delete" />
+        <span>Delete</span>
+      </div>
+      <div class="vertical-spacer"></div>
+      <div class="button-box-edit" id="edit-task-btn" onclick="toggleEditTaskBoard()">
+        <img class="icon-hover-filter" src="./assets/icons/board/edit_default.svg" alt="Edit" />
+        <span>Edit</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderOverlayAssignedContacts(task) {
+  const container = $("overlay-members");
+  if (!container) return;
+
+  const assigned = Array.isArray(task?.assignedTo) ? task.assignedTo : [];
+  if (assigned.length === 0) {
+    container.innerHTML = "<span class=\"no-assignees\">—</span>";
+    return;
+  }
+
+  const html = assigned.map((c) => {
+    const name = c?.name || "";
+    const initials = (c?.initials && c.initials.trim()) || initialsFromName(name);
+    const colorIndex = colorIndexFromContact(c);
+    return `
+      <div class="member">
+        <div class="contact-person-icon small">
+          <img src="./assets/general_elements/icons/color${colorIndex}.svg" alt="" />
+          <p>${initials}</p>
+        </div>
+        <span class="member-name">${name}</span>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = html;
+}
+
+function initialsFromName(name) {
+  if (!name) return "";
+  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function colorIndexFromContact(contact) {
+  // Try existing colorIndex; else derive a stable 1..15 from id or name
+  let idx = contact?.colorIndex;
+  if (idx && Number.isFinite(+idx)) return +idx;
+  const key = contact?.id || contact?.name || "X";
+  const code = String(key).charCodeAt(0) || 0;
+  return (code % 15) + 1;
+}
+
+// ========= Edit Mode: Assigned Contacts (render like addtask.html) =========
+(function(){
+  const COLOR_MAP = {
+    1: "#FF7A00", 2: "#9327FF", 3: "#6E52FF", 4: "#FF4646", 5: "#FFBB2B",
+    6: "#1FD7C1", 7: "#462F8A", 8: "#29ABE2", 9: "#FF7A00", 10: "#9327FF",
+    11: "#6E52FF", 12: "#FF4646", 13: "#FFBB2B", 14: "#1FD7C1", 15: "#462F8A"
+  };
+
+  function colorHexByIndex(idx) {
+    const n = Number(idx);
+    if (Number.isFinite(n) && COLOR_MAP[n]) return COLOR_MAP[n];
+    return COLOR_MAP[((String(idx || "X").charCodeAt(0) || 0) % 15) + 1];
+  }
+
+  // persistent selection across filtering/re-render
+  const selectedEditContactIds = new Set();
+
+  function getLiId(li){
+    return li.getAttribute('data-id') || (li.dataset && li.dataset.id) || '';
+  }
+
+  function applyEditSelectionVisual(li, isSelected){
+    li.classList.toggle('selected', isSelected);
+    const img = li.querySelector('img');
+    if (img) img.src = isSelected
+      ? './assets/icons/add_task/check_white.svg'
+      : './assets/icons/add_task/check_default.svg';
+  }
+
+  function renderEditContactsList(box, contacts) {
+    if (!box) return;
+    if (!Array.isArray(contacts) || contacts.length === 0) {
+      box.innerHTML = '<li class="no-contacts">No contacts</li>';
+      return;
+    }
+    box.innerHTML = contacts.map(c => {
+      const name = c?.name || '';
+      const initials = (c?.initials && c.initials.trim()) || initialsFromName(name);
+      const bg = colorHexByIndex(c?.colorIndex);
+      const id = c?.id ? String(c.id) : '';
+      return `
+        <li data-id="${id}">
+          <div>
+            <div class="contact-initial" style="background-color: ${bg};">${initials}</div>
+            ${name}
+          </div>
+          <img src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
+        </li>
+      `;
+    }).join('');
+  }
+
+  function preselectAssigned(listBox, contacts, assigned) {
+    if (!Array.isArray(assigned) || assigned.length === 0) return;
+    const byId = new Map((contacts||[]).filter(c => c.id != null).map(c => [String(c.id), c]));
+    assigned.forEach(a => {
+      const id = a?.id != null ? String(a.id) : null;
+      let li = null;
+      if (id && listBox.querySelector(`li[data-id="${CSS.escape(id)}"]`)) {
+        li = listBox.querySelector(`li[data-id="${CSS.escape(id)}"]`);
+      } else if (a?.name) {
+        li = Array.from(listBox.querySelectorAll('li')).find(x => x.textContent.trim().includes(a.name));
+      }
+      if (li) {
+        li.classList.add('selected');
+        const img = li.querySelector('img');
+        if (img) img.src = './assets/icons/add_task/check_white.svg';
+        const idSel = getLiId(li);
+        if (idSel) selectedEditContactIds.add(String(idSel));
+      }
+    });
+  }
+
+  function collectSelected(listBox, contacts) {
+    const byId = new Map((contacts||[]).filter(c => c.id != null).map(c => [String(c.id), c]));
+    return Array.from(listBox.querySelectorAll('li.selected')).map(li => {
+      const id = li.getAttribute('data-id');
+      const name = li.textContent.trim();
+      const base = (id && byId.get(String(id))) || (contacts||[]).find(c => c.name === name) || { name };
+      const initials = (base.initials && base.initials.trim()) || initialsFromName(base.name);
+      const colorIndex = base.colorIndex || colorIndexFromContact({ id: base.id, name: base.name });
+      return { id: base.id, name: base.name, initials, colorIndex };
+    });
+  }
+
+  function updateEditInitials(listBox, initialsBox) {
+    if (!initialsBox) return;
+    const selectedInitials = Array.from(listBox.querySelectorAll('li.selected .contact-initial'));
+    if (selectedInitials.length === 0) {
+      initialsBox.classList.add('d-none');
+      initialsBox.innerHTML = '';
+      return;
+    }
+    initialsBox.innerHTML = selectedInitials.slice(0,5).map(el => el.outerHTML).join('');
+    initialsBox.classList.remove('d-none');
+  }
+
+  window.initEditAssignedContacts = function(task) {
+    const listBox = document.getElementById('edit-contact-list-box');
+    const selectBox = document.getElementById('edit-assigned-select-box');
+    const arrow = document.getElementById('edit-assigned-icon');
+    const searchInput = document.getElementById('edit-contact-input');
+    if (!listBox || !selectBox) return;
+
+    // Ensure initials box exists inside the select box
+    let initialsBox = document.getElementById('edit-contact-initials');
+    if (!initialsBox) {
+      initialsBox = document.createElement('div');
+      initialsBox.id = 'edit-contact-initials';
+      initialsBox.className = 'contact-initials d-none';
+      const before = arrow || selectBox.lastChild;
+      selectBox.insertBefore(initialsBox, before);
+    }
+
+    const contacts = (window.loadedContacts && Array.isArray(window.loadedContacts)) ? window.loadedContacts : [];
+    renderEditContactsList(listBox, contacts);
+    preselectAssigned(listBox, contacts, task?.assignedTo || []);
+    updateEditInitials(listBox, initialsBox);
+
+    function updateArrow(){
+      if (!arrow) return;
+      const isOpen = !listBox.classList.contains('d-none');
+      arrow.classList.toggle('arrow-up', isOpen);
+      arrow.classList.toggle('arrow-down', !isOpen);
+    }
+
+    // Toggle dropdown on selectBox click (includes arrow and input)
+    if (selectBox) {
+      selectBox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Ensure input click does not toggle
+        if (searchInput && (e.target === searchInput || searchInput.contains(e.target))) return;
+        listBox.classList.toggle('d-none');
+        updateArrow();
+      });
+    }
+
+    // Filter by search
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        listBox.classList.remove('d-none');
+        updateArrow();
+        const term = this.value.toLowerCase();
+        Array.from(listBox.querySelectorAll('li')).forEach(li => {
+          if (li.classList.contains('no-contacts')) return;
+          const text = li.textContent.toLowerCase();
+          li.style.display = text.includes(term) ? 'flex' : 'none';
+        });
+        // Re-apply selection visuals from Set
+        Array.from(listBox.querySelectorAll('li')).forEach(li => {
+          const id = getLiId(li);
+          applyEditSelectionVisual(li, selectedEditContactIds.has(String(id)));
+        });
+      });
+      searchInput.addEventListener('focus', () => {
+        listBox.classList.remove('d-none');
+        updateArrow();
+      });
+      searchInput.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') {
+          listBox.classList.add('d-none');
+          updateArrow();
+        }
+      });
+      // Ensure input click doesn’t toggle the selectBox
+      searchInput.addEventListener('click', (ev) => ev.stopPropagation());
+    }
+
+    // Select / deselect contacts (event delegation)
+    listBox.addEventListener('click', (e) => {
+      const li = e.target.closest('li');
+      if (!li || li.classList.contains('no-contacts')) return;
+      const id = String(getLiId(li));
+      const nowSelected = !li.classList.contains('selected');
+      if (nowSelected) selectedEditContactIds.add(id); else selectedEditContactIds.delete(id);
+      applyEditSelectionVisual(li, nowSelected);
+      updateEditInitials(listBox, initialsBox);
+      // keep currentTask in sync so saveEditedTask persists it
+      if (window.currentTask) {
+        window.currentTask.assignedTo = collectSelected(listBox, contacts);
+      }
+      if (searchInput) { searchInput.focus(); searchInput.select(); }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (evt) => {
+      const inside = selectBox.contains(evt.target) || listBox.contains(evt.target) || (searchInput && searchInput.contains(evt.target));
+      if (!inside) listBox.classList.add('d-none');
+      updateArrow();
+    });
+
+    // Re-apply selection visuals if the list is re-rendered
+    new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (m.type === 'childList') {
+          Array.from(listBox.querySelectorAll('li')).forEach(li => {
+            const id = getLiId(li);
+            applyEditSelectionVisual(li, selectedEditContactIds.has(String(id)));
+          });
+          updateEditInitials(listBox, initialsBox);
+        }
+      }
+    }).observe(listBox, { childList: true, subtree: true });
+  }
+})();
+// ========= /Edit Mode: Assigned Contacts =========

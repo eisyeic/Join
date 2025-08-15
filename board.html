@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Permissions-Policy" content="unload=*" />
     <title>Join - Board</title>
 
     <link
@@ -17,8 +18,8 @@
     <link rel="stylesheet" href="./style/sidebar.css" />
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
+    <link rel="stylesheet" href="./style/addtask.css">
     <link rel="stylesheet" href="./style/overlay-add-task-board.css" />
-    <link rel="stylesheet" href="./style/addtask.css" />
     <link rel="stylesheet" href="./style/flatpickr.min.css" />
     <link rel="stylesheet" href="./style/task-overlay.css" />
     <link rel="stylesheet" href="./style/reponsiv-board.css" />
@@ -28,35 +29,18 @@
     <link rel="prerender" href="./addtask.html" />
     <link rel="prerender" href="./contact.html" />
 
-    <link
-      rel="preload"
-      href="./assets/icons/board/search_hover.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/board/search_click.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/add_task/check_default_hover.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/add_task/checked_hover.svg"
-      as="image"
-    />
+
 
     <script src="script.js"></script>
     <script src="scripts/templates.js" defer></script>
+    <script src="./scripts/permissions-fix.js"></script>
     <script type="module" src="./scripts/template.modul.js"></script>
     <script type="module" src="./scripts/addtask-firebase.js"></script>
     <script src="./scripts/flatpickr.min.js"></script>
     <script src="./scripts/addtask.js" defer></script>
     <script type="module" src="./scripts/board.js"></script>
     <script type="module" src="./scripts/task-overlay.js"></script>
+
   </head>
 
   <body onclick="closeProfileNavbar()">
@@ -262,7 +246,7 @@
           <a class="profile-navbar-help" href="./help.html">Help</a>
           <a href="./legal-notice.html">Legal Notice</a>
           <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./index.html">Log out</a>
+          <a href="./index.html" onclick="clearHeaderTextCache()">Log out</a>
         </div>
       </div>
     </header>

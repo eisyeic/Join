@@ -41,6 +41,11 @@ html, body {
   flex-direction: column;
 }
 
+*::placeholder {
+  color: var(--style-color);
+}
+
+
 main {
   display: flex;
   flex: 1;

@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Permissions-Policy" content="unload=*" />
   <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
 
   <script src="./script.js" defer></script>
+  <script src="./scripts/permissions-fix.js"></script>
   <script type="module" src="./scripts/summary-board.js" defer></script>
   <script type="module" src="./scripts/firebase.js" defer></script>
 
@@ -44,7 +46,7 @@
         <a class="profile-navbar-help" href="./help.html">Help</a>
         <a href="./legal-notice.html">Legal Notice</a>
         <a href="./privacy-policy.html">Privacy Policy</a>
-        <a href="./index.html">Log out</a>
+        <a href="./index.html" onclick="clearHeaderTextCache()">Log out</a>
       </div>
     </div>
   </header>

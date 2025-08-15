@@ -3,9 +3,10 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Permissions-Policy" content="unload=*" />
   <title>Contact</title>
   <link rel="shortcut icon" href="./assets/general_elements/icons/logo_blue_icon.svg" type="image/x-icon" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="stylesheet" href="./style/header.css" />
   <link rel="stylesheet" href="./style.css" />
@@ -22,6 +23,7 @@
   <link rel="prerender" href="./contact.html">
 
   <script src="./script.js"></script>
+  <script src="./scripts/permissions-fix.js"></script>
   <script src="./scripts/contact.js" defer></script>
   <script type="module" src="./scripts/contact-firebase.js"></script>
   <script src="./scripts/templates.js" defer></script>
@@ -155,7 +157,7 @@
         <a class="profile-navbar-help" href="./help.html">Help</a>
         <a href="./legal-notice.html">Legal Notice</a>
         <a href="./privacy-policy.html">Privacy Policy</a>
-        <a href="./index.html">Log out</a>
+        <a href="./index.html" onclick="clearHeaderTextCache()">Log out</a>
       </div>
     </div>
   </header>
