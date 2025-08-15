@@ -51,7 +51,11 @@ let contactInitialsBox = document.querySelector(".contact-initials");
 $("assigned-select-box").addEventListener("click", function () {
   $("contact-list-box").classList.toggle("d-none");
   let isListVisible = !$("contact-list-box").classList.contains("d-none");
+  $("assigned-icon").classList.add("arrow-up");
+  $("assigned-icon").classList.remove("arrow-down");
   if (!isListVisible) {
+    $("assigned-icon").classList.remove("arrow-up");
+    $("assigned-icon").classList.add("arrow-down");
     let selectedContacts =
       $("contact-list-box").querySelectorAll("li.selected");
     if (selectedContacts.length > 0) {
@@ -112,8 +116,8 @@ function handleAssignedClickOutside(event) {
     } else {
       $("contact-initials").classList.add("d-none");
     }
-    $("assigned-icon").classList.remove("arrow-up");
-    $("assigned-icon").classList.add("arrow-down");
+  $("assigned-icon").classList.remove("arrow-up");
+  $("assigned-icon").classList.add("arrow-down");
   }
 }
 
@@ -187,7 +191,6 @@ function clearAssignedContacts() {
 }
 
 // edit subtask functionality
-
 function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
     editBtn.addEventListener("click", () => enterEditMode(editBtn));
@@ -315,3 +318,29 @@ document.addEventListener("click", function (event) {
     }
   });
 });
+
+(function injectAddTaskTemplate() {
+  const render = () => {
+    const tpl = document.getElementById('addtask-template');
+    if (!tpl || !(tpl instanceof HTMLTemplateElement)) return false;
+    // Fill the template with your string markup
+    tpl.innerHTML = getAddtaskTemplate(); // contains <section class="addtask-wrapper">…</section>
+    // Clone the content and replace the <template> tag in the DOM
+    const frag = tpl.content.cloneNode(true);
+    tpl.replaceWith(frag);
+    // Now the markup exists in the live DOM → fire the ready event
+    document.dispatchEvent(new CustomEvent('addtask:template-ready'));
+    return true;
+  };
+
+  // Try to render immediately (works with defer'ed scripts executed in order)
+  if (!render()) {
+    // Fallback: when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', render);
+    } else {
+      render();
+    }
+  }
+})();
+

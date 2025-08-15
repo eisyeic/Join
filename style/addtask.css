@@ -1,6 +1,6 @@
 /* Section add task */
 .addtask-wrapper {
-  height: calc(100vh - 128px);
+  height: auto;
   gap: 12px;
   min-width: 472px;
   display: flex;

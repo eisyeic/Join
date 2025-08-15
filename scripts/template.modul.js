@@ -4,7 +4,7 @@ import {
   renderAssignedInitials,
 } from "./board.js";
 
-import { updateSubtaskStatus, truncateDescription } from "./task-overlay.js";
+import { truncateDescription } from "./task-overlay.js";
 
 
 // create task template

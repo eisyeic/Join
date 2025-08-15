@@ -172,7 +172,9 @@ function handleCreateClick() {
   let isValid = validateFormData(taskData);
   if (!isValid) return;
   sendTaskToFirebase(taskData);
-  window.toggleAddTaskBoard();
+  if (!window.location.pathname.endsWith("addtask.html")) {
+    window.toggleAddTaskBoard();
+  }
 }
 
 // send to firebase

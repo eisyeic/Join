@@ -47,6 +47,10 @@ window.toggleAddTaskBoard = function () {
       overlayContent.removeEventListener("animationend", handler);
     });
   }
+  // move the already-rendered wrapper from  .edit-addtask to .addtask-aside-clone
+const src = document.querySelector('.edit-addtask .addtask-wrapper');
+const dst = document.querySelector('.addtask-aside-clone');
+if (src && dst) dst.replaceChildren(src);
 };
 
 // load data from firebase
@@ -288,3 +292,11 @@ function updatePlaceholderForColumn(columnId) {
     placeholder.remove();
   }
 }
+
+$("edit-task-btn").addEventListener("click", function() {
+  $("task-overlay-content").classList.toggle("d-none");
+  // move the already-rendered wrapper from .addtask-aside-clone to .edit-addtask
+const src = document.querySelector('.addtask-aside-clone .addtask-wrapper');
+const dst = document.querySelector('.edit-addtask');
+if (src && dst) dst.replaceChildren(src);
+})

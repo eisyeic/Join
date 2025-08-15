@@ -21,6 +21,7 @@
   background-color: #fff;
   bottom: -100%;
   left: 50%;
+  height: auto;
   max-height: calc(100vh - 20%);
   transform: translate(-50%, 50%);
   width: 528px;

@@ -92,7 +92,7 @@
   padding: 24px;
 }
 
-.regular-close-image {
+.regular-close-image, .hover-close-image {
   position: absolute;
   top: 0;
   left: 0;
@@ -100,10 +100,6 @@
 }
 
 .hover-close-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  object-fit: cover;
   opacity: 0;
 }
 
