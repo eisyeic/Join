@@ -35,12 +35,15 @@
   width: 100%;
   gap: 16px;
   padding: 48px 40px;
-  overflow-y: auto;
+  /* allow inner children to shrink and become scrollable */
+  min-height: 0;
+  /* do not clip inner scroll containers */
+  overflow: visible;
 }
 
 .task-overlay-content:has(.edit-task-overlay-header) {
   padding: 0;
-  overflow-y: hidden;
+  overflow: visible;
 }
 
 .task-overlay.animate-in {
@@ -237,9 +240,11 @@ b {
 }
 
 .edit-task-content {
-  height: calc(100% - 100px);
-  overflow-y: scroll;
-  overflow-x: hidden;
+  /* take remaining height within the overlay */
+  flex: 1;
+  /* critical so the child can shrink and enable scrolling */
+  min-height: 0;
+  overflow: auto;
   display: flex;
   gap: 10px;
   flex-direction: column;
@@ -252,90 +257,6 @@ b {
 .task-list::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-#edit-contact-list-box {
-  display: flex;
-  flex-direction: column;
-  height: 250px;
-  overflow-y: auto !important;
-  scrollbar-width: thin !important;
-  scrollbar-color: #A8A8A8 transparent !important;
-}
-
-#edit-contact-list-box::-webkit-scrollbar {
-  width: 8px !important;
-  height: 8px !important;
-}
-
-#edit-contact-list-box::-webkit-scrollbar-track {
-  background: transparent !important;
-}
-
-#edit-contact-list-box::-webkit-scrollbar-thumb {
-  background-color: #A8A8A8 !important;
-  border-radius: 4px !important;
-}
-
-#edit-contact-list-box::-webkit-scrollbar-thumb:hover {
-  background-color: #888 !important;
-}
-
-.edit-task-overlay .edit-task-content li {
-  list-style: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  padding: 7px 16px;
-  border-radius: 10px;
-  color: #000;
-}
-
-.edit-task-overlay .edit-task-content li div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.edit-task-overlay .edit-task-content li:hover {
-  background-color: var(--navi-buttons-bg);
-}
-
-.edit-task-overlay .edit-task-content li:active {
-  background-color: var(--light-blue);
-  color: #fff;
-}
-
-.edit-task-overlay .edit-task-content li.selected {
-  background-color: var(--main-color) !important;
-  color: white;
-}
-
-.edit-task-overlay .edit-task-content li.selected:hover {
-  background-color: var(--light-blue) !important;
-}
-
-.edit-task-overlay .edit-task-content li.selected .contact-initial {
-  color: white !important;
-}
-
-.edit-task-overlay .edit-task-content .contact-initial {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  height: 40px;
-  color: #fff;
-  font-size: 12px;
-  width: 40px;
-  border: 2px solid #fff;
-}
-
-.edit-task-overlay .edit-task-content .contact-initials {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  flex-wrap: wrap;
 }
 
 /* Global scrollbar styling */
@@ -404,10 +325,8 @@ b {
 /* Edit Task Overlay Styles */
 .edit-task-overlay-header {
   height: 100px;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   background-color: #fff;
   z-index: 10;
   display: flex;
@@ -419,35 +338,30 @@ b {
 .edit-task-overlay {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 0;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  overflow: hidden;
 }
 
-.edit-task-overlay .addtask-main-content {
+.edit-wrapper-box {
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 100px;
-  margin-bottom: 150px;
-  padding: 16px 8px 16px 40px;
-  
-}
-
-.edit-task-overlay {
-  margin-right: 20px;
+  min-height: 0;
+  overflow: auto;
 }
 
 .edit-task-overlay-buttons {
   height: 100px;
-  position: fixed;
-  bottom: 40px;
-  left: 0;
-  right: 0;
+  position: sticky;
+  bottom: 20px;
   background-color: #fff;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   padding: 0 40px;
+  z-index: 10;
 }
 
 .add-task-button {

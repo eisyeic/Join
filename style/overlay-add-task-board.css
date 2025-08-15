@@ -37,7 +37,12 @@
 }
 
 .addtask-main-content {
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  width: 440px;
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Slide-In: von rechts -100% nach 0 */
