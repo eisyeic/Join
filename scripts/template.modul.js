@@ -4,7 +4,7 @@ import {
   renderAssignedInitials,
 } from "./board.js";
 
-import { updateSubtaskStatus, truncateDescription } from "./task-overlay.js";
+import { truncateDescription } from "./task-overlay.js";
 
 
 // create task template
@@ -21,10 +21,7 @@ export function createTaskElement(task, taskId) {
   
   ticket.innerHTML = `
     <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
-      <div class="label-move-box">
-        <div class="label ${labelClass}">${task.category}</div>
-        <img class="upandown" src="./assets/icons/board/upandown.svg" onclick="moveTaskBtn()">
-      </div>
+      <div class="label ${labelClass}">${task.category}</div>
       <div class="frame">
         <div class="ticket-title">${task.title}</div>
         <div class="ticket-text">${truncatedDescription}</div>
