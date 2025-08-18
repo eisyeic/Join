@@ -89,8 +89,8 @@
 
 .overlay-exit-button {
   cursor: pointer;
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
 }
 
 .overlay-exit-button:hover {
@@ -227,13 +227,6 @@ b {
   font-weight: 700;
 }
 
-.ok-button {
-  width: 62px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .add-task-button {
   display: flex;
   height: 100px;
@@ -285,86 +278,44 @@ b {
   scrollbar-width: none;
 }
 
-.edit-task-overlay-close-button {
-  position: relative;
-  width: 32px;
-  height: 32px;
+.addtask-wrapper {
+  height: 100%;
 }
 
-.edit-task-overlay-close-button img {
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.edit-task-overlay-close-regular {
-  position: absolute;
-  top: 0;
-  left: 0;
-  object-fit: cover;
-}
-
-.edit-task-overlay-close-hover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  object-fit: cover;
-  opacity: 0;
-}
-
-.edit-task-overlay-close-button:hover .edit-task-overlay-close-regular {
-  opacity: 0;
-}
-
-.edit-task-overlay-close-button:hover .edit-task-overlay-close-hover {
-  opacity: 1;
-}
-
-/* Edit Task Overlay Styles */
-.edit-task-overlay-header {
-  height: 100px;
-  position: sticky;
-  top: 0;
-  background-color: #fff;
-  z-index: 10;
+.edit-addtask {
   display: flex;
-  justify-content: end;
-  padding: 9px 40px;
-  align-items: center;
-}
-
-.edit-task-overlay {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: auto;
-  width: 100%;
+  height: 90%;
   overflow: hidden;
 }
 
-.edit-wrapper-box {
+.edit-close-btn {
+  display: flex;
+  cursor: pointer;
+  padding: 24px 24px 0 0;
+  justify-content: flex-end;
+}
+
+.edit-close-btn img {
+  height: 24px;
+  width: 24px;
+}
+
+.edit-close-btn:hover img {
+  content: url(../assets/icons/board/close_hover.svg);
+}
+
+.edit-addtask-wrapper {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
+  align-items: space-between;
 }
 
-.edit-task-overlay-buttons {
-  height: 100px;
-  position: sticky;
-  bottom: 20px;
-  background-color: #fff;
+.ok-btn-box {
+  padding: 24px;
+}
+
+.ok-button {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 40px;
-  z-index: 10;
-}
-
-.add-task-button {
-  justify-content: center;
+  justify-self: flex-end;
+  width: 50px;
 }

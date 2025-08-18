@@ -167,15 +167,31 @@ $("cancel-button").addEventListener("click", function () {
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
   $("addtask-textarea").value = "";
-  $("datepicker").value = "";
+
+  // Reset date via flatpickr if available
+  try { picker.clear(); } catch (_) { $("datepicker").value = ""; }
   $("datepicker-wrapper").style.borderColor = "";
   $("due-date-error").innerHTML = "";
-  $("category-select").querySelector("span").textContent =
-    "Select task category";
+
+  // Reset category
+  $("category-select").querySelector("span").textContent = "Select task category";
   $("category-select").style.borderColor = "";
   $("category-selection-error").innerHTML = "";
-  renderSubtasks({subtasks});
+
+  // Reset subtasks (clear array + UI)
+  try { subtasks.length = 0; } catch (_) {}
+  $("sub-input").value = "";
+  $("subtask-func-btn").classList.add("d-none");
+  $("subtask-plus-box").classList.remove("d-none");
+  renderSubtasks();
+
+  // Reset assigned contacts
   clearAssignedContacts();
+  const asb = $("assigned-select-box");
+  if (asb) asb.dataset.selected = "[]";
+  $("contact-list-box").classList.add("d-none");
+
+  // Reset priority selection
   resetPrioritySelection();
 });
 
@@ -323,19 +339,13 @@ document.addEventListener("click", function (event) {
   const render = () => {
     const tpl = document.getElementById('addtask-template');
     if (!tpl || !(tpl instanceof HTMLTemplateElement)) return false;
-    // Fill the template with your string markup
-    tpl.innerHTML = getAddtaskTemplate(); // contains <section class="addtask-wrapper">…</section>
-    // Clone the content and replace the <template> tag in the DOM
+    tpl.innerHTML = getAddtaskTemplate(); 
     const frag = tpl.content.cloneNode(true);
     tpl.replaceWith(frag);
-    // Now the markup exists in the live DOM → fire the ready event
     document.dispatchEvent(new CustomEvent('addtask:template-ready'));
     return true;
   };
-
-  // Try to render immediately (works with defer'ed scripts executed in order)
   if (!render()) {
-    // Fallback: when DOM is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', render);
     } else {

@@ -243,14 +243,22 @@ function getAddtaskTemplate() {
 
 // addtask subtasks list display
 function renderSubtasks() {
-  $("subtask-list").innerHTML = subtasks
+  // Normalize Firebase-style objects to strings for this list
+  const normalized = (window.subtasks || typeof subtasks !== 'undefined' ? (window.subtasks || subtasks) : [])
+    .map((st) => (typeof st === 'string' ? st : (st && st.name) ? st.name : ''))
+    .filter(Boolean);
+
+  try { subtasks = normalized; } catch (_) {}
+  window.subtasks = normalized;
+
+  $("subtask-list").innerHTML = normalized
     .map(
       (subtask, index) => `
       <li class="subtask-item" data-index="${index}">
         <span class="subtask-text">${subtask}</span>
         <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
         <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit""/>
+          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
           <div class="vertical-spacer first-spacer"></div>
           <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
           <div class="vertical-spacer second-spacer d-none"></div>
@@ -262,7 +270,6 @@ function renderSubtasks() {
   addEditEvents();
   deleteEvent();
 }
-
 
 
 (function injectAddTaskTemplate() {
