@@ -438,3 +438,17 @@
     width: 90%;
   }
 }
+
+@media (max-height: 755px) {
+  @keyframes moveLogo {
+    to {
+      top: -110px; /* 78 / 323 = 0,24 * 323 - 323 = -245 / 2 = -122 + 37 = -110px */
+      left: -62px; /* 64 / 265 = 0,24 * 265 - 265 = -201 / 2 = -100 + 38 = -62px */
+      transform: translate(0, 0) scale(0.24);
+    }
+  }
+
+  .logo-wrapper img {
+    transform: scale(0.8);
+  }
+}
