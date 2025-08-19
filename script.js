@@ -43,6 +43,14 @@ function closeProfileNavbar() {
                 style.remove();
             }
         });
+    } else {
+        // Fallback: Zeige "G" wenn kein Cache vorhanden ist
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialsElement = document.getElementById("person-icon-header-text");
+            if (initialsElement && initialsElement.textContent === "G") {
+                initialsElement.style.fontSize = "30px";
+            }
+        });
     }
 })();
 
@@ -52,16 +60,25 @@ window.updateUserInitials = function(user) {
         const name = user.displayName || "User";
         const initialsElement = document.getElementById("person-icon-header-text");
 
-        if (initialsElement && name !== "User") {
-            const initials = name
-                .split(" ")
-                .map((word) => word.charAt(0).toUpperCase())
-                .join("");
+        if (initialsElement) {
+            let initials, fontSize;
+            
+            // Prüfen ob es ein Gast-Login ist
+            if (user.email === "guest@login.de" || name === "User") {
+                initials = "G";
+                fontSize = "30px";
+            } else {
+                initials = name
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase())
+                    .join("");
+                fontSize = initials.length === 2 ? "22px" : "30px";
+            }
             
             // In localStorage speichern statt direkt zu rendern
             localStorage.setItem('headerTextCache', JSON.stringify({
                 text: initials,
-                fontSize: initials.length === 2 ? "22px" : "30px"
+                fontSize: fontSize
             }));
             
             // Verzögertes Rendering
