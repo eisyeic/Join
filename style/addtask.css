@@ -6,7 +6,8 @@
   display: flex;
   flex-direction: column;
   padding: 32px 0 0 24px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #fff;
 }
@@ -15,8 +16,8 @@
 .addtask-main-content {
   box-sizing: border-box;
   display: flex;
+  height: auto;
   flex-direction: column;
-  align-items: space-between;
   width: 440px;
   gap: 12px;
 }
@@ -321,6 +322,13 @@ li.selected:hover {
   cursor: pointer;
 }
 
+/* optional, globaler Fix */
+#contact-list-box li img {
+  width: 24px !important;
+  height: 24px !important;
+  align-self: center;
+}
+ 
 span {
   font-size: 19px;
 }

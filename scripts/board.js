@@ -3,14 +3,12 @@ import {
   ref,
   onValue,
   update,
-  get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
 import { createTaskElement } from "./template.modul.js";
 
 let db = getDatabase(app);
-window.loadedContacts = [];
 
 let columnMap = {
   todo: "to-do-column",
@@ -29,32 +27,39 @@ onAuthStateChanged(auth, (user) => {
 const overlay = $("overlay-add-task");
 const overlayContent = document.querySelector(".add-task-overlay-content");
 
+// Backdrop-Click NUR EINMAL registrieren
+overlay?.addEventListener("click", (e) => {
+  if (e.target === overlay && !overlay.classList.contains("d-none")) {
+    // Optional: erst Edit->Task zurückschalten
+    document.querySelector('.edit-addtask-wrapper')?.classList.add('d-none');
+    document.getElementById('task-overlay-content')?.classList.remove('d-none');
+    // Overlay schließen
+    window.toggleAddTaskBoard();
+  }
+});
+
 // Toggle Add Task Overlay
 window.toggleAddTaskBoard = function () {
-  // Close on click outside the content
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay && !overlay.classList.contains("d-none")) {
-      window.toggleAddTaskBoard();
-    }
-  });
-
-  const isHidden = overlay.classList.contains("d-none");
-  if (isHidden) {
-    // Opening
+  if (overlay.classList.contains("d-none")) {
+    // --- OPEN ---
     overlay.classList.remove("d-none");
     overlayContent.classList.remove("slide-out");
     overlayContent.classList.add("slide-in");
 
-    // Initialize Add‑Task overlay behaviors (assigned-to dropdown + search)
-    if (typeof window.setupBoardAddAssignedContacts === "function") {
-      try {
-        window.setupBoardAddAssignedContacts();
-      } catch (err) {
-        console.error("setupBoardAddAssignedContacts() failed:", err);
-      }
+    // Wichtig: Fehler & Felder leeren -> Cancel-Button nutzen
+    // (richtiges ID! "cancel-button")
+    const cancelBtn = $("cancel-button");
+    if (cancelBtn) {
+      cancelBtn.click();
+    } else {
+      // Falls die Addtask-Template noch nicht injiziert ist: auf Event warten
+      document.addEventListener('addtask:template-ready', () => {
+        $("cancel-button")?.click();
+      }, { once: true });
     }
+
   } else {
-    // Closing
+    // --- CLOSE ---
     overlayContent.classList.remove("slide-in");
     overlayContent.classList.add("slide-out");
     overlayContent.addEventListener("animationend", function handler() {
@@ -63,24 +68,12 @@ window.toggleAddTaskBoard = function () {
       overlayContent.removeEventListener("animationend", handler);
     });
   }
-};
 
-// load contacts from firebase
-async function loadContactsFromFirebase() {
-  try {
-    const contactsRef = ref(db, "contacts");
-    const snapshot = await get(contactsRef);
-    if (snapshot.exists()) {
-      const contactsData = snapshot.val();
-      window.loadedContacts = Object.keys(contactsData).map(id => ({
-        id,
-        ...contactsData[id]
-      }));
-    }
-  } catch (error) {
-    console.error("Error loading contacts:", error);
-  }
-}
+  // Form-Wrap zurück in die Aside legen (falls nötig)
+  const src = document.querySelector('.edit-addtask .addtask-wrapper');
+  const dst = document.querySelector('.addtask-aside-clone');
+  if (src && dst) dst.replaceChildren(src);
+};
 
 // load data from firebase
 function loadTasksFromFirebase() {
@@ -261,7 +254,6 @@ export function renderSubtaskProgress(subtasks) {
 
 // load tasks from firebase
 document.addEventListener("DOMContentLoaded", () => {
-  loadContactsFromFirebase();
   loadTasksFromFirebase();
 
   let searchInput = $("search-input");
@@ -277,11 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   searchButton.addEventListener("click", handleSearch);
-
-  // If the Add‑Task overlay is already in the DOM on load, wire it up once
-  if (typeof window.setupBoardAddAssignedContacts === "function") {
-    try { window.setupBoardAddAssignedContacts(); } catch (e) { console.warn(e); }
-  }
 });
 
 // search functionality
@@ -327,3 +314,11 @@ function updatePlaceholderForColumn(columnId) {
     placeholder.remove();
   }
 }
+
+$("edit-task-btn").addEventListener("click", function() {
+  $("task-overlay-content").classList.toggle("d-none");
+document.querySelector(".edit-addtask-wrapper").classList.toggle("d-none");
+const src = document.querySelector('.addtask-aside-clone .addtask-wrapper');
+const dst = document.querySelector('.edit-addtask');
+if (src && dst) dst.replaceChildren(src);
+})

@@ -138,500 +138,32 @@ function getErrorMessage(message) {
   return /*html*/ `<p class="error-message">${message}</p>`;
 }
 
-// addtask subtasks list display
-function renderSubtasks() {
-  $("subtask-list").innerHTML = subtasks
-    .map(
-      (subtask, index) => `
-      <li class="subtask-item" data-index="${index}">
-        <span class="subtask-text">${subtask}</span>
-        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
-        <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit""/>
-          <div class="vertical-spacer first-spacer"></div>
-          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-          <div class="vertical-spacer second-spacer d-none"></div>
-          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
-        </div>
-      </li>`
-    )
-    .join("");
-  addEditEvents();
-  deleteEvent();
-}
 
-function getEditTaskBoardTemplate(task) {
-  $("task-overlay-content").innerHTML = /*html*/ `
-    <div class="edit-task-overlay">
-
-      <div class="edit-task-overlay-header">
-          <div class="edit-task-overlay-close-button" onclick="closedEditedTaskOverlay()">
-            <img
-              class="edit-task-overlay-close-regular"
-              src="./assets/icons/board/close_default.svg"
-              alt="Close Icon"
-            />
-            <img
-              class="edit-task-overlay-close-hover"
-              src="./assets/icons/board/close_hover.svg"
-              alt="Close Icon Hover"
-            />
-          </div>
-        </div>
-          
-      <div class="addtask-main-content">
-        <div>
-          <div>
-            <input type="text" class="addtask-title" id="edit-task-title" value="${
-              task?.title || ""
-            }" placeholder="Enter a title" />
-            <div class="addtask-error" id="edit-title-error"></div>
-          </div>
-          
-          <div class="description">
-            <span class="label-main">Description</span>
-            <span class="label-optional">(optional)</span>
-            <textarea id="edit-task-textarea" placeholder="Enter a description">${
-              task?.description || ""
-            }</textarea>
-          </div>
-          
-          <div class="due-date">
-            <span class="label-main">Due Date</span>
-            <div class="date-input" onclick="document.querySelector('#edit-datepicker')._flatpickr?.open()">
-              <input type="text" id="edit-datepicker" value="${
-                task?.dueDate || ""
-              }" placeholder="dd/mm/yyyy" />
-              <img src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
-            </div>
-            <div class="addtask-error" id="edit-due-date-error"></div>
-          </div>
-        </div>
-        
-        <div class="priority-wrapper">
-          <span class="label-main">Priority</span>
-          <div class="prio-buttons">
-            <button class="priority-button urgent-button ${
-              task?.priority === "urgent" ? "active" : ""
-            }" data-priority="urgent">
-              <span>Urgent</span>
-              <img src="./assets/icons/add_task/urgent.svg" alt="Urgent Icon" />
-            </button>
-            <button class="priority-button medium-button ${
-              task?.priority === "medium" ? "active" : ""
-            }" data-priority="medium">
-              <span>Medium</span>
-              <img src="./assets/icons/add_task/medium.svg" alt="Medium Icon" />
-            </button>
-            <button class="priority-button low-button ${
-              task?.priority === "low" ? "active" : ""
-            }" data-priority="low">
-              <span>Low</span>
-              <img src="./assets/icons/add_task/low.svg" alt="Low Icon" />
-            </button>
-          </div>
-        </div>
-        
-        <div class="assigned-box">
-          <span class="label-main">Assigned to</span>
-          <span class="label-optional">(optional)</span>
-          <div id="edit-assigned-select-box" class="assigned-select-box">
-            <input id="edit-contact-input" type="text" placeholder="Select contacts to assign" />
-            <img id="edit-assigned-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="Arrow Down Icon" />
-          </div>
-          <div id="edit-contact-list-box" class="contact-list-box d-none"></div>
-          <div id="edit-contact-initials" class="contact-initials d-none"></div>
-        </div>
-        
-        <div class="category-box">
-          <span class="label-main">Category</span>
-          <div id="edit-category-select" class="category-select-box">
-            <span>${task?.category || "Select task category"}</span>
-            <img id="edit-category-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg" alt="Arrow Down Icon" />
-          </div>
-          <div class="addtask-error" id="edit-category-selection-error"></div>
-          <div id="edit-category-selection" class="category-selection d-none">
-            <li data-value="Technical task">Technical task</li>
-            <li data-value="User Story">User Story</li>
-          </div>
-        </div>
-        
-        <div class="subtask-box">
-          <div>
-            <span class="label-main">Subtasks</span>
-            <span class="label-optional">(optional)</span>
-          </div>
-          <div class="subtask-select">
-            <input id="edit-sub-input" type="text" placeholder="Add new subtask" />
-            <div id="edit-subtask-func-btn" class="subtask-func-btn d-none">
-              <img id="edit-sub-clear" class="sub-clear" src="./assets/icons/add_task/sub_clear_def.svg" alt="Close Icon" />
-              <div class="vertical-spacer"></div>
-              <img id="edit-sub-check" class="sub-check" src="./assets/icons/add_task/sub_check_def.svg" alt="Check Icon" />
-            </div>
-            <div id="edit-subtask-plus-box" class="subtask-plus-box">
-              <img id="edit-sub-plus" src="./assets/icons/add_task/add.svg" alt="Plus Icon" />
-            </div>
-          </div>
-          <div id="edit-subtask-list">${renderEditSubtasks(
-            task?.subtasks || []
-          )}</div>
-        </div>
-      </div>
-
-      <div class="edit-task-overlay-buttons">
-        <div class="add-task-button">
-          <div class="save-button base-button button-blue button-regular" onclick="saveEditedTask()">
-            OK
-            <img src="./assets/icons/add_task/check.svg" alt="Save Icon" />
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  setupEditPriorityButtons();
-  setupEditDatePicker();
-  setupEditCategoryDropdown();
-  setupEditSubtasks();
-  setupEditAssignedContacts();
-}
-
-
-function setupEditPriorityButtons() {
-  document.querySelectorAll(".priority-button").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      document
-        .querySelectorAll(".priority-button")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-    });
-  });
-}
-
-function setupEditDatePicker() {
-  if (typeof flatpickr !== "undefined") {
-    flatpickr("#edit-datepicker", {
-      dateFormat: "d/m/Y",
-      minDate: "today",
-    });
-  }
-
-  const dateInput = document.querySelector(".date-input");
-  if (dateInput) {
-    dateInput.addEventListener("click", () => {
-      const datePicker = document.querySelector("#edit-datepicker");
-      if (datePicker && datePicker._flatpickr) {
-        datePicker._flatpickr.open();
-      }
-    });
-  }
-}
-
-function setupEditCategoryDropdown() {
-  const categorySelect = $("edit-category-select");
-  const categorySelection = $("edit-category-selection");
-  const categoryIcon = $("edit-category-icon");
-
-  categorySelect.addEventListener("click", () => {
-    categorySelection.classList.toggle("d-none");
-    categoryIcon.style.transform = categorySelection.classList.contains(
-      "d-none"
-    )
-      ? "rotate(0deg)"
-      : "rotate(180deg)";
-  });
-
-  categorySelection.querySelectorAll("li").forEach((item) => {
-    item.addEventListener("click", () => {
-      categorySelect.querySelector("span").textContent = item.textContent;
-      categorySelection.classList.add("d-none");
-      categoryIcon.style.transform = "rotate(0deg)";
-    });
-  });
-}
-
-function setupEditSubtasks() {
-  const subInput = $("edit-sub-input");
-  const subPlus = $("edit-sub-plus");
-  const subCheck = $("edit-sub-check");
-  const subClear = $("edit-sub-clear");
-  const funcBtn = $("edit-subtask-func-btn");
-  const plusBox = $("edit-subtask-plus-box");
-
-  subInput.addEventListener("input", () => {
-    if (subInput.value.trim()) {
-      funcBtn.classList.remove("d-none");
-      plusBox.classList.add("d-none");
-    } else {
-      funcBtn.classList.add("d-none");
-      plusBox.classList.remove("d-none");
-    }
-  });
-
-  subCheck.addEventListener("click", () => {
-    if (subInput.value.trim()) {
-      addEditSubtask(subInput.value.trim());
-      subInput.value = "";
-      funcBtn.classList.add("d-none");
-      plusBox.classList.remove("d-none");
-    }
-  });
-
-  subClear.addEventListener("click", () => {
-    subInput.value = "";
-    funcBtn.classList.add("d-none");
-    plusBox.classList.remove("d-none");
-  });
-}
-
-function addEditSubtask(name) {
-  const subtaskList = $("edit-subtask-list");
-  const index = subtaskList.children.length;
-  const li = document.createElement("li");
-  li.className = "subtask-item";
-  li.dataset.index = index;
-  li.innerHTML = `
-    <span class="subtask-text">${name}</span>
-    <input class="subtask-edit-input d-none" type="text" value="${name}" />
-    <div class="subtask-func-btn d-none">
-      <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
-      <div class="vertical-spacer first-spacer"></div>
-      <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-    </div>
-  `;
-  subtaskList.appendChild(li);
-}
-
-function renderEditSubtasks(subtasks) {
-  return subtasks
-    .map((subtask, index) => {
-      const name = typeof subtask === "string" ? subtask : subtask.name;
-      return `
-      <li class="subtask-item" data-index="${index}">
-        <span class="subtask-text">${name}</span>
-        <input class="subtask-edit-input d-none" type="text" id="edit-sub${index}" value="${name}" />
-        <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
-          <div class="vertical-spacer first-spacer"></div>
-          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-          <div class="vertical-spacer second-spacer d-none"></div>
-          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
-        </div>
-      </li>`;
-    })
-    .join("");
-}
-
-function renderEditAssignedContacts(assignedTo) {
-  if (!assignedTo || assignedTo.length === 0) return "";
-  return assignedTo
-    .map((contact) => {
-      const initials =
-        contact.initials || contact.name?.substring(0, 2).toUpperCase() || "XX";
-      return `<div class="contact-initial">${initials}</div>`;
-    })
-    .join("");
-}
-
-function setupEditAssignedContacts() {
-  const assignedSelectBox = $("edit-assigned-select-box");
-  const contactListBox = $("edit-contact-list-box");
-  const assignedIcon = $("edit-assigned-icon");
-  const contactInitials = $("edit-contact-initials"); // may be null
-
-  // Guard: required elements + avoid double-binding
-  if (!assignedSelectBox || !contactListBox || !assignedIcon) return;
-  if (assignedSelectBox._assignedSetupDone) return;
-  assignedSelectBox._assignedSetupDone = true;
-
-  // --- helpers: persistent selection + search for Edit overlay ---
-  const selectedEditContactIds = new Set();
-  const assignedInput = $("edit-contact-input");
-
-  function normalizeText(str) {
-    return (str || "").toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
-  }
-
-  function getContactIdFromLi(li) {
-    const byData = li.getAttribute("data-id") || (li.dataset && li.dataset.id);
-    if (byData) return String(byData);
-    const nameEl = li.querySelector(".contact-name") || li;
-    return nameEl.textContent.trim();
-  }
-
-  function applySelectionVisual(li, isSelected) {
-    li.classList.toggle("selected", isSelected);
-    const img = li.querySelector("img");
-    if (img) {
-      img.src = isSelected
-        ? "./assets/icons/add_task/check_white.svg"
-        : "./assets/icons/add_task/check_default.svg";
-    }
-  }
-
-  function updateAssignedInitials() {
-    if (!contactInitials) return;
-    const initials = Array.from(contactListBox.querySelectorAll('li.selected .contact-initial'))
-      .slice(0, 5)
-      .map(el => el.outerHTML)
-      .join('');
-    contactInitials.innerHTML = initials;
-    contactInitials.classList.toggle('d-none', initials.length === 0);
-  }
-
-  function filterEditAssignedContacts(query) {
-    const q = normalizeText(query);
-    contactListBox.querySelectorAll('li').forEach(li => {
-      const nameEl = li.querySelector('.contact-name') || li;
-      const txt = normalizeText(nameEl.textContent);
-      const hide = q && !txt.includes(q);
-      li.classList.toggle('d-none', hide);
-      const id = getContactIdFromLi(li);
-      applySelectionVisual(li, selectedEditContactIds.has(String(id)));
-    });
-    updateAssignedInitials();
-  }
-  // --- end helpers ---
-
-  // Keep arrow synced with dropdown state
-function updateAssignedArrow() {
-  if (!assignedIcon || !contactListBox) return;
-  const isListVisible = !contactListBox.classList.contains("d-none");
-  assignedIcon.src = isListVisible
-    ? "./assets/icons/add_task/arrow_up_default.svg"
-    : "./assets/icons/add_task/arrow_down_default.svg";
-  assignedIcon.classList.toggle("arrow-up", isListVisible);
-  assignedIcon.classList.toggle("arrow-down", !isListVisible);
-}
-
-  // Initial sync
-  updateAssignedArrow();
-
-  // Observe class changes on the list box (covers any open/close done elsewhere)
-  const _assignedObserver = new MutationObserver((mutations) => {
-    for (const m of mutations) {
-      if (m.attributeName === "class") {
-        updateAssignedArrow();
-      }
-    }
-  });
-  _assignedObserver.observe(contactListBox, { attributes: true });
-
-  // Toggle by clicking anywhere on the select box (except the arrow img itself and input)
-  assignedSelectBox.addEventListener('click', (e) => {
-    if (e.target === assignedIcon) return;
-    if (assignedInput && (e.target === assignedInput || assignedInput.contains(e.target))) return;
-    e.stopPropagation();
-    contactListBox.classList.toggle('d-none');
-    updateAssignedArrow();
-    if (!contactListBox.classList.contains('d-none') && assignedInput) {
-      filterEditAssignedContacts(assignedInput.value);
-    }
-  });
-
-  if (assignedInput) {
-    assignedInput.addEventListener('input', (e) => {
-      contactListBox.classList.remove('d-none');
-      updateAssignedArrow();
-      filterEditAssignedContacts(e.target.value);
-    });
-    assignedInput.addEventListener('focus', () => {
-      contactListBox.classList.remove('d-none');
-      updateAssignedArrow();
-      filterEditAssignedContacts(assignedInput.value);
-    });
-    assignedInput.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Escape') {
-        contactListBox.classList.add('d-none');
-        updateAssignedArrow();
-      }
-    });
-    assignedInput.addEventListener('click', (ev) => ev.stopPropagation());
-  }
-
-  if (assignedIcon) {
-    assignedIcon.addEventListener('click', (e) => {
-      e.stopPropagation();
-      contactListBox.classList.toggle('d-none');
-      updateAssignedArrow();
-    });
-  }
-
-  contactListBox.addEventListener('click', (e) => {
-    const li = e.target.closest('li');
-    if (!li) return;
-    e.stopPropagation();
-    const id = getContactIdFromLi(li);
-    const nowSelected = !li.classList.contains('selected');
-    if (nowSelected) selectedEditContactIds.add(String(id));
-    else selectedEditContactIds.delete(String(id));
-    applySelectionVisual(li, nowSelected);
-    updateAssignedInitials();
-    if (assignedInput) { assignedInput.focus(); assignedInput.select(); }
-  });
-
-  document.addEventListener("click", (event) => {
-    const inside = assignedSelectBox.contains(event.target)
-                || contactListBox.contains(event.target)
-                || (assignedInput && assignedInput.contains(event.target));
-    if (!inside) {
-      contactListBox.classList.add("d-none");
-      updateAssignedArrow();
-    }
-  });
-
-  new MutationObserver((muts) => {
-    for (const m of muts) {
-      if (m.type === 'childList') {
-        contactListBox.querySelectorAll('li').forEach(li => {
-          const id = getContactIdFromLi(li);
-          applySelectionVisual(li, selectedEditContactIds.has(String(id)));
-        });
-        updateAssignedInitials();
-      }
-    }
-  }).observe(contactListBox, { childList: true, subtree: true });
-}
-
-function getAddTaskTemplate() {
+// addtask wrapper template 
+function getAddtaskTemplate() {
   return `
-  <section class="addtask-wrapper">
         <!-- task title -->
         <div class="addtask-main-content">
           <div>
-            <input
-              type="text"
-              class="addtask-title"
-              id="addtask-title"
-              placeholder="Enter a title"
-            />
+            <input type="text" class="addtask-title" id="addtask-title" placeholder="Enter a title" autocomplete="off"/>
             <div class="addtask-error" id="addtask-error"></div>
           </div>
-          
           <!-- description -->
           <div class="description">
-            <span class="label-main">Decription</span>
+            <span class="label-main">Description</span>
             <span class="label-optional">(optional)</span>
-            <textarea
-              id="addtask-textarea"
-              placeholder="Enter a description"
-            ></textarea>
+            <textarea id="addtask-textarea" placeholder="Enter a description"></textarea>
           </div>
-          
           <!-- date choose -->
           <div class="due-date">
             <span class="label-main">Due Date</span>
             <div class="date-input" id="datepicker-wrapper">
-              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img
-                onclick="flatpickr()"
-                src="./assets/icons/add_task/event.svg"
-                alt="Calendar Icon"
-              />
+              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img onclick="flatpickr()"
+                src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
             </div>
             <div class="addtask-error" id="due-date-error"></div>
           </div>
         </div>
-        
         <!-- priority choose -->
         <div class="priority-wrapper">
           <span class="label-main">Priority</span>
@@ -650,40 +182,26 @@ function getAddTaskTemplate() {
             </button>
           </div>
         </div>
-       
         <!-- assigned container -->
         <div class="assigned-box">
           <span class="label-main">Assigned to</span>
           <span class="label-optional">(optional)</span>
           <div id="assigned-select-box" class="assigned-select-box">
-            <input
-              id="contact-input"
-              type="text"
-              placeholder="Select contacts to assign"
-              autocomplete="off"
-            />
-            <img
-              id="assigned-icon"
-              class="arrow-down"
-              src="./assets/icons/add_task/arrow_down_default.svg"
-              alt="Arrow Down Icon"
-            />
+            <input id="contact-input" type="text" placeholder="Select contacts to assign" autocompletet="off"/>
+            <img id="assigned-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg"
+              alt="Arrow Down Icon" />
           </div>
           <div id="contact-list-box" class="contact-list-box d-none">
-            
-          <!-- contacts template -->
+            <!-- contacts template -->
+
             <li id="">
               <div>
                 <div class="contact-initial">AS</div>
                 Anja Schulze
               </div>
-              <img
-                src="./assets/icons/add_task/check_default.svg"
-                alt="Check Box"
-              />
+              <img class="contact-initials-checkbox" src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
             </li>
           </div>
-          
           <!-- initials under select contact-box -->
           <div id="contact-initials" class="contact-initials d-none"></div>
         </div>
@@ -692,12 +210,8 @@ function getAddTaskTemplate() {
           <span class="label-main">Category</span>
           <div id="category-select" class="category-select-box">
             <span>Select task category</span>
-            <img
-              id="category-icon"
-              class="arrow-down"
-              src="./assets/icons/add_task/arrow_down_default.svg"
-              alt="Arrow Down Icon"
-            />
+            <img id="category-icon" class="arrow-down" src="./assets/icons/add_task/arrow_down_default.svg"
+              alt="Arrow Down Icon" />
           </div>
           <div class="addtask-error" id="category-selection-error"></div>
           <div id="category-selection" class="category-selection d-none">
@@ -705,7 +219,6 @@ function getAddTaskTemplate() {
             <li data-value="User Story">User Story</li>
           </div>
         </div>
-        
         <!-- subtask container -->
         <div class="subtask-box">
           <div>
@@ -715,49 +228,66 @@ function getAddTaskTemplate() {
           <div class="subtask-select">
             <input id="sub-input" type="text" placeholder="Add new subtask" />
             <div id="subtask-func-btn" class="subtask-func-btn d-none">
-              <img
-                id="sub-clear"
-                class="sub-clear"
-                src="./assets/icons/add_task/sub_clear_def.svg"
-                alt="Close Icon"
-              />
+              <img id="sub-clear" class="sub-clear" src="./assets/icons/add_task/sub_clear_def.svg" alt="Close Icon" />
               <div class="vertical-spacer"></div>
-              <img
-                id="sub-check"
-                class="sub-check"
-                src="./assets/icons/add_task/sub_check_def.svg"
-                alt="Check Icon"
-              />
+              <img id="sub-check" class="sub-check" src="./assets/icons/add_task/sub_check_def.svg" alt="Check Icon" />
             </div>
-            <div
-              id="subtask-plus-box"
-              class="subtask-plus-box"
-              id="subtask-plus-box"
-            >
-              <img
-                id="sub-plus"
-                src="./assets/icons/add_task/add.svg"
-                alt="Plus Icon"
-              />
+            <div id="subtask-plus-box" class="subtask-plus-box">
+              <img id="sub-plus" src="./assets/icons/add_task/add.svg" alt="Plus Icon" />
             </div>
           </div>
           <div id="subtask-list"></div>
         </div>
-      </section>
-  `
+      `;
 }
 
-// Web Component für <addtask-wrapper>, rendert das Template automatisch
-(function () {
-  if (window.customElements && !customElements.get('addtask-wrapper')) {
-    class AddTaskWrapper extends HTMLElement {
-      connectedCallback() {
-        // Template einfügen
-        if (typeof getAddTaskTemplate === 'function') {
-          this.innerHTML = getAddTaskTemplate();
-        }
-      }
+// addtask subtasks list display
+function renderSubtasks() {
+  // Normalize Firebase-style objects to strings for this list
+  const normalized = (window.subtasks || typeof subtasks !== 'undefined' ? (window.subtasks || subtasks) : [])
+    .map((st) => (typeof st === 'string' ? st : (st && st.name) ? st.name : ''))
+    .filter(Boolean);
+
+  try { subtasks = normalized; } catch (_) {}
+  window.subtasks = normalized;
+
+  $("subtask-list").innerHTML = normalized
+    .map(
+      (subtask, index) => `
+      <li class="subtask-item" data-index="${index}">
+        <span class="subtask-text">${subtask}</span>
+        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
+        <div class="subtask-func-btn d-none">
+          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
+          <div class="vertical-spacer first-spacer"></div>
+          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
+          <div class="vertical-spacer second-spacer d-none"></div>
+          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
+        </div>
+      </li>`
+    )
+    .join("");
+  addEditEvents();
+  deleteEvent();
+}
+
+
+(function injectAddTaskTemplate() {
+  const render = (root = document) => {
+    const container = root.querySelector('.addtask-wrapper');
+    if (!container) return false;
+    if (container.dataset.rendered === '1' || container.childElementCount > 0) return true;
+    container.innerHTML = getAddtaskTemplate();
+    container.dataset.rendered = '1';              
+    document.dispatchEvent(new CustomEvent('addtask:template-ready'));
+    return true;
+  };
+
+  if (!render()) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', render, { once: true });
+    } else {
+      render();
     }
-    customElements.define('addtask-wrapper', AddTaskWrapper);
   }
 })();

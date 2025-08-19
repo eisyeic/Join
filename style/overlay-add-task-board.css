@@ -32,17 +32,16 @@
   scrollbar-width: 0px;
 }
 
-.addtask-wrapper {
-  height: auto;
-}
-
 .addtask-main-content {
   display: flex;
   justify-content: center;
   width: 440px;
   height: auto;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: none;
+}
+
+.add-task-overlay-content .addtask-wrapper {
+  height: auto;
 }
 
 /* Slide-In: von rechts -100% nach 0 */
@@ -88,8 +87,8 @@
   right: 24px;
   position: absolute;
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 .addtask-aside-clone {
@@ -107,7 +106,7 @@
   padding: 24px;
 }
 
-.regular-close-image {
+.regular-close-image, .hover-close-image {
   position: absolute;
   top: 0;
   left: 0;
@@ -115,10 +114,6 @@
 }
 
 .hover-close-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  object-fit: cover;
   opacity: 0;
 }
 
@@ -129,3 +124,4 @@
 .close-button:hover .hover-close-image {
   opacity: 1;
 }
+

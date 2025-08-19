@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Permissions-Policy" content="unload=*" />
     <title>Join - Board</title>
 
     <link
@@ -13,12 +12,12 @@
     />
 
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./style/addtask.css" />
     <link rel="stylesheet" href="./style/board.css" />
     <link rel="stylesheet" href="./style/header.css" />
     <link rel="stylesheet" href="./style/sidebar.css" />
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
-    <link rel="stylesheet" href="./style/addtask.css">
     <link rel="stylesheet" href="./style/overlay-add-task-board.css" />
     <link rel="stylesheet" href="./style/flatpickr.min.css" />
     <link rel="stylesheet" href="./style/task-overlay.css" />
@@ -29,18 +28,35 @@
     <link rel="prerender" href="./addtask.html" />
     <link rel="prerender" href="./contact.html" />
 
-
+    <link
+      rel="preload"
+      href="./assets/icons/board/search_hover.svg"
+      as="image"
+    />
+    <link
+      rel="preload"
+      href="./assets/icons/board/search_click.svg"
+      as="image"
+    />
+    <link
+      rel="preload"
+      href="./assets/icons/add_task/check_default_hover.svg"
+      as="image"
+    />
+    <link
+      rel="preload"
+      href="./assets/icons/add_task/checked_hover.svg"
+      as="image"
+    />
 
     <script src="script.js"></script>
-    <script src="./scripts/permissions-fix.js"></script>
-    <script type="module" src="./scripts/template.modul.js"></script>
-    <script src="./scripts/flatpickr.min.js"></script>
     <script src="scripts/templates.js" defer></script>
-    <script src="./scripts/addtask.js" defer></script>
+    <script type="module" src="./scripts/template.modul.js"></script>
     <script type="module" src="./scripts/addtask-firebase.js"></script>
+    <script src="./scripts/flatpickr.min.js"></script>
+    <script src="./scripts/addtask.js" defer></script>
     <script type="module" src="./scripts/board.js"></script>
     <script type="module" src="./scripts/task-overlay.js"></script>
-    
   </head>
 
   <body onclick="closeProfileNavbar()">
@@ -63,11 +79,9 @@
           <h2 id="head-title">Add Task</h2>
         </div>
 
-        <!-- Copy of addtask in addtask overlay -->
+        <!-- addtask clone -->
         <div class="addtask-aside-clone" onclick="event.stopPropagation()">
-          
-          <addtask-wrapper></addtask-wrapper>
-
+          <section class="addtask-wrapper"></section>
         </div>
         <!-- Add task button -->
         <section class="overlay-create-task" onclick="event.stopPropagation()">
@@ -99,9 +113,11 @@
       id="task-overlay-bg"
       class="task-overlay-bg d-none"
     >
-      <div class="task-overlay" id="task-overlay" onclick="event.stopPropagation()">
-        
-        
+      <div
+        class="task-overlay"
+        id="task-overlay"
+        onclick="event.stopPropagation()"
+      >
         <!-- task overlay content-->
         <div
           onclick="event.stopPropagation()"
@@ -187,13 +203,36 @@
               <span>Delete</span>
             </div>
             <div class="vertical-spacer"></div>
-            <div class="button-box-edit" id="edit-task-btn" data-task-id="${taskId}" onclick="toggleEditTaskBoard()">
+            <div
+              class="button-box-edit"
+              id="edit-task-btn"
+              data-task-id="${taskId}"
+            >
               <img
                 class="icon-hover-filter"
                 src="./assets/icons/board/edit_default.svg"
                 alt="Edit"
               />
               <span>Edit</span>
+            </div>
+          </div>
+        </div>
+        <div class="edit-addtask-wrapper d-none">
+          <div
+            class="edit-close-btn"
+          >
+            <img
+              src="./assets/icons/board/close_default.svg"
+              alt="Close Icon"
+              onclick="document.querySelector('.edit-addtask-wrapper')?.classList.add('d-none'); document.getElementById('task-overlay-content')?.classList.remove('d-none');"
+            />
+          </div>
+          <div class="edit-addtask">
+            <!-- edit addtask / addtask-wrapper template-->
+          </div>
+          <div class="ok-btn-box">
+            <div class="base-button button-small button-blue ok-button" id="edit-ok-button">
+              OK <img src="./assets/icons/add_task/check.svg" alt="" />
             </div>
           </div>
         </div>
@@ -237,7 +276,7 @@
           <a class="profile-navbar-help" href="./help.html">Help</a>
           <a href="./legal-notice.html">Legal Notice</a>
           <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./index.html" onclick="clearHeaderTextCache()">Log out</a>
+          <a href="./index.html">Log out</a>
         </div>
       </div>
     </header>

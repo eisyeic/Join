@@ -33,6 +33,7 @@
 }
 
 html, body {
+  scroll-behavior: smooth;
   height: 100vh;
   width: 100vw;
   margin: 0;
@@ -44,7 +45,6 @@ html, body {
 *::placeholder {
   color: var(--style-color);
 }
-
 
 main {
   display: flex;
