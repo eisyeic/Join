@@ -24,6 +24,7 @@
     .addtask-wrapper {
         padding: 24px 32px;
         justify-content: flex-start;
+        height: calc(100vh - 348px);
     }
 
     .section-addtask-buttons {
@@ -60,13 +61,14 @@
     }
 }
 
-@media (max-width: 550px) {
+@media (max-width: 720px) {
     .prio-buttons {
         justify-content: center;
         gap: 8px;
     }
 
     .addtask-wrapper {
+        height: calc(100vh - 312px);
         min-width: auto;
     }
 }
