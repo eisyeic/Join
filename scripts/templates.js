@@ -199,7 +199,7 @@ function getAddtaskTemplate() {
                 <div class="contact-initial">AS</div>
                 Anja Schulze
               </div>
-              <img src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
+              <img class="contact-initials-checkbox" src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
             </li>
           </div>
           <!-- initials under select contact-box -->

@@ -220,18 +220,18 @@
         <div class="edit-addtask-wrapper d-none">
           <div
             class="edit-close-btn"
-            onclick="document.querySelector('.edit-addtask-wrapper')?.classList.add('d-none'); document.getElementById('task-overlay-content')?.classList.remove('d-none');"
           >
             <img
               src="./assets/icons/board/close_default.svg"
               alt="Close Icon"
+              onclick="document.querySelector('.edit-addtask-wrapper')?.classList.add('d-none'); document.getElementById('task-overlay-content')?.classList.remove('d-none');"
             />
           </div>
           <div class="edit-addtask">
             <!-- edit addtask / addtask-wrapper template-->
           </div>
           <div class="ok-btn-box">
-            <div class="base-button button-small button-blue ok-button" id="ok-btn">
+            <div class="base-button button-small button-blue ok-button" id="edit-ok-button">
               OK <img src="./assets/icons/add_task/check.svg" alt="" />
             </div>
           </div>

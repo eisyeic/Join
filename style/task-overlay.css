@@ -20,14 +20,13 @@
   background-color: #fff;
   bottom: -100%;
   left: 50%;
-  height: auto;
-  max-height: calc(100vh - 20%);
+  max-height: 90vh;
   transform: translate(-50%, 50%);
   width: 528px;
   max-width: 90vw;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.16) 0px 0px 4px 0px;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .task-overlay-content {
@@ -39,12 +38,7 @@
   /* allow inner children to shrink and become scrollable */
   min-height: 0;
   /* do not clip inner scroll containers */
-  overflow: visible;
-}
-
-.task-overlay-content:has(.edit-task-overlay-header) {
-  padding: 0;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .task-overlay.animate-in {
@@ -284,13 +278,12 @@ b {
 
 .edit-addtask {
   display: flex;
-  height: 90%;
+  height: 100%;
   overflow: hidden;
 }
 
 .edit-close-btn {
   display: flex;
-  cursor: pointer;
   padding: 24px 24px 0 0;
   justify-content: flex-end;
 }
@@ -298,15 +291,17 @@ b {
 .edit-close-btn img {
   height: 24px;
   width: 24px;
+  cursor: pointer;
 }
 
-.edit-close-btn:hover img {
+.edit-close-btn img:hover {
   content: url(../assets/icons/board/close_hover.svg);
 }
 
 .edit-addtask-wrapper {
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
   align-items: space-between;
 }
 

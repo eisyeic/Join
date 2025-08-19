@@ -5,8 +5,110 @@ import { app, auth } from "./firebase.js";
 let db = getDatabase(app);
 let loadedContacts = {};
 
+let currentEditingTaskId = "";
+// Allow other modules / overlay openers to set and read the current editing task id
+window.setCurrentEditingTaskId = function (id) {
+  currentEditingTaskId = id || "";
+  // keep dataset in sync for fallback lookups
+  const wrapper = document.querySelector('.addtask-wrapper');
+  if (wrapper) wrapper.dataset.editingId = currentEditingTaskId;
+};
+window.getCurrentEditingTaskId = function () {
+  return currentEditingTaskId;
+};
+
 loadContactsAndRender();
 
+// Helpers (keep functions short)
+function getEditingId() {
+  return (
+    currentEditingTaskId ||
+    (typeof window.getCurrentEditingTaskId === "function"
+      ? window.getCurrentEditingTaskId()
+      : "") ||
+    document.querySelector(".addtask-wrapper")?.dataset.editingId ||
+    ""
+  );
+}
+
+function getAssignedContactsFromUI() {
+  const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
+  if (selectedLis.length > 0) {
+    return Array.from(selectedLis).map((li) => {
+      const id = li.id;
+      const c = loadedContacts[id] || {};
+      return { id, name: c.name, colorIndex: c.colorIndex, initials: c.initials };
+    });
+  }
+  try {
+    const raw = document.getElementById("assigned-select-box")?.dataset.selected || "[]";
+    const ids = JSON.parse(raw) || [];
+    return ids.map((id) => {
+      const c = loadedContacts[id] || {};
+      const initials = c.initials || (c.name ? c.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase() : "");
+      return { id, name: c.name || String(id), colorIndex: c.colorIndex ?? 1, initials };
+    });
+  } catch (_) {
+    return [];
+  }
+}
+
+function baseTaskFromForm() {
+  return {
+    column: "todo",
+    title: $("addtask-title").value.trim(),
+    description: $("addtask-textarea").value.trim(),
+    dueDate: $("datepicker").value.trim(),
+    category: $("category-select").querySelector("span").textContent,
+    priority: selectedPriority,
+    subtasks: subtasks.map((name) => ({ name, checked: false })),
+  };
+}
+
+function showBanner() {
+  const layout = $("layout");
+  const banner = $("slide-in-banner");
+  if (layout) layout.style.opacity = "0.5";
+  if (banner) banner.classList.add("visible");
+}
+
+function hideBanner() {
+  const layout = $("layout");
+  const banner = $("slide-in-banner");
+  if (banner) banner.classList.remove("visible");
+  if (layout) layout.style.opacity = "1";
+}
+
+function finishCreateFlow() {
+  setTimeout(() => {
+    hideBanner();
+    $("cancel-button").click();
+    if (!window.location.pathname.endsWith("board.html")) {
+      window.location.href = "./board.html";
+    }
+  }, 1200);
+}
+
+function finishUpdateFlow() {
+  setTimeout(() => {
+    hideBanner();
+    document.querySelector(".edit-addtask-wrapper")?.classList.add("d-none");
+    document.getElementById("task-overlay-content")?.classList.remove("d-none");
+    if (typeof window.hideOverlay === "function") window.hideOverlay();
+    else if (!window.location.pathname.endsWith("board.html")) window.location.href = "./board.html";
+  }, 900);
+}
+
+function resetFormErrors() {
+  $("addtask-error").innerHTML = "";
+  $("due-date-error").innerHTML = "";
+  $("category-selection-error").innerHTML = "";
+}
+
+function setError(msgId, borderId, msg) {
+  $(msgId).innerHTML = msg;
+  if (borderId) $(borderId).style.borderColor = "var(--error-color)";
+}
 
 // User initials
 onAuthStateChanged(auth, (user) => {
@@ -109,106 +211,78 @@ function renderSelectedContactInitials() {
 
 // collect form data
 function collectFormData() {
-  let column = "todo";
-  let title = $("addtask-title").value.trim();
-  let description = $("addtask-textarea").value.trim();
-  let dueDate = $("datepicker").value.trim();
-  let category = $("category-select").querySelector("span").textContent;
-  let assignedContacts = [];
-  const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
-  if (selectedLis.length > 0) {
-    assignedContacts = Array.from(selectedLis).map((li) => {
-      let id = li.id;
-      let contact = loadedContacts[id];
-      return {
-        id,
-        name: contact.name,
-        colorIndex: contact.colorIndex,
-        initials: contact.initials,
-      };
-    });
-  } else {
-    // Fallback for edit mode: read IDs that were pre-selected via dataset
-    try {
-      const selectedJson = document.getElementById('assigned-select-box')?.dataset.selected || '[]';
-      const ids = JSON.parse(selectedJson);
-      assignedContacts = (ids || []).map((id) => {
-        const c = loadedContacts[id] || {};
-        return {
-          id,
-          name: c.name || String(id),
-          colorIndex: c.colorIndex ?? 1,
-          initials: c.initials || (c.name ? c.name.split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase() : ""),
-        };
-      });
-    } catch (_) {}
-  }
-  const editingId = (typeof window.getCurrentEditingTaskId === 'function' ? window.getCurrentEditingTaskId() : '') || document.querySelector('.addtask-wrapper')?.dataset.editingId || '';
+  const base = baseTaskFromForm();
   return {
-    column,
-    title,
-    description,
-    dueDate,
-    category,
-    priority: selectedPriority,
-    assignedContacts,
-    subtasks: subtasks.map(name => ({ name, checked: false })),
-    editingId,
+    ...base,
+    assignedContacts: getAssignedContactsFromUI(),
+    editingId: getEditingId(),
   };
 }
 
 // validate form addtask
-function validateFormData(data) {
-  let valid = true;
-  $("addtask-error").innerHTML = "";
-  $("due-date-error").innerHTML = "";
-  $("category-selection-error").innerHTML = "";
+function validateTitle(data) {
   if (!data.title) {
-    $("addtask-error").innerHTML = "This field is required";
-    $("addtask-title").style.borderColor = "var(--error-color)";
-    valid = false;
+    setError("addtask-error", "addtask-title", "This field is required");
+    return false;
   }
-   if (!data.dueDate) {
-    $("due-date-error").innerHTML = "Please select a due date";
-    $("datepicker-wrapper").style.borderColor = "var(--error-color)";
-    valid = false;
-  } 
-   if (data.category === "Select task category") {
-    $("category-selection-error").innerHTML = "Please choose category";
-    $("category-select").style.borderColor = "var(--error-color)";
-    valid = false;
-  } 
-  if (!data.priority) {
-    valid = false;
-  }
-  return valid;
-} 
-
-function handleEditOkClick() {
-  let taskData = collectFormData();
-  let isValid = validateFormData(taskData);
-  if (!isValid) return;
-
-  const taskId = taskData.editingId || (typeof window.getCurrentEditingTaskId === 'function' ? window.getCurrentEditingTaskId() : '') || document.querySelector('.addtask-wrapper')?.dataset.editingId || '';
-
-  if (taskId) {
-    updateTaskInFirebase(taskId, taskData);
-  } else {
-    // No editing id present -> fallback to create behavior
-    sendTaskToFirebase(taskData);
-  }
+  return true;
 }
+
+// validate due date
+function validateDueDate(data) {
+  if (!data.dueDate) {
+    setError("due-date-error", "datepicker-wrapper", "Please select a due date");
+    return false;
+  }
+  return true;
+}
+
+// validate category
+function validateCategory(data) {
+  if (data.category === "Select task category") {
+    setError("category-selection-error", "category-select", "Please choose category");
+    return false;
+  }
+  return true;
+}
+
+function validatePriority(data) {
+  return !!data.priority;
+}
+
+// validate form data
+function validateFormData(data) {
+  resetFormErrors();
+  let ok = true;
+  ok = validateTitle(data) && ok;
+  ok = validateDueDate(data) && ok;
+  ok = validateCategory(data) && ok;
+  ok = validatePriority(data) && ok;
+  return ok;
+}
+
+// handle ok button
+async function handleEditOkClick() {
+  const taskData = collectFormData();
+  if (!validateFormData(taskData)) return;
+  const taskId = getEditingId();
+  if (!taskId) return sendTaskToFirebase(taskData);
+  const snap = await get(ref(db, `tasks/${taskId}`));
+  if (snap.exists()) {
+    const oldTask = snap.val();
+    taskData.column = oldTask?.column ?? taskData.column;
+  }
+  updateTaskInFirebase(taskId, taskData);
+}
+window.handleEditOkClick = handleEditOkClick;
 
 // create button check necessary fields filled
 $("create-button").addEventListener("click", handleCreateClick);
 function handleCreateClick() {
-  let taskData = collectFormData();
-  let isValid = validateFormData(taskData);
-  if (!isValid) return;
-  sendTaskToFirebase(taskData);
-  if (!window.location.pathname.endsWith("addtask.html")) {
-    window.toggleAddTaskBoard();
-  }
+  const data = collectFormData();
+  if (!validateFormData(data)) return;
+  sendTaskToFirebase(data);
+  if (!window.location.pathname.endsWith("addtask.html")) window.toggleAddTaskBoard();
 }
 
 // Edit-OK / Save button(s)
@@ -216,35 +290,24 @@ const okBtn = $("ok-button");
 if (okBtn) okBtn.addEventListener("click", handleEditOkClick);
 const editOkBtn = $("edit-ok-button");
 if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
+document.addEventListener('click', (e) => {
+  const saveBtn = e.target.closest('#ok-button, #edit-ok-button, [data-action="save-task"]');
+  if (saveBtn) {
+    handleEditOkClick();
+  }
+});
 
 // send to firebase
 function sendTaskToFirebase(taskData) {
-  let tasksRef = ref(db, "tasks");
-  let newTaskRef = push(tasksRef);
-  let task = {
-    ...taskData,
-    createdAt: new Date().toISOString(),
-  };
-  set(newTaskRef, task)
-    .then(() => {
-      const layout = $("layout");
-      const slideInBanner = $("slide-in-banner");
-      if (layout) layout.style.opacity = "0.5";
-      if (slideInBanner) slideInBanner.classList.add("visible");
-      setTimeout(() => {
-        if (slideInBanner) slideInBanner.classList.remove("visible");
-        if (layout) layout.style.opacity = "1";
-        $("cancel-button").click();
-        if (!window.location.pathname.endsWith("board.html")) {
-          window.location.href = "./board.html";
-        }
-      }, 1200);
-    })
-    .catch((error) => {
-      console.error("Fehler beim Speichern:", error);
-    });
+  const tasksRef = ref(db, "tasks");
+  const newRef = push(tasksRef);
+  const task = { ...taskData, createdAt: new Date().toISOString() };
+  set(newRef, task)
+    .then(() => { showBanner(); finishCreateFlow(); })
+    .catch((e) => console.error("Fehler beim Speichern:", e));
 }
 
+// update task informations
 function updateTaskInFirebase(taskId, taskData) {
   const taskRef = ref(db, `tasks/${taskId}`);
   const toSave = {
@@ -259,27 +322,6 @@ function updateTaskInFirebase(taskId, taskData) {
     updatedAt: new Date().toISOString(),
   };
   update(taskRef, toSave)
-    .then(() => {
-      const layout = $("layout");
-      const slideInBanner = $("slide-in-banner");
-      if (layout) layout.style.opacity = "0.5";
-      if (slideInBanner) slideInBanner.classList.add("visible");
-      setTimeout(() => {
-        if (slideInBanner) slideInBanner.classList.remove("visible");
-        if (layout) layout.style.opacity = "1";
-        // close edit view / overlay
-        document.querySelector('.edit-addtask-wrapper')?.classList.add('d-none');
-        document.getElementById('task-overlay-content')?.classList.remove('d-none');
-        if (typeof window.hideOverlay === 'function') {
-          // if user expects closing after save
-          window.hideOverlay();
-        } else if (!window.location.pathname.endsWith('board.html')) {
-          window.location.href = './board.html';
-        }
-      }, 900);
-    })
-    .catch((error) => {
-      console.error("Fehler beim Aktualisieren:", error);
-    });
+    .then(() => { showBanner(); finishUpdateFlow(); })
+    .catch((e) => console.error("Fehler beim Aktualisieren:", e));
 }
-
