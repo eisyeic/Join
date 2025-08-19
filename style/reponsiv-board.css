@@ -105,6 +105,11 @@
     .board {
         width: calc(100vw - 150px);
     }
+
+    .board-content {
+        height: 100%;
+        overflow-y: auto;
+    }
 }
 
 @media (max-width: 900px) {
@@ -114,6 +119,7 @@
 
     .board-content {
         width: 100% !important;
+        height: calc(100vh - 100px - 152px - 107px);
     }
 
     .input-button-box .button-blue {
@@ -127,9 +133,7 @@
     .input-button-box {
         margin: 72px 20px 30px 20px;
     }
-}
 
-@media (max-width: 900px) {
     .add-task-overlay-content {
         height: calc(100vh - 207px) !important;
         width: 100vw !important;
@@ -158,8 +162,19 @@
         display: flex;
         flex-direction: column;
     }
+
     .addtask-main-content textarea {
         width: 100%;
+    }
+}
+
+@media (max-height: 755px) {
+    .input-button-box {
+        margin: 35px 20px 30px 20px;
+    }
+
+    .board-content {
+        height: calc(100vh - 49px - 152px - 87px) !important;
     }
 }
 
@@ -167,6 +182,10 @@
     .add-task-overlay-content {
         height: calc(100vh - 171px) !important;
         top: 84px;
+    }
+
+    .board-content {
+        height: calc(100vh - 84px - 152px - 87px);
     }
 }
 
