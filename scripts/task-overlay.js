@@ -293,10 +293,6 @@ function attachSubtaskEvents(checkbox, label, img, taskId, i) {
       icon = hover ? "check_default_hover.svg" : "check_default.svg";
     }
     img.src = basePath + icon;
-    if (img) {
-      icon.style.width = "24px";
-      icon.style.height = "24px";
-    }
   };
 
   checkbox.addEventListener("change", () => {

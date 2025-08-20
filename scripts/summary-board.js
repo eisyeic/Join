@@ -8,7 +8,12 @@ const db = getDatabase(app);
 
 // ===== UTILITY FUNCTIONS =====
 
-// Get initials from full name
+/**
+ * Returns uppercase initials from a full name.
+ * Splits by whitespace and takes the first character of each part.
+ * @param {string} name - Full name (e.g., "John Doe").
+ * @returns {string} Uppercase initials (e.g., "JD").
+ */
 function getInitials(name) {
   return name
     .split(" ")
@@ -16,7 +21,10 @@ function getInitials(name) {
     .join("");
 }
 
-// Get greeting based on current hour
+/**
+ * Generates a time-of-day greeting based on the current hour.
+ * @returns {"Good Night"|"Good Morning"|"Good Afternoon"|"Good Evening"}
+ */
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 5) return "Good Night";
@@ -25,7 +33,11 @@ function getGreeting() {
   return "Good Evening";
 }
 
-// Shortcut for document.getElementById
+/**
+ * Shorthand for document.getElementById.
+ * @param {string} id - Element id.
+ * @returns {HTMLElement|null}
+ */
 function $(id) {
   return document.getElementById(id);
 }
@@ -33,7 +45,10 @@ function $(id) {
 
 // ===== TASK MANAGEMENT =====
 
-// Load task counts from database
+/**
+ * Subscribes to Firebase tasks, aggregates counters and earliest urgent date,
+ * then updates the UI for desktop and mobile summaries.
+ */
 function loadTaskCounts() {
   const tasksRef = ref(db, "tasks");
   
@@ -58,7 +73,10 @@ function loadTaskCounts() {
   });
 }
 
-// Initialize task counters
+/**
+ * Creates an initial counters object for task board statistics.
+ * @returns {{todo:number,inProgress:number,awaitFeedback:number,done:number,urgent:number,total:number}}
+ */
 function initializeCounts() {
   return {
     todo: 0,
@@ -70,7 +88,12 @@ function initializeCounts() {
   };
 }
 
-// Process individual task
+/**
+ * Updates counters for a single task and tracks earliest urgent due date.
+ * @param {{column:string,priority:string,dueDate?:string}} task
+ * @param {{total:number,todo:number,inProgress:number,awaitFeedback:number,done:number,urgent:number}} counts
+ * @param {(date: Date) => void} updateEarliestDate - Callback to update earliest urgent date.
+ */
 function processTask(task, counts, updateEarliestDate) {
   counts.total++;
   if (task.column === 'todo') counts.todo++;
@@ -87,7 +110,12 @@ function processTask(task, counts, updateEarliestDate) {
   }
 }
 
-// Parse date string DD/MM/YYYY to Date object
+/**
+ * Parses a date string in DD/MM/YYYY format to a Date object.
+ * Returns null if parsing fails.
+ * @param {string} dateStr
+ * @returns {Date|null}
+ */
 function parseTaskDate(dateStr) {
   const [day, month, year] = dateStr.split('/');
   const correctedDate = `${month}/${day}/${year}`;
@@ -95,7 +123,10 @@ function parseTaskDate(dateStr) {
   return isNaN(taskDate) ? null : taskDate;
 }
 
-// Update urgent task deadline in UI
+/**
+ * Writes the earliest urgent deadline date into desktop and mobile elements.
+ * @param {Date|null} earliestDate
+ */
 function updateUrgentDeadline(earliestDate) {
   const desktopDeadline = $("urgent-deadline");
   const mobileDeadline = $("urgent-deadline-mobile");
@@ -105,7 +136,11 @@ function updateUrgentDeadline(earliestDate) {
   if (mobileDeadline) mobileDeadline.textContent = displayDate;
 }
 
-// Format urgent date for display
+/**
+ * Formats a Date as "Month D, YYYY" for display or returns "Nothing" if null.
+ * @param {Date|null} date
+ * @returns {string}
+ */
 function formatUrgentDate(date) {
   if (!date) return "Nothing";
   const month = date.toLocaleDateString('en-US', { month: 'long' });
@@ -114,7 +149,10 @@ function formatUrgentDate(date) {
   return `${month} ${day}, ${year}`;
 }
 
-// Update task counters in UI
+/**
+ * Updates (and animates) task counters in desktop and mobile widgets.
+ * @param {{todo:number,inProgress:number,awaitFeedback:number,done:number,urgent:number,total:number}} counts
+ */
 function updateTaskCountElements(counts) {
   const elements = {
     todo: $("task-to-do-text"),
@@ -140,7 +178,11 @@ function updateTaskCountElements(counts) {
   }
 }
 
-// Animate numeric counters in UI
+/**
+ * Animates a numeric counter from 0 to its target, then snaps to the final value.
+ * @param {HTMLElement|null} element - Counter element.
+ * @param {number} target - Final count value.
+ */
 function animateCounter(element, target) {
   if (!element || isNaN(target)) return;
 
@@ -163,7 +205,10 @@ function animateCounter(element, target) {
 
 // ===== USER AUTHENTICATION =====
 
-// Update UI with user information
+/**
+ * Projects the authenticated user's name, greeting, and initials into the UI.
+ * @param {{displayName?:string}} user
+ */
 function updateUserInterface(user) {
   const name = user.displayName || "User";
   const greeting = getGreeting();
@@ -191,7 +236,9 @@ function updateUserInterface(user) {
 
 // ===== ANIMATIONS =====
 
-// Initialize mobile animations
+/**
+ * Initializes mobile-only intro animations for the summary board.
+ */
 function initMobileAnimations() {
   if (window.innerWidth > 900) return;
 
@@ -199,7 +246,9 @@ function initMobileAnimations() {
   animateTaskDashboardMobile();
 }
 
-// Animate dashboard header
+/**
+ * Slides the dashboard header upward after a short delay.
+ */
 function animateDashboardHeader() {
   setTimeout(() => {
     const header = document.querySelector('.dashboard-header');
@@ -210,7 +259,9 @@ function animateDashboardHeader() {
   }, 1800);
 }
 
-// Animate mobile task dashboard
+/**
+ * Fades and slides in the mobile task dashboard after the header animation.
+ */
 function animateTaskDashboardMobile() {
   setTimeout(() => {
     const dashboardMobile = document.querySelector('.task-dashboard-mobile');
@@ -225,13 +276,20 @@ function animateTaskDashboardMobile() {
 
 // ===== INITIALIZATION =====
 
-// Listen to authentication state changes
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, handleAuthChange);
+/**
+ * Handles Firebase auth state changes and updates the UI for signed-in users.
+ * @param {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").User|null} user
+ */
+function handleAuthChange(user) {
   if (user) updateUserInterface(user);
-});
+}
 
-// Initialize animations and tasks after DOM loads
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', onDomContentLoaded);
+/**
+ * Bootstraps the summary board once the DOM is ready.
+ */
+function onDomContentLoaded() {
   initMobileAnimations();
   loadTaskCounts();
-});
+}
