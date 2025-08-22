@@ -28,10 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // resize add event listener
-window.addEventListener("resize", () => {
-  let isLogin = !$("login-box").classList.contains("d-none");
-  updateSignUpBoxDisplay(isLogin ? "login" : "signup");
-});
+window.addEventListener("resize", updateSignUpBoxDisplay);
 
 // Background and Logo animation
 function setThemeWhite(isWhite) {

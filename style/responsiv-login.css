@@ -52,8 +52,12 @@
     display: none;
   }
 
-  .sign-up-bottom-box {
-    display: flex !important;
+  body.login .sign-up-bottom-box {
+    display: flex;
+  }
+
+  body.signup .sign-up-bottom-box {
+    display: none !important;
   }
 
   .input-wrapper-box {
