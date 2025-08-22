@@ -220,6 +220,20 @@
     }
 }
 
+@media (max-width: 550px) {
+    .overlay-add-task span {
+        font-size: 16px;
+    }
+
+    .overlay-add-task input {
+        font-size: 16px;
+    }
+
+    .addtask-title {
+        font-size: 28px !important;
+    }
+}
+
 @media (max-width: 470px) {
     .prio-buttons {
         transform: scale(0.9);
@@ -233,7 +247,7 @@
 @media (max-width: 420px) {
     .prio-buttons {
         transform: scale(0.8);
-        transform-origin: left;
+        transform-origin: center;
     }
 }
 

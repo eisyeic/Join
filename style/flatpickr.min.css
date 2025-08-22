@@ -770,6 +770,34 @@ span.flatpickr-weekday {
 .flatpickr-input[readonly] {
   cursor: pointer;
 }
+
+/* Verstecke das schwarze Kalender-Symbol auf Mobile */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="date"] {
+  -moz-appearance: textfield;
+}
+
+/* Für flatpickr mobile inputs */
+.flatpickr-mobile {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.flatpickr-mobile::-webkit-calendar-picker-indicator {
+  display: none;
+}
 @-webkit-keyframes fpFadeInDown {
   from {
     opacity: 0;
