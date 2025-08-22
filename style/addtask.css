@@ -15,7 +15,7 @@
   min-width: 472px;
   display: flex;
   flex-direction: column;
-  padding: 32px 0 0 24px;
+  padding: 20px;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;

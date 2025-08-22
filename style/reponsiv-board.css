@@ -139,7 +139,6 @@
         width: 100vw !important;
         animation: none !important;
         position: absolute !important;
-        top: 100px;
         left: 0 !important;
         border-radius: 0;
     }
@@ -149,7 +148,21 @@
     }
 
     .addtask-wrapper {
-        padding: 0;
+        padding: 20px 0 0 20px;
+    }
+
+    .addtask-main-content {
+        width: calc(100% - 20px);
+    }
+
+    .priority-wrapper {
+        width: calc(100% - 20px);
+    }
+
+    .assigned-box,
+    .category-box,
+    .subtask-box {
+        width: calc(100% - 20px);
     }
 
     .description {
@@ -181,7 +194,6 @@
 @media (max-width: 720px) {
     .add-task-overlay-content {
         height: calc(100vh - 171px) !important;
-        top: 84px;
     }
 
     .board-content {
@@ -194,32 +206,17 @@
         width: 100%;
     }
 
-    .addtask-main-content {
-        padding: 16px 8px 16px 20px;
-    }
-
     .priority-button {
         width: 109px;
     }
 
-    .priority-wrapper {
-        width: calc(100% - 4px);
+    .prio-buttons {
+        justify-content: center;
+        gap: 8px;
     }
 
-    .addtask-main-content {
-        padding: 16px 8px 16px 20px !important;
-    }
-
-    .assigned-box {
-        width: calc(100% - 40px);
-    }
-
-    .category-box {
-        width: calc(100% - 40px);
-    }
-
-    .subtask-box {
-        width: calc(100% - 40px);
+    .addtask-wrapper {
+        min-width: auto;
     }
 }
 

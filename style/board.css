@@ -296,3 +296,7 @@
   width: 0px;
   height: 0px;
 }
+
+.cancel-button {
+  display: none;
+}

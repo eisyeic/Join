@@ -136,4 +136,27 @@
     top: 100px;
     left: 0;
   }
+
+  .cancel-button {
+    display: flex;
+  }
+
+  .add-task-button {
+    flex-direction: unset !important;
+  }
+
+  .overlay-create-task {
+    justify-content: center;
+  }
+
+  .add-task-button {
+    height: auto !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .overlay-add-task {
+    top: 84px;
+    height: calc(100vh - 171px) !important;
+  }
 }
