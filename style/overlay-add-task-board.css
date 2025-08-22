@@ -127,39 +127,3 @@
 .close-button:hover .hover-close-image {
   opacity: 1;
 }
-
-
-@media (max-width: 900px) {
-  .overlay-add-task {
-    height: calc(100vh - 207px) !important;
-    position: absolute;
-    top: 100px;
-    left: 0;
-  }
-
-  .cancel-button {
-    display: flex;
-  }
-
-  .overlay-create-task {
-    justify-content: center;
-  }
-
-  .add-task-button {
-    height: auto !important;
-     flex-direction: unset !important;
-  }
-}
-
-@media (max-width: 720px) {
-  .overlay-add-task {
-    top: 84px;
-    height: calc(100vh - 171px) !important;
-  }
-}
-
-@media (max-width: 550px) {
-   .base-button {
-        font-size: 16px !important;
-    }
-}

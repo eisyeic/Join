@@ -1,3 +1,4 @@
+/* Summary Dashboard Desktop */
 h1 {
   color: var(--main-color);
   font-size: 64px;
@@ -38,7 +39,6 @@ h5 {
   text-align: center;
 }
 
-/* ===== TASK DASHBOARD CONTAINER ===== */
 .task-dashboard-container {
   display: flex;
   flex-direction: column;
@@ -60,7 +60,6 @@ h5 {
   height: 219px;
 }
 
-/* ===== TASK TILE: URGENT TASKS ===== */
 .task-tile-urgent {
   justify-content: center;
   color: white;
@@ -85,7 +84,6 @@ h5 {
   border-radius: 0 30px 30px 30px;
   margin-top: -10px;
 }
-
 
 .task-tile-urgent-content {
   display: flex;
@@ -126,7 +124,6 @@ h5 {
   gap: 13px;
 }
 
-/* ===== TASK TILE: BOARD OVERVIEW ===== */
 .task-tile-board-overview {
   gap: 7px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
@@ -167,7 +164,6 @@ h5 {
   font-weight: 400;
 }
 
-/* ===== TASK TILE: TODO ===== */
 .task-tile-todo {
   background-color: #e6f0ff;
   gap: 7px;
@@ -211,7 +207,6 @@ h5 {
   color: var(--light-blue);
 }
 
-/* ===== TASK TILE: IN PROGRESS ===== */
 .task-tile-in-progress {
   gap: 7px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
@@ -253,7 +248,6 @@ h5 {
   color: white;
 }
 
-/* ===== TASK TILE: AWAITING FEEDBACK ===== */
 .task-tile-awaiting-feedback {
   gap: 7px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
@@ -295,7 +289,6 @@ h5 {
   color: white;
 }
 
-/* ===== TASK TILE: DONE ===== */
 .task-tile-done {
   gap: 7px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
@@ -337,7 +330,6 @@ h5 {
   color: white;
 }
 
-/* ===== TASK TILE ICONS ===== */
 .task-tile-icon-container {
   position: relative;
   width: 76px;
@@ -358,110 +350,5 @@ h5 {
   left: 0;
   width: 66px;
   height: 66px;
-}
-
-.task-dashboard-mobile {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 24px;
-  background: white;
-  z-index: 1;
-  opacity: 0;
-}
-
-.task-tile-urgent-mobile {
-  justify-content: center;
-  color: white;
-  background-color: var(--main-color);
-  border-radius: 30px;
-  display: flex;
-  gap: 16px;
-  width: 396px;
-  height: 150px;
-}
-
-.task-tile-todo-mobile {
-  background-color: var(--navi-buttons-bg);
-  gap: 12px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  display: flex;
-  justify-content: unset;
-  align-items: center;
-  width: 396px;
-  height: 106px;
-}
-
-.task-tile-todo-mobile h5 {
-  color: var(--main-color);
-  font-weight: 400;
-}
-
-.task-tile-board-top-row-mobile {
-  display: flex;
-  justify-content: space-between;
-  width: 396px;
-  height: 152px;
-}
-
-.task-tile-board-overview-mobile {
-  gap: 7px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  width: 186px;
-  height: 152px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.task-tile-in-progress-mobile {
-  gap: 7px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  width: 186px;
-  height: 152px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-
-.task-tile-board-bottom-row-mobile {
-  display: flex;
-  justify-content: space-between;
-  width: 396px;
-  height: 152px;
-}
-
-.task-tile-awaiting-feedback-mobile {
-  gap: 7px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  width: 186px;
-  height: 152px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.task-tile-done-mobile {
-  gap: 7px;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 30px;
-  width: 186px;
-  height: 152px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.task-tile-urgent-title-mobile {
-  font-size: 19px;
 }
 
