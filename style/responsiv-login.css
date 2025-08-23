@@ -51,13 +51,8 @@
   .sign-up-button-box {
     display: none;
   }
-
-  body.login .sign-up-bottom-box {
-    display: flex;
-  }
-
-  body.signup .sign-up-bottom-box {
-    display: none !important;
+  .sign-up-bottom-box-mobile {
+    display: flex !important;
   }
 
   .input-wrapper-box {

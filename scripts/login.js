@@ -29,6 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // resize add event listener
 window.addEventListener("resize", updateSignUpBoxDisplay);
+window.addEventListener("resize", () => {
+  let isLogin = !$("login-box").classList.contains("d-none");
+  updateSignUpBoxDisplay(isLogin ? "login" : "signup");
+});
 
 // Background and Logo animation
 function setThemeWhite(isWhite) {
@@ -42,7 +46,10 @@ function setThemeWhite(isWhite) {
 function showSignUpForm() {
   currentMode = "signup";
   setThemeWhite(false);
-  updateSignUpBoxDisplay();
+  if (window.innerWidth <= 768) {
+    $("sign-up-bottom-box").classList.add("d-none");
+    $("logo-blue").style.display = "none";
+  }
   $("sign-up-box").classList.remove("d-none");
   $("login-box").classList.add("d-none");
   clearFormInputs(["login-email", "login-password"], $("errorMessage"));
@@ -53,7 +60,10 @@ function showSignUpForm() {
 function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
-  updateSignUpBoxDisplay();
+  if (window.innerWidth <= 768) {
+    $("sign-up-bottom-box").classList.add("d-none");
+    $("logo-blue").style.display = "";
+  }
   $("login-box").classList.remove("d-none");
   $("sign-up-box").classList.add("d-none");
   clearFormInputs(

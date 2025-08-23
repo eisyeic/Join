@@ -128,6 +128,14 @@
   height: 43px;
 }
 
+.sign-up-bottom-box-mobile {
+  display: none;
+  gap: 35px;
+  align-items: center;
+  height: 43px;
+  font-size: 19px;
+}
+
 .sign-up-bottom-box, .sign-up-bottom-box button {
   font-size: 19px;
 }
