@@ -21,7 +21,10 @@ export function createTaskElement(task, taskId) {
   
   ticket.innerHTML = `
     <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
-      <div class="label ${labelClass}">${task.category}</div>
+      <div class="label-box">  
+        <div class="label ${labelClass}">${task.category}</div>
+        <img onclick="event.stopPropagation()" class="plus-minus-img" src="./assets/icons/board/plusminus.svg">
+      </div>
       <div class="frame">
         <div class="ticket-title">${task.title}</div>
         <div class="ticket-text">${truncatedDescription}</div>

@@ -259,8 +259,8 @@ function renderSelectedContactInitials() {
   let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
   let contactInitialsBox = document.getElementById("contact-initials");
   contactInitialsBox.innerHTML = "";
-  let initialsToShow = Array.from(selectedLis).slice(0, 3);
-  initialsToShow.forEach((li) => {
+  
+  selectedLis.forEach((li) => {
     let initialsEl = li.querySelector(".contact-initial");
     if (initialsEl) {
       let clone = initialsEl.cloneNode(true);
@@ -268,6 +268,7 @@ function renderSelectedContactInitials() {
     }
   });
 }
+
 
 /**
  * Aggregates the full task payload from the form, including assigned contacts and editing id.

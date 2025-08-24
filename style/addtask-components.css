@@ -92,6 +92,7 @@ li.selected:hover {
   color: #fff;
   background-size: cover;
   font-size: 12px;
+  flex-shrink: 0;
   width: 40px;
   border: 2px solid #fff;
 }
@@ -99,8 +100,11 @@ li.selected:hover {
 .contact-initials {
   display: flex;
   gap: 8px;
+  max-height: 80px;
+  max-width: 100%;
   margin-top: 12px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .contact-initials-icon {

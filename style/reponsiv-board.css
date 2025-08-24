@@ -138,6 +138,9 @@
     .column-title-mobile {
         display: none;
     }
+    .plus-minus-img {
+        display: none;
+    }
 }
 
 @media (max-width: 1250px) {
@@ -203,7 +206,7 @@
         width: 252px;
     }
 
-    .upandown {
+    .plus-minus-img {
         display: flex;
     }
 }
