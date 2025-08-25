@@ -44,6 +44,14 @@
   height: auto;
 }
 
+.edit-addtask .addtask-wrapper {
+  height: 110%;
+}
+
+.edit-addtask .category-box {
+  display: none !important;
+}
+
 /* Slide-In: von rechts -100% nach 0 */
 @keyframes slideInRight {
   from {
