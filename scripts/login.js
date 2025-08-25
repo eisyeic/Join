@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("guest-button").addEventListener("click", handleGuestLogin);
   $("sign-up-page-button").addEventListener("click", showSignUpForm);
   $("sign-up-bottom-button").addEventListener("click", showSignUpForm);
+  document.getElementById("sign-up-bottom-box-mobile").addEventListener("click", showSignUpForm);
   $("sign-up-button").addEventListener("click", handleSignUp);
   $("login-button").addEventListener("click", handleLogin);
   $("go-back").addEventListener("click", showLoginForm);
@@ -47,8 +48,7 @@ function showSignUpForm() {
   currentMode = "signup";
   setThemeWhite(false);
   if (window.innerWidth <= 768) {
-    $("sign-up-bottom-box").classList.add("d-none");
-    $("logo-blue").style.display = "none";
+    $("sign-up-bottom-box-mobile").style.display = "none";
   }
   $("sign-up-box").classList.remove("d-none");
   $("login-box").classList.add("d-none");
@@ -61,8 +61,7 @@ function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
   if (window.innerWidth <= 768) {
-    $("sign-up-bottom-box").classList.add("d-none");
-    $("logo-blue").style.display = "";
+    $("sign-up-bottom-box-mobile").style.display = "flex";
   }
   $("login-box").classList.remove("d-none");
   $("sign-up-box").classList.add("d-none");
