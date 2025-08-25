@@ -198,6 +198,23 @@ function highlightAdjacentColumns(taskElement) {
   }
 }
 
+// Zu/Abbildung Spaltenname <-> DOM-ID
+const LOGICAL_TO_DOM = {
+  todo: 'to-do-column',
+  inProgress: 'in-progress-column',
+  awaitFeedback: 'await-feedback-column',
+  review: 'await-feedback-column', // Fallback, falls "review" noch irgendwo kommt
+  done: 'done-column',
+};
+
+const DOM_TO_LOGICAL = {
+  'to-do-column': 'todo',
+  'in-progress-column': 'inProgress',
+  'await-feedback-column': 'awaitFeedback',
+  'done-column': 'done',
+};
+
+
 /** Handles drop event for a task card. */
 window.drop = handleDrop;
 function handleDrop(event) {
@@ -211,11 +228,15 @@ function handleDrop(event) {
 /** Moves DOM, updates DB, placeholders and highlights after drop. */
 function finalizeDrop(taskId, taskElement, oldColumn, newColumn) {
   newColumn.appendChild(taskElement);
+  // NEW: dataset aktuell halten, damit Overlays später die richtige Spalte erkennen
+  taskElement.dataset.column = DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
+
   updateTaskColumn(taskId, newColumn.id);
   checkAndShowPlaceholder(oldColumn.id);
   checkAndShowPlaceholder(newColumn.id);
   resetColumnBackgrounds();
 }
+
 
 /** Removes highlight styling from all task-list columns. */
 function resetColumnBackgrounds() {
@@ -385,3 +406,19 @@ function onEditTaskBtnClick() {
   const dst = document.querySelector('.edit-addtask');
   if (src && dst) dst.replaceChildren(src);
 }
+
+// Wird vom Overlay (template.modul.js) aufgerufen, um "wie DnD" zu verschieben.
+window.onTaskColumnChanged = function(taskId, targetLogical /* z.B. 'inProgress', 'awaitFeedback' */) {
+  const taskEl = document.getElementById(String(taskId));
+  if (!taskEl) return;
+
+  const oldColumnEl = taskEl.closest('.task-list') || taskEl.parentElement;
+  const newDomId = LOGICAL_TO_DOM[targetLogical] || targetLogical;
+  const newColumnEl = document.getElementById(newDomId);
+
+  if (!newColumnEl || !oldColumnEl) {
+    console.warn('[onTaskColumnChanged] Ziel/Quelle nicht gefunden:', { targetLogical, newDomId });
+    return;
+  }
+  finalizeDrop(taskId, taskEl, oldColumnEl, newColumnEl);
+};
