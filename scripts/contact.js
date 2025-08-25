@@ -50,6 +50,17 @@ function showContactDetails(name, email, phone, colorIndex, id) {
   currentContact = { name, email, phone, colorIndex, id };
   const detailSection = document.getElementById("contact-details");
 
+  // Remove active class from all contacts
+  document.querySelectorAll(".contact-person").forEach((contact) => {
+    contact.classList.remove("active");
+  });
+
+  // Add active class to clicked contact
+  const clickedContact = document.querySelector(`[onclick*="'${id}'"]`);
+  if (clickedContact) {
+    clickedContact.classList.add("active");
+  }
+
   getContactDetails(name, email, phone, colorIndex, detailSection);
   detailSection.classList.remove("d-none");
 
@@ -78,10 +89,12 @@ function removeDetailsMobileNavbar(event) {
   if (event) {
     event.stopPropagation();
   } else {
-    const mobileNavbar = document.getElementById("single-person-content-mobile-navbar");
+    const mobileNavbar = document.getElementById(
+      "single-person-content-mobile-navbar"
+    );
     if (mobileNavbar) {
       mobileNavbar.classList.add("d-none");
-    } 
+    }
   }
 }
 
@@ -130,7 +143,7 @@ function getContactUpdateData() {
     email: currentContact.email,
     phone: currentContact.phone,
     colorIndex: currentContact.colorIndex,
-    initials: getInitials(currentContact.name)
+    initials: getInitials(currentContact.name),
   };
 }
 
@@ -145,7 +158,6 @@ function handleUpdateSuccess() {
   );
   toggleEditContact();
 }
-
 
 // Update Contact In Firebase
 function updateContactInFirebase() {
@@ -163,7 +175,6 @@ function updateContactInFirebase() {
     });
   });
 }
-
 
 // ===== INPUT VALIDATION =====
 
@@ -226,7 +237,7 @@ function getFieldMapping() {
     "phone-new-contact": "phone-new-contact-box",
     "edit-name-input": "edit-name-input-box",
     "edit-email-input": "edit-email-input-box",
-    "edit-phone-input": "edit-phone-input-box"
+    "edit-phone-input": "edit-phone-input-box",
   };
 }
 
@@ -251,7 +262,7 @@ function setFieldErrorStyle(field, placeholder) {
 function showFieldError(fieldId, message) {
   const field = $(fieldId);
   const placeholder = $(fieldId + "-placeholder");
-  
+
   setErrorMessage(fieldId, message);
   setFieldErrorStyle(field, placeholder);
 }
@@ -277,7 +288,7 @@ function clearFieldErrorStyle(field, placeholder) {
 function clearFieldError(fieldId) {
   const field = $(fieldId);
   const placeholder = $(fieldId + "-placeholder");
-  
+
   clearErrorMessage(fieldId);
   clearFieldErrorStyle(field, placeholder);
 }
@@ -287,7 +298,7 @@ function getEditFormValues() {
   return {
     name: $("edit-name-input").value.trim(),
     email: $("edit-email-input").value.trim(),
-    phone: $("edit-phone-input").value.trim()
+    phone: $("edit-phone-input").value.trim(),
   };
 }
 
@@ -333,7 +344,7 @@ function validateEditFormFields(values) {
   const nameValid = validateEditNameField(values.name);
   const emailValid = validateEditEmailField(values.email);
   const phoneValid = validateEditPhoneField(values.phone);
-  
+
   return nameValid && emailValid && phoneValid;
 }
 
@@ -349,7 +360,7 @@ function getAddFormValues() {
   return {
     name: $("name-new-contact").value.trim(),
     email: $("email-new-contact").value.trim(),
-    phone: $("phone-new-contact").value.trim()
+    phone: $("phone-new-contact").value.trim(),
   };
 }
 
@@ -395,7 +406,7 @@ function validateAddFormFields(values) {
   const nameValid = validateAddNameField(values.name);
   const emailValid = validateAddEmailField(values.email);
   const phoneValid = validateAddPhoneField(values.phone);
-  
+
   return nameValid && emailValid && phoneValid;
 }
 

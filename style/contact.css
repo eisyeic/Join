@@ -22,6 +22,7 @@ main,
     scrollbar-color: rgba(0, 0, 0, 0);
     box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.1);
     margin-top: 4px;
+    width: 380px;
 }
 
 .button-add-new-contact-container {
@@ -72,12 +73,14 @@ main,
     background-color: #D2E3FF;
 }
 
-.contact-person:active {
+.contact-person:active,
+.contact-person.active {
     background-color: var(--main-color);
     color: white;
 }
 
-.contact-person:active a {
+.contact-person:active a,
+.contact-person.active a {
     color: white;
 }
 
