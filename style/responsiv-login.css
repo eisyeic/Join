@@ -44,7 +44,7 @@
   }
 
   .sign-up-box {
-    height: 608px;
+    height: 580px;
     width: 396px;
   }
 
@@ -52,7 +52,7 @@
     display: none;
   }
   .sign-up-bottom-box-mobile {
-    display: flex !important;
+    display: flex;
   }
 
   .input-wrapper-box {
@@ -111,15 +111,22 @@
   .logo-wrapper img {
     transform: scale(0.8);
   }
-
-  .spacer-box {
-    padding-top: 20px;
-  }
 }
 
-@media (max-height: 700px) {
+@media (max-height: 820px) {
   .login-box {
-    height: 430px;
+    transform: scale(0.8);
+    gap: 16px;
+  }
+
+  .sign-up-bottom-box-mobile {
+    transform: scale(0.8);
+    padding-bottom: 20px;
+  }
+
+  .sign-up-box {
+    transform: scale(0.8);
+    margin-top: 50px;
     gap: 16px;
   }
 }

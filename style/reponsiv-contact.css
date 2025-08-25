@@ -166,7 +166,7 @@
         bottom: 107px;
     }
 
-     .contact-content {
+    .contact-content {
         height: calc(100vh - 171px);
     }
 
@@ -233,6 +233,9 @@
         top: 300px !important;
     }
 
+    .contact-overlay-edit-content-name {
+        width: calc(100% - 16px) !important;
+    }
 
     header {
         z-index: 0;
