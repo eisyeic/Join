@@ -50,6 +50,7 @@ function showSignUpForm() {
   if (window.innerWidth <= 768) {
     $("sign-up-bottom-box-mobile").style.display = "none";
   }
+  $("sign-up-top-right-box").style.display = "none";
   $("sign-up-box").classList.remove("d-none");
   $("login-box").classList.add("d-none");
   clearFormInputs(["login-email", "login-password"], $("errorMessage"));
@@ -63,6 +64,7 @@ function showLoginForm() {
   if (window.innerWidth <= 768) {
     $("sign-up-bottom-box-mobile").style.display = "flex";
   }
+  $("sign-up-top-right-box").style.display = "flex";
   $("login-box").classList.remove("d-none");
   $("sign-up-box").classList.add("d-none");
   clearFormInputs(
@@ -80,10 +82,10 @@ function updateSignUpBoxDisplay() {
   } else {
     if (window.innerWidth <= 768) {
       $("sign-up-top-right-box").classList.add("d-none");
-      $("sign-up-bottom-box").classList.remove("d-none");
+      $("sign-up-bottom-box-mobile").classList.remove("d-none");
     } else {
       $("sign-up-top-right-box").classList.remove("d-none");
-      $("sign-up-bottom-box").classList.add("d-none");
+      $("sign-up-bottom-box-mobile").classList.add("d-none");
     }
   }
 }
