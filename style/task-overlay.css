@@ -97,6 +97,15 @@
   word-wrap: break-word;
   line-height: 1.1;
   flex-shrink: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  min-height: 75px;
+}
+
+.task-text {
+  min-height: 30px;
+  max-height: 100px;
+  overflow: auto;
 }
 
 .due-date-box {
@@ -216,9 +225,19 @@ b {
   font-weight: 700;
 }
 
-.task-overlay-title {
-  font-size: clamp(16px, 4vw, 61px);
-  font-weight: 700;
+.subtasks-ckeck-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subtasks-container {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.members {
+  max-height: 400px;
 }
 
 .add-task-button {

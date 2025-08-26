@@ -17,109 +17,110 @@
 
 /* Board Overlay Media Queries */
 @media (max-width: 900px) {
-  .overlay-add-task {
-    height: calc(100vh - 207px) !important;
-    position: absolute;
-    top: 100px;
-    left: 0;
-  }
+    .overlay-add-task {
+        height: calc(100vh - 207px) !important;
+        position: absolute;
+        top: 100px;
+        left: 0;
+    }
 
-  .cancel-button {
-    display: flex;
-  }
+    .cancel-button {
+        display: flex;
+    }
 
-  .overlay-create-task {
-    justify-content: center;
-  }
+    .overlay-create-task {
+        justify-content: center;
+    }
 
-  .add-task-button {
-    height: auto !important;
-    flex-direction: unset !important;
-  }
+    .add-task-button {
+        height: auto !important;
+        flex-direction: unset !important;
+    }
 
-  .add-task-overlay-content {
-    height: calc(100vh - 207px) !important;
-    width: 100vw !important;
-    animation: none !important;
-    position: absolute !important;
-    left: 0 !important;
-    border-radius: 0;
-  }
+    .add-task-overlay-content {
+        height: calc(100vh - 207px) !important;
+        width: 100vw !important;
+        animation: none !important;
+        position: absolute !important;
+        left: 0 !important;
+        border-radius: 0;
+    }
 
-  .add-task-overlay-head {
-    display: none;
-  }
+    .add-task-overlay-head {
+        display: none;
+    }
 
-  .addtask-wrapper {
-    padding: 20px 0 0 20px;
-  }
+    .addtask-wrapper {
+        padding: 20px 0 0 20px;
+    }
 
-  .addtask-main-content {
-    width: calc(100% - 20px);
-  }
+    .addtask-main-content {
+        width: calc(100% - 20px);
+    }
 
-  .priority-wrapper {
-    width: calc(100% - 20px);
-  }
+    .priority-wrapper {
+        width: calc(100% - 20px);
+    }
 
-  .assigned-box,
-  .category-box,
-  .subtask-box {
-    width: calc(100% - 20px);
-  }
+    .assigned-box,
+    .category-box,
+    .subtask-box {
+        width: calc(100% - 20px);
+    }
 
-  .description {
-    display: flex;
-    flex-direction: column;
-  }
+    .description {
+        display: flex;
+        flex-direction: column;
+    }
 
-  .addtask-aside-clone {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+    .addtask-aside-clone {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
-  .addtask-main-content textarea {
-    width: 100%;
-  }
+    .addtask-main-content textarea {
+        width: 100%;
+    }
 }
 
 @media (max-width: 720px) {
-  .overlay-add-task {
-    top: 84px;
-    height: calc(100vh - 171px) !important;
-  }
+    .overlay-add-task {
+        top: 84px;
+        height: calc(100vh - 171px) !important;
+    }
 
-  .add-task-overlay-content {
-    height: calc(100vh - 171px) !important;
-  }
+    .add-task-overlay-content {
+        height: calc(100vh - 171px) !important;
+    }
 }
 
 @media (max-width: 550px) {
-  .base-button {
-    font-size: 16px !important;
-  }
+    .base-button {
+        font-size: 16px !important;
+    }
 
-  .overlay-add-task span {
-    font-size: 16px;
-  }
+    .overlay-add-task span {
+        font-size: 16px;
+    }
 
-  .overlay-add-task input {
-    font-size: 16px;
-  }
+    .overlay-add-task input {
+        font-size: 16px;
+    }
 
-  .addtask-title {
-    font-size: 28px !important;
-  }
+    .addtask-title {
+        font-size: 28px !important;
+    }
 }
 
 @media (max-width: 375px) {
-  .create-button {
-    padding: 8px 8px;
-  }
-  .cancel-button {
-    padding: 8px 8px;
-  }
+    .create-button {
+        padding: 8px 8px;
+    }
+
+    .cancel-button {
+        padding: 8px 8px;
+    }
 }
 
 @media (max-width: 1350px) {
@@ -138,6 +139,7 @@
     .column-title-mobile {
         display: none;
     }
+
     .plus-minus-img {
         display: none;
     }
@@ -288,6 +290,60 @@
 
     .addtask-main-content textarea {
         width: 100%;
+    }
+}
+
+@media (max-height: 900px) {
+    .user-story {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+
+    .task-overlay-title {
+        max-height: 90px;
+        font-size: 32px;
+    }
+
+    .task-text {
+        min-height: 52px;
+    }
+
+    .member {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+
+    .members {
+        max-height: 60px !important;
+    }
+
+    .subtask {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+
+    .subtasks-container {
+        max-height: 60px;
+    }
+
+    .due-date-box b {
+        font-size: 16px !important;
+    }
+
+    .due-date-box span {
+        font-size: 16px !important;
+    }
+
+    .priority-box b {
+        font-size: 16px !important;
+    }
+
+    .priority span {
+        font-size: 16px !important;
+    }
+
+    .task-overlay-content {
+        padding: 30px 40px;
     }
 }
 

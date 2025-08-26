@@ -118,7 +118,7 @@ window.renderAssignedContacts = renderAssignedContacts;
 export function renderSubtasks(task) {
   let container = $("overlay-subtasks");
   if (task.subtasks && task.subtasks.length > 0) {
-    container.innerHTML = "<b>Subtasks</b>";
+    let subtasksHtml = "";
     task.subtasks.forEach((subtask, i) => {
       let checked = subtask.checked ? "checked" : "";
       let checkboxId = `subtask${i}`;
@@ -126,7 +126,7 @@ export function renderSubtasks(task) {
         ? "./assets/icons/add_task/check_checked.svg"
         : "./assets/icons/add_task/check_default.svg";
       let labelClass = subtask.checked ? "checked" : "";
-      container.innerHTML += `
+      subtasksHtml += `
         <div class="subtask">
           <input type="checkbox" id="${checkboxId}" ${checked} style="display: none"/>
           <label for="${checkboxId}" class="${labelClass}">
@@ -136,6 +136,7 @@ export function renderSubtasks(task) {
         </div>
       `;
     });
+    container.innerHTML = `<b>Subtasks:</b><div class="subtasks-container">${subtasksHtml}</div>`;
   } else {
     container.innerHTML = "<b>no subtasks</b>";
   }
