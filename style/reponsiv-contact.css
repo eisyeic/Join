@@ -141,6 +141,20 @@
 
     .contact-single-person-content-head {
         align-items: center;
+        justify-content: flex-start;
+        gap: 22px !important;
+    }
+
+    .contact-person-icon-big {
+        flex-shrink: 0;
+        width: 120px !important;
+    }
+
+    .contact-single-person-content-head-name h3 {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+        max-width: calc(100vw - 180px) !important;
     }
 }
 
@@ -201,10 +215,32 @@
     .contact-overlay-edit-head p {
         font-size: 20px !important;
     }
+
+    .contact-person-icon-big img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .contact-person-icon-big h3 {
+        font-size: 32px;
+    }
+
+    .contact-single-person-content-head-name h4 {
+        font-size: 32px;
+    }
+
+    .contact-single-person-content-head {
+        gap: 10px !important;
+        padding: 0 !important;
+    }
+
+    .contact-person-icon-big {
+        width: 70px !important;
+    }
 }
 
 
-@media (max-height: 800px) {
+@media (max-height: 900px) {
     .contact-overlay-add-head {
         margin: 0 !important;
         width: 100% !important;
