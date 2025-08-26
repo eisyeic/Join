@@ -37,6 +37,7 @@ function setThemeWhite(isWhite) {
   $("layout").classList.toggle("bg-blue", !isWhite);
   $("logo-white").style.opacity = isWhite ? "0" : "1";
   $("logo-blue").style.opacity = isWhite ? "1" : "0";
+  updateSignUpBoxDisplay();
 }
 
 // Show Sign Up view

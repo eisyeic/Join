@@ -273,23 +273,42 @@ function updateTaskColumn(taskId, newColumnId) {
  * @param {{initials:string,colorIndex:number}[]} contacts
  * @returns {string}
  */
-export function renderAssignedInitials(contacts) {
-  let maxShown = 3;
-  let shownContacts = contacts.slice(0, maxShown);
+export function renderAssignedInitials(contacts = []) {
+  const maxShown = 3;
+  if (!Array.isArray(contacts) || contacts.length === 0) return "";
+
+  const shownContacts = contacts.slice(0, maxShown);
+  const hasOverflow = contacts.length > maxShown;
+  const overflowCount = contacts.length - (maxShown - 1);
+
   return shownContacts
     .map((contact, index) => {
-      let positionClass = ["first-initial", "second-initial", "third-initial"][
-        index
-      ];
+      const positionClass = ["first-initial", "second-initial", "third-initial"][index];
+
+      if (hasOverflow && index === maxShown - 1) {
+        return `
+          <div class="initial-circle ${positionClass} initial-circle--more" title="+${overflowCount}">
+            +${overflowCount}
+          </div>
+        `;
+      }
+
+      const colorIdx = Number.isFinite(contact?.colorIndex) ? contact.colorIndex : 0;
+      const initials = contact?.initials || "";
+      const title = contact?.name || initials;
+
       return `
-      <div class="initial-circle ${positionClass}" 
-           style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
-        ${contact.initials}
-      </div>
-    `;
+        <div class="initial-circle ${positionClass}" 
+             style="background-image: url(../assets/icons/contact/color${colorIdx}.svg)"
+             title="${title}">
+          ${initials}
+        </div>
+      `;
     })
     .join("");
 }
+
+
 
 /**
  * Maps task category name to a CSS class used for the label.

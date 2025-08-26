@@ -329,3 +329,13 @@
   animation: none !important;
   transform: none !important;
 }
+
+.initial-circle--more {
+  background-image: none !important;
+  background-color: white; /* grau */
+  color: var(--main-color);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
