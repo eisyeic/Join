@@ -294,7 +294,7 @@
 }
 
 @media (max-height: 900px) {
-    .user-story {
+    .user-story, .technical-task {
         transform: scale(0.8);
         transform-origin: top left;
     }
