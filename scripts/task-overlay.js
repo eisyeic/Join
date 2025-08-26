@@ -281,6 +281,7 @@ function syncAssignedSelectionToList() {
   });
 }
 
+
 // subtasks checkbox events
 function attachSubtaskEvents(checkbox, label, img, taskId, i) {
   const updateImage = () => {
