@@ -77,24 +77,42 @@ export function createTaskElement(task, taskId) {
 }
 
 // render contacts in task overlay
+// overlay.js / board.js – wo deine Funktion aktuell liegt
 export function renderAssignedContacts(task) {
-  let container = $("overlay-members");
-  if (!container) return;
-  container.innerHTML = "";
-  let maxShown = 3;
-  let contacts = task.assignedContacts || [];
-  for (let i = 0; i < Math.min(contacts.length, maxShown); i++) {
-    let contact = contacts[i];
-    container.innerHTML += `
-      <div class="member">
-        <div class="initial-circle" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
-          ${contact.initials}
+  const contacts = Array.isArray(task?.assignedContacts) ? task.assignedContacts : [];
+
+  // wartet bis der Container im DOM ist (max. ~15 Frames)
+  const waitAndRender = (tries = 15) => {
+    const container = document.getElementById("overlay-members");
+    if (!container) {
+      if (tries > 0) requestAnimationFrame(() => waitAndRender(tries - 1));
+      return;
+    }
+
+    container.innerHTML = contacts.map((c) => {
+      const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
+      const initials = c?.initials || "";
+      const name = c?.name || initials;
+
+      return `
+        <div class="member">
+          <div class="initial-circle"
+               style="background-image:url(../assets/icons/contact/color${colorIdx}.svg)">
+            ${initials}
+          </div>
+          <span>${name}</span>
         </div>
-        <span>${contact.name}</span>
-      </div>
-    `;
-  }
+      `;
+    }).join("");
+  };
+
+  waitAndRender();
 }
+
+// Optional (macht die Funktion auch global aufrufbar, falls showTaskOverlay auf window zugreift)
+window.renderAssignedContacts = renderAssignedContacts;
+
+
 
 // render subtasks in task overlay
 export function renderSubtasks(task) {
