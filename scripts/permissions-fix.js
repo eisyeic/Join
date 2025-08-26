@@ -14,21 +14,6 @@ window.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
-
-  // Alternative Events verwenden statt unload/beforeunload
-  // pagehide Event für Cleanup-Operationen
-  window.addEventListener('pagehide', function(event) {
-    // Hier können Sie Cleanup-Code einfügen, der normalerweise in unload stehen würde
-    console.log('Page is being hidden/unloaded');
-  });
-
-  // visibilitychange Event für Sichtbarkeitsänderungen
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'hidden') {
-      // Page wird versteckt/verlassen
-      console.log('Page visibility changed to hidden');
-    }
-  });
 });
 
 // Überschreiben der addEventListener Methode für unload/beforeunload

@@ -30,10 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // resize add event listener
 window.addEventListener("resize", updateSignUpBoxDisplay);
-window.addEventListener("resize", () => {
-  let isLogin = !$("login-box").classList.contains("d-none");
-  updateSignUpBoxDisplay(isLogin ? "login" : "signup");
-});
 
 // Background and Logo animation
 function setThemeWhite(isWhite) {
@@ -47,7 +43,7 @@ function setThemeWhite(isWhite) {
 function showSignUpForm() {
   currentMode = "signup";
   setThemeWhite(false);
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 720) {
     $("sign-up-bottom-box-mobile").style.display = "none";
   }
   $("sign-up-top-right-box").style.display = "none";
@@ -61,7 +57,7 @@ function showSignUpForm() {
 function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 720) {
     $("sign-up-bottom-box-mobile").style.display = "flex";
   }
   $("sign-up-top-right-box").style.display = "flex";
@@ -76,19 +72,25 @@ function showLoginForm() {
 
 // Update Sign Up box display based on current mode
 function updateSignUpBoxDisplay() {
+  const topRight = $("sign-up-top-right-box");
+  const bottomMobile = $("sign-up-bottom-box-mobile");
+
+  if (!topRight) return; // nothing to do if layout isn’t present
+
   if (currentMode === "signup") {
-    $("sign-up-top-right-box").classList.add("d-none");
-    $("sign-up-bottom-box").classList.add("d-none");
+    topRight.classList.add("d-none");
+    bottomMobile?.classList.add("d-none");
   } else {
-    if (window.innerWidth <= 768) {
-      $("sign-up-top-right-box").classList.add("d-none");
-      $("sign-up-bottom-box-mobile").classList.remove("d-none");
+    if (window.innerWidth <= 720) {
+      topRight.classList.add("d-none");
+      bottomMobile?.classList.remove("d-none");
     } else {
-      $("sign-up-top-right-box").classList.remove("d-none");
-      $("sign-up-bottom-box-mobile").classList.add("d-none");
+      topRight.classList.remove("d-none");
+      bottomMobile?.classList.add("d-none");
     }
   }
 }
+
 
 // Password Logic
 function initializePasswordFields(context) {
