@@ -1,11 +1,14 @@
-main {
-    height: 100%;
+.hep-wrapper {
+    flex: 1;
+    overflow-y: auto;
 }
+
 .help-content {
     padding: 72px 88px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    max-width: 1440px;
     overflow: auto;
     overflow-x: hidden;
 }
