@@ -8,6 +8,18 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 import { app, auth } from "./firebase.js";
 import { createTaskElement } from "./template.modul.js";
 
+
+const MIN_SEARCH_CHARS = 3;
+let currentSearchTerm = "";
+function debounce(fn, wait = 200) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+
 /**
  * Maps logical task columns to their DOM container ids.
  * @type {{todo:string,inProgress:string,awaitFeedback:string,done:string}}
@@ -350,15 +362,38 @@ function onBoardDomContentLoaded() {
   loadTasksFromFirebase();
   setupSearchHandlers();
 }
+
 /** Wires search input and button handlers. */
 function setupSearchHandlers() {
   const searchInput = $("search-input");
   const searchButton = $("search-btn");
-  if (!searchInput || !searchButton) return;
-  const handleSearch = () => filterTasks(searchInput.value.toLowerCase().trim());
-  searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleSearch(); });
-  searchButton.addEventListener("click", handleSearch);
+  if (!searchInput) return;
+
+  const run = () => {
+    const term = (searchInput.value || "").toLowerCase().trim();
+
+    if (term.length >= MIN_SEARCH_CHARS) {
+      currentSearchTerm = term;
+      filterTasks(term);
+    } else {
+      currentSearchTerm = "";
+      filterTasks(currentSearchTerm); 
+    }
+  };
+
+  // Live-Suche beim Tippen (mit Debounce)
+  const debouncedRun = debounce(run, 200);
+  searchInput.addEventListener("input", debouncedRun);
+
+  // Optional: Enter erlaubt sofortiges Suchen
+  searchInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") run();
+  });
+
+  // Search-Button bleibt nutzbar, aber respektiert die 3-Zeichen-Regel
+  searchButton?.addEventListener("click", run);
 }
+
 
 /**
  * Shows only tasks whose title or description contains the term.

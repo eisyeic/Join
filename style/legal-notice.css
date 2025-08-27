@@ -1,9 +1,15 @@
+.legal-wrapper {
+    flex: 1;
+    overflow-y: auto;
+}
+
+
 .legal-notice-content {
     padding: 72px 88px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    overflow-y: scroll;
+    width: 1440px;
 }
 
 .legal-notice-a-tag-style {

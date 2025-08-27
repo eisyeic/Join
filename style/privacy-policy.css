@@ -1,9 +1,14 @@
+.policy-wrapper {
+    overflow-y: auto;
+    flex: 1;
+}
+
 .privacy-policy-content {
     padding: 72px 88px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    flex: 1;
+    width: 1440px;
     overflow: auto;
 }
 

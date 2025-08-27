@@ -229,6 +229,7 @@ function registerUser(email, password) {
         $("slide-in-banner").classList.remove("visible");
         $("layout").style.opacity = "1";
         showLoginForm();
+        $("confirm").classList.toggle("checked");
       }, 1200);
     })
     .catch((err) => showError($("error-sign-up"), err.message));
