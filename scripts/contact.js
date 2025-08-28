@@ -1,9 +1,20 @@
 // ===== GLOBAL VARIABLES =====
 
+/**
+ * Rolling color index used when creating new contacts.
+ * @type {number}
+ * @global
+ */
 window.colorIndex = 0;
 
 // ===== UTILITY FUNCTIONS =====
 
+/**
+ * Derive up to two initials from a full name.
+ * @param {string} name - Full name (e.g., "Ada Lovelace").
+ * @returns {string} Uppercase initials (e.g., "AL").
+ * @global
+ */
 window.getInitials = function (name) {
   const words = name.split(" ");
   const firstInitial = words[0] ? words[0][0].toUpperCase() : "";
@@ -13,7 +24,10 @@ window.getInitials = function (name) {
 
 // ===== OVERLAY TOGGLE FUNCTIONS =====
 
-// Clear Add Form Inputs
+/**
+ * Clear all inputs and error states in the Add-Contact form.
+ * @returns {void}
+ */
 function clearAddFormInputs() {
   $("name-new-contact").value = "";
   $("email-new-contact").value = "";
@@ -23,29 +37,51 @@ function clearAddFormInputs() {
   clearFieldError("phone-new-contact");
 }
 
-// Open Add Contact
+/**
+ * Open the Add-Contact overlay and reset the form.
+ * @returns {void}
+ */
 function openAddContact() {
   $("contact-overlay-close-add").classList.remove("d-none");
   clearAddFormInputs();
 }
 
-// Close Add Contact
+/**
+ * Close the Add-Contact overlay and reset the form.
+ * @returns {void}
+ */
 function closeAddContact() {
   $("contact-overlay-close-add").classList.add("d-none");
   clearAddFormInputs();
 }
 
-// Toggle Add Contact
+/**
+ * Toggle visibility of the Add-Contact overlay.
+ * @returns {void}
+ */
 function toggleAddContact() {
   $("contact-overlay-close-add").classList.toggle("d-none");
 }
 
-// Toggle Edit Contact
+/**
+ * Toggle visibility of the Edit-Contact overlay.
+ * @returns {void}
+ */
 function toggleEditContact() {
   $("contact-overlay-close-edit").classList.toggle("d-none");
 }
 
-// Show Contact Details
+/**
+ * Show contact details in the details pane and handle mobile layout.
+ * Also sets the global `currentContact`.
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {string} id - Contact id.
+ * @returns {void}
+ * @global
+ */
 function showContactDetails(name, email, phone, colorIndex, id) {
   currentContact = { name, email, phone, colorIndex, id };
   const detailSection = document.getElementById("contact-details");
@@ -61,6 +97,7 @@ function showContactDetails(name, email, phone, colorIndex, id) {
     clickedContact.classList.add("active");
   }
 
+  // External renderer expected: getContactDetails(...)
   getContactDetails(name, email, phone, colorIndex, detailSection);
   detailSection.classList.remove("d-none");
 
@@ -68,23 +105,34 @@ function showContactDetails(name, email, phone, colorIndex, id) {
     $("contact-details").classList.add("mobile-visible");
     $("add-new-contact-container").style.display = "none";
 
+    // External mobile renderer expected: getNewLayoutDetails(...)
     getNewLayoutDetails(name, email, phone, colorIndex, detailSection);
   }
 }
 
-// Details Mobile Back
+/**
+ * Mobile back action: hide details, show add-contact panel.
+ * @returns {void}
+ */
 function detailsMobileBack() {
   $("contact-details").classList.remove("mobile-visible");
   $("contact-details").style.display = "none";
   $("add-new-contact-container").style.display = "block";
 }
 
-// Add Details Mobile Navbar
+/**
+ * Show the mobile navbar in contact details view.
+ * @returns {void}
+ */
 function addDetailsMobileNavbar() {
   $("single-person-content-mobile-navbar").classList.remove("d-none");
 }
 
-// Remove Mobile Navbar
+/**
+ * Hide the mobile navbar. Stops propagation if an event is provided.
+ * @param {Event} [event]
+ * @returns {void}
+ */
 function removeDetailsMobileNavbar(event) {
   if (event) {
     event.stopPropagation();
@@ -100,7 +148,16 @@ function removeDetailsMobileNavbar(event) {
 
 // ===== EDIT CONTACT FUNCTIONS =====
 
-// Get Edit Form Elements
+/**
+ * Get references to edit form elements.
+ * @returns {{
+ *  nameInput: HTMLInputElement,
+ *  emailInput: HTMLInputElement,
+ *  phoneInput: HTMLInputElement,
+ *  iconImg: HTMLImageElement,
+ *  iconText: HTMLElement
+ * }}
+ */
 function getEditFormElements() {
   return {
     nameInput: $("edit-name-input"),
@@ -111,7 +168,11 @@ function getEditFormElements() {
   };
 }
 
-// Populate Edit Form
+/**
+ * Populate the edit form with `currentContact` values.
+ * @param {ReturnType<typeof getEditFormElements>} elements
+ * @returns {void}
+ */
 function populateEditForm(elements) {
   elements.nameInput.value = currentContact.name;
   elements.emailInput.value = currentContact.email;
@@ -120,7 +181,10 @@ function populateEditForm(elements) {
   elements.iconText.textContent = getInitials(currentContact.name);
 }
 
-// Open Edit Contact
+/**
+ * Open the Edit-Contact overlay with prefilled fields.
+ * @returns {void}
+ */
 function openEditContact() {
   const elements = getEditFormElements();
   populateEditForm(elements);
@@ -129,14 +193,20 @@ function openEditContact() {
 
 // ===== SAVE CONTACT FUNCTIONS =====
 
-// Get Updated Contact Data
+/**
+ * Read updated values from edit inputs into `currentContact`.
+ * @returns {void}
+ */
 function getUpdatedContactData() {
   currentContact.name = $("edit-name-input").value;
   currentContact.email = $("edit-email-input").value;
   currentContact.phone = $("edit-phone-input").value;
 }
 
-// Get Contact Update Data
+/**
+ * Build the update payload for Firebase.
+ * @returns {{name:string,email:string,phone:string,colorIndex:number,initials:string}}
+ */
 function getContactUpdateData() {
   return {
     name: currentContact.name,
@@ -147,7 +217,10 @@ function getContactUpdateData() {
   };
 }
 
-// Handle Update Success
+/**
+ * After successful update: re-render details and close editor.
+ * @returns {void}
+ */
 function handleUpdateSuccess() {
   showContactDetails(
     currentContact.name,
@@ -159,7 +232,11 @@ function handleUpdateSuccess() {
   toggleEditContact();
 }
 
-// Update Contact In Firebase
+/**
+ * Update the current contact in Firebase (dynamic imports).
+ * Expects `currentContact.id` to be defined.
+ * @returns {void}
+ */
 function updateContactInFirebase() {
   import(
     "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
@@ -178,7 +255,11 @@ function updateContactInFirebase() {
 
 // ===== INPUT VALIDATION =====
 
-// Validate Phone Input
+/**
+ * Allow only phone-friendly keystrokes.
+ * @param {KeyboardEvent} event
+ * @returns {void}
+ */
 function validatePhoneInput(event) {
   const allowedChars = /[0-9+\-() ]/;
   if (
@@ -191,13 +272,21 @@ function validatePhoneInput(event) {
   }
 }
 
-// Is Valid Email
+/**
+ * Basic email format validation.
+ * @param {string} email
+ * @returns {boolean} True if the email matches a simple regex.
+ */
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Validate Name Input
+/**
+ * Allow only letters, spaces, hyphen, apostrophe (incl. umlauts).
+ * @param {KeyboardEvent} event
+ * @returns {void}
+ */
 function validateNameInput(event) {
   const allowedChars = /[a-zA-ZäöüÄÖÜß\s\-']/;
   if (
@@ -212,7 +301,10 @@ function validateNameInput(event) {
 
 // ===== EVENT LISTENERS =====
 
-// Initialize Event Listeners
+/**
+ * Wire input validators after DOM is ready.
+ * @returns {void}
+ */
 document.addEventListener("DOMContentLoaded", function () {
   $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
   $("phone-new-contact").addEventListener("keydown", validatePhoneInput);
@@ -220,7 +312,12 @@ document.addEventListener("DOMContentLoaded", function () {
   $("edit-name-input").addEventListener("keydown", validateNameInput);
 });
 
-// Delete Contact And Go Back
+/**
+ * Delete the current contact and navigate back (mobile).
+ * @param {Event} event
+ * @returns {void}
+ * @global
+ */
 function deleteContactAndGoBack(event) {
   event.stopPropagation();
   deleteContact();
@@ -229,7 +326,10 @@ function deleteContactAndGoBack(event) {
 
 // ===== ERROR HANDLING =====
 
-// Get Field Mapping
+/**
+ * Map field IDs to their respective error container IDs.
+ * @returns {Record<string,string>}
+ */
 function getFieldMapping() {
   return {
     "name-new-contact": "name-new-contact-box",
@@ -241,7 +341,12 @@ function getFieldMapping() {
   };
 }
 
-// Set Error Message
+/**
+ * Inject an error message for a field into its error container.
+ * @param {string} fieldId
+ * @param {string} message
+ * @returns {void}
+ */
 function setErrorMessage(fieldId, message) {
   const fieldMapping = getFieldMapping();
   if (fieldMapping[fieldId]) {
@@ -249,7 +354,12 @@ function setErrorMessage(fieldId, message) {
   }
 }
 
-// Set Field Error Style
+/**
+ * Apply error styles to a field and its placeholder (if present).
+ * @param {HTMLElement} field
+ * @param {HTMLElement} [placeholder]
+ * @returns {void}
+ */
 function setFieldErrorStyle(field, placeholder) {
   field.style.borderColor = "red";
   field.classList.add("error-input");
@@ -258,7 +368,12 @@ function setFieldErrorStyle(field, placeholder) {
   }
 }
 
-// Show Field Error
+/**
+ * Show a validation error on a field by id.
+ * @param {string} fieldId
+ * @param {string} message
+ * @returns {void}
+ */
 function showFieldError(fieldId, message) {
   const field = $(fieldId);
   const placeholder = $(fieldId + "-placeholder");
@@ -267,7 +382,11 @@ function showFieldError(fieldId, message) {
   setFieldErrorStyle(field, placeholder);
 }
 
-// Clear Error Message
+/**
+ * Clear the error message for a specific field id.
+ * @param {string} fieldId
+ * @returns {void}
+ */
 function clearErrorMessage(fieldId) {
   const fieldMapping = getFieldMapping();
   if (fieldMapping[fieldId]) {
@@ -275,7 +394,12 @@ function clearErrorMessage(fieldId) {
   }
 }
 
-// Clear Field Error Style
+/**
+ * Remove error styles from a field and its placeholder.
+ * @param {HTMLElement} field
+ * @param {HTMLElement} [placeholder]
+ * @returns {void}
+ */
 function clearFieldErrorStyle(field, placeholder) {
   field.style.borderColor = "";
   field.classList.remove("error-input");
@@ -284,7 +408,11 @@ function clearFieldErrorStyle(field, placeholder) {
   }
 }
 
-// Clear Field Error
+/**
+ * Clear error message and styles for a specific field id.
+ * @param {string} fieldId
+ * @returns {void}
+ */
 function clearFieldError(fieldId) {
   const field = $(fieldId);
   const placeholder = $(fieldId + "-placeholder");
@@ -293,7 +421,10 @@ function clearFieldError(fieldId) {
   clearFieldErrorStyle(field, placeholder);
 }
 
-// Get Edit Form Values
+/**
+ * Read values from edit form inputs.
+ * @returns {{name:string,email:string,phone:string}}
+ */
 function getEditFormValues() {
   return {
     name: $("edit-name-input").value.trim(),
@@ -302,14 +433,21 @@ function getEditFormValues() {
   };
 }
 
-// Clear Edit Form Errors
+/**
+ * Clear all edit-form error messages/styles.
+ * @returns {void}
+ */
 function clearEditFormErrors() {
   clearFieldError("edit-name-input");
   clearFieldError("edit-email-input");
   clearFieldError("edit-phone-input");
 }
 
-// Validate Edit Name Field
+/**
+ * Validate edit name field (required).
+ * @param {string} name
+ * @returns {boolean} True if valid.
+ */
 function validateEditNameField(name) {
   if (!name) {
     showFieldError("edit-name-input", "Name is required");
@@ -318,7 +456,11 @@ function validateEditNameField(name) {
   return true;
 }
 
-// Validate Edit Email Field
+/**
+ * Validate edit email field (required + format).
+ * @param {string} email
+ * @returns {boolean} True if valid.
+ */
 function validateEditEmailField(email) {
   if (!email) {
     showFieldError("edit-email-input", "E-Mail is required");
@@ -330,7 +472,11 @@ function validateEditEmailField(email) {
   return true;
 }
 
-// Validate Edit Phone Field
+/**
+ * Validate edit phone field (required).
+ * @param {string} phone
+ * @returns {boolean} True if valid.
+ */
 function validateEditPhoneField(phone) {
   if (!phone) {
     showFieldError("edit-phone-input", "Phone is required");
@@ -339,7 +485,11 @@ function validateEditPhoneField(phone) {
   return true;
 }
 
-// Validate Edit Form Fields
+/**
+ * Validate all edit form fields.
+ * @param {{name:string,email:string,phone:string}} values
+ * @returns {boolean} True if all valid.
+ */
 function validateEditFormFields(values) {
   const nameValid = validateEditNameField(values.name);
   const emailValid = validateEditEmailField(values.email);
@@ -348,14 +498,20 @@ function validateEditFormFields(values) {
   return nameValid && emailValid && phoneValid;
 }
 
-// Validate Edit Contact Form
+/**
+ * Validate the edit contact form and return validity.
+ * @returns {boolean}
+ */
 function validateEditContactForm() {
   const values = getEditFormValues();
   clearEditFormErrors();
   return validateEditFormFields(values);
 }
 
-// Get Add Form Values
+/**
+ * Read values from Add-Contact form inputs.
+ * @returns {{name:string,email:string,phone:string}}
+ */
 function getAddFormValues() {
   return {
     name: $("name-new-contact").value.trim(),
@@ -364,14 +520,21 @@ function getAddFormValues() {
   };
 }
 
-// Clear Add Form Errors
+/**
+ * Clear all add-form error messages/styles.
+ * @returns {void}
+ */
 function clearAddFormErrors() {
   clearFieldError("name-new-contact");
   clearFieldError("email-new-contact");
   clearFieldError("phone-new-contact");
 }
 
-// Validate Add Name Field
+/**
+ * Validate add name field (required).
+ * @param {string} name
+ * @returns {boolean}
+ */
 function validateAddNameField(name) {
   if (!name) {
     showFieldError("name-new-contact", "Name is required");
@@ -380,7 +543,11 @@ function validateAddNameField(name) {
   return true;
 }
 
-// Validate Add Email Field
+/**
+ * Validate add email field (required + format).
+ * @param {string} email
+ * @returns {boolean}
+ */
 function validateAddEmailField(email) {
   if (!email) {
     showFieldError("email-new-contact", "E-Mail is required");
@@ -392,7 +559,11 @@ function validateAddEmailField(email) {
   return true;
 }
 
-// Validate Add Phone Field
+/**
+ * Validate add phone field (required).
+ * @param {string} phone
+ * @returns {boolean}
+ */
 function validateAddPhoneField(phone) {
   if (!phone) {
     showFieldError("phone-new-contact", "Phone is required");
@@ -401,7 +572,11 @@ function validateAddPhoneField(phone) {
   return true;
 }
 
-// Validate Add Form Fields
+/**
+ * Validate all add form fields.
+ * @param {{name:string,email:string,phone:string}} values
+ * @returns {boolean}
+ */
 function validateAddFormFields(values) {
   const nameValid = validateAddNameField(values.name);
   const emailValid = validateAddEmailField(values.email);
@@ -410,14 +585,20 @@ function validateAddFormFields(values) {
   return nameValid && emailValid && phoneValid;
 }
 
-// Validate Add Contact Form
+/**
+ * Validate the add contact form and return validity.
+ * @returns {boolean}
+ */
 function validateAddContactForm() {
   const values = getAddFormValues();
   clearAddFormErrors();
   return validateAddFormFields(values);
 }
 
-// Save Edited Contact
+/**
+ * Validate edit form, collect updated data, and trigger Firebase update.
+ * @returns {void}
+ */
 function saveEditedContact() {
   if (!validateEditContactForm()) {
     return;

@@ -103,6 +103,7 @@
   background-color: rgba(241, 241, 241, 0.342);
   transition: background-color 0.2s ease;
   border-radius: 20px;
+  border: dashed 1px gray;
 }
 
 .task-list {

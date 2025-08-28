@@ -1,24 +1,36 @@
-// Fix für Permissions Policy Violation: unload is not allowed
-// Diese Datei behebt das Problem mit unload Event Listeners
+/* eslint-env browser */
+/**
+ * @file Removes existing 'unload'/'beforeunload' listeners after DOM ready
+ *       and blocks new registrations of those events by monkey-patching
+ *       `window.addEventListener`. Prefer 'pagehide' or 'visibilitychange'.
+ */
 
-// Entfernen aller unload/beforeunload Event Listeners
-window.addEventListener('DOMContentLoaded', function() {
-  // Alle bestehenden unload/beforeunload Listener entfernen
+window.addEventListener('DOMContentLoaded', function () {
+  /** @type {Array<'unload'|'beforeunload'>} */
   const events = ['unload', 'beforeunload'];
-  events.forEach(eventType => {
-    // Alle Listener für diese Events entfernen
+  events.forEach((eventType) => {
+    /** @type {{listener: EventListenerOrEventListenerObject}[]|undefined} */
+    // @ts-ignore Non-standard DevTools API may be undefined
     const listeners = window.getEventListeners ? window.getEventListeners(window)[eventType] : [];
     if (listeners) {
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         window.removeEventListener(eventType, listener.listener);
       });
     }
   });
 });
 
-// Überschreiben der addEventListener Methode für unload/beforeunload
+/** @type {Window['addEventListener']} */
 const originalAddEventListener = window.addEventListener;
-window.addEventListener = function(type, listener, options) {
+
+/**
+ * Override to block 'unload' and 'beforeunload' listeners.
+ * @param {string} type
+ * @param {EventListenerOrEventListenerObject} listener
+ * @param {boolean|AddEventListenerOptions} [options]
+ * @returns {void}
+ */
+window.addEventListener = function (type, listener, options) {
   if (type === 'unload' || type === 'beforeunload') {
     console.warn(`${type} event blocked due to Permissions Policy. Use 'pagehide' or 'visibilitychange' instead.`);
     return;

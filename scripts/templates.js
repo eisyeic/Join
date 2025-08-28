@@ -1,12 +1,25 @@
-// Get Contact Person
+/**
+ * @typedef {Object} Contact
+ * @property {string} name
+ * @property {string} [email]
+ * @property {string} [phone]
+ * @property {string} [initials]
+ * @property {number} [colorIndex]
+ */
+
+/**
+ * Build a contact list item (compact row) as HTML string.
+ * Color index falls back to a stable hash of the id.
+ * @param {Contact} key
+ * @param {string} id
+ * @returns {string} HTML
+ */
 function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
   if (!savedColorIndex) {
     savedColorIndex = (id.charCodeAt(0) % 15) + 1;
   }
-
   const initials = key.initials || getInitials(key.name);
-
   return /*html*/ `
         <div class="contact-placeholder">
             <img src="./assets/contacts/img/Vector 10.svg" />
@@ -23,9 +36,18 @@ function getContactPerson(key, id) {
         </div>`;
 }
 
+/** @type {Partial<Contact>} */
 let currentContact = {};
 
-// Get Contact Details
+/**
+ * Render the desktop contact details view into the given container.
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {HTMLElement} detailSection
+ * @returns {void}
+ */
 function getContactDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">
@@ -56,7 +78,15 @@ function getContactDetails(name, email, phone, colorIndex, detailSection) {
         </div>`;
 }
 
-// Get New Layout Details
+/**
+ * Render the mobile contact details layout into the given container.
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {HTMLElement} detailSection
+ * @returns {void}
+ */
 function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = ``;
   detailSection.innerHTML = /*html*/ `
@@ -99,7 +129,10 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
     `;
 }
 
-// Get Mobile Task Todo
+/**
+ * Render the "Task To-do" summary tile for mobile.
+ * @returns {void}
+ */
 function getMobileTaskTodo() {
   $("mobile-task-to-do").innerHTML = /*html*/ `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
@@ -116,7 +149,10 @@ function getMobileTaskTodo() {
           </div>`;
 }
 
-// Get Mobile Task On Board
+/**
+ * Render the "Task on Board" summary tile for mobile.
+ * @returns {void}
+ */
 function getMobileTaskOnBoard() {
   $("mobile-task-on-board").innerHTML = /*html*/ `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
@@ -133,13 +169,19 @@ function getMobileTaskOnBoard() {
           </div>`;
 }
 
-// Get Error Message
+/**
+ * Build a standardized inline error message HTML.
+ * @param {string} message
+ * @returns {string} HTML
+ */
 function getErrorMessage(message) {
   return /*html*/ `<p class="error-message">${message}</p>`;
 }
 
-
-// addtask wrapper template 
+/**
+ * Return the full Add-Task form markup.
+ * @returns {string} HTML
+ */
 function getAddtaskTemplate() {
   return `
         <!-- task title -->
@@ -241,11 +283,15 @@ function getAddtaskTemplate() {
       `;
 }
 
-// addtask subtasks list display
+/**
+ * Render the editable subtasks list (titles only).
+ * Accepts `window.subtasks` or a global `subtasks` and normalizes to string[].
+ * Calls external helpers `addEditEvents()` and `deleteEvent()`.
+ * @returns {void}
+ */
 function renderSubtasks() {
-  // Normalize Firebase-style objects to strings for this list
-  const normalized = (window.subtasks || typeof subtasks !== 'undefined' ? (window.subtasks || subtasks) : [])
-    .map((st) => (typeof st === 'string' ? st : (st && st.name) ? st.name : ''))
+  const normalized = (window.subtasks || typeof subtasks !== "undefined" ? (window.subtasks || subtasks) : [])
+    .map((st) => (typeof st === "string" ? st : (st && st.name) ? st.name : ""))
     .filter(Boolean);
 
   try { subtasks = normalized; } catch (_) {}
@@ -271,12 +317,11 @@ function renderSubtasks() {
   deleteEvent();
 }
 
-
 /**
- * Creates HTML template for contact list item
- * @param {Object} contact - Contact object with name, initials, colorIndex
- * @param {string} id - Contact ID
- * @returns {string} HTML string for contact list item
+ * Build the contact dropdown option template used in "Assigned to".
+ * @param {Required<Pick<Contact, "name"|"initials"|"colorIndex">>} contact
+ * @param {string} id
+ * @returns {string} HTML
  */
 function createContactListItemTemplate(contact, id) {
   return `
@@ -291,34 +336,46 @@ function createContactListItemTemplate(contact, id) {
 }
 
 /**
- * Creates error message template
- * @param {string} message - Error message text
- * @returns {string} HTML string for error message
+ * Build plain error message content (used by some components).
+ * @param {string} message
+ * @returns {string}
  */
 function createErrorMessageTemplate(message) {
   return message;
 }
 
-// Für globalen Zugriff verfügbar machen
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
+  // @ts-ignore make helpers available for legacy inline usage
   window.createContactListItemTemplate = createContactListItemTemplate;
+  // @ts-ignore
   window.createErrorMessageTemplate = createErrorMessageTemplate;
 }
 
+/**
+ * Inject the Add-Task template into `.addtask-wrapper` if empty.
+ * Dispatches `addtask:template-ready` once rendered.
+ * Self-invoking to run ASAP and on DOMContentLoaded if needed.
+ * @returns {void}
+ */
 (function injectAddTaskTemplate() {
+  /**
+   * Try to render into a given root (default: document).
+   * @param {Document|HTMLElement} [root=document]
+   * @returns {boolean} true if the template is present after this call
+   */
   const render = (root = document) => {
-    const container = root.querySelector('.addtask-wrapper');
+    const container = root.querySelector(".addtask-wrapper");
     if (!container) return false;
-    if (container.dataset.rendered === '1' || container.childElementCount > 0) return true;
+    if (container.dataset.rendered === "1" || container.childElementCount > 0) return true;
     container.innerHTML = getAddtaskTemplate();
-    container.dataset.rendered = '1';              
-    document.dispatchEvent(new CustomEvent('addtask:template-ready'));
+    container.dataset.rendered = "1";
+    document.dispatchEvent(new CustomEvent("addtask:template-ready"));
     return true;
   };
 
   if (!render()) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', render, { once: true });
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", render, { once: true });
     } else {
       render();
     }

@@ -101,7 +101,7 @@
     .contact-overlay-edit-content {
         border-radius: 0 0 30px 30px !important;
         top: 381px !important;
-        height: 80vh;
+        height: 95vh;
         margin-right: 10px;
         width: calc(100% - 20px) !important;
     }
@@ -166,7 +166,7 @@
     }
 
     .contact-overlay-edit-content {
-        height: 90vh;
+        height: 95vh;
     }
 
     .single-person-content-mobile-bottom {
@@ -194,8 +194,21 @@
         height: 200px !important;
     }
 
+    h3 {
+        font-size: 36px;
+    }
+
     .contact-overlay-edit-content {
-      top: 240px !important;
+      top: 230px !important;
+    }
+    .contact-overlay-add-head {
+        margin-top: 24px;
+        height: 200px !important;
+    }
+
+    .contact-overlay-add-content {
+        top: 220px !important;
+        height: 65vh !important;
     }
 
     .contact-overlay-add-content-name {
@@ -208,6 +221,10 @@
 
     .contact-overlay-edit-head p {
         font-size: 20px !important;
+    }
+
+    .contact-overlay-person-icon-big {
+        top: -60px;
     }
 
     .contact-overlay-person-icon-big img {

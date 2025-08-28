@@ -1,4 +1,18 @@
-// Firebase Imports
+/* eslint-env browser */
+/**
+ * @file Auth UI logic: login/sign-up flows, password toggles, email validation,
+ *       guest login, theme animation, and basic error rendering.
+ *
+ * External dependencies:
+ *  - Firebase Auth v10.12.0 (createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile)
+ *  - `auth` instance from ./firebase.js
+ *
+ * Expected globals:
+ *  - $: (id: string) => HTMLElement                      // shorthand for getElementById
+ *  - CSS classes/variables used in the DOM and stylesheets (e.g., 'd-none', '--error-color')
+ */
+
+ // Firebase Imports
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -7,6 +21,7 @@ import {
 import { auth } from "./firebase.js";
 
 // Utility
+/** Current UI mode: "login" | "signup". */
 let currentMode = "login";
 
 // Init
@@ -31,7 +46,11 @@ document.addEventListener("DOMContentLoaded", () => {
 // resize add event listener
 window.addEventListener("resize", updateSignUpBoxDisplay);
 
-// Background and Logo animation
+/**
+ * Set the theme (background and logo) and adjust sign-up box display.
+ * @param {boolean} isWhite - Whether to use the white theme.
+ * @returns {void}
+ */
 function setThemeWhite(isWhite) {
   $("layout").classList.toggle("bg-white", isWhite);
   $("layout").classList.toggle("bg-blue", !isWhite);
@@ -40,7 +59,10 @@ function setThemeWhite(isWhite) {
   updateSignUpBoxDisplay();
 }
 
-// Show Sign Up view
+/**
+ * Switch to the Sign Up view and reset related inputs/state.
+ * @returns {void}
+ */
 function showSignUpForm() {
   currentMode = "signup";
   setThemeWhite(false);
@@ -54,7 +76,10 @@ function showSignUpForm() {
   initializePasswordFields("sign-up");
 }
 
-// show Login view
+/**
+ * Switch to the Login view and reset related inputs/state.
+ * @returns {void}
+ */
 function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
@@ -71,7 +96,11 @@ function showLoginForm() {
   initializePasswordFields("login");
 }
 
-// Update Sign Up box display based on current mode
+/**
+ * Update visibility of the top-right sign-up box and the mobile bottom box
+ * based on current mode and viewport width.
+ * @returns {void}
+ */
 function updateSignUpBoxDisplay() {
   const topRight = $("sign-up-top-right-box");
   const bottomMobile = $("sign-up-bottom-box-mobile");
@@ -92,8 +121,13 @@ function updateSignUpBoxDisplay() {
   }
 }
 
-
 // Password Logic
+
+/**
+ * Initialize password fields and their toggles for the given context.
+ * @param {"login"|"sign-up"} context - Determines which inputs to wire.
+ * @returns {void}
+ */
 function initializePasswordFields(context) {
   let fields = {
     login: [["login-password", "togglePassword"]],
@@ -111,7 +145,13 @@ function initializePasswordFields(context) {
   );
 }
 
-// Setup password icon toggle functionality
+/**
+ * Wire up a single password input with its visibility toggle and error box.
+ * @param {string} inputId - ID of the password input element.
+ * @param {string} toggleId - ID of the icon/image acting as a toggle.
+ * @param {HTMLElement} errorBox - Element for showing errors.
+ * @returns {void}
+ */
 function setupPasswordToggle(inputId, toggleId, errorBox) {
   let input = $(inputId);
   let toggle = $(toggleId);
@@ -124,21 +164,39 @@ function setupPasswordToggle(inputId, toggleId, errorBox) {
   updatePasswordIcon(input, toggle, isVisible);
 }
 
-// Toggle password visibility
+/**
+ * Toggle password input type and icon.
+ * @param {HTMLInputElement} input
+ * @param {HTMLImageElement} toggle
+ * @param {boolean} visible - If true, show text; else, hide text.
+ * @returns {void}
+ */
 function togglePasswordVisibility(input, toggle, visible) {
   if (!input.value) return;
   input.type = visible ? "text" : "password";
   updatePasswordIcon(input, toggle, visible);
 }
 
-// Reset password field to default state
+/**
+ * Reset a password field to default state and clear related error styling.
+ * @param {HTMLInputElement} input
+ * @param {HTMLImageElement} toggle
+ * @param {HTMLElement} errorBox
+ * @returns {void}
+ */
 function resetPasswordField(input, toggle, errorBox) {
   input.type = "password";
   updatePasswordIcon(input, toggle, false);
   clearFieldError(input, errorBox);
 }
 
-// Update the password icon based on visibility
+/**
+ * Update the password toggle icon based on visibility and input content.
+ * @param {HTMLInputElement} input
+ * @param {HTMLImageElement} toggle
+ * @param {boolean} isVisible
+ * @returns {void}
+ */
 function updatePasswordIcon(input, toggle, isVisible) {
   toggle.src = input.value
     ? isVisible
@@ -148,7 +206,10 @@ function updatePasswordIcon(input, toggle, isVisible) {
   toggle.classList.toggle("cursor-pointer", !!input.value);
 }
 
-// Email Validation functionality
+/**
+ * Wire email validation for login and sign-up inputs.
+ * @returns {void}
+ */
 function setupEmailValidation() {
   [
     ["login-email", "errorMessage"],
@@ -161,7 +222,12 @@ function setupEmailValidation() {
   });
 }
 
-// Validate Email Format
+/**
+ * Validate email format on blur and show inline error if invalid.
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement} errorBox
+ * @returns {void}
+ */
 function validateEmailFormat(input, errorBox) {
   let email = input.value.trim();
   let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -172,6 +238,12 @@ function validateEmailFormat(input, errorBox) {
 }
 
 // Auth functions
+
+/**
+ * Attempt to sign in with email and password.
+ * Navigates to summary-board on success; shows inline errors on failure.
+ * @returns {void}
+ */
 function handleLogin() {
   let email = $("login-email").value.trim();
   let password = $("login-password").value;
@@ -184,7 +256,10 @@ function handleLogin() {
     );
 }
 
-// Sign Up button handler
+/**
+ * Validate sign-up inputs and proceed to registration if valid.
+ * @returns {void}
+ */
 function handleSignUp() {
   let name = $("name").value.trim();
   let email = $("sign-up-email").value.trim();
@@ -195,7 +270,15 @@ function handleSignUp() {
   registerUser(email, password);
 }
 
-// Validate Sign Up inputs
+/**
+ * Validate sign-up fields (required, format, length, matching, consent).
+ * @param {string} name
+ * @param {string} email
+ * @param {string} pw
+ * @param {string} confirmPw
+ * @param {boolean} accepted - Privacy policy accepted.
+ * @returns {boolean} True if all validations pass.
+ */
 function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
   if (!name || !email || !pw || !confirmPw)
     return showError($("error-sign-up"), "Please fill out all fields.");
@@ -213,7 +296,13 @@ function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
   return true;
 }
 
-// Register new User
+/**
+ * Create a new Firebase user and set displayName, then show success banner
+ * and switch back to Login view.
+ * @param {string} email
+ * @param {string} password
+ * @returns {void}
+ */
 function registerUser(email, password) {
   let name = $("name").value.trim();
   createUserWithEmailAndPassword(auth, email, password)
@@ -235,7 +324,10 @@ function registerUser(email, password) {
     .catch((err) => showError($("error-sign-up"), err.message));
 }
 
-// Guewst login handler
+/**
+ * Guest login handler: signs in with a static guest account.
+ * @returns {void}
+ */
 function handleGuestLogin() {
   signInWithEmailAndPassword(auth, "guest@login.de", "guestpassword")
     .then(() => (window.location.href = "./summary-board.html"))
@@ -244,27 +336,48 @@ function handleGuestLogin() {
     });
 }
 
-// showError function
+/**
+ * Render an error message into the given element.
+ * @param {HTMLElement} el
+ * @param {string} msg
+ * @returns {false} Always returns false for early-return patterns.
+ */
 function showError(el, msg) {
   el.innerHTML = msg;
   return false;
 }
 
-// Clear field text error
+/**
+ * Clear inline error for an input and reset its border color.
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement} el - Error container element.
+ * @returns {void}
+ */
 function clearFieldError(input, el) {
   el.innerHTML = "";
   input.parentElement.style.borderColor = "";
 }
 
-// Display authentication error and border color
+/**
+ * Show a generic auth error and highlight password/email borders.
+ * @param {HTMLElement} el - Error container.
+ * @param {HTMLInputElement} pwInput
+ * @param {HTMLInputElement} [emailInput]
+ * @returns {false} Always returns false for early-return patterns.
+ */
 function displayAuthError(el, pwInput, emailInput) {
   showError(el, "Check your email and password. Please try again.");
   pwInput.parentElement.style.borderColor = "var(--error-color)";
   if (emailInput)
     emailInput.parentElement.style.borderColor = "var(--error-color)";
+  return false;
 }
 
-// Keydown Enter Handler
+/**
+ * Global Enter key handler: triggers login or sign-up depending on the visible box.
+ * @param {KeyboardEvent} e
+ * @returns {void}
+ */
 function handleKeyDown(e) {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -274,7 +387,12 @@ function handleKeyDown(e) {
   }
 }
 
-// Clear form inputs and error messages
+/**
+ * Clear specific form inputs and an associated error box.
+ * @param {string[]} inputs - List of input element IDs to clear.
+ * @param {HTMLElement} [errorBox] - Optional element to clear innerHTML on.
+ * @returns {void}
+ */
 function clearFormInputs(inputs, errorBox) {
   inputs.forEach((id) => {
     let input = $(id);

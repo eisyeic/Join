@@ -8,75 +8,98 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 import { app, auth } from "./firebase.js";
 import { createTaskElement } from "./template.modul.js";
 
-
+/** Minimum characters required to trigger search filtering. */
 const MIN_SEARCH_CHARS = 3;
+/** Current search term used to filter tasks. */
 let currentSearchTerm = "";
-function debounce(fn, wait = 200) {
-  let t;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), wait);
-  };
-}
-
 
 /**
- * Maps logical task columns to their DOM container ids.
+ * Debounce helper.
+ * Executes `fn` after no calls have been made for `wait` ms.
+ * @template {(...args:any[])=>any} F
+ * @param {F} fn
+ * @param {number} [wait=200]
+ * @returns {F}
+ */
+function debounce(fn, wait = 200) {
+  let t;
+  return /** @type {F} */ ((...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  });
+}
+
+/**
+ * Logical → DOM column ids.
  * @type {{todo:string,inProgress:string,awaitFeedback:string,done:string}}
  */
-let columnMap = {
+const columnMap = {
   todo: "to-do-column",
   inProgress: "in-progress-column",
   awaitFeedback: "await-feedback-column",
   done: "done-column",
 };
 
-// User initials
 onAuthStateChanged(auth, handleAuthChange);
 /**
- * Handles auth state change to project user initials.
+ * Updates user initials badge on auth changes.
  * @param {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").User|null} user
+ * @returns {void}
  */
 function handleAuthChange(user) {
-  if (window.updateUserInitials) {
-    window.updateUserInitials(user);
-  }
+  if (window.updateUserInitials) window.updateUserInitials(user);
 }
 
+/** Overlay root element. */
 const overlay = $("overlay-add-task");
+/** Overlay content element. */
 const overlayContent = document.querySelector(".add-task-overlay-content");
 
-// Backdrop-Click NUR EINMAL registrieren
 overlay?.addEventListener("click", onOverlayBackdropClick);
 /**
- * Closes the Add Task overlay when clicking the backdrop and resets edit view.
+ * Closes the Add Task overlay if the backdrop is clicked.
  * @param {MouseEvent} e
+ * @returns {void}
  */
 function onOverlayBackdropClick(e) {
   if (e.target !== overlay || overlay.classList.contains("d-none")) return;
-  document.querySelector('.edit-addtask-wrapper')?.classList.add('d-none');
-  document.getElementById('task-overlay-content')?.classList.remove('d-none');
+  document.querySelector(".edit-addtask-wrapper")?.classList.add("d-none");
+  document.getElementById("task-overlay-content")?.classList.remove("d-none");
   window.toggleAddTaskBoard();
 }
 
-// Toggle Add Task Overlay
+/**
+ * Toggles the Add Task overlay visibility.
+ * @returns {void}
+ */
 window.toggleAddTaskBoard = function () {
   if (overlay.classList.contains("d-none")) openOverlay();
   else closeOverlay();
   moveFormBackToAside();
 };
 
-/** Opens the overlay and resets the form via Cancel button. */
+/**
+ * Opens the Add Task overlay and resets the form.
+ * @returns {void}
+ */
 function openOverlay() {
   overlay.classList.remove("d-none");
   overlayContent.classList.remove("slide-out");
   overlayContent.classList.add("slide-in");
   const cancelBtn = $("cancel-button");
   if (cancelBtn) cancelBtn.click();
-  else document.addEventListener('addtask:template-ready', () => $("cancel-button")?.click(), { once: true });
+  else
+    document.addEventListener(
+      "addtask:template-ready",
+      () => $("cancel-button")?.click(),
+      { once: true }
+    );
 }
 
-/** Closes the overlay with slide-out animation. */
+/**
+ * Closes the Add Task overlay with a slide-out animation.
+ * @returns {void}
+ */
 function closeOverlay() {
   overlayContent.classList.remove("slide-in");
   overlayContent.classList.add("slide-out");
@@ -87,65 +110,85 @@ function closeOverlay() {
   });
 }
 
-/** Returns the Add Task form wrapper back into the aside clone. */
+/**
+ * Moves the add-task form back to the aside placeholder.
+ * @returns {void}
+ */
 function moveFormBackToAside() {
-  const src = document.querySelector('.edit-addtask .addtask-wrapper');
-  const dst = document.querySelector('.addtask-aside-clone');
+  const src = document.querySelector(".edit-addtask .addtask-wrapper");
+  const dst = document.querySelector(".addtask-aside-clone");
   if (src && dst) dst.replaceChildren(src);
 }
 
-let db = getDatabase(app);
+/** Firebase RTDB instance. */
+const db = getDatabase(app);
 
 /**
- * Subscribes to /tasks changes and re-renders all columns.
+ * Subscribes to `/tasks` and renders the board on changes.
+ * @returns {void}
  */
 function loadTasksFromFirebase() {
-  let tasksRef = ref(db, "tasks");
+  const tasksRef = ref(db, "tasks");
   onValue(tasksRef, (snapshot) => {
-    let tasks = snapshot.val();
+    const tasks = snapshot.val() || {};
     renderAllColumns(tasks);
   });
 }
 
 /**
- * Renders all columns from a tasks dictionary.
+ * Renders all task columns from a task dictionary.
  * @param {Record<string, any>} tasks
+ * @returns {void}
  */
 function renderAllColumns(tasks) {
   clearAllColumns();
   const sortedIds = getSortedTaskIds(tasks);
   sortedIds.forEach((taskId) => renderTask(tasks[taskId], taskId));
-  Object.keys(columnMap).forEach((key) => checkAndShowPlaceholder(columnMap[key]));
+  Object.keys(columnMap).forEach((k) => checkAndShowPlaceholder(columnMap[k]));
 }
 
-/** Clears innerHTML of every column container. */
+/**
+ * Clears all columns’ inner HTML.
+ * @returns {void}
+ */
 function clearAllColumns() {
   for (const key in columnMap) $(columnMap[key]).innerHTML = "";
 }
 
 /**
- * Returns task ids sorted by movedAt (ascending).
+ * Returns task ids sorted by `movedAt` ascending.
  * @param {Record<string, any>} tasks
  * @returns {string[]}
  */
 function getSortedTaskIds(tasks) {
-  return Object.keys(tasks).sort((a, b) => (tasks[a].movedAt||0) - (tasks[b].movedAt||0));
+  return Object.keys(tasks).sort(
+    (a, b) => (tasks[a].movedAt || 0) - (tasks[b].movedAt || 0)
+  );
 }
 
 /**
  * Creates and appends a task card into its target column.
  * @param {any} task
  * @param {string} taskId
+ * @returns {void}
  */
 function renderTask(task, taskId) {
   const targetColumnId = columnMap[task.column] || "to-do-column";
   const columnElement = $(targetColumnId);
   const taskElement = createTaskElement(task, taskId);
+
+  if (!taskElement.id) taskElement.id = String(taskId);
+  taskElement.setAttribute("draggable", "true");
+  taskElement.addEventListener("dragstart", onTaskDragStart);
+
   columnElement.appendChild(taskElement);
 }
 
-// placeholde inner text
-let placeholderTexts = {
+/**
+ * Placeholder text per column DOM id.
+ * @type {Record<string,string>}
+ */
+const placeholderTexts = {
   "to-do-column": "No tasks to do",
   "in-progress-column": "No tasks in progressing",
   "await-feedback-column": "No tasks await feedback",
@@ -153,151 +196,203 @@ let placeholderTexts = {
 };
 
 /**
- * Ensures a column shows a placeholder when it has no task cards.
+ * Ensures a placeholder exists if a column has no tasks.
  * @param {string} columnId
+ * @returns {void}
  */
 function checkAndShowPlaceholder(columnId) {
-  let column = $(columnId);
-  let taskCards = Array.from(column.children).filter(
+  const column = $(columnId);
+  const taskCards = Array.from(column.children).filter(
     (el) => !el.classList.contains("no-tasks")
   );
-  let existingPlaceholder = column.querySelector(".no-tasks");
-  if (taskCards.length === 0 && !existingPlaceholder) {
-    let placeholder = document.createElement("div");
-    placeholder.classList.add("no-tasks");
-    placeholder.textContent = placeholderTexts[columnId] || "No tasks";
-    column.appendChild(placeholder);
-  } else if (taskCards.length > 0 && existingPlaceholder) {
-    existingPlaceholder.remove();
+  const existing = column.querySelector(".no-tasks");
+  if (taskCards.length === 0 && !existing) {
+    const ph = document.createElement("div");
+    ph.classList.add("no-tasks");
+    ph.textContent = placeholderTexts[columnId] || "No tasks";
+    column.appendChild(ph);
+  } else if (taskCards.length > 0 && existing) {
+    existing.remove();
   }
 }
 
-// drag and drop event listener
-document.querySelectorAll(".board-column").forEach((column) => {
-  column.addEventListener("dragover", allowDrop);
-  column.addEventListener("drop", drop);
-});
+/** Flag indicating a drag operation is in progress. */
+let IS_DRAGGING = false;
 
-/** Prevents default to allow dropping. */
-window.allowDrop = function (event) {
-  event.preventDefault();
-};
+/**
+ * DragStart handler for task cards.
+ * @param {DragEvent} e
+ * @returns {void}
+ */
+function onTaskDragStart(e) {
+  const id = e.currentTarget?.id || /** @type {HTMLElement} */(e.target).id;
+  if (id) {
+    e.dataTransfer?.setData("text/plain", id);
+    e.dataTransfer?.setData("text", id);
+  }
+  if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+  IS_DRAGGING = true;
+  e.currentTarget?.addEventListener(
+    "dragend",
+    () => {
+      IS_DRAGGING = false;
+      resetColumnBackgrounds();
+    },
+    { once: true }
+  );
+}
 
-/** Starts a drag and highlights adjacent columns. */
-window.drag = function (event) {
-  event.dataTransfer.setData("text", event.target.id);
-  highlightAdjacentColumns(event.target);
+/**
+ * Optional global dragstart used by inline HTML attributes.
+ * @param {DragEvent} e
+ * @returns {void}
+ */
+window.drag = onTaskDragStart;
+
+/**
+ * Wires drag hover listeners to all drop targets (`.task-list`).
+ * Expects HTML to call `drop(event)` via `ondrop` attribute.
+ * @returns {void}
+ */
+function initDnDListeners() {
+  document.querySelectorAll(".task-list").forEach((list) => {
+    list.addEventListener("dragenter", (e) => {
+      if (!IS_DRAGGING) return;
+      e.preventDefault();
+      highlightColumn(list);
+    });
+    list.addEventListener("dragover", (e) => {
+      if (!IS_DRAGGING) return;
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+      highlightColumn(list);
+    });
+    list.addEventListener("dragleave", (e) => {
+      const elUnder = document.elementFromPoint(e.clientX, e.clientY);
+      if (elUnder && list.contains(elUnder)) return;
+      unhighlightColumn(list);
+    });
+  });
+}
+
+/**
+ * Applies highlight to the given drop target and clears it on others.
+ * @param {Element} el
+ * @returns {void}
+ */
+function highlightColumn(el) {
+  document
+    .querySelectorAll(".task-list")
+    .forEach((n) => n.classList.remove("highlight-column"));
+  el.classList.add("highlight-column");
+}
+
+/**
+ * Removes highlight from a single drop target.
+ * @param {Element} el
+ * @returns {void}
+ */
+function unhighlightColumn(el) {
+  el.classList.remove("highlight-column");
+}
+
+/**
+ * Clears highlight from all drop targets.
+ * @returns {void}
+ */
+function resetColumnBackgrounds() {
+  document
+    .querySelectorAll(".task-list")
+    .forEach((el) => el.classList.remove("highlight-column"));
+}
+
+/**
+ * Logical → DOM column id map.
+ * @type {{todo:string,inProgress:string,awaitFeedback:string,review:string,done:string}}
+ */
+const LOGICAL_TO_DOM = {
+  todo: "to-do-column",
+  inProgress: "in-progress-column",
+  awaitFeedback: "await-feedback-column",
+  review: "await-feedback-column",
+  done: "done-column",
 };
 
 /**
- * Highlights columns adjacent to the one containing the dragged card.
- * @param {HTMLElement} taskElement
+ * DOM → logical column id map.
+ * @type {Record<string,'todo'|'inProgress'|'awaitFeedback'|'done'>}
  */
-function highlightAdjacentColumns(taskElement) {
-  const columns = document.querySelectorAll('.task-list');
-  const currentColumn = taskElement.closest('.task-list');
-  columns.forEach(column => {
-    column.classList.remove('highlight-column');
-  });
-  if (currentColumn) {
-    const currentIndex = Array.from(columns).indexOf(currentColumn);
-    if (currentIndex > 0) {
-      columns[currentIndex - 1].classList.add('highlight-column'); 
-    }
-    if (currentIndex < columns.length - 1) {
-      columns[currentIndex + 1].classList.add('highlight-column'); 
-    }
-  }
-}
-
-// Zu/Abbildung Spaltenname <-> DOM-ID
-const LOGICAL_TO_DOM = {
-  todo: 'to-do-column',
-  inProgress: 'in-progress-column',
-  awaitFeedback: 'await-feedback-column',
-  review: 'await-feedback-column', // Fallback, falls "review" noch irgendwo kommt
-  done: 'done-column',
-};
-
 const DOM_TO_LOGICAL = {
-  'to-do-column': 'todo',
-  'in-progress-column': 'inProgress',
-  'await-feedback-column': 'awaitFeedback',
-  'done-column': 'done',
+  "to-do-column": "todo",
+  "in-progress-column": "inProgress",
+  "await-feedback-column": "awaitFeedback",
+  "done-column": "done",
 };
 
-
-/** Handles drop event for a task card. */
-window.drop = handleDrop;
-function handleDrop(event) {
+/**
+ * Drop handler (intended to be called from HTML via `ondrop="drop(event)"`).
+ * Moves the card in the DOM, updates Firebase, and maintains placeholders.
+ * @param {DragEvent} event
+ * @returns {void}
+ */
+window.drop = function handleDrop(event) {
   event.preventDefault();
-  const taskId = event.dataTransfer.getData("text");
-  const taskElement = $(taskId);
-  const oldColumn = taskElement.parentElement;
-  const newColumn = event.currentTarget;
-  finalizeDrop(taskId, taskElement, oldColumn, newColumn);
-}
-/** Moves DOM, updates DB, placeholders and highlights after drop. */
-function finalizeDrop(taskId, taskElement, oldColumn, newColumn) {
+  const taskId =
+    event.dataTransfer?.getData("text/plain") ||
+    event.dataTransfer?.getData("text");
+  if (!taskId) return;
+
+  const taskElement = document.getElementById(taskId);
+  const newColumn =
+    /** @type {HTMLElement} */ (event.currentTarget).closest(".task-list") ||
+    /** @type {HTMLElement} */ (event.currentTarget);
+  const oldColumn = taskElement?.parentElement;
+  if (!taskElement || !newColumn || !oldColumn) return;
+
   newColumn.appendChild(taskElement);
-  // NEW: dataset aktuell halten, damit Overlays später die richtige Spalte erkennen
-  taskElement.dataset.column = DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
+  taskElement.dataset.column =
+    DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
 
   updateTaskColumn(taskId, newColumn.id);
   checkAndShowPlaceholder(oldColumn.id);
   checkAndShowPlaceholder(newColumn.id);
+
+  IS_DRAGGING = false;
   resetColumnBackgrounds();
-}
-
-
-/** Removes highlight styling from all task-list columns. */
-function resetColumnBackgrounds() {
-  const columns = document.querySelectorAll('.task-list');
-  columns.forEach(column => {
-    column.classList.remove('highlight-column');
-  });
-}
+};
 
 /**
- * Persists the new column to Firebase and stamps movedAt.
+ * Persists a task’s column change and stamps `movedAt`.
  * @param {string} taskId
- * @param {string} newColumnId - DOM id of the target column.
+ * @param {string} newColumnId
+ * @returns {Promise<void>|void}
  */
 function updateTaskColumn(taskId, newColumnId) {
-  const columnMapReverse = {
-    "to-do-column": "todo",
-    "in-progress-column": "inProgress",
-    "await-feedback-column": "awaitFeedback",
-    "done-column": "done",
-  };
-  let dbRef = ref(db, `tasks/${taskId}`);
-  let newColumnValue = columnMapReverse[newColumnId] || "todo";
-  update(dbRef, {
-    column: newColumnValue,
-    movedAt: Date.now(),
-  }).catch((error) =>
-    console.error("Fehler beim Aktualisieren der Spalte:", error)
+  const dbRef = ref(db, `tasks/${taskId}`);
+  const newColumnValue = DOM_TO_LOGICAL[newColumnId] || "todo";
+  return update(dbRef, { column: newColumnValue, movedAt: Date.now() }).catch(
+    (err) => console.error("Fehler beim Aktualisieren der Spalte:", err)
   );
 }
 
 /**
- * Renders up to three contact initials with background images.
- * @param {{initials:string,colorIndex:number}[]} contacts
+ * Renders up to three contact initials with colored backgrounds.
+ * @param {{initials?:string,colorIndex?:number,name?:string}[]} [contacts=[]]
  * @returns {string}
  */
 export function renderAssignedInitials(contacts = []) {
   const maxShown = 3;
   if (!Array.isArray(contacts) || contacts.length === 0) return "";
 
-  const shownContacts = contacts.slice(0, maxShown);
+  const shown = contacts.slice(0, maxShown);
   const hasOverflow = contacts.length > maxShown;
   const overflowCount = contacts.length - (maxShown - 1);
 
-  return shownContacts
-    .map((contact, index) => {
-      const positionClass = ["first-initial", "second-initial", "third-initial"][index];
+  return shown
+    .map((c, idx) => {
+      const positionClass = ["first-initial", "second-initial", "third-initial"][idx];
 
-      if (hasOverflow && index === maxShown - 1) {
+      if (hasOverflow && idx === maxShown - 1) {
         return `
           <div class="initial-circle ${positionClass} initial-circle--more" title="+${overflowCount}">
             +${overflowCount}
@@ -305,9 +400,9 @@ export function renderAssignedInitials(contacts = []) {
         `;
       }
 
-      const colorIdx = Number.isFinite(contact?.colorIndex) ? contact.colorIndex : 0;
-      const initials = contact?.initials || "";
-      const title = contact?.name || initials;
+      const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
+      const initials = c?.initials || "";
+      const title = c?.name || initials;
 
       return `
         <div class="initial-circle ${positionClass}" 
@@ -320,10 +415,8 @@ export function renderAssignedInitials(contacts = []) {
     .join("");
 }
 
-
-
 /**
- * Maps task category name to a CSS class used for the label.
+ * Maps a task category to a CSS class for labels.
  * @param {string} category
  * @returns {string}
  */
@@ -337,14 +430,14 @@ export function getLabelClass(category) {
 }
 
 /**
- * Builds the progress bar HTML for subtasks and the done/total label.
+ * Renders a subtask progress bar and label.
  * @param {{checked:boolean}[]} subtasks
  * @returns {string}
  */
 export function renderSubtaskProgress(subtasks) {
-  let total = subtasks.length;
-  let done = subtasks.filter((st) => st.checked).length;
-  let percentage = total ? Math.round((done / total) * 100) : 0;
+  const total = subtasks.length;
+  const done = subtasks.filter((st) => st.checked).length;
+  const percentage = total ? Math.round((done / total) * 100) : 0;
   return `
     <div class="subtasks-box">
       <div class="progressbar">
@@ -355,15 +448,21 @@ export function renderSubtaskProgress(subtasks) {
   `;
 }
 
-// load tasks from firebase
+/**
+ * DOMContentLoaded bootstrap: wires DnD, loads tasks, sets up search.
+ * @returns {void}
+ */
 document.addEventListener("DOMContentLoaded", onBoardDomContentLoaded);
-/** Bootstraps board: tasks subscription and search handlers. */
 function onBoardDomContentLoaded() {
+  initDnDListeners();
   loadTasksFromFirebase();
   setupSearchHandlers();
 }
 
-/** Wires search input and button handlers. */
+/**
+ * Sets up search input/button handlers with debounce.
+ * @returns {void}
+ */
 function setupSearchHandlers() {
   const searchInput = $("search-input");
   const searchButton = $("search-btn");
@@ -371,108 +470,115 @@ function setupSearchHandlers() {
 
   const run = () => {
     const term = (searchInput.value || "").toLowerCase().trim();
-
     if (term.length >= MIN_SEARCH_CHARS) {
       currentSearchTerm = term;
       filterTasks(term);
     } else {
       currentSearchTerm = "";
-      filterTasks(currentSearchTerm); 
+      filterTasks(currentSearchTerm);
     }
   };
 
-  // Live-Suche beim Tippen (mit Debounce)
   const debouncedRun = debounce(run, 200);
   searchInput.addEventListener("input", debouncedRun);
-
-  // Optional: Enter erlaubt sofortiges Suchen
   searchInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") run();
   });
-
-  // Search-Button bleibt nutzbar, aber respektiert die 3-Zeichen-Regel
   searchButton?.addEventListener("click", run);
 }
 
-
 /**
- * Shows only tasks whose title or description contains the term.
+ * Filters visible tasks across all columns by a search term.
  * @param {string} searchTerm
+ * @returns {void}
  */
 function filterTasks(searchTerm) {
-  let allTasks = document.querySelectorAll(".ticket");
+  const allTasks = document.querySelectorAll(".ticket");
   filterTaskVisibility(allTasks, searchTerm);
   updateAllPlaceholders();
 }
 
 /**
- * Applies display filtering to a NodeList of task cards.
+ * Applies filter display logic to a set of task elements.
  * @param {NodeListOf<Element>|Element[]} tasks
  * @param {string} searchTerm
+ * @returns {void}
  */
 function filterTaskVisibility(tasks, searchTerm) {
   tasks.forEach((taskEl) => {
-    let title =
+    const title =
       taskEl.querySelector(".ticket-title")?.textContent.toLowerCase() || "";
-    let description =
+    const description =
       taskEl.querySelector(".ticket-text")?.textContent.toLowerCase() || "";
-    let matches =
-      title.includes(searchTerm) || description.includes(searchTerm);
-    taskEl.style.display = matches || searchTerm === "" ? "" : "none";
+    const matches = title.includes(searchTerm) || description.includes(searchTerm);
+    /** @type {HTMLElement} */ (taskEl).style.display =
+      matches || searchTerm === "" ? "" : "none";
   });
 }
 
-/** Updates placeholders for all columns after a filter run. */
+/**
+ * Updates placeholders for all columns after filtering.
+ * @returns {void}
+ */
 function updateAllPlaceholders() {
-  for (let key in columnMap) {
-    updatePlaceholderForColumn(columnMap[key]);
-  }
+  for (const key in columnMap) updatePlaceholderForColumn(columnMap[key]);
 }
 
 /**
- * Ensures a specific column shows or hides its placeholder based on visible tasks.
+ * Ensures a single column shows/hides its placeholder based on visible tasks.
  * @param {string} columnId
+ * @returns {void}
  */
 function updatePlaceholderForColumn(columnId) {
-  let column = document.getElementById(columnId);
-  let visibleTasks = Array.from(column.querySelectorAll(".ticket")).filter(
-    (el) => el.style.display !== "none"
+  const column = document.getElementById(columnId);
+  const visibleTasks = Array.from(column.querySelectorAll(".ticket")).filter(
+    (el) => /** @type {HTMLElement} */ (el).style.display !== "none"
   );
   const placeholder = column.querySelector(".no-tasks");
   if (visibleTasks.length === 0 && !placeholder) {
-    let newPlaceholder = document.createElement("div");
-    newPlaceholder.classList.add("no-tasks");
-    newPlaceholder.textContent = placeholderTexts[columnId] || "No tasks";
-    column.appendChild(newPlaceholder);
+    const ph = document.createElement("div");
+    ph.classList.add("no-tasks");
+    ph.textContent = placeholderTexts[columnId] || "No tasks";
+    column.appendChild(ph);
   } else if (visibleTasks.length > 0 && placeholder) {
     placeholder.remove();
   }
 }
 
-$("edit-task-btn").addEventListener("click", onEditTaskBtnClick);
 /**
- * Switches overlay content into edit mode and moves the form into the edit container.
+ * Toggles the task overlay into edit mode and moves the form into place.
+ * @returns {void}
  */
+$("edit-task-btn").addEventListener("click", onEditTaskBtnClick);
 function onEditTaskBtnClick() {
   $("task-overlay-content").classList.toggle("d-none");
   document.querySelector(".edit-addtask-wrapper").classList.toggle("d-none");
-  const src = document.querySelector('.addtask-aside-clone .addtask-wrapper');
-  const dst = document.querySelector('.edit-addtask');
+  const src = document.querySelector(".addtask-aside-clone .addtask-wrapper");
+  const dst = document.querySelector(".edit-addtask");
   if (src && dst) dst.replaceChildren(src);
 }
 
-// Wird vom Overlay (template.modul.js) aufgerufen, um "wie DnD" zu verschieben.
-window.onTaskColumnChanged = function(taskId, targetLogical /* z.B. 'inProgress', 'awaitFeedback' */) {
+/**
+ * Updates a task's column programmatically (overlay action), mirroring DnD.
+ * @param {string|number} taskId
+ * @param {'todo'|'inProgress'|'awaitFeedback'|'done'|string} targetLogical
+ * @returns {void}
+ */
+window.onTaskColumnChanged = function (taskId, targetLogical) {
   const taskEl = document.getElementById(String(taskId));
   if (!taskEl) return;
 
-  const oldColumnEl = taskEl.closest('.task-list') || taskEl.parentElement;
+  const oldColumnEl = taskEl.closest(".task-list") || taskEl.parentElement;
   const newDomId = LOGICAL_TO_DOM[targetLogical] || targetLogical;
   const newColumnEl = document.getElementById(newDomId);
+  if (!newColumnEl || !oldColumnEl) return;
 
-  if (!newColumnEl || !oldColumnEl) {
-    console.warn('[onTaskColumnChanged] Ziel/Quelle nicht gefunden:', { targetLogical, newDomId });
-    return;
-  }
-  finalizeDrop(taskId, taskEl, oldColumnEl, newColumnEl);
+  newColumnEl.appendChild(taskEl);
+  taskEl.dataset.column =
+    DOM_TO_LOGICAL[newColumnEl.id] || taskEl.dataset.column;
+
+  updateTaskColumn(String(taskId), newColumnEl.id);
+  checkAndShowPlaceholder(oldColumnEl.id);
+  checkAndShowPlaceholder(newColumnEl.id);
+  resetColumnBackgrounds();
 };
