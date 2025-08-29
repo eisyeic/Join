@@ -11,7 +11,7 @@
       type="image/x-icon"
     />
 
-    <script src="./script.js"></script>
+    <script src="./script.js" defer></script>
     <script type="module" src="./scripts/help.js"></script>
     <script type="module" src="./scripts/firebase.js"></script>
 
@@ -68,14 +68,22 @@
           <a class="profile-navbar-help" href="./help.html">Help</a>
           <a href="./legal-notice.html">Legal Notice</a>
           <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./index.html">Log out</a>
+          <a href="#" data-logout>Log out</a>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="sidebar">
-        <div class="nav">
+     <section class="sidebar">
+        <div class="nav-login-box">
+          <a href="./index.html" class="nav-bg"
+            ><img
+              src="./assets/icons/sidebar/Menu Icons.svg"
+              alt="Button Summary Board"
+            />Log In</a
+          >
+        </div>
+        <div class="nav d-none">
           <a href="./summary-board.html" class="nav-bg"
             ><img
               src="./assets/icons/sidebar/summery.svg"
@@ -98,7 +106,7 @@
         </div>
         <div class="sidebar-links">
           <a href="./privacy-policy.html">Privacy Policy</a>
-          <a href="./legal-notice.html">Legal notice</a>
+          <a class="active" href="./legal-notice.html">Legal notice</a>
         </div>
       </section>
 

@@ -19,7 +19,16 @@ import { auth } from "./firebase.js";
  * @returns {void}
  */
 onAuthStateChanged(auth, (user) => {
-  if (window.updateUserInitials) {
-    window.updateUserInitials(user);
-  }
+  const nav               = document.querySelector('.nav');
+  const navBox            = document.querySelector('.nav-box');
+  const navLoginBox       = document.querySelector('.nav-login-box');
+  const navLoginBoxMobile = document.querySelector('.nav-login-box-mobile');
+
+  const showNav = !!user;
+
+  nav?.classList.toggle('d-none', !showNav);
+  navBox?.classList.toggle('d-none', !showNav);
+
+  navLoginBox?.classList.toggle('d-none', showNav);
+  navLoginBoxMobile?.classList.toggle('d-none', showNav);
 });
