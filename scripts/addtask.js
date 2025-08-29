@@ -9,8 +9,18 @@
  *  - flatpickr                            // datepicker library
  */
 
+
 /** @type {string[]} */
-let subtasks = [];
+window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : [];
+// Alias auf dieselbe Array-Instanz – NICHT neu zuweisen!
+let subtasks = window.subtasks;
+
+
+window.SubtaskIO = window.SubtaskIO || {
+  set(index, value) { subtasks[index] = value; },
+  remove(index) { subtasks.splice(index, 1); },
+  rerender() { renderSubtasks(); addEditEvents(); }
+};
 
 /** @typedef {'urgent' | 'medium' | 'low'} Priority */
 
@@ -268,6 +278,7 @@ function addEditEvents() {
     editBtn.addEventListener("click", () => enterEditMode(editBtn));
   });
 }
+window.addEditEvents = addEditEvents;
 
 /**
  * Put a subtask item into edit mode and bind Enter-to-save.
@@ -281,6 +292,7 @@ function enterEditMode(editBtn) {
   showEditFields(item, /** @type {HTMLInputElement} */ (input));
   setupEnterKeyToSave(/** @type {HTMLInputElement} */ (input), item);
 }
+window.enterEditMode = enterEditMode;
 
 /**
  * Reveal edit input fields of a subtask item and focus the input.
@@ -306,16 +318,15 @@ function showEditFields(item, input) {
  * @param {HTMLElement} item
  */
 function setupEnterKeyToSave(input, item) {
-  input.addEventListener(
-    "keydown",
-    (e) => {
-      if (e.key === "Enter") {
-        const saveBtn = item.querySelector(".subtask-save-icon");
-        if (saveBtn) saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
-      }
-    },
-    { once: true }
-  );
+  const handler = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const saveBtn = item.querySelector(".subtask-save-icon");
+      if (saveBtn) saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
+      input.removeEventListener("keydown", handler);
+    }
+  };
+  input.addEventListener("keydown", handler);
 }
 
 /** Add a new subtask from the input via the check icon click. */
@@ -397,12 +408,20 @@ function saveEditedSubtask(saveBtn) {
   if (!Number.isFinite(index) || !input) return;
 
   const newValue = /** @type {HTMLInputElement} */ (input).value.trim();
-  if (!newValue) return;
 
-  subtasks[index] = newValue;
+  if (!newValue) {
+    // Leer -> Subtask löschen
+    subtasks.splice(index, 1);
+  } else {
+    // Inhalt -> Subtask aktualisieren
+    subtasks[index] = newValue;
+  }
+
   renderSubtasks();
   addEditEvents();
 }
+window.saveEditedSubtask = saveEditedSubtask;
+
 
 /** Delegate clicks on save icons inside the subtask list to save the edit. */
 $("subtask-list").addEventListener("click", (event) => {
@@ -412,14 +431,20 @@ $("subtask-list").addEventListener("click", (event) => {
 });
 
 /** Save subtask edits when clicking outside of an item in edit mode. */
-document.addEventListener("click", (event) => {
-  document.querySelectorAll(".subtask-item.editing").forEach((subtaskItem) => {
-    if (!subtaskItem.contains(/** @type {Node} */ (event.target))) {
-      const saveBtn = subtaskItem.querySelector(".subtask-save-icon");
-      if (saveBtn) saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
-    }
-  });
-});
+document.addEventListener(
+  "pointerdown",
+  (event) => {
+    document.querySelectorAll(".subtask-item.editing").forEach((subtaskItem) => {
+      if (!subtaskItem.contains(/** @type {Node} */ (event.target))) {
+        const saveBtn = subtaskItem.querySelector(".subtask-save-icon");
+        if (saveBtn) window.saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
+      }
+    });
+  },
+  true
+);
+
+
 
 /**
  * Replace a <template id="addtask-template"> with its rendered content as soon
@@ -452,3 +477,4 @@ document.addEventListener("click", (event) => {
     }
   }
 })();
+

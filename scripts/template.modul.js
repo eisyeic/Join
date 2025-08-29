@@ -456,3 +456,4 @@ function getMoveTargetsFor(currentColumn) {
       return [];
   }
 }
+
