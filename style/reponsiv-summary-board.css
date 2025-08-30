@@ -1,4 +1,8 @@
 @media (max-width: 1250px) {
+  .board-wrapper {
+    padding: 0;
+  }
+  
   .dashboard {
     width: calc(100vw - 234px);
   }

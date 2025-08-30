@@ -8,10 +8,19 @@ function openEditInsideOverlay(task) {
   moveFormIntoEdit();
   markEditingId(task);
   populateEditForm(task);
-  setTimeout(() => populateEditForm(task), 0);
+  if (typeof window.applyAssignedInitialsCap === "function") {
+    queueMicrotask(() => applyAssignedInitialsCap());
+  }
+  setTimeout(() => {
+    populateEditForm(task);
+    if (typeof window.applyAssignedInitialsCap === "function") {
+      applyAssignedInitialsCap();
+    }
+  }, 0);
   syncAssignedSelectionToList();
   if (typeof window.addEditEvents === "function") window.addEditEvents();
 }
+
 
 /**
  * Show edit wrapper and hide read-only content.

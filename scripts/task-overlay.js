@@ -287,8 +287,6 @@ export async function updateSubtaskStatus(taskId, subtaskIndex, isChecked) {
   await update(taskRef, { subtasks: updated });
 }
 
-
-
 /**
  * Truncate a description to 50 chars on word boundary.
  * @param {string} text

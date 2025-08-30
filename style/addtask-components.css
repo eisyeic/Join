@@ -107,6 +107,18 @@ li.selected:hover {
   scrollbar-width: thin;
 }
 
+.assigned-plus-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: var(--main-color);
+  font-size: 16px;
+}
+
 .contact-initials-icon {
   background-color: var(--main-color);
   color: white;

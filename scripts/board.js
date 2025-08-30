@@ -582,3 +582,4 @@ window.onTaskColumnChanged = function (taskId, targetLogical) {
   checkAndShowPlaceholder(newColumnEl.id);
   resetColumnBackgrounds();
 };
+

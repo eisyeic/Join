@@ -8,6 +8,11 @@ h5 {
   font-size: 23px;
 }
 
+.board-wrapper {
+  display: flex;
+  padding: 268px 100px;
+}
+
 .dashboard {
   justify-content: center;
   align-items: center;

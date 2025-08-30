@@ -4,17 +4,14 @@
  *       assigned contacts dropdown, and subtask CRUD. JSDoc-annotated.
  *
  * Expected globals:
- *  - $: (id: string) => HTMLElement       // shorthand for getElementById
- *  - renderSubtasks: () => void           // renders the current subtask list
- *  - flatpickr                            // datepicker library
+ *  - $: (id: string) => HTMLElement
+ *  - renderSubtasks: () => void
+ *  - flatpickr
  */
-
 
 /** @type {string[]} */
 window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : [];
-// Alias auf dieselbe Array-Instanz – NICHT neu zuweisen!
 let subtasks = window.subtasks;
-
 
 window.SubtaskIO = window.SubtaskIO || {
   set(index, value) { subtasks[index] = value; },
@@ -24,13 +21,11 @@ window.SubtaskIO = window.SubtaskIO || {
 
 /** @typedef {'urgent' | 'medium' | 'low'} Priority */
 
-/** Current selected priority. @type {Priority} */
+/** @type {Priority} */
 let selectedPriority = "medium";
 
 /**
  * Initialize flatpickr on #datepicker.
- * Clears error styles after a valid selection.
- * flatpickr onChange signature: (selectedDates: Date[], dateStr: string, instance)
  * @see https://flatpickr.js.org/events/
  */
 let picker = flatpickr("#datepicker", {
@@ -44,15 +39,12 @@ let picker = flatpickr("#datepicker", {
   },
 });
 
-/** Open the datepicker when clicking the wrapper area. */
 $("datepicker-wrapper").addEventListener("click", () => {
   document.querySelector("#datepicker")?.click();
 });
 
 /**
  * Priority buttons: set active state and update `selectedPriority`.
- * Requires buttons with .priority-button and exactly one of:
- *  - .urgent-button, .medium-button, .low-button
  */
 document.querySelectorAll(".priority-button").forEach((button) => {
   button.addEventListener("click", () => {
@@ -69,51 +61,51 @@ document.querySelectorAll(".priority-button").forEach((button) => {
 });
 
 /**
- * Reset priority selection visually and logically to "medium".
- * Re-applies active state to .medium-button if present.
+ * Reset the entire Add-Task form priority to "medium".
  */
 function resetPrioritySelection() {
-  document
-    .querySelectorAll(".priority-button")
-    .forEach((btn) => btn.classList.remove("active"));
+  document.querySelectorAll(".priority-button").forEach((btn) => btn.classList.remove("active"));
   selectedPriority = /** @type {Priority} */ ("medium");
   const mediumButton = document.querySelector(".medium-button");
   if (mediumButton) mediumButton.classList.add("active");
 }
 
-/** Box that shows initials of assigned contacts (uses a class selector once). */
 const contactInitialsBox = document.querySelector(".contact-initials");
+const MAX_VISIBLE_INITIALS = 5;
+
+/**
+ * Zeigt max. 5 Initialen; Rest als EINEN "+x"-Kreis (assigned-plus-badge).
+ */
+function applyAssignedInitialsCap() {
+  capAssignedInitialsIn(contactInitialsBox, MAX_VISIBLE_INITIALS);
+}
+window.applyAssignedInitialsCap = applyAssignedInitialsCap;
 
 /**
  * Toggle contact list on clicking the assigned-select box.
- * Manages arrow icon states and initials visibility based on selection.
  */
 $("assigned-select-box").addEventListener("click", () => {
   $("contact-list-box").classList.toggle("d-none");
-
   const isListVisible = !$("contact-list-box").classList.contains("d-none");
-  $("assigned-icon").classList.add("arrow-up");
-  $("assigned-icon").classList.remove("arrow-down");
 
-  if (!isListVisible) {
-    $("assigned-icon").classList.remove("arrow-up");
-    $("assigned-icon").classList.add("arrow-down");
+  $("assigned-icon").classList.toggle("arrow-up", isListVisible);
+  $("assigned-icon").classList.toggle("arrow-down", !isListVisible);
 
-    const selectedContacts =
-      $("contact-list-box").querySelectorAll("li.selected");
+  if (isListVisible) {
+    contactInitialsBox?.classList.add("d-none");
+  } else {
+    const selectedContacts = $("contact-list-box").querySelectorAll("li.selected");
     if (selectedContacts.length > 0) {
       contactInitialsBox?.classList.remove("d-none");
     } else {
       contactInitialsBox?.classList.add("d-none");
     }
-  } else {
-    contactInitialsBox?.classList.add("d-none");
+    applyAssignedInitialsCap();
   }
 });
 
 /**
- * Category selection: click on a list item sets the label, closes dropdown,
- * and clears error styles.
+ * Category selection
  */
 $("category-selection")
   .querySelectorAll("li")
@@ -129,7 +121,6 @@ $("category-selection")
     });
   });
 
-/** Close open dropdowns (category, contacts) when clicking outside. */
 document.addEventListener("click", (event) => {
   handleCategoryClickOutside(event);
   handleAssignedClickOutside(event);
@@ -154,7 +145,6 @@ function handleCategoryClickOutside(event) {
 
 /**
  * Close assigned contacts dropdown if the click was outside assigned elements.
- * Also toggles initials based on whether items are selected.
  * @param {MouseEvent} event
  */
 function handleAssignedClickOutside(event) {
@@ -165,11 +155,9 @@ function handleAssignedClickOutside(event) {
 
   if (!isInsideAssigned) {
     $("contact-list-box").classList.add("d-none");
+    applyAssignedInitialsCap();
 
-    const selectedContacts = document.querySelectorAll(
-      "#contact-list-box li.selected"
-    );
-
+    const selectedContacts = document.querySelectorAll("#contact-list-box li.selected");
     if (selectedContacts.length > 0) {
       contactInitialsBox?.classList.remove("d-none");
     } else {
@@ -181,14 +169,15 @@ function handleAssignedClickOutside(event) {
   }
 }
 
-/** Toggle the category dropdown when clicking the select. */
+/**
+ * Toggle the category dropdown when clicking the select.
+ */
 $("category-select").addEventListener("click", () => {
   $("category-selection").classList.toggle("d-none");
   $("category-icon").classList.toggle("arrow-down");
   $("category-icon").classList.toggle("arrow-up");
 });
 
-/** Show/hide subtask action buttons based on the new-subtask input content. */
 $("sub-input").addEventListener("input", function () {
   if (this.value !== "") {
     $("subtask-plus-box").classList.add("d-none");
@@ -199,35 +188,27 @@ $("sub-input").addEventListener("input", function () {
   }
 });
 
-/** Reveal subtask action buttons on hover over a subtask item. */
 $("subtask-list").addEventListener("mouseover", (event) => {
   const item = event.target.closest(".subtask-item");
   item?.querySelector(".subtask-func-btn")?.classList.remove("d-none");
 });
 
-/** Hide subtask action buttons when leaving a subtask item. */
 $("subtask-list").addEventListener("mouseout", (event) => {
   const item = event.target.closest(".subtask-item");
   item?.querySelector(".subtask-func-btn")?.classList.add("d-none");
 });
 
-/** Clear title input error styles while typing. */
 $("addtask-title").addEventListener("input", function () {
   this.style.borderColor = "";
   $("addtask-error").innerHTML = "";
 });
 
-/**
- * Reset the entire Add-Task form:
- * title, description, date, category, subtasks, contacts, priority, error messages.
- */
 $("cancel-button").addEventListener("click", () => {
   $("addtask-title").value = "";
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
   $("addtask-textarea").value = "";
 
-  // Reset date (prefer flatpickr if available)
   try {
     picker.clear();
   } catch {
@@ -236,29 +217,27 @@ $("cancel-button").addEventListener("click", () => {
   $("datepicker-wrapper").style.borderColor = "";
   $("due-date-error").innerHTML = "";
 
-  // Reset category
   $("category-select").querySelector("span").textContent = "Select task category";
   $("category-select").style.borderColor = "";
   $("category-selection-error").innerHTML = "";
 
-  // Reset subtasks
   subtasks.length = 0;
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
   renderSubtasks();
 
-  // Reset assigned contacts
   clearAssignedContacts();
   const asb = $("assigned-select-box");
   if (asb) asb.dataset.selected = "[]";
   $("contact-list-box").classList.add("d-none");
 
-  // Reset priority
   resetPrioritySelection();
 });
 
-/** Remove all selected contacts and clear the initials box. */
+/**
+ * Remove all selected contacts and clear the initials box.
+ */
 function clearAssignedContacts() {
   document.querySelectorAll("#contact-list-box li.selected").forEach((li) => {
     li.classList.remove("selected");
@@ -271,7 +250,6 @@ function clearAssignedContacts() {
 
 /**
  * Attach edit click listeners for all subtask edit icons.
- * Call after each re-render.
  */
 function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
@@ -282,7 +260,7 @@ window.addEditEvents = addEditEvents;
 
 /**
  * Put a subtask item into edit mode and bind Enter-to-save.
- * @param {HTMLElement} editBtn - The clicked pencil icon inside a .subtask-item.
+ * @param {HTMLElement} editBtn
  */
 function enterEditMode(editBtn) {
   const item = editBtn.closest(".subtask-item");
@@ -296,8 +274,8 @@ window.enterEditMode = enterEditMode;
 
 /**
  * Reveal edit input fields of a subtask item and focus the input.
- * @param {HTMLElement} item - The .subtask-item container.
- * @param {HTMLInputElement} input - The edit input inside the item.
+ * @param {HTMLElement} item
+ * @param {HTMLInputElement} input
  */
 function showEditFields(item, input) {
   item.querySelector(".subtask-text")?.classList.add("d-none");
@@ -313,7 +291,7 @@ function showEditFields(item, input) {
 }
 
 /**
- * Bind Enter key to save subtask edit (listener removed after first trigger).
+ * Bind Enter key to save subtask edit.
  * @param {HTMLInputElement} input
  * @param {HTMLElement} item
  */
@@ -329,7 +307,6 @@ function setupEnterKeyToSave(input, item) {
   input.addEventListener("keydown", handler);
 }
 
-/** Add a new subtask from the input via the check icon click. */
 $("sub-check").addEventListener("click", () => {
   const subtaskText = $("sub-input").value.trim();
   if (!subtaskText) return;
@@ -341,7 +318,6 @@ $("sub-check").addEventListener("click", () => {
   renderSubtasks();
 });
 
-/** Add a new subtask by pressing Enter while typing in the new-subtask input. */
 $("sub-input").addEventListener("keydown", function (event) {
   if (event.key !== "Enter") return;
 
@@ -358,8 +334,6 @@ $("sub-input").addEventListener("keydown", function (event) {
 
 /**
  * Attach delete click listeners for all .subtask-delete-icon after a render.
- * Removes the item from the array, re-renders, and rebinds edit handlers.
- * Should be called after renderSubtasks().
  */
 function deleteEvent() {
   document.querySelectorAll(".subtask-delete-icon").forEach((deleteBtn) => {
@@ -376,7 +350,9 @@ function deleteEvent() {
   });
 }
 
-/** Clear the new-subtask input via the clear (X) icon. */
+/**
+ * Clear the new-subtask input via the clear (X) icon.
+ */
 $("sub-clear").addEventListener("click", () => {
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
@@ -385,7 +361,6 @@ $("sub-clear").addEventListener("click", () => {
 
 /**
  * Provide a default suggestion on plus click if there are no subtasks yet.
- * (Uses "Contact Form" as example text.)
  */
 $("sub-plus").addEventListener("click", () => {
   if (subtasks.length === 0) {
@@ -397,7 +372,7 @@ $("sub-plus").addEventListener("click", () => {
 
 /**
  * Persist an edited subtask triggered by clicking the save icon.
- * @param {HTMLElement} saveBtn - The clicked save icon inside a .subtask-item.
+ * @param {HTMLElement} saveBtn
  */
 function saveEditedSubtask(saveBtn) {
   const item = saveBtn.closest(".subtask-item");
@@ -410,10 +385,8 @@ function saveEditedSubtask(saveBtn) {
   const newValue = /** @type {HTMLInputElement} */ (input).value.trim();
 
   if (!newValue) {
-    // Leer -> Subtask löschen
     subtasks.splice(index, 1);
   } else {
-    // Inhalt -> Subtask aktualisieren
     subtasks[index] = newValue;
   }
 
@@ -422,15 +395,12 @@ function saveEditedSubtask(saveBtn) {
 }
 window.saveEditedSubtask = saveEditedSubtask;
 
-
-/** Delegate clicks on save icons inside the subtask list to save the edit. */
 $("subtask-list").addEventListener("click", (event) => {
   if (event.target.classList?.contains("subtask-save-icon")) {
     saveEditedSubtask(/** @type {HTMLElement} */ (event.target));
   }
 });
 
-/** Save subtask edits when clicking outside of an item in edit mode. */
 document.addEventListener(
   "pointerdown",
   (event) => {
@@ -444,24 +414,18 @@ document.addEventListener(
   true
 );
 
-
-
 /**
- * Replace a <template id="addtask-template"> with its rendered content as soon
- * as it is available. Dispatches 'addtask:template-ready' afterward.
- * Falls back to DOMContentLoaded if the template is not yet present.
- * Self-invoking IIFE for isolation.
+ * Replace a <template id="addtask-template"> with its rendered content.
+ * Dispatches 'addtask:template-ready' afterward.
  */
 (function injectAddTaskTemplate() {
   /**
    * Render the template if present.
-   * Expects a function getAddtaskTemplate(): string (provided externally).
-   * @returns {boolean} true if rendered; otherwise false
+   * @returns {boolean}
    */
   const render = () => {
     const tpl = document.getElementById("addtask-template");
     if (!tpl || !(tpl instanceof HTMLTemplateElement)) return false;
-    // Replaces the template content – getAddtaskTemplate must return HTML.
     tpl.innerHTML = getAddtaskTemplate();
     const frag = tpl.content.cloneNode(true);
     tpl.replaceWith(frag);
@@ -478,3 +442,73 @@ document.addEventListener(
   }
 })();
 
+/**
+ * Kürzt die Avatare in einem Container auf max und hängt GENAU EINEN "+x"-Badge an.
+ * Idempotent: erneuter Aufruf erzeugt keine Duplikate.
+ * @param {HTMLElement} container
+ * @param {number} max
+ */
+function capAssignedInitialsIn(container, max = 5) {
+  if (!container) return;
+
+  const chips = Array.from(container.children)
+    .filter(el => el.nodeType === 1 && el.getAttribute('data-plus-badge') !== 'true');
+
+  chips.forEach(el => el.classList.remove('d-none'));
+
+  let plus = container.querySelector('[data-plus-badge="true"]');
+
+  if (chips.length <= max) {
+    plus?.remove();
+    return;
+  }
+
+  for (let i = max; i < chips.length; i++) chips[i].classList.add('d-none');
+
+  if (!plus) {
+    plus = document.createElement('div');
+    plus.setAttribute('data-plus-badge', 'true');
+    plus.className = 'assigned-plus-badge';
+  }
+
+  plus.textContent = `+${chips.length - max}`;
+  container.appendChild(plus);
+}
+
+/**
+ * Wendet das Capping auf ALLE .contact-initials auf der Seite an.
+ * @param {number} max
+ */
+function applyCapToAllInitials(max = 5) {
+  document.querySelectorAll('.contact-initials')
+    .forEach(box => capAssignedInitialsIn(box, max));
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => applyCapToAllInitials(5));
+} else {
+  applyCapToAllInitials(5);
+}
+
+(function observeInitials() {
+  let scheduled = false;
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => { scheduled = false; applyCapToAllInitials(5); });
+  };
+
+  const obs = new MutationObserver(records => {
+    for (const r of records) {
+      if (r.type !== 'childList') continue;
+      if ([...r.addedNodes].some(n =>
+        n.nodeType === 1 && (n.matches?.('.contact-initials') || n.querySelector?.('.contact-initials'))
+      )) {
+        schedule();
+        break;
+      }
+    }
+  });
+
+  obs.observe(document.documentElement, { childList: true, subtree: true });
+})();
