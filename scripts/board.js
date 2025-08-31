@@ -341,22 +341,16 @@ window.drop = function handleDrop(event) {
     event.dataTransfer?.getData("text/plain") ||
     event.dataTransfer?.getData("text");
   if (!taskId) return;
-
   const taskElement = document.getElementById(taskId);
-  const newColumn =
-    /** @type {HTMLElement} */ (event.currentTarget).closest(".task-list") ||
-    /** @type {HTMLElement} */ (event.currentTarget);
+  const newColumn = (event.currentTarget).closest(".task-list") || (event.currentTarget);
   const oldColumn = taskElement?.parentElement;
   if (!taskElement || !newColumn || !oldColumn) return;
-
   newColumn.appendChild(taskElement);
   taskElement.dataset.column =
     DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
-
   updateTaskColumn(taskId, newColumn.id);
   checkAndShowPlaceholder(oldColumn.id);
   checkAndShowPlaceholder(newColumn.id);
-
   IS_DRAGGING = false;
   resetColumnBackgrounds();
 };
@@ -380,40 +374,97 @@ function updateTaskColumn(taskId, newColumnId) {
  * @param {{initials?:string,colorIndex?:number,name?:string}[]} [contacts=[]]
  * @returns {string}
  */
+/**
+ * @typedef {Object} Contact
+ * @property {string} [name]
+ * @property {string} [initials]
+ * @property {number} [colorIndex]
+ */
+
+/**
+ * Render up to 3 initials; last slot becomes "+x" if overflow.
+ * @param {Contact[]} [contacts=[]]
+ * @returns {string}
+ */
 export function renderAssignedInitials(contacts = []) {
   const maxShown = 3;
-  if (!Array.isArray(contacts) || contacts.length === 0) return "";
-
+  if (!isValidContacts(contacts)) return "";
   const shown = contacts.slice(0, maxShown);
   const hasOverflow = contacts.length > maxShown;
-  const overflowCount = contacts.length - (maxShown - 1);
-
-  return shown
-    .map((c, idx) => {
-      const positionClass = ["first-initial", "second-initial", "third-initial"][idx];
-
-      if (hasOverflow && idx === maxShown - 1) {
-        return `
-          <div class="initial-circle ${positionClass} initial-circle--more" title="+${overflowCount}">
-            +${overflowCount}
-          </div>
-        `;
-      }
-
-      const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
-      const initials = c?.initials || "";
-      const title = c?.name || initials;
-
-      return `
-        <div class="initial-circle ${positionClass}" 
-             style="background-image: url(../assets/icons/contact/color${colorIdx}.svg)"
-             title="${title}">
-          ${initials}
-        </div>
-      `;
-    })
-    .join("");
+  const overflowCount = calcOverflow(contacts.length, maxShown);
+  const ctx = { hasOverflow, overflowCount, maxShown };
+  return shown.map((c, idx) => renderChip(c, idx, ctx)).join("");
 }
+
+/**
+ * @param {any} contacts
+ * @returns {contacts is Contact[]}
+ */
+function isValidContacts(contacts) {
+  return Array.isArray(contacts) && contacts.length > 0;
+}
+
+/**
+ * @param {number} len
+ * @param {number} maxShown
+ */
+function calcOverflow(len, maxShown) {
+  return len > maxShown ? len - (maxShown - 1) : 0;
+}
+
+/**
+ * @param {number} idx
+ * @returns {string}
+ */
+function getPositionClass(idx) {
+  return ["first-initial", "second-initial", "third-initial"][idx] || "";
+}
+
+/**
+ * @param {number} count
+ * @param {string} positionClass
+ * @returns {string}
+ */
+function renderOverflowBadge(count, positionClass) {
+  return `
+    <div class="initial-circle ${positionClass} initial-circle--more" title="+${count}">
+      +${count}
+    </div>
+  `;
+}
+
+/**
+ * @param {Contact} c
+ * @param {string} positionClass
+ * @returns {string}
+ */
+function renderInitialCircle(c, positionClass) {
+  const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
+  const initials = c?.initials || "";
+  const title = c?.name || initials;
+  return `
+    <div class="initial-circle ${positionClass}"
+         style="background-image: url(../assets/icons/contact/color${colorIdx}.svg)"
+         title="${title}">
+      ${initials}
+    </div>
+  `;
+}
+
+/**
+ * @param {Contact} c
+ * @param {number} idx
+ * @param {{hasOverflow:boolean, overflowCount:number, maxShown:number}} ctx
+ * @returns {string}
+ */
+function renderChip(c, idx, ctx) {
+  const pos = getPositionClass(idx);
+  if (ctx.hasOverflow && idx === ctx.maxShown - 1) {
+    return renderOverflowBadge(ctx.overflowCount, pos);
+  }
+  return renderInitialCircle(c, pos);
+}
+
 
 /**
  * Maps a task category to a CSS class for labels.

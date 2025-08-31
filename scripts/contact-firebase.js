@@ -11,6 +11,7 @@ import {
   push,
   onValue,
   remove,
+  child
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
@@ -158,7 +159,6 @@ function handleSaveSuccess(data) {
     el.classList.remove("d-none");
     setTimeout(() => el.classList.add("d-none"), 4000);
   }
-  console.log("Saved:", data);
 }
 
 /**
@@ -171,23 +171,24 @@ function saveToFirebase(data) {
     .catch((err) => console.error("Save failed:", err));
 }
 
-// -- Global actions (used by HTML) -------------------------------------------
-
 /**
  * Delete the currently selected contact.
  * Relies on global `currentContact` ({ id, name }).
  */
-window.deleteContact = () => {
-  if (!window.currentContact?.id) return;
-  const contactRef = ref(db, `contacts/${window.currentContact.id}`);
-  remove(contactRef)
-    .then(() => {
-      const box = document.getElementById("contact-details");
-      if (box) box.innerHTML = "";
-      console.log("Contact deleted:", window.currentContact.name);
-    })
-    .catch((err) => console.error("Delete failed:", err));
+window.deleteContact = async () => {
+  const key = typeof currentContact?.id === "string" ? currentContact.id.trim() : "";
+  if (!key) {
+    console.warn("Abbruch: Kein Push-Key in currentContact.id:", currentContact);
+    return;
+  }
+  try {
+    await remove(child(dataRef, key));  
+    document.getElementById("contact-details")?.replaceChildren();
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
 };
+
 
 /**
  * Validate and save a new contact.
@@ -198,8 +199,6 @@ window.dataSave = () => {
   window.colorIndex = (window.colorIndex % 15) + 1;
   saveToFirebase(getNewContactData());
 };
-
-// -- Init --------------------------------------------------------------------
 
 /** Start realtime subscription on page load. */
 showAllData();

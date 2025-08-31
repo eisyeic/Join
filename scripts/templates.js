@@ -48,7 +48,7 @@ let currentContact = {};
  * @param {HTMLElement} detailSection
  * @returns {void}
  */
-function getContactDetails(name, email, phone, colorIndex, detailSection) {
+function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
   detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">
             <div class="contact-person-icon-big">
@@ -290,11 +290,17 @@ function getAddtaskTemplate() {
  * @returns {void}
  */
 function renderSubtasks() {
-  const normalized = (window.subtasks || typeof subtasks !== "undefined" ? (window.subtasks || subtasks) : [])
-    .map((st) => (typeof st === "string" ? st : (st && st.name) ? st.name : ""))
+  const normalized = (
+    window.subtasks || typeof subtasks !== "undefined"
+      ? window.subtasks || subtasks
+      : []
+  )
+    .map((st) => (typeof st === "string" ? st : st && st.name ? st.name : ""))
     .filter(Boolean);
 
-  try { subtasks = normalized; } catch (_) {}
+  try {
+    subtasks = normalized;
+  } catch (_) {}
   window.subtasks = normalized;
 
   $("subtask-list").innerHTML = normalized
@@ -366,7 +372,8 @@ if (typeof window !== "undefined") {
   const render = (root = document) => {
     const container = root.querySelector(".addtask-wrapper");
     if (!container) return false;
-    if (container.dataset.rendered === "1" || container.childElementCount > 0) return true;
+    if (container.dataset.rendered === "1" || container.childElementCount > 0)
+      return true;
     container.innerHTML = getAddtaskTemplate();
     container.dataset.rendered = "1";
     document.dispatchEvent(new CustomEvent("addtask:template-ready"));

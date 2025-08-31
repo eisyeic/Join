@@ -97,8 +97,8 @@
   word-wrap: break-word;
   line-height: 1.1;
   flex-shrink: 0;
-  max-height: 120px;
-  overflow-y: auto;
+  max-height: 124px;
+  overflow: hidden;
   min-height: 75px;
 }
 
@@ -234,6 +234,7 @@ b {
 .subtasks-container {
   max-height: 150px;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .members {

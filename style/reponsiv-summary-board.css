@@ -41,17 +41,6 @@
 }
 
 @media (max-width: 900px) {
-
-  main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 100px;
-    left: 0;
-    height: calc(100vh - 207px);
-    width: 100vw;
-  }
-
   .dashboard {
     width: 100%;
     height: calc(100vh - 207px);
