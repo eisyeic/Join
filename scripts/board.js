@@ -12,6 +12,8 @@ import { createTaskElement } from "./template.modul.js";
 const MIN_SEARCH_CHARS = 3;
 /** Current search term used to filter tasks. */
 let currentSearchTerm = "";
+/** Firebase RTDB instance. */
+const db = getDatabase(app);
 
 /**
  * Debounce helper.
@@ -50,50 +52,7 @@ function handleAuthChange(user) {
   if (window.updateUserInitials) window.updateUserInitials(user);
 }
 
-/** Overlay root element. */
-const overlay = $("overlay-add-task");
-/** Overlay content element. */
-const overlayContent = document.querySelector(".add-task-overlay-content");
 
-overlay?.addEventListener("click", onOverlayBackdropClick);
-/**
- * Closes the Add Task overlay if the backdrop is clicked.
- * @param {MouseEvent} e
- * @returns {void}
- */
-function onOverlayBackdropClick(e) {
-  if (e.target !== overlay || overlay.classList.contains("d-none")) return;
-  document.querySelector(".edit-addtask-wrapper")?.classList.add("d-none");
-  document.getElementById("task-overlay-content")?.classList.remove("d-none");
-  window.toggleAddTaskBoard();
-}
-
-/**
- * Toggles the Add Task overlay visibility.
- * @returns {void}
- */
-window.toggleAddTaskBoard = function () {
-  if (overlay.classList.contains("d-none")) openOverlay();
-  else closeOverlay();
-  moveFormBackToAside();
-};
-
-
-
-
-
-/**
- * Moves the add-task form back to the aside placeholder.
- * @returns {void}
- */
-function moveFormBackToAside() {
-  const src = document.querySelector(".edit-addtask .addtask-wrapper");
-  const dst = document.querySelector(".addtask-aside-clone");
-  if (src && dst) dst.replaceChildren(src);
-}
-
-/** Firebase RTDB instance. */
-const db = getDatabase(app);
 
 /**
  * Subscribes to `/tasks` and renders the board on changes.

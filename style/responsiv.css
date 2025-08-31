@@ -14,8 +14,6 @@
   }
 }
 
-
-
 @media (max-width: 900px) {
   .sidebar {
     display: none;
@@ -73,7 +71,7 @@
     height: 83px;
   }
 
-  header {
+  .header-box {
     min-height: 80px !important;
   }
 
@@ -94,7 +92,7 @@
   }
 
 
-  header {
+  .header-box {
     height: 80px;
     padding-left: 20px;
     padding-right: 20px;

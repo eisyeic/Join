@@ -30,29 +30,48 @@
 
   <body>
     <header>
-    <a href="./index.html"><img src="./assets/icons/header/logo_white.svg" /></a>
-    <nav>
-      <p>Kanban Project Management Tool</p>
-      <a href="help.html"><img class="help" src="./assets/icons/header/help.svg" alt="Help Icon" /></a>
-      <div id="person-icon-header" class="person-icon-header">
-        <svg width="56" height="56" class="circle-badge" onclick="event.stopPropagation(); toggleProfileNavbar()">
-          <circle cx="28" cy="28" r="26.5" class="circle-ring"></circle>
-          <circle cx="28" cy="28" r="23.06" class="circle-fill"></circle>
-          <text id="person-icon-header-text" x="28" y="31" class="circle-text">
-            G
-          </text>
-        </svg>
+      <div class="header-box">
+        <a href="./index.html"
+          ><img src="./assets/icons/header/logo_white.svg"
+        /></a>
+        <nav>
+          <p>Kanban Project Management Tool</p>
+          <a href="help.html"
+            ><img
+              class="help"
+              src="./assets/icons/header/help.svg"
+              alt="Help Icon"
+          /></a>
+          <div id="person-icon-header" class="person-icon-header">
+            <svg
+              width="56"
+              height="56"
+              class="circle-badge"
+              onclick="event.stopPropagation(); toggleProfileNavbar()"
+            >
+              <circle cx="28" cy="28" r="26.5" class="circle-ring"></circle>
+              <circle cx="28" cy="28" r="23.06" class="circle-fill"></circle>
+              <text
+                id="person-icon-header-text"
+                x="28"
+                y="31"
+                class="circle-text"
+              >
+                G
+              </text>
+            </svg>
+          </div>
+        </nav>
+        <div class="profile-navbar d-none" id="profile-navbar">
+          <div class="profile-navbar-box">
+            <a class="profile-navbar-help" href="./help.html">Help</a>
+            <a href="./legal-notice.html">Legal Notice</a>
+            <a href="./privacy-policy.html">Privacy Policy</a>
+            <a href="#" data-logout>Log out</a>
+          </div>
+        </div>
       </div>
-    </nav>
-    <div class="profile-navbar d-none" id="profile-navbar">
-      <div class="profile-navbar-box">
-        <a class="profile-navbar-help" href="./help.html">Help</a>
-        <a href="./legal-notice.html">Legal Notice</a>
-        <a href="./privacy-policy.html">Privacy Policy</a>
-        <a href="#" data-logout>Log out</a>
-      </div>
-    </div>
-  </header>
+    </header>
 
     <main>
       <section class="sidebar">
