@@ -1,9 +1,5 @@
-import {
-  getLabelClass,
-  renderSubtaskProgress,
-  renderAssignedInitials,
-} from "./board.js";
-import { truncateDescription } from "./task-overlay.js";
+import { renderAssignedInitials } from "./board.js";
+import { truncateDescription, renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
 
 /**
  * @typedef {Object} AssignedContact
@@ -73,14 +69,22 @@ export function createTaskElement(task, taskId) {
       ${task.subtasks?.length ? renderSubtaskProgress(task.subtasks) : ""}
       <div class="initials-icon-box">
         <div class="initials">
-          ${task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : ""}
+          ${
+            task.assignedContacts
+              ? renderAssignedInitials(task.assignedContacts)
+              : ""
+          }
         </div>
-        <img src="./assets/icons/board/${task.priority}.svg" alt="${task.priority}">
+        <img src="./assets/icons/board/${task.priority}.svg" alt="${
+    task.priority
+  }">
       </div>
     </div>
   `;
 
-  const plusMinus = /** @type {HTMLImageElement|null} */ (ticket.querySelector(".plus-minus-img"));
+  const plusMinus = /** @type {HTMLImageElement|null} */ (
+    ticket.querySelector(".plus-minus-img")
+  );
   if (plusMinus) {
     plusMinus.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -88,7 +92,9 @@ export function createTaskElement(task, taskId) {
       openMoveOverlay(plusMinus, taskId, currentColumn);
     });
     plusMinus.addEventListener("mousedown", (e) => e.stopPropagation());
-    plusMinus.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+    plusMinus.addEventListener("touchstart", (e) => e.stopPropagation(), {
+      passive: true,
+    });
     plusMinus.addEventListener("dragstart", (e) => e.preventDefault());
   }
   return ticket;
@@ -101,11 +107,15 @@ export function createTaskElement(task, taskId) {
  * @returns {void}
  */
 export function renderAssignedContacts(task) {
-  const contacts = Array.isArray(task?.assignedContacts) ? task.assignedContacts : [];
+  const contacts = Array.isArray(task?.assignedContacts)
+    ? task.assignedContacts
+    : [];
 
   /** @param {number} [tries] */
   const waitAndRender = (tries = 15) => {
-    const container = /** @type {HTMLElement|null} */ (document.getElementById("overlay-members"));
+    const container = /** @type {HTMLElement|null} */ (
+      document.getElementById("overlay-members")
+    );
     if (!container) {
       if (tries > 0) requestAnimationFrame(() => waitAndRender(tries - 1));
       return;
@@ -175,7 +185,10 @@ export function renderSubtasks(task) {
  * @returns {void}
  */
 function openMoveOverlay(anchorEl, taskId, currentColumn) {
-  if (_currentMoveOverlay && _currentMoveOverlay.dataset.taskId === String(taskId)) {
+  if (
+    _currentMoveOverlay &&
+    _currentMoveOverlay.dataset.taskId === String(taskId)
+  ) {
     closeMoveOverlay();
     return;
   }
@@ -187,7 +200,12 @@ function openMoveOverlay(anchorEl, taskId, currentColumn) {
   overlay.dataset.taskId = taskId;
 
   const normCurrent = normalizeColumnName(currentColumn);
-  const order = /** @type {Record<string, number>} */ ({ todo: 0, inProgress: 1, awaitFeedback: 2, done: 3 });
+  const order = /** @type {Record<string, number>} */ ({
+    todo: 0,
+    inProgress: 1,
+    awaitFeedback: 2,
+    done: 3,
+  });
 
   const parts = [];
   parts.push(`<div class="move-overlay__title">Move to</div>`);
@@ -210,10 +228,15 @@ function openMoveOverlay(anchorEl, taskId, currentColumn) {
   overlay.innerHTML = parts.join("\n");
 
   overlay.addEventListener("mousedown", (e) => e.stopPropagation());
-  overlay.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+  overlay.addEventListener("touchstart", (e) => e.stopPropagation(), {
+    passive: true,
+  });
   overlay.addEventListener("click", (e) => {
     e.stopPropagation();
-    const trg = e.target instanceof Element ? e.target.closest("[data-col],[data-action]") : null;
+    const trg =
+      e.target instanceof Element
+        ? e.target.closest("[data-col],[data-action]")
+        : null;
     if (!trg) return;
     const action = trg.getAttribute("data-action");
     const col = trg.getAttribute("data-col");
@@ -245,23 +268,42 @@ function openMoveOverlay(anchorEl, taskId, currentColumn) {
   overlay.tabIndex = -1;
   overlay.focus?.();
 
-  const onDocClick = (ev) => { if (!overlay.contains(ev.target)) closeMoveOverlay(); };
-  const onKey = (ev) => { if (ev.key === "Escape") closeMoveOverlay(); };
+  const onDocClick = (ev) => {
+    if (!overlay.contains(ev.target)) closeMoveOverlay();
+  };
+  const onKey = (ev) => {
+    if (ev.key === "Escape") closeMoveOverlay();
+  };
   const onAnyScrollOrResize = () => closeMoveOverlay();
 
   document.addEventListener("click", onDocClick, { capture: true });
   document.addEventListener("keydown", onKey);
-  document.addEventListener("scroll", onAnyScrollOrResize, { capture: true, passive: true });
-  document.addEventListener("wheel", onAnyScrollOrResize, { capture: true, passive: true });
-  document.addEventListener("touchmove", onAnyScrollOrResize, { capture: true, passive: true });
+  document.addEventListener("scroll", onAnyScrollOrResize, {
+    capture: true,
+    passive: true,
+  });
+  document.addEventListener("wheel", onAnyScrollOrResize, {
+    capture: true,
+    passive: true,
+  });
+  document.addEventListener("touchmove", onAnyScrollOrResize, {
+    capture: true,
+    passive: true,
+  });
   window.addEventListener("resize", onAnyScrollOrResize);
 
   _moveOverlayCleanup = () => {
     document.removeEventListener("click", onDocClick, { capture: true });
     document.removeEventListener("keydown", onKey);
-    document.removeEventListener("scroll", onAnyScrollOrResize, { capture: true });
-    document.removeEventListener("wheel", onAnyScrollOrResize, { capture: true });
-    document.removeEventListener("touchmove", onAnyScrollOrResize, { capture: true });
+    document.removeEventListener("scroll", onAnyScrollOrResize, {
+      capture: true,
+    });
+    document.removeEventListener("wheel", onAnyScrollOrResize, {
+      capture: true,
+    });
+    document.removeEventListener("touchmove", onAnyScrollOrResize, {
+      capture: true,
+    });
     window.removeEventListener("resize", onAnyScrollOrResize);
   };
 
@@ -320,9 +362,11 @@ function positionOverlayTopLeft(anchorEl, overlay) {
   let top = r.top;
   let left = r.right - ow;
   if (left < MARGIN) left = MARGIN;
-  if (left + ow > window.innerWidth - MARGIN) left = window.innerWidth - MARGIN - ow;
+  if (left + ow > window.innerWidth - MARGIN)
+    left = window.innerWidth - MARGIN - ow;
   if (top < MARGIN) top = MARGIN;
-  if (top + oh > window.innerHeight - MARGIN) top = window.innerHeight - MARGIN - oh;
+  if (top + oh > window.innerHeight - MARGIN)
+    top = window.innerHeight - MARGIN - oh;
   overlay.style.left = `${Math.round(left)}px`;
   overlay.style.top = `${Math.round(top)}px`;
 }
@@ -333,16 +377,20 @@ function positionOverlayTopLeft(anchorEl, overlay) {
  * @returns {void}
  */
 function moveTaskUp(taskId) {
-  const ticket = /** @type {HTMLElement|null} */ (document.getElementById(String(taskId)));
+  const ticket = /** @type {HTMLElement|null} */ (
+    document.getElementById(String(taskId))
+  );
   if (!ticket) return;
   const parent = ticket.parentElement;
   if (!parent) return;
   /** @type {Element|null} */
   let prev = ticket.previousElementSibling;
-  while (prev && !prev.classList.contains("ticket")) prev = prev.previousElementSibling;
+  while (prev && !prev.classList.contains("ticket"))
+    prev = prev.previousElementSibling;
   if (prev) {
     parent.insertBefore(ticket, prev);
-    if (typeof window.onTaskOrderChanged === "function") window.onTaskOrderChanged(parent);
+    if (typeof window.onTaskOrderChanged === "function")
+      window.onTaskOrderChanged(parent);
   }
 }
 
@@ -352,16 +400,20 @@ function moveTaskUp(taskId) {
  * @returns {void}
  */
 function moveTaskDown(taskId) {
-  const ticket = /** @type {HTMLElement|null} */ (document.getElementById(String(taskId)));
+  const ticket = /** @type {HTMLElement|null} */ (
+    document.getElementById(String(taskId))
+  );
   if (!ticket) return;
   const parent = ticket.parentElement;
   if (!parent) return;
   /** @type {Element|null} */
   let next = ticket.nextElementSibling;
-  while (next && !next.classList.contains("ticket")) next = next.nextElementSibling;
+  while (next && !next.classList.contains("ticket"))
+    next = next.nextElementSibling;
   if (next) {
     parent.insertBefore(next, ticket);
-    if (typeof window.onTaskOrderChanged === "function") window.onTaskOrderChanged(parent);
+    if (typeof window.onTaskOrderChanged === "function")
+      window.onTaskOrderChanged(parent);
   }
 }
 
@@ -372,7 +424,9 @@ function moveTaskDown(taskId) {
  * @returns {void}
  */
 function moveTaskToColumn(taskId, targetColumn) {
-  const ticket = /** @type {HTMLElement|null} */ (document.getElementById(String(taskId)));
+  const ticket = /** @type {HTMLElement|null} */ (
+    document.getElementById(String(taskId))
+  );
   if (!ticket) return;
   const sourceColumn = getCurrentColumnForTicket(ticket);
 
@@ -382,7 +436,9 @@ function moveTaskToColumn(taskId, targetColumn) {
   }
 
   const targetContainer =
-    /** @type {HTMLElement|null} */ (document.querySelector(`[data-column="${targetColumn}"]`)) ||
+    /** @type {HTMLElement|null} */ (
+      document.querySelector(`[data-column="${targetColumn}"]`)
+    ) ||
     /** @type {HTMLElement|null} */ (document.getElementById(targetColumn));
 
   if (!targetContainer) {
@@ -407,10 +463,13 @@ function moveTaskToColumn(taskId, targetColumn) {
  */
 function getCurrentColumnForTicket(ticketEl) {
   if (ticketEl?.dataset?.column) return ticketEl.dataset.column;
-  const columnEl = ticketEl.closest("[data-column]") || ticketEl.closest(".column");
+  const columnEl =
+    ticketEl.closest("[data-column]") || ticketEl.closest(".column");
   if (columnEl) {
-    if (/** @type {HTMLElement} */ (columnEl).dataset?.column) return /** @type {HTMLElement} */ (columnEl).dataset.column;
-    if ((/** @type {HTMLElement} */ (columnEl)).id) return (/** @type {HTMLElement} */ (columnEl)).id;
+    if (/** @type {HTMLElement} */ (columnEl).dataset?.column)
+      return /** @type {HTMLElement} */ (columnEl).dataset.column;
+    if (/** @type {HTMLElement} */ (columnEl).id)
+      return /** @type {HTMLElement} */ (columnEl).id;
   }
   return "";
 }
@@ -424,8 +483,14 @@ function normalizeColumnName(raw) {
   if (!raw) return "";
   const v = String(raw).toLowerCase().replace(/\s+/g, "");
   if (v === "todo" || v.includes("to-do-column")) return "todo";
-  if (v === "inprogress" || v.includes("in-progress-column")) return "inProgress";
-  if (v.startsWith("await") || v.includes("review") || v.includes("await-feedback-column")) return "awaitFeedback";
+  if (v === "inprogress" || v.includes("in-progress-column"))
+    return "inProgress";
+  if (
+    v.startsWith("await") ||
+    v.includes("review") ||
+    v.includes("await-feedback-column")
+  )
+    return "awaitFeedback";
   if (v === "done" || v.includes("done-column")) return "done";
   return raw;
 }
@@ -456,4 +521,3 @@ function getMoveTargetsFor(currentColumn) {
       return [];
   }
 }
-

@@ -240,3 +240,4 @@ async function deleteTaskFromDatabase(taskId) {
   TASK_CATEGORIES.forEach((c) => (updates[`${c}Tasks/${taskId}`] = null));
   await update(ref(db), updates);
 }
+

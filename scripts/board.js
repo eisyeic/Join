@@ -78,37 +78,9 @@ window.toggleAddTaskBoard = function () {
   moveFormBackToAside();
 };
 
-/**
- * Opens the Add Task overlay and resets the form.
- * @returns {void}
- */
-function openOverlay() {
-  overlay.classList.remove("d-none");
-  overlayContent.classList.remove("slide-out");
-  overlayContent.classList.add("slide-in");
-  const cancelBtn = $("cancel-button");
-  if (cancelBtn) cancelBtn.click();
-  else
-    document.addEventListener(
-      "addtask:template-ready",
-      () => $("cancel-button")?.click(),
-      { once: true }
-    );
-}
 
-/**
- * Closes the Add Task overlay with a slide-out animation.
- * @returns {void}
- */
-function closeOverlay() {
-  overlayContent.classList.remove("slide-in");
-  overlayContent.classList.add("slide-out");
-  overlayContent.addEventListener("animationend", function handler() {
-    overlay.classList.add("d-none");
-    overlayContent.classList.remove("slide-out");
-    overlayContent.removeEventListener("animationend", handler);
-  });
-}
+
+
 
 /**
  * Moves the add-task form back to the aside placeholder.
@@ -465,40 +437,6 @@ function renderChip(c, idx, ctx) {
   return renderInitialCircle(c, pos);
 }
 
-
-/**
- * Maps a task category to a CSS class for labels.
- * @param {string} category
- * @returns {string}
- */
-export function getLabelClass(category) {
-  return (
-    {
-      "User Story": "user-story",
-      "Technical task": "technical-task",
-    }[category] || ""
-  );
-}
-
-/**
- * Renders a subtask progress bar and label.
- * @param {{checked:boolean}[]} subtasks
- * @returns {string}
- */
-export function renderSubtaskProgress(subtasks) {
-  const total = subtasks.length;
-  const done = subtasks.filter((st) => st.checked).length;
-  const percentage = total ? Math.round((done / total) * 100) : 0;
-  return `
-    <div class="subtasks-box">
-      <div class="progressbar">
-        <div class="progressbar-inlay" style="width: ${percentage}%"></div>
-      </div>
-      ${done}/${total} Subtasks
-    </div>
-  `;
-}
-
 /**
  * DOMContentLoaded bootstrap: wires DnD, loads tasks, sets up search.
  * @returns {void}
@@ -518,7 +456,6 @@ function setupSearchHandlers() {
   const searchInput = $("search-input");
   const searchButton = $("search-btn");
   if (!searchInput) return;
-
   const run = () => {
     const term = (searchInput.value || "").toLowerCase().trim();
     if (term.length >= MIN_SEARCH_CHARS) {
@@ -529,7 +466,6 @@ function setupSearchHandlers() {
       filterTasks(currentSearchTerm);
     }
   };
-
   const debouncedRun = debounce(run, 200);
   searchInput.addEventListener("input", debouncedRun);
   searchInput.addEventListener("keypress", (e) => {
@@ -597,19 +533,6 @@ function updatePlaceholderForColumn(columnId) {
 }
 
 /**
- * Toggles the task overlay into edit mode and moves the form into place.
- * @returns {void}
- */
-$("edit-task-btn").addEventListener("click", onEditTaskBtnClick);
-function onEditTaskBtnClick() {
-  $("task-overlay-content").classList.toggle("d-none");
-  document.querySelector(".edit-addtask-wrapper").classList.toggle("d-none");
-  const src = document.querySelector(".addtask-aside-clone .addtask-wrapper");
-  const dst = document.querySelector(".edit-addtask");
-  if (src && dst) dst.replaceChildren(src);
-}
-
-/**
  * Updates a task's column programmatically (overlay action), mirroring DnD.
  * @param {string|number} taskId
  * @param {'todo'|'inProgress'|'awaitFeedback'|'done'|string} targetLogical
@@ -618,16 +541,13 @@ function onEditTaskBtnClick() {
 window.onTaskColumnChanged = function (taskId, targetLogical) {
   const taskEl = document.getElementById(String(taskId));
   if (!taskEl) return;
-
   const oldColumnEl = taskEl.closest(".task-list") || taskEl.parentElement;
   const newDomId = LOGICAL_TO_DOM[targetLogical] || targetLogical;
   const newColumnEl = document.getElementById(newDomId);
   if (!newColumnEl || !oldColumnEl) return;
-
   newColumnEl.appendChild(taskEl);
   taskEl.dataset.column =
     DOM_TO_LOGICAL[newColumnEl.id] || taskEl.dataset.column;
-
   updateTaskColumn(String(taskId), newColumnEl.id);
   checkAndShowPlaceholder(oldColumnEl.id);
   checkAndShowPlaceholder(newColumnEl.id);

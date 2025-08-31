@@ -5,7 +5,6 @@ import {
   get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { renderAssignedContacts, renderSubtasks } from "./template.modul.js";
-import { getLabelClass } from "./board.js";
 
 /**
  * Firebase Realtime Database instance.
@@ -299,4 +298,83 @@ export function truncateDescription(text) {
   const lastSpace = cut.lastIndexOf(" ");
   if (lastSpace > 0) cut = cut.slice(0, lastSpace);
   return cut + "...";
+}
+
+/**
+ * Opens the Add Task overlay and resets the form.
+ * @returns {void}
+ */
+function openOverlay() {
+  overlay.classList.remove("d-none");
+  overlayContent.classList.remove("slide-out");
+  overlayContent.classList.add("slide-in");
+  const cancelBtn = $("cancel-button");
+  if (cancelBtn) cancelBtn.click();
+  else
+    document.addEventListener(
+      "addtask:template-ready",
+      () => $("cancel-button")?.click(),
+      { once: true }
+    );
+}
+
+/**
+ * Closes the Add Task overlay with a slide-out animation.
+ * @returns {void}
+ */
+function closeOverlay() {
+  overlayContent.classList.remove("slide-in");
+  overlayContent.classList.add("slide-out");
+  overlayContent.addEventListener("animationend", function handler() {
+    overlay.classList.add("d-none");
+    overlayContent.classList.remove("slide-out");
+    overlayContent.removeEventListener("animationend", handler);
+  });
+}
+
+/**
+ * Toggles the task overlay into edit mode and moves the form into place.
+ * @returns {void}
+ */
+$("edit-task-btn").addEventListener("click", onEditTaskBtnClick);
+function onEditTaskBtnClick() {
+  $("task-overlay-content").classList.toggle("d-none");
+  document.querySelector(".edit-addtask-wrapper").classList.toggle("d-none");
+  const src = document.querySelector(".addtask-aside-clone .addtask-wrapper");
+  const dst = document.querySelector(".edit-addtask");
+  if (src && dst) dst.replaceChildren(src);
+}
+
+
+/**
+ * Renders a subtask progress bar and label.
+ * @param {{checked:boolean}[]} subtasks
+ * @returns {string}
+ */
+export function renderSubtaskProgress(subtasks) {
+  const total = subtasks.length;
+  const done = subtasks.filter((st) => st.checked).length;
+  const percentage = total ? Math.round((done / total) * 100) : 0;
+  return `
+    <div class="subtasks-box">
+      <div class="progressbar">
+        <div class="progressbar-inlay" style="width: ${percentage}%"></div>
+      </div>
+      ${done}/${total} Subtasks
+    </div>
+  `;
+}
+
+/**
+ * Maps a task category to a CSS class for labels.
+ * @param {string} category
+ * @returns {string}
+ */
+export function getLabelClass(category) {
+  return (
+    {
+      "User Story": "user-story",
+      "Technical task": "technical-task",
+    }[category] || ""
+  );
 }
