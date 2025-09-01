@@ -41,31 +41,41 @@ function getEditingId() {
 }
 
 /**
- * Collects selected contacts from the UI and normalizes them to a consistent object shape.
- * Supports both list selections and dataset fallback on the assigned-select-box.
- * @returns {{id:string,name:string,colorIndex:number,initials:string}[]}
+ * Normalize a contact record by id.
+ * @param {string} id
+ * @returns {{id:string,name?:string,colorIndex?:number,initials:string}}
  */
-function getAssignedContactsFromUI() {
-  const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
-  if (selectedLis.length > 0) {
-    return Array.from(selectedLis).map((li) => {
-      const id = li.id;
-      const c = loadedContacts[id] || {};
-      return { id, name: c.name, colorIndex: c.colorIndex, initials: c.initials };
-    });
-  }
+function mapContact(id) {
+  const c = loadedContacts[id] || {};
+  const initials = c.initials || (c.name ? c.name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase() : "");
+  return { id, name: c.name || String(id), colorIndex: c.colorIndex ?? 1, initials };
+}
+
+/**
+ * Read selected contact ids from the dataset.
+ * @returns {string[]}
+ */
+function getIdsFromDataset() {
   try {
     const raw = document.getElementById("assigned-select-box")?.dataset.selected || "[]";
-    const ids = JSON.parse(raw) || [];
-    return ids.map((id) => {
-      const c = loadedContacts[id] || {};
-      const initials = c.initials || (c.name ? c.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase() : "");
-      return { id, name: c.name || String(id), colorIndex: c.colorIndex ?? 1, initials };
-    });
-  } catch (_) {
+    const ids = JSON.parse(raw);
+    return Array.isArray(ids) ? ids : [];
+  } catch {
     return [];
   }
 }
+
+/**
+ * Collect assigned contacts from UI (selected lis or dataset).
+ * @returns {Array<{id:string,name?:string,colorIndex?:number,initials:string}>}
+ */
+function getAssignedContactsFromUI() {
+  const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
+  if (selectedLis.length > 0) return Array.from(selectedLis, li => mapContact(li.id));
+  const ids = getIdsFromDataset();
+  return ids.map(mapContact);
+}
+
 
 /**
  * Reads core task fields from the Add Task form and returns the base task payload (without contacts or editing meta).

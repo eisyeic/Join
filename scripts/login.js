@@ -268,6 +268,7 @@ function handleSignUp() {
   let accepted = $("confirm").classList.contains("checked");
   if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
   registerUser(email, password);
+  $("sign-up-button").disabled = true;
 }
 
 /**
@@ -319,6 +320,7 @@ function registerUser(email, password) {
         $("layout").style.opacity = "1";
         showLoginForm();
         $("confirm").classList.toggle("checked");
+        $("sign-up-button").disabled = false;
       }, 1200);
     })
     .catch((err) => showError($("error-sign-up"), err.message));

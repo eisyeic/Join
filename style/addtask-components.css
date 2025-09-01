@@ -91,7 +91,7 @@ li.selected:hover {
   height: 40px;
   color: #fff;
   background-size: cover;
-  font-size: 12px;
+  font-size: 14px;
   flex-shrink: 0;
   width: 40px;
   border: 2px solid #fff;
@@ -129,7 +129,7 @@ li.selected:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .category-select-box {

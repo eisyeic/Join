@@ -120,6 +120,7 @@ nav {
     fill: var(--light-blue);
     text-anchor: middle;
     dominant-baseline: middle;
+    transition: 0.2s;
 }
 
 .person-icon-header {

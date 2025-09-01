@@ -320,7 +320,6 @@ function closeMoveOverlay() {
     el.style.transform = "translate(0,0) scale(0.98)";
     el.style.opacity = "0";
     el.classList.remove("is-open");
-
     const cleanup = () => {
       el.remove();
       if (_moveOverlayCleanup) {
@@ -328,7 +327,6 @@ function closeMoveOverlay() {
         _moveOverlayCleanup = null;
       }
     };
-
     let done = false;
     const onEnd = () => {
       if (done) return;
@@ -338,7 +336,6 @@ function closeMoveOverlay() {
     };
     el.addEventListener("transitionend", onEnd, { once: true });
     setTimeout(onEnd, 240);
-
     _currentMoveOverlay = null;
     return;
   }
@@ -434,13 +431,11 @@ function moveTaskToColumn(taskId, targetColumn) {
     window.onTaskColumnChanged(taskId, targetColumn);
     return;
   }
-
   const targetContainer =
     /** @type {HTMLElement|null} */ (
       document.querySelector(`[data-column="${targetColumn}"]`)
     ) ||
     /** @type {HTMLElement|null} */ (document.getElementById(targetColumn));
-
   if (!targetContainer) {
     console.warn(
       `[moveTaskToColumn] Target container for "${targetColumn}" not found. Expected [data-column="${targetColumn}"] or #${targetColumn}`

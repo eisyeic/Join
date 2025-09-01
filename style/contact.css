@@ -316,7 +316,7 @@ main,
 
 .error-message {
     color: var(--error-color);
-    font-size: 13px;
+    font-size: 16px;
     margin: 0;
     height: 28px;
 }

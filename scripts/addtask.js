@@ -65,11 +65,13 @@ function resetPrioritySelection() {
 }
 
 const contactInitialsBox = document.querySelector(".contact-initials"); 
-const MAX_VISIBLE_INITIALS = 5;
+const MAX_VISIBLE_INITIALS = 3;
 function applyAssignedInitialsCap() {
   capAssignedInitialsIn(contactInitialsBox, MAX_VISIBLE_INITIALS);
 }
+
 window.applyAssignedInitialsCap = applyAssignedInitialsCap;
+
 $("assigned-select-box").addEventListener("click", () => {
   $("contact-list-box").classList.toggle("d-none");
   const isListVisible = !$("contact-list-box").classList.contains("d-none");
@@ -146,6 +148,7 @@ function handleAssignedClickOutside(event) {
     $("assigned-icon").classList.add("arrow-down");
   }
 }
+
 
 /**
  * Toggle the category dropdown when clicking the select.
@@ -390,14 +393,32 @@ $("subtask-list").addEventListener("click", (event) => {
 /**
  * Auto-save editing subtask when clicking outside its bounds.
  */
-document.addEventListener("pointerdown", (event) => {
-  document.querySelectorAll(".subtask-item.editing").forEach((subtaskItem) => {
-    if (!subtaskItem.contains(/** @type {Node} */ (event.target))) {
-      const saveBtn = subtaskItem.querySelector(".subtask-save-icon");
+/**
+ * Auto-save editing subtask when clicking outside its bounds.
+ * Zusätzlich: Wenn außerhalb von #sub-input geklickt wird und es Text gibt,
+ * den #sub-check-Button auslösen (aber nicht während eines Edit-Modus).
+ */
+document.addEventListener('pointerdown', (event) => {
+  const target = /** @type {Node} */ (event.target);
+  const editingItems = document.querySelectorAll('.subtask-item.editing');
+  const hadEditing = editingItems.length > 0;
+  editingItems.forEach((subtaskItem) => {
+    if (!subtaskItem.contains(target)) {
+      const saveBtn = subtaskItem.querySelector('.subtask-save-icon');
       if (saveBtn) window.saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
     }
   });
+  if (!hadEditing) {
+    const subInput = /** @type {HTMLInputElement|null} */ (document.getElementById('sub-input'));
+    if (subInput && subInput.value.trim() && !subInput.contains(target)) {
+      const funcBox = document.getElementById('subtask-func-btn');
+      if (!funcBox || !funcBox.contains(target)) {
+        document.getElementById('sub-check')?.click();
+      }
+    }
+  }
 }, true);
+
 
 /**
  * Replace a <template id="addtask-template"> with its rendered content and dispatch 'addtask:template-ready'.

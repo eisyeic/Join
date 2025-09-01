@@ -206,16 +206,40 @@ function updateContactInFirebase() {
  * @param {KeyboardEvent} event
  * @returns {void}
  */
-function validatePhoneInput(event) {
-  const allowedChars = /[0-9+\-() ]/;
-  if (
-    !allowedChars.test(event.key) &&
-    !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(
-      event.key
-    )
-  ) {
-    event.preventDefault();
+function validatePhoneInput(e) {
+  const t = e.target;
+  const k = e.key;
+  const ctrlCmd = e.ctrlKey || e.metaKey;
+  if (ctrlCmd && ['a','c','v','x','z','y'].includes(k.toLowerCase())) return;
+  if (['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(k)) return;
+  const selLen = (t.selectionEnd ?? t.value.length) - (t.selectionStart ?? 0);
+  const nextLen = t.value.length - selLen + 1;
+  if (k === '+') {
+    const atStart = (t.selectionStart ?? 0) === 0;
+    const hasPlus = t.value.startsWith('+');
+    if (!atStart || hasPlus || nextLen > 20) e.preventDefault();
+    return;
   }
+  if (/^\d$/.test(k)) {
+    if (nextLen > 20) e.preventDefault();
+    return;
+  }
+  e.preventDefault();
+}
+
+/**
+  *
+ * @param {InputEvent} e - input-Event des Eingabefeldes
+ * @returns {void}
+ */
+function sanitizePhoneOnInput(e) {
+  let v = e.target.value.replace(/[^\d+]/g, ''); 
+  if (v.startsWith('+')) {
+    v = '+' + v.slice(1).replace(/\+/g, ''); 
+  } else {
+    v = v.replace(/\+/g, ''); 
+  }
+  e.target.value = v.slice(0, 20); 
 }
 
 /**

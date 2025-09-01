@@ -95,10 +95,9 @@
   font-size: 48px;
   font-weight: 700;
   word-wrap: break-word;
-  line-height: 1.1;
   flex-shrink: 0;
-  max-height: 124px;
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
   min-height: 75px;
 }
 
@@ -146,8 +145,10 @@ b {
   flex-direction: column;
   padding: 0 16px;
   gap: 2px;
-  max-height: 200px;
+  min-height: 0;
+  max-height: 128px !important;
   overflow-y: auto;
+  flex: 0 1 auto;
 }
 
 .member {

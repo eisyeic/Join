@@ -10,7 +10,8 @@
 }
 
 .addtask-wrapper {
-  height: calc(100vh - 128px);
+  margin-left: 24px;
+  height: calc(100vh - 136px);
   gap: 12px;
   min-width: 472px;
   display: flex;
@@ -57,7 +58,7 @@
 .addtask-error {
   height: 16px;
   font-family: inter;
-  font-size: 13px;
+  font-size: 16px;
   width: 100%;
   color: var(--error-color);
 }

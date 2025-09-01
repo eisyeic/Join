@@ -26,6 +26,10 @@
   animation-delay: 0.5s;
 }
 
+main {
+  overflow-y: auto;
+}
+
 /* display main */
 @keyframes fadeIn {
   to {
@@ -267,7 +271,7 @@
   justify-self: flex-start;
   color: var(--error-color);
   font-family: inter;
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 400;
   height: 24px;
   width: 90%;
