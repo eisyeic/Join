@@ -15,6 +15,7 @@ window.setCurrentEditingTaskId = function (id) {
   const wrapper = document.querySelector('.addtask-wrapper');
   if (wrapper) wrapper.dataset.editingId = currentEditingTaskId;
 };
+
 /**
  * Returns the task id that is currently being edited. Falls back to wrapper dataset if needed.
  * @returns {string}
@@ -57,7 +58,7 @@ function mapContact(id) {
  */
 function getIdsFromDataset() {
   try {
-    const raw = document.getElementById("assigned-select-box")?.dataset.selected || "[]";
+    const raw = $("assigned-select-box")?.dataset.selected || "[]";
     const ids = JSON.parse(raw);
     return Array.isArray(ids) ? ids : [];
   } catch {

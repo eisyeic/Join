@@ -51,12 +51,10 @@ function $(id) {
  */
 function loadTaskCounts() {
   const tasksRef = ref(db, "tasks");
-  
   onValue(tasksRef, (snapshot) => {
     const tasks = snapshot.val();
     const counts = initializeCounts();
     let earliestUrgentDate = null;
-
     if (tasks) {
       for (const taskId in tasks) {
         const task = tasks[taskId];
@@ -67,7 +65,6 @@ function loadTaskCounts() {
         });
       }
     }
-
     updateTaskCountElements(counts);
     updateUrgentDeadline(earliestUrgentDate);
   });
@@ -162,7 +159,6 @@ function updateTaskCountElements(counts) {
     urgent: $("task-urgent-text"),
     total: $("task-on-board-text")
   };
-
   const mobileElements = {
     todo: $("task-to-do-text-mobile"),
     inProgress: $("task-in-progress-text-mobile"),
@@ -171,7 +167,6 @@ function updateTaskCountElements(counts) {
     urgent: $("task-urgent-text-mobile"),
     total: $("task-on-board-text-mobile")
   };
-
   for (const key in counts) {
     animateCounter(elements[key], counts[key]);
     animateCounter(mobileElements[key], counts[key]);
@@ -185,13 +180,10 @@ function updateTaskCountElements(counts) {
  */
 function animateCounter(element, target) {
   if (!element || isNaN(target)) return;
-
   let current = 0;
   const maxFakeCount = 9;
   const delay = 10;
-
   if (element.counterInterval) clearInterval(element.counterInterval);
-
   element.counterInterval = setInterval(() => {
     element.textContent = current;
     current++;
@@ -217,16 +209,13 @@ function updateUserInterface(user) {
     greeting: $("greeting"),
     initials: $("person-icon-header-text")
   };
-
   if (elements.username && name !== "User") {
     elements.username.textContent = name;
-
     if (elements.greeting) {
       elements.greeting.textContent = greeting + ",";
       elements.greeting.style.fontSize = "48px";
       elements.greeting.style.fontWeight = "400";
     }
-
     if (elements.initials && window.updateUserInitials) {
       window.updateUserInitials(user);
     }

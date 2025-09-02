@@ -156,7 +156,6 @@ function setupPasswordToggle(inputId, toggleId, errorBox) {
   let input = $(inputId);
   let toggle = $(toggleId);
   if (!input || !toggle) return;
-
   let isVisible = false;
   toggle.onclick = () =>
     togglePasswordVisibility(input, toggle, (isVisible = !isVisible));

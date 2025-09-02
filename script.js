@@ -61,31 +61,104 @@ function closeProfileNavbar(ev) {
   });
 })();
 
+/** @typedef {{displayName?: string, email?: string}} User */
+
+/** LocalStorage key for caching header text. */
+ /** @type {string} */
+const HEADER_KEY = "headerTextCache";
+
+/** DOM id of the header initials element. */
+ /** @type {string} */
+const HEADER_EL_ID = "person-icon-header-text";
+
 /**
- * Compute and set user initials in the header, caching the value.
- * @param {{displayName?: string|null, email?: string|null}|null} user
+ * Get the header element that displays the user's initials.
+ * @returns {HTMLElement|null} The header element or null if not found.
+ */
+function getHeaderEl() {
+  return document.getElementById(HEADER_EL_ID);
+}
+
+/**
+ * Build a base string to derive initials from (name > email local-part).
+ * @param {User} user - The authenticated user object.
+ * @returns {string} Display name or email local-part; empty string if none.
+ */
+function getUserBase(user) {
+  const name = (user.displayName || "").trim();
+  if (name) return name;
+  const email = user.email || "";
+  return email.split("@")[0] || "";
+}
+
+/**
+ * Split a base string into alphanumeric name parts (Unicode-aware).
+ * @param {string} base - Source string for name parsing.
+ * @returns {string[]} Non-empty parts.
+ */
+function nameParts(base) {
+  return base.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
+/**
+ * Compute initials from name parts (first letters of first two parts).
+ * @param {string[]} parts - Parsed name parts.
+ * @returns {string} Uppercased initials or empty string.
+ */
+function initialsFromParts(parts) {
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return "";
+}
+
+/**
+ * Clear the header UI and remove any cached value.
+ * @param {HTMLElement} el - Header target element.
+ * @returns {void}
+ */
+function clearHeader(el) {
+  localStorage.removeItem(HEADER_KEY);
+  el.textContent = "";
+  el.style.fontSize = "";
+}
+
+/**
+ * Determine font size for the initials.
+ * @param {string} initials - Computed initials.
+ * @returns {string} CSS font-size value.
+ */
+function fontSizeForInitials(initials) {
+  return initials.length === 2 ? "22px" : "30px";
+}
+
+/**
+ * Apply initials to the header element and cache them.
+ * @param {HTMLElement} el - Header target element.
+ * @param {string} initials - Computed initials to display.
+ * @returns {void}
+ */
+function applyHeader(el, initials) {
+  const fontSize = fontSizeForInitials(initials);
+  localStorage.setItem(HEADER_KEY, JSON.stringify({ text: initials, fontSize }));
+  el.textContent = initials;
+  el.style.fontSize = fontSize;
+  el.style.opacity = "1";
+}
+
+/**
+ * Update the header with the user's initials (or clear if not derivable).
+ * Side effects: touches DOM and localStorage.
+ * @param {User|null|undefined} user - Current user.
  * @returns {void}
  */
 window.updateUserInitials = function (user) {
   if (!user) return;
-  const el = document.getElementById("person-icon-header-text");
+  const el = getHeaderEl();
   if (!el) return;
-  const base = (user.displayName && user.displayName.trim()) || (user.email && user.email.split("@")[0]) || "";
-  const parts = base.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-  let initials = "";
-  if (parts.length >= 2) initials = (parts[0][0] + parts[1][0]).toUpperCase();
-  else if (parts.length === 1) initials = parts[0][0].toUpperCase();
-  if (!initials) {
-    localStorage.removeItem("headerTextCache");
-    el.textContent = "";
-    el.style.fontSize = "";
-    return;
-  }
-  const fontSize = initials.length === 2 ? "22px" : "30px";
-  localStorage.setItem("headerTextCache", JSON.stringify({ text: initials, fontSize }));
-  el.textContent = initials;
-  el.style.fontSize = fontSize;
-  el.style.opacity = "1";
+  const base = getUserBase(user);
+  const initials = initialsFromParts(nameParts(base));
+  if (!initials) return clearHeader(el);
+  applyHeader(el, initials);
 };
 
 /**
@@ -126,41 +199,114 @@ function isPublicPage() {
   return /(?:^|\/)(index|privacy-policy|legal-notice|help)(?:\.html)?$/.test(p) || p === "";
 }
 
+/** @typedef {{ displayName?: string, email?: string }} User */
+
+/** Query single element helper. */
+/// @param {string} sel
+/// @returns {Element|null}
+function qs(sel) { return document.querySelector(sel); }
+
 /**
- * Initialize auth state listener to toggle nav and visibility for general pages.
+ * Get the header element that holds the initials.
+ * @returns {HTMLElement|null}
+ */
+function getInitialsEl() {
+  return document.getElementById("person-icon-header-text");
+}
+
+/**
+ * Toggle .d-none on an element.
+ * @param {Element|null} el
+ * @param {boolean} hidden
  * @returns {void}
  */
-(async () => {
+function toggleHidden(el, hidden) {
+  el?.classList.toggle("d-none", hidden);
+}
+
+/**
+ * Show navigation for authenticated users.
+ * @returns {void}
+ */
+function showAuthedNav() {
+  toggleHidden(qs(".nav"), false);
+  toggleHidden(qs(".nav-box"), false);
+  toggleHidden(qs(".nav-login-box"), true);
+  toggleHidden(qs(".nav-login-box-mobile"), true);
+}
+
+/**
+ * Show navigation for anonymous users.
+ * @returns {void}
+ */
+function showAnonNav() {
+  toggleHidden(qs(".nav"), true);
+  toggleHidden(qs(".nav-box"), true);
+  toggleHidden(qs(".nav-login-box"), false);
+  toggleHidden(qs(".nav-login-box-mobile"), false);
+}
+
+/**
+ * Clear initials UI (and leave cache clearing to external helper).
+ * @param {HTMLElement|null} el
+ * @returns {void}
+ */
+function resetInitials(el) {
+  if (!el) return;
+  el.textContent = "";
+  el.style.fontSize = "";
+  el.style.opacity = "0";
+}
+
+/**
+ * Redirect to index if the page is not public.
+ * @returns {void}
+ */
+function redirectIfNotPublic() {
+  if (typeof isPublicPage === "function" && !isPublicPage()) {
+    location.replace("index.html");
+  }
+}
+
+/**
+ * Handle Firebase auth state changes and update UI.
+ * @param {User|null} user
+ * @returns {void}
+ */
+function handleAuthChange(user) {
+  const el = getInitialsEl();
+  if (user) {
+    window.updateUserInitials?.(user);
+    if (el) el.style.opacity = "1";
+    showAuthedNav();
+    return;
+  }
+  window.clearHeaderTextCache?.();
+  resetInitials(el);
+  showAnonNav();
+  redirectIfNotPublic();
+}
+
+/**
+ * Initialize Firebase Auth listener and wire the UI.
+ * @returns {Promise<void>}
+ */
+async function initAuthUI() {
   try {
-    const [{ auth }, { onAuthStateChanged }] = await Promise.all([import(FIREBASE_MODULE_PATH), import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")]);
-    onAuthStateChanged(auth, (user) => {
-      const initialsEl = document.getElementById("person-icon-header-text");
-      if (user) {
-        window.updateUserInitials?.(user);
-        if (initialsEl) initialsEl.style.opacity = "1";
-        document.querySelector(".nav")?.classList.remove("d-none");
-        document.querySelector(".nav-box")?.classList.remove("d-none");
-        document.querySelector(".nav-login-box")?.classList.add("d-none");
-        document.querySelector(".nav-login-box-mobile")?.classList.add("d-none");
-        return;
-      }
-      window.clearHeaderTextCache?.();
-      if (initialsEl) {
-        initialsEl.textContent = "";
-        initialsEl.style.fontSize = "";
-        initialsEl.style.opacity = "0";
-      }
-      document.querySelector(".nav")?.classList.add("d-none");
-      document.querySelector(".nav-box")?.classList.add("d-none");
-      document.querySelector(".nav-login-box")?.classList.remove("d-none");
-      document.querySelector(".nav-login-box-mobile")?.classList.remove("d-none");
-      if (!isPublicPage()) location.replace("index.html");
-    });
+    const [{ auth }, { onAuthStateChanged }] = await Promise.all([
+      import(FIREBASE_MODULE_PATH),
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"),
+    ]);
+    onAuthStateChanged(auth, handleAuthChange);
   } catch (err) {
     console.error("Auth initialization failed:", err);
-    if (!isPublicPage()) location.replace("index.html");
+    redirectIfNotPublic();
   }
-})();
+}
+
+// Kick off on load (kept as IIFE like your original)
+(async () => { await initAuthUI(); })();
+
 
 /**
  * Check if current page is index.html.
@@ -172,33 +318,70 @@ function isIndexPage() {
 }
 
 /**
+ * Get the header initials element.
+ * @returns {HTMLElement|null}
+ */
+function getHeaderEl() {
+  return document.getElementById("person-icon-header-text");
+}
+
+/**
+ * Handle UI when user is authenticated.
+ * @param {any} user
+ * @returns {void}
+ */
+function onUserAuthenticated(user) {
+  applyHeaderNavByAuth?.(user);
+  window.updateUserInitials?.(user);
+  const el = getHeaderEl();
+  if (el) el.style.opacity = "1";
+}
+
+/**
+ * Handle UI when no user is authenticated.
+ * @returns {void}
+ */
+function onUserUnauthenticated() {
+  applyHeaderNavByAuth?.(null);
+  localStorage.removeItem("headerTextCache");
+  const el = getHeaderEl();
+  if (el) {
+    el.textContent = "";
+    el.style.fontSize = "";
+    el.style.opacity = "0";
+  }
+  if (!isPublicPage()) location.replace("index.html");
+}
+
+/**
+ * onAuthStateChanged callback wrapper.
+ * @param {any|null} user
+ * @returns {void}
+ */
+function handleAuthStateChange(user) {
+  if (user) {
+    onUserAuthenticated(user);
+    return;
+  }
+  onUserUnauthenticated();
+}
+
+/**
  * Initialize auth state listener to apply header nav state.
  * @returns {void}
  */
 (async () => {
   try {
-    const [{ auth }, { onAuthStateChanged }] = await Promise.all([import(FIREBASE_MODULE_PATH), import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")]);
-    onAuthStateChanged(auth, (user) => {
-      const el = document.getElementById("person-icon-header-text");
-      if (user) {
-        applyHeaderNavByAuth?.(user);
-        window.updateUserInitials?.(user);
-        if (el) el.style.opacity = "1";
-        return;
-      }
-      applyHeaderNavByAuth?.(null);
-      localStorage.removeItem("headerTextCache");
-      if (el) {
-        el.textContent = "";
-        el.style.fontSize = "";
-        el.style.opacity = "0";
-      }
-      if (!isPublicPage()) location.replace("index.html");
-    });
+    const [{ auth }, { onAuthStateChanged }] = await Promise.all([
+      import(FIREBASE_MODULE_PATH),
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"),
+    ]);
+    onAuthStateChanged(auth, handleAuthStateChange);
   } catch (err) {
     console.error("Auth initialization failed:", err);
   }
 })();
+
 
 /**
  * Sign out the current user and redirect to index.
