@@ -97,36 +97,36 @@
   }
 }
 
+@media (max-height: 830px) {
+  .top-section {
+    display: none;
+  }
+  .main-section {
+    margin-top: 10px;
+  }
+  .logo-wrapper {
+    display: none;
+  }
+  .bottom-section {
+    height: auto;
+  }
+}
+
 @media (max-height: 755px) {
   @keyframes moveLogo {
     to {
       top: -110px;
       /* 78 / 323 = 0,24 * 323 - 323 = -245 / 2 = -122 + 37 = -110px */
-      left: -62px;
+      left: -82px;
       /* 64 / 265 = 0,24 * 265 - 265 = -201 / 2 = -100 + 38 = -62px */
       transform: translate(0, 0) scale(0.24);
     }
   }
-
-  .logo-wrapper img {
-    transform: scale(0.8);
+  .links {
+    margin-bottom: 10px;
   }
-}
-
-@media (max-height: 820px) {
-  .login-box {
-    transform: scale(0.8);
-    gap: 16px;
-  }
-
   .sign-up-bottom-box-mobile {
-    transform: scale(0.8);
-    padding-bottom: 20px;
-  }
-
-  .sign-up-box {
-    transform: scale(0.8);
-    margin-top: 50px;
-    gap: 16px;
+    margin: 10px;
   }
 }
+

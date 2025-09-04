@@ -10,7 +10,6 @@
 }
 
 .addtask-wrapper {
-  margin-left: 24px;
   height: calc(100vh - 136px);
   gap: 12px;
   min-width: 472px;

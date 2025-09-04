@@ -51,37 +51,32 @@
     }
 
     .contact-overlay-edit-content {
-        width: 100% !important;
-        border-radius: 0 0 30px 30px !important;
-        margin-left: 10px !important;
-    }
-
-    .contact-overlay-person-icon-big {
-        position: absolute;
-        top: -60px;
+        width: 100%;
+        border-radius: 0 0 30px 30px;
+        margin-left: 10px;
     }
 
     .overlay-add-contact {
-        width: 100vw !important;
+        width: 100vw;
     }
 
     .contact-overlay-add-head {
-        width: calc(100% - 20px) !important;
-        border-radius: 30px 30px 0 0 !important;
+        width: calc(100% - 20px);
+        border-radius: 30px 30px 0 0;
         margin-top: 84px;
         margin-right: 10px;
     }
 
     .contact-overlay-add-content {
-        border-radius: 0 0 30px 30px !important;
-        top: 381px !important;
-        height: calc(100vh - 491px) !important;
+        border-radius: 0 0 30px 30px;
+        top: 381px;
+        height: calc(100vh - 491px);
         margin-right: 10px;
-        width: calc(100% - 20px) !important;
+        width: calc(100% - 20px);
     }
 
     .overlay-add-contact-cancel {
-        display: none !important;
+        display: none;
     }
 
     .contact-overlay-add-head img {
@@ -89,25 +84,24 @@
     }
 
     .overlay-edit-contact {
-        width: 100vw !important;
+        width: 100vw;
     }
 
     .contact-overlay-edit-head {
-        width: calc(100% - 20px) !important;
-        border-radius: 30px 30px 0 0 !important;
-        margin: 84px 10px;
+        width: calc(100% - 20px);
+        border-radius: 30px 30px 0 0;
+        margin: 10px 10px;
     }
 
     .contact-overlay-edit-content {
-        border-radius: 0 0 30px 30px !important;
-        top: 381px !important;
-        height: 95vh;
+        border-radius: 0 0 30px 30px;
+        top: 310px;
         margin-right: 10px;
-        width: calc(100% - 20px) !important;
+        width: calc(100% - 20px);
     }
 
     .overlay-edit-contact-cancel {
-        display: none !important;
+        display: none;
     }
 
     .contact-overlay-edit-head img {
@@ -116,38 +110,38 @@
 
     .contact-single-person-content {
         display: none;
-        width: 100vw !important;
+        width: 100vw;
     }
 
     .contact-single-person-content.mobile-visible {
-        display: flex !important;
+        display: flex;
         flex-direction: column;
-        width: 100vw !important;
+        width: 100vw;
         position: fixed;
         top: 84px;
         left: 0;
         height: calc(100vh - 187px);
         padding: 64px 16px;
-        box-sizing: border-box !important;
+        box-sizing: border-box;
         gap: 21px;
     }
 
     .contact-single-person-content-head {
         align-items: center;
         justify-content: flex-start;
-        gap: 22px !important;
+        gap: 22px;
     }
 
     .contact-person-icon-big {
         flex-shrink: 0;
-        width: 120px !important;
+        width: 120px;
     }
 
     .contact-single-person-content-head-name h3 {
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-        hyphens: auto !important;
-        max-width: calc(100vw - 180px) !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        max-width: calc(100vw - 180px);
     }
 }
 
@@ -162,11 +156,7 @@
     }
 
     .contact-overlay-add-content {
-        height: calc(100vh - 475px) !important;
-    }
-
-    .contact-overlay-edit-content {
-        height: 95vh;
+        height: calc(100vh - 475px);
     }
 
     .single-person-content-mobile-bottom {
@@ -191,7 +181,7 @@
 
     .contact-overlay-edit-head {
         margin-top: 36px;
-        height: 200px !important;
+        height: 200px;
     }
 
     h3 {
@@ -199,38 +189,33 @@
     }
 
     .contact-overlay-edit-content {
-      top: 230px !important;
+      top: 230px;
     }
     .contact-overlay-add-head {
-        margin-top: 24px;
-        height: 200px !important;
+        margin-top: 10px;
+        height: 200px;
     }
 
     .contact-overlay-add-content {
-        top: 220px !important;
-        height: 65vh !important;
+        top: 220px;
+        height: 65vh;
     }
 
     .contact-overlay-add-content-name {
-        width: 280px !important;
+        width: 280px;
     }
 
     .contact-overlay-add-head p {
-        font-size: 20px !important;
+        font-size: 20px;
     }
 
     .contact-overlay-edit-head p {
-        font-size: 20px !important;
-    }
-
-    .contact-overlay-person-icon-big {
-        top: -60px;
+        font-size: 20px;
     }
 
     .contact-overlay-person-icon-big img {
-      top: 20px;
-      height: 80px !important;
-      width: 80px !important;
+      height: 80px;
+      width: 80px;
     }
 
     .contact-person-icon-big img {
@@ -239,7 +224,7 @@
     }
 
     .contact-person-icon-big h3 {
-        font-size: 14px !important;
+        font-size: 14px;
     }
 
     .contact-single-person-content-head-name h4 {
@@ -247,12 +232,12 @@
     }
 
     .contact-single-person-content-head {
-        gap: 10px !important;
-        padding: 0 !important;
+        gap: 10px;
+        padding: 0;
     }
 
     .contact-person-icon-big {
-        width: 70px !important;
+        width: 70px;
     }
     .overlay-edit-contact-delete-save {
         transform: scale(0.8);

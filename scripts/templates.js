@@ -200,8 +200,7 @@ function getAddtaskTemplate() {
           <div class="due-date">
             <span class="label-main">Due Date</span>
             <div class="date-input" id="datepicker-wrapper">
-              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img onclick="flatpickr()"
-                src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
+              <input type="text" id="datepicker" placeholder="dd/mm/yyyy" /><img src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
             </div>
             <div class="addtask-error" id="due-date-error"></div>
           </div>

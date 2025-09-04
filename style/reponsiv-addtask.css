@@ -1,11 +1,11 @@
 @media (max-width: 1250px) {
     .add-task-button {
-        flex-direction: column-reverse !important;
+        flex-direction: column-reverse;
         align-items: center;
     }
 
     .section-addtask-buttons {
-        justify-content: center !important;
+        justify-content: center;
         padding-left: 0;
         padding-right: 0;
         padding-bottom: 55px;
@@ -18,11 +18,10 @@
     }
 
     .add-task-button {
-        flex-direction: unset !important;
+        flex-direction: unset;
     }
 
     .addtask-wrapper {
-        padding: 24px 32px;
         justify-content: flex-start;
         height: calc(100vh - 348px);
     }
@@ -63,7 +62,6 @@
 
 @media (max-width: 720px) {
     .prio-buttons {
-        justify-content: center;
         gap: 8px;
     }
 
@@ -86,16 +84,12 @@
         font-size: 16px;
     }
 
-    .priority-button {
-        width: 95px;
-    }
-
     .cancel-button {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .create-button {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .addtask-title {
@@ -103,9 +97,15 @@
     }
 }
 
+@media (max-width: 470px) {
+    .priority-button {
+        padding: 6px;
+    }
+}
+
 @media (max-width: 375px) {
     .prio-buttons {
-        transform: scale(0.8);
+        font-size: 16px;
     }
 
     .cancel-button {

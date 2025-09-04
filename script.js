@@ -47,18 +47,6 @@ function closeProfileNavbar(ev) {
   const style = document.createElement("style");
   style.textContent = `#person-icon-header-text { opacity: 0; }`;
   document.head.appendChild(style);
-  document.addEventListener("DOMContentLoaded", () => {
-    const cached = JSON.parse(localStorage.getItem("headerTextCache") || "null");
-    const el = $("person-icon-header-text");
-    if (!el) return;
-    if (cached) {
-      el.textContent = cached.text;
-      el.style.fontSize = cached.fontSize;
-    } else {
-      el.textContent = "";
-      el.style.fontSize = "";
-    }
-  });
 })();
 
 /** @typedef {{displayName?: string, email?: string}} User */
@@ -138,12 +126,18 @@ function fontSizeForInitials(initials) {
  * @returns {void}
  */
 function applyHeader(el, initials) {
-  const fontSize = fontSizeForInitials(initials);
-  localStorage.setItem(HEADER_KEY, JSON.stringify({ text: initials, fontSize }));
+  const prevText = el.textContent || "";
+
+  if (prevText === initials ) {
+    // schon gesetzt – nur sicherstellen, dass es sichtbar ist
+    el.style.opacity = "1";
+    return;
+  }
+  localStorage.setItem(HEADER_KEY, JSON.stringify({ text: initials }));
   el.textContent = initials;
-  el.style.fontSize = fontSize;
   el.style.opacity = "1";
 }
+
 
 /**
  * Update the header with the user's initials (or clear if not derivable).
@@ -403,18 +397,13 @@ async function doLogout() {
   }
 }
 
-document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-logout]");
-  if (!el) return;
-  e.preventDefault();
-  doLogout();
-});
-
 /**
  * Attach a global click handler to trigger logout links with data-logout.
  * @returns {void}
  */
 function attachLogoutListener() {
+  if (window.__logoutListenerAttached) return; // Guard
+  window.__logoutListenerAttached = true;
   document.addEventListener("click", (e) => {
     const el = e.target.closest("[data-logout]");
     if (!el) return;
@@ -423,6 +412,7 @@ function attachLogoutListener() {
   });
 }
 attachLogoutListener();
+
 
 /**
  * Show/hide navigation UI depending on authentication.

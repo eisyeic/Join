@@ -49,7 +49,7 @@
 }
 
 .edit-addtask .category-box {
-  display: none !important;
+  display: none;
 }
 
 /* Slide-In: von rechts -100% nach 0 */

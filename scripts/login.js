@@ -12,7 +12,7 @@
  *  - CSS classes/variables used in the DOM and stylesheets (e.g., 'd-none', '--error-color')
  */
 
- // Firebase Imports
+// Firebase Imports
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -32,7 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
   $("guest-button").addEventListener("click", handleGuestLogin);
   $("sign-up-page-button").addEventListener("click", showSignUpForm);
   $("sign-up-bottom-button").addEventListener("click", showSignUpForm);
-  document.getElementById("sign-up-bottom-box-mobile").addEventListener("click", showSignUpForm);
+  document
+    .getElementById("sign-up-bottom-box-mobile")
+    .addEventListener("click", showSignUpForm);
   $("sign-up-button").addEventListener("click", handleSignUp);
   $("login-button").addEventListener("click", handleLogin);
   $("go-back").addEventListener("click", showLoginForm);
@@ -268,6 +270,7 @@ function handleSignUp() {
   if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
   registerUser(email, password);
   $("sign-up-button").disabled = true;
+  $("sign-up-button").style.pointerEvents = "none";
 }
 
 /**
@@ -320,6 +323,7 @@ function registerUser(email, password) {
         showLoginForm();
         $("confirm").classList.toggle("checked");
         $("sign-up-button").disabled = false;
+        $("sign-up-button").style.pointerEvents = "";
       }, 1200);
     })
     .catch((err) => showError($("error-sign-up"), err.message));

@@ -146,7 +146,7 @@ b {
   padding: 0 16px;
   gap: 2px;
   min-height: 0;
-  max-height: 128px !important;
+  max-height: 128px;
   overflow-y: auto;
   flex: 0 1 auto;
 }

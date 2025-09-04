@@ -322,8 +322,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  border: none !important;
-  outline: none !important;
+  border: none;
+  outline: none;
   gap: 8px;
 }
 
@@ -332,14 +332,13 @@
   transform: rotate(5deg);
 }
 
-
 .ticket.no-press {
-  animation: none !important;
-  transform: none !important;
+  animation: none;
+  transform: none;
 }
 
 .initial-circle--more {
-  background-image: none !important;
+  background-image: none;
   background-color: white; 
   color: var(--main-color);
   font-weight: 600;
@@ -347,7 +346,6 @@
   align-items: center;
   justify-content: center;
 }
-
 
 #overlay-members {
   --member-size: 31px;   

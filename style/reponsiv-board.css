@@ -18,7 +18,7 @@
 /* Board Overlay Media Queries */
 @media (max-width: 900px) {
     .overlay-add-task {
-        height: calc(100vh - 207px) !important;
+        height: calc(100vh - 207px);
         position: absolute;
         top: 100px;
         left: 0;
@@ -33,16 +33,16 @@
     }
 
     .add-task-button {
-        height: auto !important;
-        flex-direction: unset !important;
+        height: auto;
+        flex-direction: unset;
     }
 
     .add-task-overlay-content {
-        height: calc(100vh - 207px) !important;
-        width: 100vw !important;
-        animation: none !important;
-        position: absolute !important;
-        left: 0 !important;
+        height: calc(100vh - 207px);
+        width: 100vw;
+        animation: none;
+        position: absolute;
+        left: 0;
         border-radius: 0;
     }
 
@@ -87,17 +87,17 @@
 @media (max-width: 720px) {
     .overlay-add-task {
         top: 84px;
-        height: calc(100vh - 171px) !important;
+        height: calc(100vh - 171px);
     }
 
     .add-task-overlay-content {
-        height: calc(100vh - 171px) !important;
+        height: calc(100vh - 171px);
     }
 }
 
 @media (max-width: 550px) {
     .base-button {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .overlay-add-task span {
@@ -109,7 +109,7 @@
     }
 
     .addtask-title {
-        font-size: 28px !important;
+        font-size: 28px;
     }
 }
 
@@ -194,12 +194,12 @@
     }
 
     .task-list {
-        flex-direction: row !important;
-        overflow-x: scroll !important;
+        flex-direction: row;
+        overflow-x: scroll;
         overflow-y: hidden;
         padding: 8px;
         width: 100%;
-        align-items: flex-start !important;
+        align-items: flex-start;
         height: 100%;
     }
 
@@ -230,7 +230,7 @@
     }
 
     .board-content {
-        width: 100% !important;
+        width: 100%;
         height: calc(100vh - 100px - 152px - 107px);
     }
 
@@ -247,12 +247,13 @@
     }
 
     .add-task-overlay-content {
-        height: calc(100vh - 207px) !important;
-        width: 100vw !important;
-        animation: none !important;
-        position: absolute !important;
-        left: 0 !important;
+        height: calc(100vh - 207px);
+        width: 100vw;
+        animation: none;
+        position: absolute;
+        left: 0;
         border-radius: 0;
+        overflow: auto;
     }
 
     .add-task-overlay-head {
@@ -295,8 +296,7 @@
 
 @media (max-height: 900px) {
     .user-story, .technical-task {
-        transform: scale(0.8);
-        transform-origin: top left;
+        font-size: 16px;
     }
 
     .task-overlay-title {
@@ -306,6 +306,7 @@
 
     .task-text {
         min-height: 52px;
+        scrollbar-width: thin;
     }
 
     .member {
@@ -323,19 +324,19 @@
     }
 
     .due-date-box b {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .due-date-box span {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .priority-box b {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .priority span {
-        font-size: 16px !important;
+        font-size: 16px;
     }
 
     .task-overlay-content {
@@ -349,13 +350,13 @@
     }
 
     .board-content {
-        height: calc(100vh - 49px - 152px - 87px) !important;
+        height: calc(100vh - 49px - 152px - 87px);
     }
 }
 
 @media (max-width: 720px) {
     .add-task-overlay-content {
-        height: calc(100vh - 171px) !important;
+        height: calc(100vh - 171px);
     }
 
     .board-content {
@@ -399,7 +400,7 @@
     }
 
     .addtask-title {
-        font-size: 28px !important;
+        font-size: 28px;
     }
 }
 

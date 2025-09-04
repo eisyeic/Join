@@ -20,7 +20,7 @@
   }
 
   .nav-mobile {
-    display: flex !important;
+    display: flex;
   }
 
   .profile-navbar {
@@ -37,7 +37,7 @@
   }
 
   .help-a-tag-back-button {
-    display: block !important;
+    display: block;
   }
 
   .help-headline-container {
@@ -72,7 +72,7 @@
   }
 
   .header-box {
-    min-height: 80px !important;
+    min-height: 80px;
   }
 
   .nav-box img {
@@ -140,6 +140,6 @@
 
 @media (max-width: 1250px) {
   .add-task-button {
-    flex-direction: column-reverse !important;
+    flex-direction: column-reverse;
   }
 }
