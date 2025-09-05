@@ -35,10 +35,9 @@
   width: 100%;
   gap: 16px;
   padding: 48px 40px;
-  /* allow inner children to shrink and become scrollable */
   min-height: 0;
-  /* do not clip inner scroll containers */
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .task-overlay.animate-in {
@@ -144,9 +143,8 @@ b {
   display: flex;
   flex-direction: column;
   padding: 0 16px;
-  gap: 2px;
+  gap: 12px;
   min-height: 0;
-  max-height: 128px;
   overflow-y: auto;
   flex: 0 1 auto;
 }
@@ -159,7 +157,6 @@ b {
 }
 
 .member span {
-  font-size: 18px;
   color: var(--menu-color);
 }
 
@@ -233,13 +230,9 @@ b {
 }
 
 .subtasks-container {
-  max-height: 150px;
+  max-height: 105px;
   overflow-y: auto;
   scrollbar-width: thin;
-}
-
-.members {
-  max-height: 400px;
 }
 
 .add-task-button {

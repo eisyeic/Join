@@ -138,6 +138,12 @@
   cursor: pointer;
 }
 
+#subtask-list {
+  max-height: 110px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;

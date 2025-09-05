@@ -89,6 +89,7 @@
   gap: 24px;
   height: calc(100vh - 370px);
   box-sizing: border-box;
+  scrollbar-width: thin;
 }
 
 .column {
@@ -347,23 +348,9 @@
   justify-content: center;
 }
 
-#overlay-members {
-  --member-size: 31px;   
-  --member-vpad: 8px;    
-  max-height: calc(3 * (var(--member-size) + var(--member-vpad) + 10px));
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  padding-right: 4px;
-  scrollbar-width: thin;    
+.members {
+  height: 103px;
+  scrollbar-width: thin;
 }
 
-#overlay-members .member {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;        
-}
 
-#overlay-members .initial-circle {
-  flex: 0 0 31px;        
-}
