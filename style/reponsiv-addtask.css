@@ -6,9 +6,7 @@
 
     .section-addtask-buttons {
         justify-content: center;
-        padding-left: 0;
-        padding-right: 0;
-        padding-bottom: 55px;
+        padding: 0;
     }
 }
 
@@ -27,7 +25,7 @@
     }
 
     .section-addtask-buttons {
-        padding: 20px 0;
+        padding-top: 20px;
     }
 
     .addtask-main-content {

@@ -108,6 +108,7 @@
   border: none;
   border: 1px solid var(--style-color);
   border-radius: 0px 10px 10px 10px;
+  scrollbar-width: thin;
 }
 
 .addtask-main-content textarea:focus, textarea:hover {
@@ -123,7 +124,7 @@
 
 .prio-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   height: 51px;
 }
 

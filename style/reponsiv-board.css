@@ -336,15 +336,6 @@
         width: 100%;
     }
 
-    .priority-button {
-        width: 109px;
-    }
-
-    .prio-buttons {
-        justify-content: center;
-        gap: 8px;
-    }
-
     .addtask-wrapper {
         min-width: auto;
     }
@@ -375,20 +366,12 @@
 }
 
 @media (max-width: 470px) {
-    .prio-buttons {
-        transform: scale(0.9);
+    .priority-button {
+        font-size: 16px;
+        width: 109px;
     }
     .user-story, .technical-task {
         font-size: 16px;
     }
 }
 
-@media (max-width: 370px) {
-    .prio-buttons {
-        transform: scale(0.7);
-    }
-
-    .assigned-select-box input {
-        font-size: 16px;
-    }
-}

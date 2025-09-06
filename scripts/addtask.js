@@ -26,6 +26,7 @@ let selectedPriority = "medium";
 let picker = flatpickr("#datepicker", {
   minDate: "today",
   dateFormat: "d/m/Y",
+  disableMobile: true,
   onChange(selectedDates, dateStr) {
     if (selectedDates && selectedDates.length > 0 && dateStr) {
       $("datepicker-wrapper").style.borderColor = "";
