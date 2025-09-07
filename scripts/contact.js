@@ -22,10 +22,6 @@ window.getInitials = function (name) {
 
 // ===== OVERLAY TOGGLE FUNCTIONS =====
 
-
-
-
-
 /**
  * Show contact details in the details pane and handle mobile layout.
  * Also sets the global `currentContact`.
@@ -39,21 +35,17 @@ window.getInitials = function (name) {
  */
 function showContactDetails(name, email, phone, colorIndex, id) {
   currentContact = { name, email, phone, colorIndex, id };
-  const detailSection = document.getElementById("contact-details");
-  document.querySelectorAll(".contact-person").forEach((contact) => {
-    contact.classList.remove("active");
-  });
-  const clickedContact = document.querySelector(`[onclick*="'${id}'"]`);
-  if (clickedContact) {
-    clickedContact.classList.add("active");
-  }
-  getContactDetails(name, email, phone, colorIndex, detailSection);
-  detailSection.classList.remove("d-none");
-  if (window.innerWidth <= 900) {
-    $("contact-details").classList.add("mobile-visible");
-    $("add-new-contact-container").style.display = "none";
-    getNewLayoutDetails(name, email, phone, colorIndex, detailSection);
-  }
+  const d = $("contact-details"), a = $("add-new-contact-container");
+  document.querySelectorAll(".contact-person.active").forEach(el => el.classList.remove("active"));
+  document.querySelector(`.contact-person[onclick*="'${id}'"]`)?.classList.add("active");
+  d.replaceChildren();
+  getContactDetails(name, email, phone, colorIndex, d);
+  d.classList.remove("d-none");
+  const mobile = window.innerWidth <= 900;
+  d.classList.toggle("mobile-visible", mobile);
+  a.classList.toggle("d-none", mobile);
+  if (mobile) { getNewLayoutDetails?.(name, email, phone, colorIndex, d); addDetailsMobileNavbar?.(); }
+  else { removeDetailsMobileNavbar?.(); }
 }
 
 /**
@@ -61,9 +53,9 @@ function showContactDetails(name, email, phone, colorIndex, id) {
  * @returns {void}
  */
 function detailsMobileBack() {
-  $("contact-details").classList.remove("mobile-visible");
-  $("contact-details").style.display = "none";
-  $("add-new-contact-container").style.display = "block";
+  const d = $("contact-details"), a = $("add-new-contact-container");
+  d.classList.remove("mobile-visible"); d.classList.add("d-none");
+  a.classList.remove("d-none"); removeDetailsMobileNavbar?.();
 }
 
 /**
