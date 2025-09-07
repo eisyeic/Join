@@ -74,12 +74,13 @@
 .contact-overlay-add-content-details {
     gap: 10px;
     display: flex;
+    width: 380px;
     flex-direction: column;
 }
 
 .contact-overlay-add-content-name {
     display: flex;
-    width: 380px;
+    width: 95%;
     justify-content: space-between;
     align-items: center;
     padding: 0 8px;

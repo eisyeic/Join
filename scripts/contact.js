@@ -5,6 +5,39 @@
  */
 window.colorIndex = 0;
 
+// Prevent immediate re-open of the edit overlay after closing
+let _editOverlayClosing = false;
+// Swallow the next document click right after saving to avoid background handlers toggling overlays
+let _swallowNextDocClick = false;
+
+// Suppress unintended mobile navbar visibility while editing
+let _suppressMobileNavbar = false;
+let _navbarLockObserver = null;
+
+function ensureMobileNavbarLockObserver(){
+  if (_navbarLockObserver) return;
+  _navbarLockObserver = new MutationObserver(() => {
+    const el = document.getElementById('single-person-content-mobile-navbar');
+    if (!el) return;
+    if (_suppressMobileNavbar && !el.classList.contains('d-none')) {
+      // force hide while suppressed
+      el.classList.add('d-none');
+    }
+  });
+  // Observe class changes on the whole document and correct if needed
+  _navbarLockObserver.observe(document.documentElement, { attributes:true, subtree:true, attributeFilter:['class'] });
+}
+
+document.addEventListener('DOMContentLoaded', ensureMobileNavbarLockObserver);
+
+document.addEventListener('click', function(e){
+  if (_swallowNextDocClick) {
+    e.stopPropagation();
+    e.preventDefault();
+    _swallowNextDocClick = false;
+  }
+}, { capture: true });
+
 // ===== UTILITY FUNCTIONS =====
 
 /**
@@ -63,7 +96,10 @@ function detailsMobileBack() {
  * @returns {void}
  */
 function addDetailsMobileNavbar() {
-  $("single-person-content-mobile-navbar").classList.remove("d-none");
+  const el = $("single-person-content-mobile-navbar");
+  if (!el) return;
+  if (_suppressMobileNavbar) { el.classList.add('d-none'); return; }
+  if (el.classList.contains("d-none")) el.classList.remove("d-none");
 }
 
 /**
@@ -124,6 +160,9 @@ function populateEditForm(elements) {
  * @returns {void}
  */
 function openEditContact() {
+  if (_editOverlayClosing) return;
+  _suppressMobileNavbar = true;
+  removeDetailsMobileNavbar();
   const elements = getEditFormElements();
   populateEditForm(elements);
   toggleEditContact();
@@ -167,7 +206,12 @@ function handleUpdateSuccess() {
     currentContact.colorIndex,
     currentContact.id
   );
+  // Close editor and guard against immediate re-open from bubbling/async clicks
+  _editOverlayClosing = true;
   toggleEditContact();
+  // keep navbar suppressed briefly to ignore stray toggles, then allow
+  _suppressMobileNavbar = true;
+  setTimeout(() => { _editOverlayClosing = false; _suppressMobileNavbar = false; }, 350);
 }
 
 /**
@@ -336,7 +380,6 @@ function setFieldErrorStyle(field, placeholder) {
 function showFieldError(fieldId, message) {
   const field = $(fieldId);
   const placeholder = $(fieldId + "-placeholder");
-
   setErrorMessage(fieldId, message);
   setFieldErrorStyle(field, placeholder);
 }
@@ -472,10 +515,17 @@ function validateEditContactForm() {
  * @returns {void}
  */
 function saveEditedContact() {
+  // Stop the Save click from bubbling and triggering background overlay handlers
+  const ev = (typeof window !== 'undefined' && window.event) ? window.event : null;
+  if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+  // Also swallow the very next document click (capture) to avoid stray toggles
+  _swallowNextDocClick = true;
+  setTimeout(() => { _swallowNextDocClick = false; }, 300);
+  _suppressMobileNavbar = true; setTimeout(()=>{ _suppressMobileNavbar = false; }, 350);
+
   if (!validateEditContactForm()) {
     return;
   }
-
   getUpdatedContactData();
   updateContactInFirebase();
 }

@@ -117,6 +117,7 @@ li.selected:hover {
   border-radius: 50%;
   background-color: var(--main-color);
   font-size: 16px;
+  border: 2px solid white;
 }
 
 .contact-initials-icon {

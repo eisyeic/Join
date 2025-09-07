@@ -11,10 +11,13 @@
         padding-right: 5px;
         gap: 10px;
     }
+
+    .overlay-add-contact-cancel-save {
+        padding-bottom: 12px;
+    }
 }
 
 @media (max-width: 900px) {
-
     .contact-content {
         height: calc(100vh - 207px);
     }
@@ -46,16 +49,6 @@
         border-radius: 10px;
     }
 
-    .overlay-edit-contact {
-        width: 100vw;
-    }
-
-    .contact-overlay-edit-content {
-        width: 100%;
-        border-radius: 0 0 30px 30px;
-        margin-left: 10px;
-    }
-
     .overlay-add-contact {
         width: 100vw;
     }
@@ -63,14 +56,14 @@
     .contact-overlay-add-head {
         width: calc(100% - 20px);
         border-radius: 30px 30px 0 0;
-        margin-top: 84px;
+        margin-top: 10px;
         margin-right: 10px;
     }
 
     .contact-overlay-add-content {
         border-radius: 0 0 30px 30px;
-        top: 381px;
-        height: calc(100vh - 491px);
+        top: 310px;
+        height: calc(100vh - 320px);
         margin-right: 10px;
         width: calc(100% - 20px);
     }
@@ -96,7 +89,7 @@
     .contact-overlay-edit-content {
         border-radius: 0 0 30px 30px;
         top: 310px;
-        margin-right: 10px;
+        margin-left: 10px;
         width: calc(100% - 20px);
     }
 
@@ -150,13 +143,30 @@
         height: calc(100vh - 167px);
     }
 
+    .contact-overlay-add-head, .contact-overlay-edit-head {
+        height: 220px;
+    }
+
+    .contact-overlay-add-head h2, .contact-overlay-edit-head h2 {
+        font-size: 36px;
+    }
+
+    .contact-overlay-add-head p {
+        font-size: 19px;
+    }
+
+    .contact-overlay-add-head img, .contact-overlay-edit-head img {
+        height: 36px;
+    }
+
+    .contact-overlay-add-content, .contact-overlay-edit-content {
+        top: 220px;
+        height: calc(100vh - 230px);
+    }
+
     .button-mobile-add-new-contact {
         bottom: 107px;
         right: 24px;
-    }
-
-    .contact-overlay-add-content {
-        height: calc(100vh - 475px);
     }
 
     .single-person-content-mobile-bottom {
@@ -169,47 +179,30 @@
 
     .contact-add-new-contact-container {
         width: 100vw;
-        padding: 0 24px;
+        padding: 0;
         height: calc(100vh - 171px);
     }
 }
 
 @media (max-width: 450px) {
-    .contact-person {
-        gap: 10px;
-    }
-
-    .contact-overlay-edit-head {
-        margin-top: 36px;
-        height: 200px;
-    }
-
     h3 {
         font-size: 36px;
     }
 
-    .contact-overlay-edit-content {
-      top: 230px;
-    }
-    .contact-overlay-add-head {
-        margin-top: 10px;
-        height: 200px;
+    .contact-overlay-add-content, .contact-overlay-edit-content {
+        top: 150px;
+        height: calc(100vh - 160px);
     }
 
-    .contact-overlay-add-content {
-        top: 220px;
-        height: 65vh;
+    .contact-overlay-add-content-details, .contact-overlay-edit-content-details {
+        width: 90%;
     }
 
-    .contact-overlay-add-content-name {
-        width: 280px;
+    .contact-overlay-add-head, .contact-overlay-edit-head {
+        height: 150px;
     }
 
     .contact-overlay-add-head p {
-        font-size: 20px;
-    }
-
-    .contact-overlay-edit-head p {
         font-size: 20px;
     }
 
@@ -239,7 +232,17 @@
     .contact-person-icon-big {
         width: 70px;
     }
-    .overlay-edit-contact-delete-save {
-        transform: scale(0.8);
+
+    .overlay-edit-contact-delete {
+        height: 48px;
+        width: 90px;
+    }
+    .overlay-edit-contact-save {
+        height: 48px;
+        padding-right: 12px;
+        width: 110px;
+    }
+    .overlay-add-create-contact {
+        height: 48px;
     }
 }
