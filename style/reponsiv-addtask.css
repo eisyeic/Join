@@ -97,7 +97,12 @@
 
 @media (max-width: 470px) {
     .priority-button {
-        padding: 6px;
+        padding: 2px;
+        height: 40px;
+    }
+    .priority-button img {
+        height: 12px;
+        width:12px;
     }
 }
 

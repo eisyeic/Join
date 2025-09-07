@@ -58,10 +58,7 @@
         width: calc(100% - 20px);
     }
 
-    .priority-wrapper {
-        width: calc(100% - 20px);
-    }
-
+    .priority-wrapper,
     .assigned-box,
     .category-box,
     .subtask-box {
@@ -263,10 +260,6 @@
         width: calc(100% - 20px);
     }
 
-    .priority-wrapper {
-        width: calc(100% - 20px);
-    }
-
     .description {
         display: flex;
         flex-direction: column;
@@ -329,6 +322,9 @@
     .board-content {
         height: calc(100vh - 84px - 152px - 87px);
     }
+    .prio-buttons {
+    gap: 8px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -345,9 +341,6 @@
     }
     .member span {
         font-size: 16px;
-    }
-    .subtasks-container label {
-        font-family: 16px;
     }
 }
 
@@ -366,12 +359,29 @@
 }
 
 @media (max-width: 470px) {
-    .priority-button {
-        font-size: 16px;
-        width: 109px;
-    }
     .user-story, .technical-task {
         font-size: 16px;
     }
+    .priority-button {
+        padding: 2px;
+        height: 40px;
+    }
+    .priority-button img {
+        height: 12px;
+        width:12px;
+    }
 }
 
+@media (max-width: 375px) {
+    .prio-buttons {
+        font-size: 16px;
+    }
+
+    .cancel-button {
+        padding: 8px 8px;
+    }
+
+    .create-button {
+        padding: 8px 8px;
+    }
+}
