@@ -104,10 +104,6 @@
     .overlay-add-task input {
         font-size: 16px;
     }
-
-    .addtask-title {
-        font-size: 28px;
-    }
 }
 
 @media (max-width: 375px) {
@@ -351,9 +347,8 @@
     .overlay-add-task input {
         font-size: 16px;
     }
-
     .addtask-title {
-        font-size: 28px;
+        font-size: 20px !important;
     }
 }
 
@@ -369,13 +364,13 @@
         height: 12px;
         width:12px;
     }
+    .priority-button.active {
+        font-size: 16px;
+        height: 41px;
+    }
 }
 
 @media (max-width: 375px) {
-    .prio-buttons {
-        font-size: 16px;
-    }
-
     .cancel-button {
         padding: 8px 8px;
     }
