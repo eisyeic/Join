@@ -101,17 +101,23 @@
         padding: 2px;
         height: 40px;
     }
+    .priority-button.active {
+        height: 40px;
+    }
+    .priority-button:hover {
+        height: 41px;
+    }
     .priority-button img {
         height: 12px;
         width: 8px;
     }
+    .prio-buttons {
+        font-size: 16px;
+        height: 41px;
+    }
 }
 
 @media (max-width: 375px) {
-    .prio-buttons {
-        font-size: 16px;
-    }
-
     .cancel-button {
         padding: 8px 8px;
     }
