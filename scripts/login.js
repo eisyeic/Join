@@ -38,10 +38,15 @@ document.addEventListener("DOMContentLoaded", () => {
   $("sign-up-button").addEventListener("click", handleSignUp);
   $("login-button").addEventListener("click", handleLogin);
   $("go-back").addEventListener("click", showLoginForm);
-  $("confirm").addEventListener("click", () => {
-    $("confirm").classList.toggle("checked");
-    $("sign-up-button").classList.toggle("sign-up-button");
-  });
+ $("confirm").addEventListener("click", () => {
+  $("confirm").classList.toggle("checked");
+  if ($("confirm").classList.contains("checked")) {
+    $("sign-up-button").style.pointerEvents = "";
+  } else {
+    $("sign-up-button").style.pointerEvents = "none";
+  }
+});
+  $("sign-up-button").style.pointerEvents = "none";
   document.addEventListener("keydown", handleKeyDown);
 });
 
@@ -106,9 +111,7 @@ function showLoginForm() {
 function updateSignUpBoxDisplay() {
   const topRight = $("sign-up-top-right-box");
   const bottomMobile = $("sign-up-bottom-box-mobile");
-
-  if (!topRight) return; // nothing to do if layout isn’t present
-
+  if (!topRight) return;
   if (currentMode === "signup") {
     topRight.classList.add("d-none");
     bottomMobile?.classList.add("d-none");
@@ -269,8 +272,7 @@ function handleSignUp() {
   let accepted = $("confirm").classList.contains("checked");
   if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
   registerUser(email, password);
-  $("sign-up-button").disabled = true;
-  $("sign-up-button").style.pointerEvents = "none";
+  $("sign-up-button").style.pointerEvents = "none";  
 }
 
 /**
@@ -322,7 +324,6 @@ function registerUser(email, password) {
         $("layout").style.opacity = "1";
         showLoginForm();
         $("confirm").classList.toggle("checked");
-        $("sign-up-button").disabled = false;
         $("sign-up-button").style.pointerEvents = "";
       }, 1200);
     })

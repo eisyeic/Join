@@ -287,20 +287,6 @@ export async function updateSubtaskStatus(taskId, subtaskIndex, isChecked) {
 }
 
 /**
- * Truncate a description to 50 chars on word boundary.
- * @param {string} text
- * @returns {string}
- */
-export function truncateDescription(text) {
-  const MAX = 50;
-  if (text.length <= MAX) return text;
-  let cut = text.slice(0, MAX);
-  const lastSpace = cut.lastIndexOf(" ");
-  if (lastSpace > 0) cut = cut.slice(0, lastSpace);
-  return cut + "...";
-}
-
-/**
  * Opens the Add Task overlay and resets the form.
  * @returns {void}
  */

@@ -76,7 +76,19 @@ function handleSubtaskClickOutside(event, editMode = false) {
   if (input) input.blur();
 }
 
+
+/**
+ * Initialize outside-click closing for Add-Task overlay.
+ */
 setupDropdownOutsideCloseIn($('overlay-add-task'));
+
+/**
+ * Initialize outside-click closing for Task overlay.
+ */
 setupDropdownOutsideCloseIn($('task-overlay'));
+
+/**
+ * Initialize outside-click closing for Edit-AddTask wrapper if it exists.
+ */
 const editWrapper = document.querySelector('#task-overlay .edit-addtask-wrapper');
 if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);

@@ -4,13 +4,11 @@
   }
 
   .nav {
-    width: 140px;
+    width: 130px;
   }
 
-  .nav-bg,
-  .nav img {
-    width: 140px;
-    height: 30px;
+  .nav-bg {
+    width: 120px;
   }
 }
 
@@ -55,10 +53,6 @@
     font-size: 23px;
     color: var(--menu-color);
     width: 76px;
-  }
-
-  .nav-bg img {
-    height: 96px;
   }
 
   .sidebar-links {

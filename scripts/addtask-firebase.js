@@ -7,8 +7,37 @@ let loadedContacts = {};
 let currentEditingTaskId = "";
 
 /**
- * Sets the current task ID that is being edited and mirrors it to the DOM wrapper dataset for cross-module access.
- * @param {string} id - The Firebase task id to edit. Use empty string to clear.
+ * @typedef {Object} Subtask
+ * @property {string} name - Subtask title.
+ * @property {boolean} checked - Completion state.
+ */
+
+/**
+ * @typedef {Object} AssignedContact
+ * @property {string} id
+ * @property {string} [name]
+ * @property {number} [colorIndex]
+ * @property {string} initials
+ */
+
+/**
+ * @typedef {Object} TaskData
+ * @property {('todo'|'inProgress'|'done')} column
+ * @property {string} title
+ * @property {string} description
+ * @property {string} dueDate
+ * @property {string} category
+ * @property {string} priority
+ * @property {Subtask[]} subtasks
+ * @property {AssignedContact[]} [assignedContacts]
+ * @property {string} [editingId]
+ * @property {string} [createdAt]
+ * @property {string} [updatedAt]
+ */
+
+/**
+ * Sets the current editing task ID and updates the wrapper dataset attribute.
+ * @param {string} id - The task ID to set as currently editing.
  */
 window.setCurrentEditingTaskId = function (id) {
   currentEditingTaskId = id || "";
@@ -17,14 +46,22 @@ window.setCurrentEditingTaskId = function (id) {
 };
 
 /**
- * Returns the task id that is currently being edited. Falls back to wrapper dataset if needed.
+ * Returns the task id that is currently being edited.
  * @returns {string}
  */
 window.getCurrentEditingTaskId = function () {
   return currentEditingTaskId;
 };
 
-loadContactsAndRender();
+
+/**
+ * Initializes the Add Task module: loads contacts, sets up listeners, and ensures the UI is ready.
+ * @returns {void}
+ */
+function initAddTask() {
+  loadContactsAndRender();
+  // add other top-level startup calls here
+}
 
 /**
  * Resolves the active editing id from in-memory state, global helpers, or DOM dataset.
@@ -79,8 +116,9 @@ function getAssignedContactsFromUI() {
 
 
 /**
- * Reads core task fields from the Add Task form and returns the base task payload (without contacts or editing meta).
- * @returns {{column:string,title:string,description:string,dueDate:string,category:string,priority:string,subtasks:{name:string,checked:boolean}[]}}
+ * Reads core task fields from the Add Task form and returns the base task payload
+ * (without assignedContacts or editingId meta fields).
+ * @returns {TaskData}
  */
 function baseTaskFromForm() {
   return {
@@ -171,6 +209,7 @@ onAuthStateChanged(auth, (user) => {
 
 /**
  * Loads contacts from Firebase and renders them into the contact list box.
+ * @returns {void}
  */
 function loadContactsAndRender() {
   let contactListBox = $("contact-list-box");
@@ -264,7 +303,9 @@ function addContactListItemListener(li) {
 }
 
 /**
- * Renders up to three selected contact initials below the selector.
+ * Renders the initials of all currently selected contacts below the selector.
+ * Clones the `.contact-initial` nodes from the selected list items into `#contact-initials`.
+ * @returns {void}
  */
 function renderSelectedContactInitials() {
   let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
@@ -283,6 +324,7 @@ function renderSelectedContactInitials() {
 
 /**
  * Aggregates the full task payload from the form, including assigned contacts and editing id.
+ * @returns {TaskData}
  */
 function collectFormData() {
   const base = baseTaskFromForm();
@@ -342,7 +384,7 @@ function validatePriority(data) {
 }
 
 /**
- * Runs all form validators and returns the combined result.
+ * Runs all form validators, mutating the UI error state, and returns the combined result.
  * @param {Object} data
  * @returns {boolean}
  */
@@ -358,6 +400,7 @@ function validateFormData(data) {
 
 /**
  * Handles saving when editing: validates, preserves column, and updates the task.
+ * @returns {Promise<void>}
  */
 async function handleEditOkClick() {
   const taskData = collectFormData();
@@ -375,6 +418,7 @@ window.handleEditOkClick = handleEditOkClick;
 
 /**
  * Handles creating a new task from the Add Task form after validation.
+ * @returns {void}
  */
 function handleCreateClick() {
   const data = collectFormData();
@@ -396,7 +440,8 @@ if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
 
 /**
  * Persists a new task to Firebase under /tasks and triggers the create flow UI.
- * @param {Object} taskData
+ * @param {TaskData} taskData
+ * @returns {void}
  */
 function sendTaskToFirebase(taskData) {
   const tasksRef = ref(db, "tasks");
@@ -410,7 +455,8 @@ function sendTaskToFirebase(taskData) {
 /**
  * Updates an existing task in Firebase and triggers the update flow UI.
  * @param {string} taskId
- * @param {Object} taskData
+ * @param {TaskData} taskData
+ * @returns {void}
  */
 function updateTaskInFirebase(taskId, taskData) {
   const taskRef = ref(db, `tasks/${taskId}`);
@@ -429,3 +475,8 @@ function updateTaskInFirebase(taskId, taskData) {
     .then(() => { showBanner(); finishUpdateFlow(); })
     .catch((e) => console.error("Fehler beim Aktualisieren:", e));
 }
+
+/**
+ * Run initialization immediately on script load.
+ */
+initAddTask();

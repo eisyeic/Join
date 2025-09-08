@@ -21,18 +21,29 @@
 }
 
 .nav-bg{
-  height: 40px;
+  display: flex;
+  padding: 8px 12px;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  text-decoration: none;
+  color: var(--menu-color);
+  width: 140px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.nav-bg img {
+  height: 24px;
+  width: 24px;
 }
 
 .nav-bg:hover {
-  cursor: pointer;
-  border-radius: 8px;
   background-color: var(--navi-buttons-bg);
 }
 
 .nav-bg.active {
   background-color: var(--navi-buttons-bg);
-  border-radius: 8px;
   pointer-events: none;
 }
 

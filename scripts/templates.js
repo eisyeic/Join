@@ -363,11 +363,6 @@ if (typeof window !== "undefined") {
  * @returns {void}
  */
 (function injectAddTaskTemplate() {
-  /**
-   * Try to render into a given root (default: document).
-   * @param {Document|HTMLElement} [root=document]
-   * @returns {boolean} true if the template is present after this call
-   */
   const render = (root = document) => {
     const container = root.querySelector(".addtask-wrapper");
     if (!container) return false;
@@ -378,7 +373,6 @@ if (typeof window !== "undefined") {
     document.dispatchEvent(new CustomEvent("addtask:template-ready"));
     return true;
   };
-
   if (!render()) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", render, { once: true });

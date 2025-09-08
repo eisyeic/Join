@@ -28,7 +28,6 @@
   height: auto;
   flex-direction: column;
   width: 440px;
-  gap: 12px;
 }
 
 .addtask-title {
@@ -140,7 +139,7 @@
 }
 
 #subtask-list {
-  max-height: 110px;
+  max-height: 90px;
   overflow-y: auto;
   scrollbar-width: thin;
 }

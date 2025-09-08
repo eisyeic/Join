@@ -4,32 +4,67 @@
  * @global
  */
 window.colorIndex = 0;
-
-// Prevent immediate re-open of the edit overlay after closing
+/**
+ * Prevent immediate re-open of the edit overlay after closing.
+ * @type {boolean}
+ */
 let _editOverlayClosing = false;
-// Swallow the next document click right after saving to avoid background handlers toggling overlays
+/**
+ * Swallow the next document click right after saving to avoid background handlers toggling overlays.
+ * @type {boolean}
+ */
 let _swallowNextDocClick = false;
-
-// Suppress unintended mobile navbar visibility while editing
+/**
+ * Suppress unintended mobile navbar visibility while editing.
+ * @type {boolean}
+ */
 let _suppressMobileNavbar = false;
+/**
+ * MutationObserver that enforces navbar suppression.
+ * @type {MutationObserver|null}
+ */
 let _navbarLockObserver = null;
-
+/**
+ * Ensures a MutationObserver exists that hides the mobile navbar while suppression is active.
+ * @returns {void}
+ */
 function ensureMobileNavbarLockObserver(){
   if (_navbarLockObserver) return;
   _navbarLockObserver = new MutationObserver(() => {
     const el = document.getElementById('single-person-content-mobile-navbar');
     if (!el) return;
     if (_suppressMobileNavbar && !el.classList.contains('d-none')) {
-      // force hide while suppressed
       el.classList.add('d-none');
     }
   });
-  // Observe class changes on the whole document and correct if needed
   _navbarLockObserver.observe(document.documentElement, { attributes:true, subtree:true, attributeFilter:['class'] });
 }
-
 document.addEventListener('DOMContentLoaded', ensureMobileNavbarLockObserver);
 
+/**
+ * Patch: wraps `toggleEditContact` to re-enable (but not auto-open) the mobile navbar
+ * when the edit overlay closes.
+ */
+(function patchToggleEditContactOnce(){
+  if (window._toggleEditPatched) return;
+  const orig = window.toggleEditContact;
+  if (typeof orig !== 'function') return;
+  window.toggleEditContact = function patchedToggleEditContact() {
+    const result = orig.apply(this, arguments);
+    setTimeout(() => {
+      if (!isEditOverlayOpen()) {
+        _suppressMobileNavbar = false; 
+        removeDetailsMobileNavbar?.(); 
+      }
+    }, 0);
+    return result;
+  };
+  window._toggleEditPatched = true;
+})();
+
+/**
+ * Capture-phase click guard to optionally swallow the next document click.
+ */
 document.addEventListener('click', function(e){
   if (_swallowNextDocClick) {
     e.stopPropagation();
@@ -38,7 +73,60 @@ document.addEventListener('click', function(e){
   }
 }, { capture: true });
 
-// ===== UTILITY FUNCTIONS =====
+/**
+ * After each click settles, if the edit overlay is closed, allow the navbar again (do not auto-open).
+ */
+document.addEventListener('click', () => {
+  setTimeout(() => {
+    if (!isEditOverlayOpen()) {
+      _suppressMobileNavbar = false; 
+      removeDetailsMobileNavbar?.(); 
+    }
+  }, 0);
+});
+
+/**
+ * Handle ESC-based closes: allow navbar again without auto-opening.
+ */
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') {
+    setTimeout(() => {
+      if (!isEditOverlayOpen()) {
+        _suppressMobileNavbar = false; 
+        removeDetailsMobileNavbar?.(); 
+      }
+    }, 0);
+  }
+});
+
+/**
+ * Returns true if the edit-contact overlay is visible.
+ * @returns {boolean}
+ */
+function isEditOverlayOpen() {
+  const overlayRoot =
+    document.getElementById('edit-contact-overlay') ||
+    document.querySelector('#edit-contact, .edit-contact-overlay, .contact-edit-overlay, .edit-contact');
+  if (overlayRoot) {
+    const cs = window.getComputedStyle(overlayRoot);
+    if (
+      overlayRoot.classList.contains('d-none') ||
+      cs.display === 'none' ||
+      cs.visibility === 'hidden' ||
+      cs.opacity === '0'
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  const el = document.getElementById('edit-name-input');
+  if (!el) return false;
+  if (el.closest('.d-none')) return false;
+  const cs = window.getComputedStyle(el);
+  if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+  return el.offsetParent !== null && el.getClientRects().length > 0;
+}
 
 /**
  * Derive up to two initials from a full name.
@@ -52,8 +140,6 @@ window.getInitials = function (name) {
   const secondInitial = words[1] ? words[1][0].toUpperCase() : "";
   return firstInitial + secondInitial;
 };
-
-// ===== OVERLAY TOGGLE FUNCTIONS =====
 
 /**
  * Show contact details in the details pane and handle mobile layout.
@@ -75,10 +161,14 @@ function showContactDetails(name, email, phone, colorIndex, id) {
   getContactDetails(name, email, phone, colorIndex, d);
   d.classList.remove("d-none");
   const mobile = window.innerWidth <= 900;
-  d.classList.toggle("mobile-visible", mobile);
-  a.classList.toggle("d-none", mobile);
-  if (mobile) { getNewLayoutDetails?.(name, email, phone, colorIndex, d); addDetailsMobileNavbar?.(); }
-  else { removeDetailsMobileNavbar?.(); }
+d.classList.toggle("mobile-visible", mobile);
+a.classList.toggle("d-none", mobile);
+if (mobile) {
+  getNewLayoutDetails?.(name, email, phone, colorIndex, d);
+  removeDetailsMobileNavbar?.();
+} else {
+  removeDetailsMobileNavbar?.();
+}
 }
 
 /**
@@ -120,17 +210,10 @@ function removeDetailsMobileNavbar(event) {
   }
 }
 
-// ===== EDIT CONTACT FUNCTIONS =====
 
 /**
- * Get references to edit form elements.
- * @returns {{
- *  nameInput: HTMLInputElement,
- *  emailInput: HTMLInputElement,
- *  phoneInput: HTMLInputElement,
- *  iconImg: HTMLImageElement,
- *  iconText: HTMLElement
- * }}
+ * Returns a handle set to the edit form elements inside the contact edit overlay.
+ * @returns {{nameInput:HTMLElement,emailInput:HTMLElement,phoneInput:HTMLElement,iconImg:HTMLImageElement,iconText:HTMLElement}}
  */
 function getEditFormElements() {
   return {
@@ -143,8 +226,8 @@ function getEditFormElements() {
 }
 
 /**
- * Populate the edit form with `currentContact` values.
- * @param {ReturnType<typeof getEditFormElements>} elements
+ * Populates the edit form fields from the currentContact object.
+ * @param {{nameInput:HTMLInputElement,emailInput:HTMLInputElement,phoneInput:HTMLInputElement,iconImg:HTMLImageElement,iconText:HTMLElement}} elements
  * @returns {void}
  */
 function populateEditForm(elements) {
@@ -156,10 +239,33 @@ function populateEditForm(elements) {
 }
 
 /**
- * Open the Edit-Contact overlay with prefilled fields.
+ * Opens the Edit-Contact overlay with prefilled fields.
+ * Only responds to clicks from the burger navbar or explicit edit triggers.
+ * @param {Event} [e]
  * @returns {void}
  */
-function openEditContact() {
+function openEditContact(e) {
+  const ev = e || (typeof window !== 'undefined' && window.event ? window.event : null);
+  if (!ev) return;
+  if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
+  if (typeof ev.preventDefault === 'function') ev.preventDefault();
+  _swallowNextDocClick = true;
+  setTimeout(() => { _swallowNextDocClick = false; }, 250);
+  const target = ev && ev.target instanceof Element ? ev.target : null;
+  const isFromContactList = target && target.closest('.contact-person');
+  if (isFromContactList) {
+    return;
+  }
+  if (ev) {
+    const allowed = target && (
+      target.closest('#single-person-content-mobile-navbar') ||
+      target.closest('#edit-contact-button') ||
+      target.closest('[data-role="edit-contact-trigger"]')
+    );
+    if (!allowed) {
+      return;
+    }
+  }
   if (_editOverlayClosing) return;
   _suppressMobileNavbar = true;
   removeDetailsMobileNavbar();
@@ -168,10 +274,8 @@ function openEditContact() {
   toggleEditContact();
 }
 
-// ===== SAVE CONTACT FUNCTIONS =====
-
 /**
- * Read updated values from edit inputs into `currentContact`.
+ * Copies values from the edit form inputs back into the currentContact object.
  * @returns {void}
  */
 function getUpdatedContactData() {
@@ -181,7 +285,7 @@ function getUpdatedContactData() {
 }
 
 /**
- * Build the update payload for Firebase.
+ * Builds the update payload for Firebase from the currentContact state.
  * @returns {{name:string,email:string,phone:string,colorIndex:number,initials:string}}
  */
 function getContactUpdateData() {
@@ -195,7 +299,7 @@ function getContactUpdateData() {
 }
 
 /**
- * After successful update: re-render details and close editor.
+ * Handles UI updates after a successful contact update save.
  * @returns {void}
  */
 function handleUpdateSuccess() {
@@ -206,17 +310,14 @@ function handleUpdateSuccess() {
     currentContact.colorIndex,
     currentContact.id
   );
-  // Close editor and guard against immediate re-open from bubbling/async clicks
   _editOverlayClosing = true;
   toggleEditContact();
-  // keep navbar suppressed briefly to ignore stray toggles, then allow
   _suppressMobileNavbar = true;
   setTimeout(() => { _editOverlayClosing = false; _suppressMobileNavbar = false; }, 350);
 }
 
 /**
- * Update the current contact in Firebase (dynamic imports).
- * Expects `currentContact.id` to be defined.
+ * Persists the edited contact to Firebase Realtime Database and updates the UI on success.
  * @returns {void}
  */
 function updateContactInFirebase() {
@@ -235,11 +336,9 @@ function updateContactInFirebase() {
   });
 }
 
-// ===== INPUT VALIDATION =====
-
 /**
- * Allow only phone-friendly keystrokes.
- * @param {KeyboardEvent} event
+ * Keydown filter for phone inputs: allows digits, one leading plus, and control keys; enforces max length.
+ * @param {KeyboardEvent} e
  * @returns {void}
  */
 function validatePhoneInput(e) {
@@ -264,8 +363,8 @@ function validatePhoneInput(e) {
 }
 
 /**
-  *
- * @param {InputEvent} e - input-Event des Eingabefeldes
+ * Normalizes phone input to digits plus a single leading plus sign, capped length.
+ * @param {InputEvent} e
  * @returns {void}
  */
 function sanitizePhoneOnInput(e) {
@@ -279,9 +378,9 @@ function sanitizePhoneOnInput(e) {
 }
 
 /**
- * Basic email format validation.
+ * Validates a simple email address pattern.
  * @param {string} email
- * @returns {boolean} True if the email matches a simple regex.
+ * @returns {boolean}
  */
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -289,7 +388,7 @@ function isValidEmail(email) {
 }
 
 /**
- * Allow only letters, spaces, hyphen, apostrophe (incl. umlauts).
+ * Keydown filter to allow only letters (incl. umlauts), spaces, hyphens, and apostrophes in name fields.
  * @param {KeyboardEvent} event
  * @returns {void}
  */
@@ -305,10 +404,8 @@ function validateNameInput(event) {
   }
 }
 
-
 /**
- * Wire input validators after DOM is ready.
- * @returns {void}
+ * Wires input validators once the DOM is ready.
  */
 document.addEventListener("DOMContentLoaded", function () {
   $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
@@ -318,10 +415,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /**
- * Delete the current contact and navigate back (mobile).
+ * Deletes the current contact and navigates back in the mobile layout.
  * @param {Event} event
  * @returns {void}
- * @global
  */
 function deleteContactAndGoBack(event) {
   event.stopPropagation();
@@ -330,7 +426,7 @@ function deleteContactAndGoBack(event) {
 }
 
 /**
- * Map field IDs to their respective error container IDs.
+ * Returns a mapping from input field IDs to their corresponding error message containers.
  * @returns {Record<string,string>}
  */
 function getFieldMapping() {
@@ -345,7 +441,7 @@ function getFieldMapping() {
 }
 
 /**
- * Inject an error message for a field into its error container.
+ * Sets the inline error message for a given field.
  * @param {string} fieldId
  * @param {string} message
  * @returns {void}
@@ -358,7 +454,7 @@ function setErrorMessage(fieldId, message) {
 }
 
 /**
- * Apply error styles to a field and its placeholder (if present).
+ * Applies error styling to a field and its placeholder element.
  * @param {HTMLElement} field
  * @param {HTMLElement} [placeholder]
  * @returns {void}
@@ -372,7 +468,7 @@ function setFieldErrorStyle(field, placeholder) {
 }
 
 /**
- * Show a validation error on a field by id.
+ * Convenience helper to set both message and styles for a field error.
  * @param {string} fieldId
  * @param {string} message
  * @returns {void}
@@ -385,7 +481,7 @@ function showFieldError(fieldId, message) {
 }
 
 /**
- * Clear the error message for a specific field id.
+ * Clears the inline error message for a given field.
  * @param {string} fieldId
  * @returns {void}
  */
@@ -397,7 +493,7 @@ function clearErrorMessage(fieldId) {
 }
 
 /**
- * Remove error styles from a field and its placeholder.
+ * Removes error styling from a field and its placeholder element.
  * @param {HTMLElement} field
  * @param {HTMLElement} [placeholder]
  * @returns {void}
@@ -411,7 +507,7 @@ function clearFieldErrorStyle(field, placeholder) {
 }
 
 /**
- * Clear error message and styles for a specific field id.
+ * Clears both the message and the styles for a field error.
  * @param {string} fieldId
  * @returns {void}
  */
@@ -424,7 +520,7 @@ function clearFieldError(fieldId) {
 }
 
 /**
- * Read values from edit form inputs.
+ * Reads current values from the edit contact form inputs.
  * @returns {{name:string,email:string,phone:string}}
  */
 function getEditFormValues() {
@@ -436,7 +532,7 @@ function getEditFormValues() {
 }
 
 /**
- * Clear all edit-form error messages/styles.
+ * Clears all edit form error states.
  * @returns {void}
  */
 function clearEditFormErrors() {
@@ -446,9 +542,9 @@ function clearEditFormErrors() {
 }
 
 /**
- * Validate edit name field (required).
+ * Validates the name field; sets UI error if invalid.
  * @param {string} name
- * @returns {boolean} True if valid.
+ * @returns {boolean}
  */
 function validateEditNameField(name) {
   if (!name) {
@@ -459,9 +555,9 @@ function validateEditNameField(name) {
 }
 
 /**
- * Validate edit email field (required + format).
+ * Validates the email field; sets UI error if invalid.
  * @param {string} email
- * @returns {boolean} True if valid.
+ * @returns {boolean}
  */
 function validateEditEmailField(email) {
   if (!email) {
@@ -475,9 +571,9 @@ function validateEditEmailField(email) {
 }
 
 /**
- * Validate edit phone field (required).
+ * Validates the phone field; sets UI error if invalid.
  * @param {string} phone
- * @returns {boolean} True if valid.
+ * @returns {boolean}
  */
 function validateEditPhoneField(phone) {
   if (!phone) {
@@ -488,9 +584,9 @@ function validateEditPhoneField(phone) {
 }
 
 /**
- * Validate all edit form fields.
+ * Validates all edit contact fields and returns whether the form is valid.
  * @param {{name:string,email:string,phone:string}} values
- * @returns {boolean} True if all valid.
+ * @returns {boolean}
  */
 function validateEditFormFields(values) {
   const nameValid = validateEditNameField(values.name);
@@ -501,7 +597,7 @@ function validateEditFormFields(values) {
 }
 
 /**
- * Validate the edit contact form and return validity.
+ * Validates the edit contact form by reading values and applying validators.
  * @returns {boolean}
  */
 function validateEditContactForm() {
@@ -511,14 +607,12 @@ function validateEditContactForm() {
 }
 
 /**
- * Validate edit form, collect updated data, and trigger Firebase update.
+ * Validates and saves the edited contact; updates Firebase and guards against menu re-open.
  * @returns {void}
  */
 function saveEditedContact() {
-  // Stop the Save click from bubbling and triggering background overlay handlers
   const ev = (typeof window !== 'undefined' && window.event) ? window.event : null;
   if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
-  // Also swallow the very next document click (capture) to avoid stray toggles
   _swallowNextDocClick = true;
   setTimeout(() => { _swallowNextDocClick = false; }, 300);
   _suppressMobileNavbar = true; setTimeout(()=>{ _suppressMobileNavbar = false; }, 350);

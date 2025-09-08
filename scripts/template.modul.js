@@ -1,5 +1,5 @@
 import { renderAssignedInitials } from "./board.js";
-import { truncateDescription, renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
+import { renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
 
 /**
  * @typedef {Object} AssignedContact
@@ -43,6 +43,21 @@ let _moveOverlayCleanup = null;
 /** Small helpers (≤14 lines each) **/
 
 /**
+ * Truncates description text for board cards while keeping words intact.
+ * Overlay should always show full text; only cards are shortened.
+ * @param {string} text
+ * @param {number} [max=50]
+ * @returns {string}
+ */
+function truncateForCard(text, max = 50) {
+  const s = (text || "").trim();
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + "…";
+}
+
+/**
  * Builds the inner HTML string for a board ticket.
  * Keeps markup small; heavy logic is delegated to helpers.
  * @param {Task} task - The task data used to render the ticket.
@@ -51,7 +66,8 @@ let _moveOverlayCleanup = null;
  */
 function buildTicketHTML(task, taskId) {
   const labelClass = getLabelClass(task.category);
-  const truncated = truncateDescription(task.description || "");
+  const desc = task.description || "";
+  const truncated = truncateForCard(desc, 50);
   const initials = task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : "";
   return `
     <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
