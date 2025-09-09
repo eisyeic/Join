@@ -39,7 +39,9 @@ function ensureMobileNavbarLockObserver(){
   });
   _navbarLockObserver.observe(document.documentElement, { attributes:true, subtree:true, attributeFilter:['class'] });
 }
-document.addEventListener('DOMContentLoaded', ensureMobileNavbarLockObserver);
+function setupMobileNavbarObserver() {
+  document.addEventListener('DOMContentLoaded', ensureMobileNavbarLockObserver);
+}
 
 /**
  * Patch: wraps `toggleEditContact` to re-enable (but not auto-open) the mobile navbar
@@ -65,39 +67,45 @@ document.addEventListener('DOMContentLoaded', ensureMobileNavbarLockObserver);
 /**
  * Capture-phase click guard to optionally swallow the next document click.
  */
-document.addEventListener('click', function(e){
-  if (_swallowNextDocClick) {
-    e.stopPropagation();
-    e.preventDefault();
-    _swallowNextDocClick = false;
-  }
-}, { capture: true });
+function setupClickGuard() {
+  document.addEventListener('click', function(e){
+    if (_swallowNextDocClick) {
+      e.stopPropagation();
+      e.preventDefault();
+      _swallowNextDocClick = false;
+    }
+  }, { capture: true });
+}
 
 /**
  * After each click settles, if the edit overlay is closed, allow the navbar again (do not auto-open).
  */
-document.addEventListener('click', () => {
-  setTimeout(() => {
-    if (!isEditOverlayOpen()) {
-      _suppressMobileNavbar = false; 
-      removeDetailsMobileNavbar?.(); 
-    }
-  }, 0);
-});
-
-/**
- * Handle ESC-based closes: allow navbar again without auto-opening.
- */
-document.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Escape') {
+function setupOverlayCloseHandler() {
+  document.addEventListener('click', () => {
     setTimeout(() => {
       if (!isEditOverlayOpen()) {
         _suppressMobileNavbar = false; 
         removeDetailsMobileNavbar?.(); 
       }
     }, 0);
-  }
-});
+  });
+}
+
+/**
+ * Handle ESC-based closes: allow navbar again without auto-opening.
+ */
+function setupEscapeHandler() {
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') {
+      setTimeout(() => {
+        if (!isEditOverlayOpen()) {
+          _suppressMobileNavbar = false; 
+          removeDetailsMobileNavbar?.(); 
+        }
+      }, 0);
+    }
+  });
+}
 
 /**
  * Returns true if the edit-contact overlay is visible.
@@ -407,12 +415,24 @@ function validateNameInput(event) {
 /**
  * Wires input validators once the DOM is ready.
  */
-document.addEventListener("DOMContentLoaded", function () {
-  $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
-  $("phone-new-contact").addEventListener("keydown", validatePhoneInput);
-  $("name-new-contact").addEventListener("keydown", validateNameInput);
-  $("edit-name-input").addEventListener("keydown", validateNameInput);
-});
+function setupInputValidators() {
+  document.addEventListener("DOMContentLoaded", function () {
+    $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
+    $("phone-new-contact").addEventListener("keydown", validatePhoneInput);
+    $("name-new-contact").addEventListener("keydown", validateNameInput);
+    $("edit-name-input").addEventListener("keydown", validateNameInput);
+  });
+}
+
+function initContact() {
+  setupMobileNavbarObserver();
+  setupClickGuard();
+  setupOverlayCloseHandler();
+  setupEscapeHandler();
+  setupInputValidators();
+}
+
+initContact();
 
 /**
  * Deletes the current contact and navigates back in the mobile layout.

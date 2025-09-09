@@ -265,7 +265,9 @@ function animateTaskDashboardMobile() {
 
 // ===== INITIALIZATION =====
 
-onAuthStateChanged(auth, handleAuthChange);
+function setupAuthListener() {
+  onAuthStateChanged(auth, handleAuthChange);
+}
 /**
  * Handles Firebase auth state changes and updates the UI for signed-in users.
  * @param {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").User|null} user
@@ -274,11 +276,10 @@ function handleAuthChange(user) {
   if (user) updateUserInterface(user);
 }
 
-document.addEventListener('DOMContentLoaded', onDomContentLoaded);
-/**
- * Bootstraps the summary board once the DOM is ready.
- */
-function onDomContentLoaded() {
+function initSummaryBoard() {
+  setupAuthListener();
   initMobileAnimations();
   loadTaskCounts();
 }
+
+document.addEventListener('DOMContentLoaded', initSummaryBoard);

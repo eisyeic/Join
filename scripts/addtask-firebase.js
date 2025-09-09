@@ -60,7 +60,10 @@ window.getCurrentEditingTaskId = function () {
  */
 function initAddTask() {
   loadContactsAndRender();
-  // add other top-level startup calls here
+  setupAuthListener();
+  setupContactInputListener();
+  setupCreateButton();
+  setupOkButtons();
 }
 
 /**
@@ -201,11 +204,13 @@ function setError(msgId, borderId, msg) {
 /**
  * Auth listener to project user initials into the UI when available.
  */
-onAuthStateChanged(auth, (user) => {
-  if (window.updateUserInitials) {
-    window.updateUserInitials(user);
-  }
-});
+function setupAuthListener() {
+  onAuthStateChanged(auth, (user) => {
+    if (window.updateUserInitials) {
+      window.updateUserInitials(user);
+    }
+  });
+}
 
 /**
  * Loads contacts from Firebase and renders them into the contact list box.
@@ -246,9 +251,11 @@ function onContactInput(e) {
   renderContacts(filtered, listBox);
 }
 
-const contactInput = $("contact-input");
-if (contactInput) {
-  contactInput.addEventListener("input", onContactInput);
+function setupContactInputListener() {
+  const contactInput = $("contact-input");
+  if (contactInput) {
+    contactInput.addEventListener("input", onContactInput);
+  }
 }
 
 /**
@@ -427,16 +434,20 @@ function handleCreateClick() {
   if (!window.location.pathname.endsWith("addtask.html")) window.toggleAddTaskBoard();
 }
 
-const createBtn = $("create-button");
-if (createBtn) createBtn.addEventListener("click", handleCreateClick);
+function setupCreateButton() {
+  const createBtn = $("create-button");
+  if (createBtn) createBtn.addEventListener("click", handleCreateClick);
+}
 
 /**
  * Wires explicit click handlers for save/edit OK buttons to prevent double triggers (no global delegation).
  */
-const okBtn = $("ok-button");
-if (okBtn) okBtn.addEventListener("click", handleEditOkClick);
-const editOkBtn = $("edit-ok-button");
-if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
+function setupOkButtons() {
+  const okBtn = $("ok-button");
+  if (okBtn) okBtn.addEventListener("click", handleEditOkClick);
+  const editOkBtn = $("edit-ok-button");
+  if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
+}
 
 /**
  * Persists a new task to Firebase under /tasks and triggers the create flow UI.

@@ -25,33 +25,40 @@ import { auth } from "./firebase.js";
 let currentMode = "login";
 
 // Init
-document.addEventListener("DOMContentLoaded", () => {
+function initLogin() {
   setTimeout(() => setThemeWhite(true), 500);
   setupEmailValidation();
   initializePasswordFields("login");
+  setupEventListeners();
+  setupResizeListener();
+  $("sign-up-button").style.pointerEvents = "none";
+  document.addEventListener("keydown", handleKeyDown);
+}
+
+function setupEventListeners() {
   $("guest-button").addEventListener("click", handleGuestLogin);
   $("sign-up-page-button").addEventListener("click", showSignUpForm);
   $("sign-up-bottom-button").addEventListener("click", showSignUpForm);
-  document
-    .getElementById("sign-up-bottom-box-mobile")
-    .addEventListener("click", showSignUpForm);
+  document.getElementById("sign-up-bottom-box-mobile").addEventListener("click", showSignUpForm);
   $("sign-up-button").addEventListener("click", handleSignUp);
   $("login-button").addEventListener("click", handleLogin);
   $("go-back").addEventListener("click", showLoginForm);
- $("confirm").addEventListener("click", () => {
-  $("confirm").classList.toggle("checked");
-  if ($("confirm").classList.contains("checked")) {
-    $("sign-up-button").style.pointerEvents = "";
-  } else {
-    $("sign-up-button").style.pointerEvents = "none";
-  }
-});
-  $("sign-up-button").style.pointerEvents = "none";
-  document.addEventListener("keydown", handleKeyDown);
-});
+  $("confirm").addEventListener("click", () => {
+    $("confirm").classList.toggle("checked");
+    if ($("confirm").classList.contains("checked")) {
+      $("sign-up-button").style.pointerEvents = "";
+    } else {
+      $("sign-up-button").style.pointerEvents = "none";
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initLogin);
 
 // resize add event listener
-window.addEventListener("resize", updateSignUpBoxDisplay);
+function setupResizeListener() {
+  window.addEventListener("resize", updateSignUpBoxDisplay);
+}
 
 /**
  * Set the theme (background and logo) and adjust sign-up box display.

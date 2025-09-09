@@ -18,7 +18,9 @@ import { app, auth } from "./firebase.js";
 
 // -- Auth initials -----------------------------------------------------------
 
-onAuthStateChanged(auth, handleAuthChange);
+function setupAuthListener() {
+  onAuthStateChanged(auth, handleAuthChange);
+}
 /**
  * Projects user initials to the UI (if hook is present).
  * @param {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").User|null} user
@@ -200,5 +202,11 @@ window.dataSave = () => {
   saveToFirebase(getNewContactData());
 };
 
-/** Start realtime subscription on page load. */
-showAllData();
+/** Initialize the contact module */
+function initContacts() {
+  setupAuthListener();
+  showAllData();
+}
+
+/** Start initialization on page load. */
+initContacts();

@@ -42,7 +42,9 @@ const columnMap = {
   done: "done-column",
 };
 
-onAuthStateChanged(auth, handleAuthChange);
+function setupAuthListener() {
+  onAuthStateChanged(auth, handleAuthChange);
+}
 /**
  * Updates user initials badge on auth changes.
  * @param {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").User|null} user
@@ -400,12 +402,14 @@ function renderChip(c, idx, ctx) {
  * DOMContentLoaded bootstrap: wires DnD, loads tasks, sets up search.
  * @returns {void}
  */
-document.addEventListener("DOMContentLoaded", onBoardDomContentLoaded);
-function onBoardDomContentLoaded() {
+function initBoard() {
+  setupAuthListener();
   initDnDListeners();
   loadTasksFromFirebase();
   setupSearchHandlers();
 }
+
+document.addEventListener("DOMContentLoaded", initBoard);
 
 /**
  * Sets up search input/button handlers with debounce.

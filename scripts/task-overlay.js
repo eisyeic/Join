@@ -341,7 +341,12 @@ function moveFormBackToAside() {
  * Toggles the task overlay into edit mode and moves the form into place.
  * @returns {void}
  */
-$("edit-task-btn").addEventListener("click", onEditTaskBtnClick);
+function setupEditTaskButton() {
+  const editBtn = $("edit-task-btn");
+  if (editBtn) {
+    editBtn.addEventListener("click", onEditTaskBtnClick);
+  }
+}
 function onEditTaskBtnClick() {
   $("task-overlay-content").classList.toggle("d-none");
   document.querySelector(".edit-addtask-wrapper").classList.toggle("d-none");
@@ -355,7 +360,16 @@ const overlay = $("overlay-add-task");
 /** Overlay content element. */
 const overlayContent = document.querySelector(".add-task-overlay-content");
 
-overlay?.addEventListener("click", onOverlayBackdropClick);
+function setupOverlayListener() {
+  overlay?.addEventListener("click", onOverlayBackdropClick);
+}
+
+function initTaskOverlay() {
+  setupEditTaskButton();
+  setupOverlayListener();
+}
+
+initTaskOverlay();
 /**
  * Closes the Add Task overlay if the backdrop is clicked.
  * @param {MouseEvent} e

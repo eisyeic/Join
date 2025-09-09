@@ -474,11 +474,19 @@ function capAssignedInitialsIn(container, max = 5) {
 function applyCapToAllInitials(max = 5) {
   document.querySelectorAll('.contact-initials').forEach(box => capAssignedInitialsIn(box, max));
 }
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => applyCapToAllInitials(5));
-} else {
-  applyCapToAllInitials(5);
+function setupInitialsCapping() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => applyCapToAllInitials(5));
+  } else {
+    applyCapToAllInitials(5);
+  }
 }
+
+function initAddTaskUI() {
+  setupInitialsCapping();
+}
+
+initAddTaskUI();
 
 /**
  * Observe the DOM and re-apply initials capping when ".contact-initials" nodes are added.
