@@ -34,6 +34,7 @@ function handleAuthChange(user) {
 /** Firebase DB handle and contacts ref. */
 const db = getDatabase(app);
 const dataRef = ref(db, "contacts");
+let loadedContacts = {};
 
 // -- Contact rendering --------------------------------------------------------
 
@@ -129,7 +130,9 @@ function processContactData(data) {
 /** Subscribe to /contacts and render on every change. */
 function showAllData() {
   onValue(dataRef, (snapshot) => {
-    processContactData(snapshot.val());
+    const data = snapshot.val();
+    loadedContacts = data || {};
+    processContactData(data);
   });
 }
 
@@ -191,7 +194,6 @@ window.deleteContact = async () => {
   }
 };
 
-
 /**
  * Validate and save a new contact.
  * Uses external `validateAddContactForm()` and updates rotating colorIndex.
@@ -200,6 +202,91 @@ window.dataSave = () => {
   if (!validateAddContactForm()) return; // external validator
   window.colorIndex = (window.colorIndex % 15) + 1;
   saveToFirebase(getNewContactData());
+};
+
+/**
+ * Renders contacts for AddTask dropdown with selection functionality.
+ * @param {Object.<string, {name:string,initials:string,colorIndex:number}>} contacts
+ * @param {HTMLElement} container
+ */
+window.renderContactsForAddTask = function(contacts, container) {
+  for (const id in contacts) {
+    const contact = contacts[id];
+    const li = createAddTaskContactItem(contact, id);
+    container.appendChild(li);
+  }
+};
+
+/**
+ * Creates contact list item for AddTask with selection functionality.
+ * @param {{name:string,initials:string,colorIndex:number}} contact
+ * @param {string} id
+ * @returns {HTMLLIElement}
+ */
+function createAddTaskContactItem(contact, id) {
+  let li = document.createElement("li");
+  li.id = id;
+  li.innerHTML = `
+    <div>
+      <div class="contact-initial" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
+        ${contact.initials}
+      </div>
+      ${contact.name}
+    </div>
+    <img src="./assets/icons/add_task/check_default.svg" alt="checkbox" />
+  `;
+  li.addEventListener("click", () => {
+    li.classList.toggle("selected");
+    let checkboxIcon = li.querySelector("img");
+    let isSelected = li.classList.contains("selected");
+    checkboxIcon.src = isSelected
+      ? "./assets/icons/add_task/check_white.svg"
+      : "./assets/icons/add_task/check_default.svg";
+    renderSelectedContactInitials();
+  });
+  return li;
+}
+
+/**
+ * Renders selected contact initials for AddTask.
+ */
+function renderSelectedContactInitials() {
+  let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
+  let contactInitialsBox = document.getElementById("contact-initials");
+  if (!contactInitialsBox) return;
+  contactInitialsBox.innerHTML = "";
+  selectedLis.forEach((li) => {
+    let initialsEl = li.querySelector(".contact-initial");
+    if (initialsEl) {
+      let clone = initialsEl.cloneNode(true);
+      contactInitialsBox.appendChild(clone);
+    }
+  });
+}
+
+/**
+ * Filters contacts for AddTask input.
+ * @param {InputEvent} e
+ */
+window.onContactInputForAddTask = function(e) {
+  const value = String(e.target.value || "").trim().toLowerCase();
+  const listBox = document.getElementById("contact-list-box");
+  if (!listBox) return;
+  listBox.classList.remove("d-none");
+  const filtered = {};
+  if (value.length === 0) {
+    Object.assign(filtered, loadedContacts || {});
+  } else {
+    for (const id in (loadedContacts || {})) {
+      const contact = loadedContacts[id];
+      const nameParts = String(contact.name || "").trim().toLowerCase().split(" ");
+      if (nameParts.some((part) => part.startsWith(value))) {
+        filtered[id] = contact;
+      }
+    }
+  }
+  listBox.innerHTML = "";
+  window.renderContactsForAddTask(filtered, listBox);
 };
 
 /** Initialize the contact module */

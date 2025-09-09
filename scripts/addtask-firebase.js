@@ -218,114 +218,23 @@ function setupAuthListener() {
  */
 function loadContactsAndRender() {
   let contactListBox = $("contact-list-box");
+  if (!contactListBox) return;
   contactListBox.innerHTML = "";
   get(ref(db, "contacts")).then((snapshot) => {
     if (snapshot.exists()) {
       loadedContacts = snapshot.val();
-      renderContacts(loadedContacts, contactListBox);
-    }
-  });
-}
-
-/**
- * Filters the contact list as the user types in the contact input and re-renders the list.
- * @param {InputEvent} e
- */
-function onContactInput(e) {
-  const value = String(e.target.value || "").trim().toLowerCase();
-  const listBox = $("contact-list-box");
-  listBox.classList.remove("d-none");
-  const filtered = {};
-  if (value.length === 0) {
-    Object.assign(filtered, loadedContacts);
-  } else {
-    for (const id in loadedContacts) {
-      const contact = loadedContacts[id];
-      const nameParts = String(contact.name || "").trim().toLowerCase().split(" ");
-      if (nameParts.some((part) => part.startsWith(value))) {
-        filtered[id] = contact;
+      if (window.renderContactsForAddTask) {
+        window.renderContactsForAddTask(loadedContacts, contactListBox);
       }
     }
-  }
-  listBox.innerHTML = "";
-  renderContacts(filtered, listBox);
+  });
 }
 
 function setupContactInputListener() {
   const contactInput = $("contact-input");
-  if (contactInput) {
-    contactInput.addEventListener("input", onContactInput);
+  if (contactInput && window.onContactInputForAddTask) {
+    contactInput.addEventListener("input", window.onContactInputForAddTask);
   }
-}
-
-/**
- * Renders a contact dictionary into list items inside the provided container.
- * @param {Object.<string, {name:string,initials:string,colorIndex:number}>} contacts
- * @param {HTMLElement} container
- */
-function renderContacts(contacts, container) {
-  for (const id in contacts) {
-    const contact = contacts[id];
-    const li = createContactListItem(contact, id);
-    container.appendChild(li);
-  }
-}
-
-/**
- * Creates a single contact list item element with avatar and checkbox UI.
- * @param {{name:string,initials:string,colorIndex:number}} contact
- * @param {string} id
- * @returns {HTMLLIElement}
- */
-function createContactListItem(contact, id) {
-  let li = document.createElement("li");
-  li.id = id;
-  li.innerHTML = `
-    <div>
-      <div class="contact-initial" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
-        ${contact.initials}
-      </div>
-      ${contact.name}
-    </div>
-    <img src="./assets/icons/add_task/check_default.svg" alt="checkbox" />
-  `;
-  addContactListItemListener(li);
-  return li;
-}
-
-/**
- * Attaches selection toggle behavior to a contact list item and updates the initials strip.
- * @param {HTMLLIElement} li
- */
-function addContactListItemListener(li) {
-  li.addEventListener("click", () => {
-    li.classList.toggle("selected");
-    let checkboxIcon = li.querySelector("img");
-    let isSelected = li.classList.contains("selected");
-    checkboxIcon.src = isSelected
-      ? "./assets/icons/add_task/check_white.svg"
-      : "./assets/icons/add_task/check_default.svg";
-    renderSelectedContactInitials();
-  });
-}
-
-/**
- * Renders the initials of all currently selected contacts below the selector.
- * Clones the `.contact-initial` nodes from the selected list items into `#contact-initials`.
- * @returns {void}
- */
-function renderSelectedContactInitials() {
-  let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
-  let contactInitialsBox = document.getElementById("contact-initials");
-  contactInitialsBox.innerHTML = "";
-  
-  selectedLis.forEach((li) => {
-    let initialsEl = li.querySelector(".contact-initial");
-    if (initialsEl) {
-      let clone = initialsEl.cloneNode(true);
-      contactInitialsBox.appendChild(clone);
-    }
-  });
 }
 
 
