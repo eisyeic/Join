@@ -1,7 +1,4 @@
-/**
- * Clear all inputs and error states in the Add-Contact form.
- * @returns {void}
- */
+// Clear all inputs and error states in the Add-Contact form
 function clearAddFormInputs() {
   $("name-new-contact").value = "";
   $("email-new-contact").value = "";
@@ -11,44 +8,29 @@ function clearAddFormInputs() {
   clearFieldError("phone-new-contact");
 }
 
-/**
- * Open the Add-Contact overlay and reset the form.
- * @returns {void}
- */
+// Open the Add-Contact overlay and reset the form
 function openAddContact() {
   $("contact-overlay-close-add").classList.remove("d-none");
   clearAddFormInputs();
 }
 
-/**
- * Close the Add-Contact overlay and reset the form.
- * @returns {void}
- */
+// Close the Add-Contact overlay and reset the form
 function closeAddContact() {
   $("contact-overlay-close-add").classList.add("d-none");
   clearAddFormInputs();
 }
 
-/**
- * Toggle visibility of the Add-Contact overlay.
- * @returns {void}
- */
+// Toggle visibility of the Add-Contact overlay
 function toggleAddContact() {
   $("contact-overlay-close-add").classList.toggle("d-none");
 }
 
-/**
- * Toggle visibility of the Edit-Contact overlay.
- * @returns {void}
- */
+// Toggle visibility of the Edit-Contact overlay
 function toggleEditContact() {
   $("contact-overlay-close-edit").classList.toggle("d-none");
 }
 
-/**
- * Read values from Add-Contact form inputs.
- * @returns {{name:string,email:string,phone:string}}
- */
+// Read values from Add-Contact form inputs
 function getAddFormValues() {
   return {
     name: $("name-new-contact").value.trim(),
@@ -57,21 +39,14 @@ function getAddFormValues() {
   };
 }
 
-/**
- * Clear all add-form error messages/styles.
- * @returns {void}
- */
+// Clear all add-form error messages/styles
 function clearAddFormErrors() {
   clearFieldError("name-new-contact");
   clearFieldError("email-new-contact");
   clearFieldError("phone-new-contact");
 }
 
-/**
- * Validate add name field (required).
- * @param {string} name
- * @returns {boolean}
- */
+// Validate add name field (required)
 function validateAddNameField(name) {
   if (!name) {
     showFieldError("name-new-contact", "Name is required");
@@ -80,11 +55,7 @@ function validateAddNameField(name) {
   return true;
 }
 
-/**
- * Validate add email field (required + format).
- * @param {string} email
- * @returns {boolean}
- */
+// Validate add email field (required + format)
 function validateAddEmailField(email) {
   if (!email) {
     showFieldError("email-new-contact", "E-Mail is required");
@@ -96,11 +67,7 @@ function validateAddEmailField(email) {
   return true;
 }
 
-/**
- * Validate add phone field (required).
- * @param {string} phone
- * @returns {boolean}
- */
+// Validate add phone field (required)
 function validateAddPhoneField(phone) {
   if (!phone) {
     showFieldError("phone-new-contact", "Phone is required");
@@ -109,11 +76,7 @@ function validateAddPhoneField(phone) {
   return true;
 }
 
-/**
- * Validate all add form fields.
- * @param {{name:string,email:string,phone:string}} values
- * @returns {boolean}
- */
+// Validate all add form fields
 function validateAddFormFields(values) {
   const nameValid = validateAddNameField(values.name);
   const emailValid = validateAddEmailField(values.email);
@@ -122,10 +85,7 @@ function validateAddFormFields(values) {
   return nameValid && emailValid && phoneValid;
 }
 
-/**
- * Validate the add contact form and return validity.
- * @returns {boolean}
- */
+// Validate the add contact form and return validity
 function validateAddContactForm() {
   const values = getAddFormValues();
   clearAddFormErrors();

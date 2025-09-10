@@ -1,8 +1,4 @@
-/**
- * Switch overlay to edit mode and preload form.
- * @param {any} task
- * @returns {void}
- */
+// Switch overlay to edit mode and preload form
 function openEditInsideOverlay(task) {
   switchToEditView();
   moveFormIntoEdit();
@@ -22,10 +18,7 @@ function openEditInsideOverlay(task) {
 }
 
 
-/**
- * Show edit wrapper and hide read-only content.
- * @returns {void}
- */
+// Show edit wrapper and hide read-only content
 function switchToEditView() {
   const taskContent = document.getElementById("task-overlay-content");
   const editWrap = document.querySelector(".edit-addtask-wrapper");
@@ -33,10 +26,7 @@ function switchToEditView() {
   editWrap?.classList.remove("d-none");
 }
 
-/**
- * Move the addtask form into the overlay edit container.
- * @returns {void}
- */
+// Move the addtask form into the overlay edit container
 function moveFormIntoEdit() {
   const src =
     document.querySelector(".addtask-aside-clone .addtask-wrapper") ||
@@ -45,21 +35,13 @@ function moveFormIntoEdit() {
   if (src && dst && src.parentElement !== dst) dst.replaceChildren(src);
 }
 
-/**
- * Store the editing task id on the wrapper dataset.
- * @param {{id?:string}} task
- * @returns {void}
- */
+// Store the editing task id on the wrapper dataset
 function markEditingId(task) {
   const wrap = document.querySelector(".addtask-wrapper");
   if (wrap && task?.id) wrap.dataset.editingId = String(task.id);
 }
 
-/**
- * Populate the edit form via provided hook or fallback.
- * @param {any} task
- * @returns {void}
- */
+// Populate the edit form via provided hook or fallback
 function populateEditForm(task) {
   if (typeof window.enterAddTaskEditMode === "function") {
     try {
@@ -72,11 +54,7 @@ function populateEditForm(task) {
   populateEditFormFallback(task);
 }
 
-/**
- * Fallback population for edit form fields.
- * @param {any} task
- * @returns {void}
- */
+// Fallback population for edit form fields
 function populateEditFormFallback(task) {
   if (!task) return;
   markEditingId(task);
@@ -88,11 +66,7 @@ function populateEditFormFallback(task) {
   setSubtasksArray(task);
 }
 
-/**
- * Set title and description fields.
- * @param {{title?:string,description?:string}} task
- * @returns {void}
- */
+// Set title and description fields
 function setTitleAndDescription(task) {
   const titleEl = document.getElementById("addtask-title");
   const descEl = document.getElementById("addtask-textarea");
@@ -100,11 +74,7 @@ function setTitleAndDescription(task) {
   if (descEl) /** @type {HTMLTextAreaElement} */ (descEl).value = task.description || "";
 }
 
-/**
- * Fill due date input (keeps dd/mm/yyyy if string).
- * @param {{dueDate?:string}} task
- * @returns {void}
- */
+// Fill due date input (keeps dd/mm/yyyy if string)
 function setDueDateField(task) {
   const dateEl = document.getElementById("datepicker");
   if (!dateEl) return;
@@ -119,11 +89,7 @@ function setDueDateField(task) {
   }
 }
 
-/**
- * Set category label and data value.
- * @param {{category?:string}} task
- * @returns {void}
- */
+// Set category label and data value
 function setCategorySelection(task) {
   const sel = document.getElementById("category-select");
   const span = sel ? sel.querySelector("span") : null;
@@ -131,11 +97,7 @@ function setCategorySelection(task) {
   if (sel) sel.dataset.value = task.category || "";
 }
 
-/**
- * Activate the correct priority button.
- * @param {{priority?:string}} task
- * @returns {void}
- */
+// Activate the correct priority button
 function setPriorityButtons(task) {
   document.querySelectorAll(".prio-buttons .priority-button")
     .forEach((b) => b.classList.remove("active"));
@@ -144,11 +106,7 @@ function setPriorityButtons(task) {
   document.querySelector(map[key] || ".medium-button")?.classList.add("active");
 }
 
-/**
- * Render assigned initials and store selected ids.
- * @param {{assignedContacts?:any[],assigned?:any[]}} task
- * @returns {void}
- */
+// Render assigned initials and store selected ids
 function setAssignedContactsUI(task) {
   const assigned = Array.isArray(task.assignedContacts)
     ? task.assignedContacts
@@ -161,12 +119,7 @@ function setAssignedContactsUI(task) {
   if (selectBox) selectBox.dataset.selected = JSON.stringify(assigned.map((p) => p.id).filter(Boolean));
 }
 
-/**
- * Update initials preview box markup.
- * @param {HTMLElement} box
- * @param {Array<any>} assigned
- * @returns {void}
- */
+// Update initials preview box markup
 function updateInitialsBox(box, assigned) {
   if (!assigned.length) {
     box.classList.add("d-none");
@@ -187,11 +140,7 @@ function updateInitialsBox(box, assigned) {
   box.classList.remove("d-none");
 }
 
-/**
- * Sync global subtasks array for the edit UI.
- * @param {{subtasks?:any[]}} task
- * @returns {void}
- */
+// Sync global subtasks array for the edit UI
 function setSubtasksArray(task) {
   if (!Array.isArray(task.subtasks)) return;
  try {
@@ -206,10 +155,7 @@ function setSubtasksArray(task) {
   } catch {}
 }
 
-/**
- * Mirror selected contacts to the list UI.
- * @returns {void}
- */
+// Mirror selected contacts to the list UI
 function syncAssignedSelectionToList() {
   const list = document.getElementById("contact-list-box");
   const selectBox = document.getElementById("assigned-select-box");
@@ -230,11 +176,7 @@ function syncAssignedSelectionToList() {
   });
 }
 
-/**
- * Remove a task and its category mirrors.
- * @param {string} taskId
- * @returns {Promise<void>}
- */
+// Remove a task and its category mirrors
 window.deleteTaskFromDatabase = async function(taskId) {
   if (!taskId) throw new Error("Missing taskId");
   const RTDB = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");

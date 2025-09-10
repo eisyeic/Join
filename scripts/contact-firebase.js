@@ -1,9 +1,4 @@
-/* eslint-env browser */
-/* eslint-disable no-undef */
-/**
- * @file Contacts module: Firebase subscription, alphabetical rendering,
- *       add/delete contacts. JSDoc-annotated. Every function ≤ 14 lines.
- */
+// Contacts module: Firebase subscription, alphabetical rendering, add/delete contacts
 
 import {
   getDatabase,
@@ -16,33 +11,26 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { app, auth } from "./firebase.js";
 
-// -- Auth initials -----------------------------------------------------------
+
 
 function setupAuthListener() {
   onAuthStateChanged(auth, handleAuthChange);
 }
-/**
- * Projects user initials to the UI (if hook is present).
- * @param {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").User|null} user
- */
+// Projects user initials to the UI (if hook is present)
 function handleAuthChange(user) {
   if (window.updateUserInitials) window.updateUserInitials(user);
 }
 
-// -- Firebase setup ----------------------------------------------------------
 
-/** Firebase DB handle and contacts ref. */
+
+// Firebase DB handle and contacts ref
 const db = getDatabase(app);
 const dataRef = ref(db, "contacts");
 let loadedContacts = {};
 
-// -- Contact rendering --------------------------------------------------------
 
-/**
- * Prepare the contacts container; show empty state if no data.
- * @param {Record<string, any>|null} data
- * @returns {HTMLElement|null}
- */
+
+// Prepare the contacts container; show empty state if no data
 function initializeContactContainer(data) {
   const box = $("all-contacts");
   box.innerHTML = "";
@@ -53,22 +41,14 @@ function initializeContactContainer(data) {
   return box;
 }
 
-/**
- * Return entries sorted by name (case-insensitive).
- * @param {Record<string, any>} data
- */
+// Return entries sorted by name (case-insensitive)
 function getSortedContacts(data) {
   return Object.entries(data).sort(([, a], [, b]) =>
     (a?.name || "").localeCompare(b?.name || "", undefined, { sensitivity: "base" })
   );
 }
 
-/**
- * Add an alphabet letter header if the letter changed.
- * @param {string} firstLetter
- * @param {HTMLElement} container
- * @param {{value:string}} currentLetter
- */
+// Add an alphabet letter header if the letter changed
 function addLetterHeaderIfNeeded(firstLetter, container, currentLetter) {
   if (firstLetter === currentLetter.value) return;
   const hdr = document.createElement("div");
@@ -78,12 +58,7 @@ function addLetterHeaderIfNeeded(firstLetter, container, currentLetter) {
   currentLetter.value = firstLetter;
 }
 
-/**
- * Append a single rendered contact element.
- * @param {string} id
- * @param {{name:string}} contact
- * @param {HTMLElement} container
- */
+// Append a single rendered contact element
 function createContactElement(id, contact, container) {
   const wrapper = document.createElement("div");
   wrapper.classList.add("rendered-contacts");
@@ -91,24 +66,14 @@ function createContactElement(id, contact, container) {
   container.appendChild(wrapper);
 }
 
-/**
- * Render one contact with optional letter header.
- * @param {string} id
- * @param {{name:string,colorIndex?:number}} contact
- * @param {HTMLElement} container
- * @param {{value:string}} currentLetter
- */
+// Render one contact with optional letter header
 function renderSingleContact(id, contact, container, currentLetter) {
   const first = (contact.name || "").charAt(0).toUpperCase();
   addLetterHeaderIfNeeded(first, container, currentLetter);
   createContactElement(id, contact, container);
 }
 
-/**
- * Render the full contact list with alphabetical headers.
- * @param {Record<string, any>} data
- * @param {HTMLElement} container
- */
+// Render the full contact list with alphabetical headers
 function renderContactList(data, container) {
   const entries = getSortedContacts(data);
   const currentLetter = { value: "" };
@@ -118,16 +83,13 @@ function renderContactList(data, container) {
   });
 }
 
-/**
- * Process Firebase data and render the contact list.
- * @param {Record<string, any>|null} data
- */
+// Process Firebase data and render the contact list
 function processContactData(data) {
   const container = initializeContactContainer(data);
   if (container) renderContactList(/** @type {Record<string, any>} */ (data), container);
 }
 
-/** Subscribe to /contacts and render on every change. */
+// Subscribe to /contacts and render on every change
 function showAllData() {
   onValue(dataRef, (snapshot) => {
     const data = snapshot.val();
@@ -136,12 +98,9 @@ function showAllData() {
   });
 }
 
-// -- Add contact -------------------------------------------------------------
 
-/**
- * Collect new-contact form values.
- * @returns {{name:string,email:string,phone:string,colorIndex:number,initials:string}}
- */
+
+// Collect new-contact form values
 function getNewContactData() {
   const name = $("name-new-contact").value || "";
   return {
@@ -153,10 +112,7 @@ function getNewContactData() {
   };
 }
 
-/**
- * Handle successful save: toggle UI status and refresh list.
- * @param {any} data
- */
+// Handle successful save: toggle UI status and refresh list
 function handleSaveSuccess(data) {
   const el = $("check-status-add-contact");
   if (el) {
@@ -166,20 +122,14 @@ function handleSaveSuccess(data) {
   }
 }
 
-/**
- * Push a new contact into Firebase.
- * @param {ReturnType<typeof getNewContactData>} data
- */
+// Push a new contact into Firebase
 function saveToFirebase(data) {
   push(dataRef, data)
     .then(() => handleSaveSuccess(data))
     .catch((err) => console.error("Save failed:", err));
 }
 
-/**
- * Delete the currently selected contact.
- * Relies on global `currentContact` ({ id, name }).
- */
+// Delete the currently selected contact
 window.deleteContact = async () => {
   const key = typeof currentContact?.id === "string" ? currentContact.id.trim() : "";
   if (!key) {
@@ -194,21 +144,14 @@ window.deleteContact = async () => {
   }
 };
 
-/**
- * Validate and save a new contact.
- * Uses external `validateAddContactForm()` and updates rotating colorIndex.
- */
+// Validate and save a new contact
 window.dataSave = () => {
   if (!validateAddContactForm()) return; // external validator
   window.colorIndex = (window.colorIndex % 15) + 1;
   saveToFirebase(getNewContactData());
 };
 
-/**
- * Renders contacts for AddTask dropdown with selection functionality.
- * @param {Object.<string, {name:string,initials:string,colorIndex:number}>} contacts
- * @param {HTMLElement} container
- */
+// Renders contacts for AddTask dropdown with selection functionality
 window.renderContactsForAddTask = function(contacts, container) {
   for (const id in contacts) {
     const contact = contacts[id];
@@ -217,12 +160,7 @@ window.renderContactsForAddTask = function(contacts, container) {
   }
 };
 
-/**
- * Creates contact list item for AddTask with selection functionality.
- * @param {{name:string,initials:string,colorIndex:number}} contact
- * @param {string} id
- * @returns {HTMLLIElement}
- */
+// Creates contact list item for AddTask with selection functionality
 function createAddTaskContactItem(contact, id) {
   let li = document.createElement("li");
   li.id = id;
@@ -247,9 +185,7 @@ function createAddTaskContactItem(contact, id) {
   return li;
 }
 
-/**
- * Renders selected contact initials for AddTask.
- */
+// Renders selected contact initials for AddTask
 function renderSelectedContactInitials() {
   let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
   let contactInitialsBox = document.getElementById("contact-initials");
@@ -264,10 +200,7 @@ function renderSelectedContactInitials() {
   });
 }
 
-/**
- * Filters contacts for AddTask input.
- * @param {InputEvent} e
- */
+// Filters contacts for AddTask input
 window.onContactInputForAddTask = function(e) {
   const value = String(e.target.value || "").trim().toLowerCase();
   const listBox = document.getElementById("contact-list-box");
@@ -289,11 +222,11 @@ window.onContactInputForAddTask = function(e) {
   window.renderContactsForAddTask(filtered, listBox);
 };
 
-/** Initialize the contact module */
+// Initialize the contact module
 function initContacts() {
   setupAuthListener();
   showAllData();
 }
 
-/** Start initialization on page load. */
+// Start initialization on page load
 initContacts();

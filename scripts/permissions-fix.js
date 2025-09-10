@@ -1,39 +1,30 @@
-/* eslint-env browser */
-/**
- * @file Removes existing 'unload'/'beforeunload' listeners after DOM ready
- *       and blocks new registrations of those events by monkey-patching
- *       `window.addEventListener`. Prefer 'pagehide' or 'visibilitychange'.
- */
-
-window.addEventListener('DOMContentLoaded', function () {
-  /** @type {Array<'unload'|'beforeunload'>} */
-  const events = ['unload', 'beforeunload'];
-  events.forEach((eventType) => {
-    /** @type {{listener: EventListenerOrEventListenerObject}[]|undefined} */
-    // @ts-ignore Non-standard DevTools API may be undefined
-    const listeners = window.getEventListeners ? window.getEventListeners(window)[eventType] : [];
-    if (listeners) {
-      listeners.forEach((listener) => {
-        window.removeEventListener(eventType, listener.listener);
-      });
-    }
-  });
-});
-
-/** @type {Window['addEventListener']} */
+// Block unload/beforeunload events due to Permissions Policy
 const originalAddEventListener = window.addEventListener;
+const originalRemoveEventListener = window.removeEventListener;
 
-/**
- * Override to block 'unload' and 'beforeunload' listeners.
- * @param {string} type
- * @param {EventListenerOrEventListenerObject} listener
- * @param {boolean|AddEventListenerOptions} [options]
- * @returns {void}
- */
+// Override addEventListener to block unload events
 window.addEventListener = function (type, listener, options) {
   if (type === 'unload' || type === 'beforeunload') {
-    console.warn(`${type} event blocked due to Permissions Policy. Use 'pagehide' or 'visibilitychange' instead.`);
-    return;
+    return; // Silently ignore
   }
   return originalAddEventListener.call(this, type, listener, options);
 };
+
+// Override removeEventListener for consistency
+window.removeEventListener = function (type, listener, options) {
+  if (type === 'unload' || type === 'beforeunload') {
+    return; // Silently ignore
+  }
+  return originalRemoveEventListener.call(this, type, listener, options);
+};
+
+// Block onunload and onbeforeunload properties
+Object.defineProperty(window, 'onunload', {
+  set: function() { /* ignore */ },
+  get: function() { return null; }
+});
+
+Object.defineProperty(window, 'onbeforeunload', {
+  set: function() { /* ignore */ },
+  get: function() { return null; }
+});

@@ -1,8 +1,4 @@
-/**
- * Close the category dropdown within a given container.
- * @param {HTMLElement} scope - Container element that wraps the category UI.
- * @returns {void}
- */
+// Close the category dropdown within a given container
 function closeCategoryDropdown(scope) {
   const panel = scope.querySelector('#category-selection');
   const icon = scope.querySelector('#category-icon');
@@ -13,11 +9,7 @@ function closeCategoryDropdown(scope) {
   }
 }
 
-/**
- * Close the assigned contacts dropdown within a given container and update UI.
- * @param {HTMLElement} scope - Container element that wraps the assigned UI.
- * @returns {void}
- */
+// Close the assigned contacts dropdown within a given container and update UI
 function closeAssignedDropdown(scope) {
   const list = scope.querySelector('#contact-list-box');
   const icon = scope.querySelector('#assigned-icon');
@@ -34,11 +26,7 @@ function closeAssignedDropdown(scope) {
   }
 }
 
-/**
- * Attach a capture-phase outside-click handler for Category & Assigned inside a container.
- * @param {HTMLElement} container - Wrapper (e.g., #overlay-add-task or #task-overlay).
- * @returns {void}
- */
+// Attach a capture-phase outside-click handler for Category & Assigned inside a container
 function setupDropdownOutsideCloseIn(container) {
   if (!container || container.dataset.outsideCloserAttached === '1') return;
   const onClickCapture = (e) => {
@@ -53,13 +41,7 @@ function setupDropdownOutsideCloseIn(container) {
   container.dataset.outsideCloserAttached = '1';
 }
 
-/**
- * Handle subtask outside-click: save if input has value (add mode), then close UI.
- * In edit mode it only closes the UI.
- * @param {MouseEvent} event - Pointer/click event.
- * @param {boolean} [editMode=false] - When true, never adds a new subtask.
- * @returns {void}
- */
+// Handle subtask outside-click: save if input has value (add mode), then close UI
 function handleSubtaskClickOutside(event, editMode = false) {
   const scope = event.currentTarget || document;
   const subZone = scope.querySelector('.subtask-select');
@@ -77,9 +59,7 @@ function handleSubtaskClickOutside(event, editMode = false) {
 }
 
 
-/**
- * Initialize all dropdown outside-click handlers.
- */
+// Initialize all dropdown outside-click handlers
 function initDropdownHandlers() {
   setupDropdownOutsideCloseIn($('overlay-add-task'));
   setupDropdownOutsideCloseIn($('task-overlay'));
@@ -87,5 +67,5 @@ function initDropdownHandlers() {
   if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
 }
 
-/** Initialize on page load */
+// Initialize on page load
 initDropdownHandlers();

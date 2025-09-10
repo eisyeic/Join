@@ -1,19 +1,7 @@
-/**
- * @typedef {Object} Contact
- * @property {string} name
- * @property {string} [email]
- * @property {string} [phone]
- * @property {string} [initials]
- * @property {number} [colorIndex]
- */
+// Current contact object
+let currentContact = {};
 
-/**
- * Build a contact list item (compact row) as HTML string.
- * Color index falls back to a stable hash of the id.
- * @param {Contact} key
- * @param {string} id
- * @returns {string} HTML
- */
+// Build a contact list item (compact row) as HTML string
 function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
   if (!savedColorIndex) {
@@ -36,18 +24,7 @@ function getContactPerson(key, id) {
         </div>`;
 }
 
-/** @type {Partial<Contact>} */
-let currentContact = {};
-
-/**
- * Render the desktop contact details view into the given container.
- * @param {string} name
- * @param {string} email
- * @param {string} phone
- * @param {number} colorIndex
- * @param {HTMLElement} detailSection
- * @returns {void}
- */
+// Render the desktop contact details view into the given container
 function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
   detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">
@@ -78,15 +55,7 @@ function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
         </div>`;
 }
 
-/**
- * Render the mobile contact details layout into the given container.
- * @param {string} name
- * @param {string} email
- * @param {string} phone
- * @param {number} colorIndex
- * @param {HTMLElement} detailSection
- * @returns {void}
- */
+// Render the mobile contact details layout into the given container
 function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = ``;
   detailSection.innerHTML = /*html*/ `
@@ -129,10 +98,7 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
     `;
 }
 
-/**
- * Render the "Task To-do" summary tile for mobile.
- * @returns {void}
- */
+// Render the Task To-do summary tile for mobile
 function getMobileTaskTodo() {
   $("mobile-task-to-do").innerHTML = /*html*/ `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
@@ -149,10 +115,7 @@ function getMobileTaskTodo() {
           </div>`;
 }
 
-/**
- * Render the "Task on Board" summary tile for mobile.
- * @returns {void}
- */
+// Render the Task on Board summary tile for mobile
 function getMobileTaskOnBoard() {
   $("mobile-task-on-board").innerHTML = /*html*/ `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
@@ -169,19 +132,12 @@ function getMobileTaskOnBoard() {
           </div>`;
 }
 
-/**
- * Build a standardized inline error message HTML.
- * @param {string} message
- * @returns {string} HTML
- */
+// Build a standardized inline error message HTML
 function getErrorMessage(message) {
   return /*html*/ `<p class="error-message">${message}</p>`;
 }
 
-/**
- * Return the full Add-Task form markup.
- * @returns {string} HTML
- */
+// Return the full Add-Task form markup
 function getAddtaskTemplate() {
   return `
         <!-- task title -->
@@ -282,12 +238,7 @@ function getAddtaskTemplate() {
       `;
 }
 
-/**
- * Render the editable subtasks list (titles only).
- * Accepts `window.subtasks` or a global `subtasks` and normalizes to string[].
- * Calls external helpers `addEditEvents()` and `deleteEvent()`.
- * @returns {void}
- */
+// Render the editable subtasks list (titles only)
 function renderSubtasks() {
   const normalized = (
     window.subtasks || typeof subtasks !== "undefined"
@@ -322,12 +273,7 @@ function renderSubtasks() {
   deleteEvent();
 }
 
-/**
- * Build the contact dropdown option template used in "Assigned to".
- * @param {Required<Pick<Contact, "name"|"initials"|"colorIndex">>} contact
- * @param {string} id
- * @returns {string} HTML
- */
+// Build the contact dropdown option template used in Assigned to
 function createContactListItemTemplate(contact, id) {
   return `
     <div>
@@ -340,11 +286,7 @@ function createContactListItemTemplate(contact, id) {
   `;
 }
 
-/**
- * Build plain error message content (used by some components).
- * @param {string} message
- * @returns {string}
- */
+// Build plain error message content (used by some components)
 function createErrorMessageTemplate(message) {
   return message;
 }
@@ -356,12 +298,7 @@ if (typeof window !== "undefined") {
   window.createErrorMessageTemplate = createErrorMessageTemplate;
 }
 
-/**
- * Inject the Add-Task template into `.addtask-wrapper` if empty.
- * Dispatches `addtask:template-ready` once rendered.
- * Self-invoking to run ASAP and on DOMContentLoaded if needed.
- * @returns {void}
- */
+// Inject the Add-Task template into .addtask-wrapper if empty
 (function injectAddTaskTemplate() {
   const render = (root = document) => {
     const container = root.querySelector(".addtask-wrapper");

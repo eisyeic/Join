@@ -190,13 +190,26 @@ function populateEditForm(elements) {
 // Opens the Edit-Contact overlay with prefilled fields
 function openEditContact(e) {
   const ev = e || (typeof window !== 'undefined' && window.event ? window.event : null);
-  if (ev) {
-    if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
-    if (typeof ev.preventDefault === 'function') ev.preventDefault();
-  }
+  if (!ev) return;
+  if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
+  if (typeof ev.preventDefault === 'function') ev.preventDefault();
   _swallowNextDocClick = true;
   setTimeout(() => { _swallowNextDocClick = false; }, 250);
-  
+  const target = ev && ev.target instanceof Element ? ev.target : null;
+  const isFromContactList = target && target.closest('.contact-person');
+  if (isFromContactList) {
+    return;
+  }
+  if (ev) {
+    const allowed = target && (
+      target.closest('#single-person-content-mobile-navbar') ||
+      target.closest('#edit-contact-button') ||
+      target.closest('[data-role="edit-contact-trigger"]')
+    );
+    if (!allowed) {
+      return;
+    }
+  }
   if (_editOverlayClosing) return;
   _suppressMobileNavbar = true;
   removeDetailsMobileNavbar();
@@ -204,9 +217,6 @@ function openEditContact(e) {
   populateEditForm(elements);
   toggleEditContact();
 }
-
-// Make openEditContact globally available
-window.openEditContact = openEditContact;
 
 // Copies values from the edit form inputs back into the currentContact object
 function getUpdatedContactData() {
@@ -341,14 +351,6 @@ function deleteContactAndGoBack(event) {
   deleteContact();
   detailsMobileBack();
 }
-
-// Make other functions globally available
-window.showContactDetails = showContactDetails;
-window.detailsMobileBack = detailsMobileBack;
-window.addDetailsMobileNavbar = addDetailsMobileNavbar;
-window.removeDetailsMobileNavbar = removeDetailsMobileNavbar;
-window.saveEditedContact = saveEditedContact;
-window.deleteContactAndGoBack = deleteContactAndGoBack;
 
 // Initialize contact module
 function initContact() {

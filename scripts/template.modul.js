@@ -1,54 +1,16 @@
 import { renderAssignedInitials } from "./board.js";
 import { renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
 
-/**
- * @typedef {Object} AssignedContact
- * @property {string} [id]
- * @property {string} [name]
- * @property {string} [initials]
- * @property {number} [colorIndex]
- */
 
-/**
- * @typedef {Object} Subtask
- * @property {string} name
- * @property {boolean} [checked]
- */
 
-/**
- * @typedef {Object} Task
- * @property {string} [id]
- * @property {string} [title]
- * @property {string} [description]
- * @property {string} [category]        - e.g. "User Story" | "Technical task"
- * @property {"urgent"|"medium"|"low"|string} [priority]
- * @property {"todo"|"inProgress"|"awaitFeedback"|"done"|string} [column]
- * @property {AssignedContact[]} [assignedContacts]
- * @property {Subtask[]} [subtasks]
- */
-
-/**
- * Holds the currently open move overlay element, or null if none is open.
- * Used to ensure only one overlay exists at a time.
- * @type {HTMLDivElement|null}
- */
+// Holds the currently open move overlay element, or null if none is open
 let _currentMoveOverlay = null;
-/**
- * Cleanup callback for global listeners registered by the move overlay.
- * If set, calling this function removes event listeners and resets state.
- * @type {(() => void)|null}
- */
+// Cleanup callback for global listeners registered by the move overlay
 let _moveOverlayCleanup = null;
 
-/** Small helpers (≤14 lines each) **/
+// Small helpers
 
-/**
- * Truncates description text for board cards while keeping words intact.
- * Overlay should always show full text; only cards are shortened.
- * @param {string} text
- * @param {number} [max=50]
- * @returns {string}
- */
+// Truncates description text for board cards while keeping words intact
 function truncateForCard(text, max = 50) {
   const s = (text || "").trim();
   if (s.length <= max) return s;
@@ -57,13 +19,7 @@ function truncateForCard(text, max = 50) {
   return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + "…";
 }
 
-/**
- * Builds the inner HTML string for a board ticket.
- * Keeps markup small; heavy logic is delegated to helpers.
- * @param {Task} task - The task data used to render the ticket.
- * @param {string} taskId - Unique identifier of the task.
- * @returns {string} HTML string for the ticket content.
- */
+// Builds the inner HTML string for a board ticket
 function buildTicketHTML(task, taskId) {
   const labelClass = getLabelClass(task.category);
   const desc = task.description || "";
@@ -87,13 +43,7 @@ function buildTicketHTML(task, taskId) {
     </div>`;
 }
 
-/**
- * Wires the plus/minus button inside a ticket to open the move overlay.
- * Stops event propagation to avoid triggering the ticket click handler.
- * @param {HTMLElement} ticket - The ticket root element.
- * @param {string} taskId - The task identifier bound to this ticket.
- * @returns {void}
- */
+// Wires the plus/minus button inside a ticket to open the move overlay
 function initPlusMinus(ticket, taskId) {
   const btn = /** @type {HTMLImageElement|null} */(ticket.querySelector(".plus-minus-img"));
   if (!btn) return;
@@ -105,23 +55,12 @@ function initPlusMinus(ticket, taskId) {
   ["mousedown","touchstart","dragstart"].forEach((t)=>btn.addEventListener(t,(e)=>e.stopPropagation(),{passive:true}));
 }
 
-/**
- * Safely resolves the assigned contacts array from a task.
- * @param {Task} task
- * @returns {AssignedContact[]} Array of contacts (possibly empty).
- */
+// Safely resolves the assigned contacts array from a task
 function resolveContacts(task){
   return Array.isArray(task?.assignedContacts) ? task.assignedContacts : [];
 }
 
-/**
- * Repeatedly tries to find an element by id, then executes a callback.
- * Useful when rendering into elements that appear asynchronously.
- * @param {string} id - Target element id.
- * @param {(el:HTMLElement)=>void} fn - Callback invoked with the element.
- * @param {number} [tries=15] - Maximum animation frames to retry.
- * @returns {void}
- */
+// Repeatedly tries to find an element by id, then executes a callback
 function retryUntilFound(id, fn, tries=15){
   const el = document.getElementById(id);
   if (el) return fn(el);
@@ -129,12 +68,7 @@ function retryUntilFound(id, fn, tries=15){
   requestAnimationFrame(()=>retryUntilFound(id, fn, tries-1));
 }
 
-/**
- * Renders a list of contacts into a container element.
- * @param {HTMLElement} container - Target container for DOM injection.
- * @param {AssignedContact[]} contacts - Contacts to render.
- * @returns {void}
- */
+// Renders a list of contacts into a container element
 function renderContactsTo(container, contacts){
   container.innerHTML = contacts.map((c)=>{
     const idx = Number.isFinite(c?.colorIndex)?c.colorIndex:0;
@@ -144,11 +78,7 @@ function renderContactsTo(container, contacts){
   }).join("");
 }
 
-/**
- * Creates the subtasks HTML block including check visuals.
- * @param {Subtask[]} subtasks - List of subtasks to display.
- * @returns {string} HTML string representing the subtasks section.
- */
+// Creates the subtasks HTML block including check visuals
 function toSubtasksHtml(subtasks){
   return `<b>Subtasks:</b><div class="subtasks-container">${subtasks.map((s,i)=>{
     const chk = s.checked?"checked":"";
@@ -159,19 +89,10 @@ function toSubtasksHtml(subtasks){
   }).join("")}</div>`;
 }
 
-/**
- * Writes a simple fallback when no subtasks are present.
- * @param {HTMLElement} container
- * @returns {void}
- */
+// Writes a simple fallback when no subtasks are present
 function renderNoSubtasks(container){ container.innerHTML = "<b>no subtasks</b>"; }
 
-/**
- * Creates the move overlay element for a given task.
- * @param {string} taskId - Task id to attach to the overlay dataset.
- * @param {string} currentColumn - The ticket's current logical column.
- * @returns {HTMLDivElement} The constructed overlay element.
- */
+// Creates the move overlay element for a given task
 function createMoveOverlay(taskId, currentColumn){
   const overlay = document.createElement("div");
   overlay.className = "move-overlay";
@@ -189,12 +110,7 @@ function createMoveOverlay(taskId, currentColumn){
   return overlay;
 }
 
-/**
- * Attaches event handlers for overlay actions (move up/down/to column).
- * @param {HTMLDivElement} overlay - The overlay root element.
- * @param {string} taskId - The associated task id.
- * @returns {void}
- */
+// Attaches event handlers for overlay actions (move up/down/to column)
 function attachMoveOverlayHandlers(overlay, taskId){
   overlay.addEventListener("mousedown", (e)=>e.stopPropagation());
   overlay.addEventListener("touchstart", (e)=>e.stopPropagation(), {passive:true});
@@ -211,12 +127,7 @@ function attachMoveOverlayHandlers(overlay, taskId){
   });
 }
 
-/**
- * Positions the overlay near an anchor element and clamps to viewport.
- * @param {Element} anchorEl - Anchor used to compute the position.
- * @param {HTMLDivElement} overlay - The overlay element to position.
- * @returns {void}
- */
+// Positions the overlay near an anchor element and clamps to viewport
 function placeOverlay(anchorEl, overlay){
   const M=8, r=anchorEl.getBoundingClientRect();
   document.body.appendChild(overlay);
@@ -228,11 +139,7 @@ function placeOverlay(anchorEl, overlay){
   overlay.style.left=`${Math.round(left)}px`; overlay.style.top=`${Math.round(top)}px`;
 }
 
-/**
- * Plays a small open animation and focuses the overlay for accessibility.
- * @param {HTMLDivElement} overlay
- * @returns {void}
- */
+// Plays a small open animation and focuses the overlay for accessibility
 function animateOpen(overlay){
   overlay.style.transition="opacity 140ms ease, transform 140ms ease";
   overlay.style.transformOrigin="top right";
@@ -242,12 +149,7 @@ function animateOpen(overlay){
   overlay.tabIndex=-1; overlay.focus?.();
 }
 
-/**
- * Registers global listeners to close the overlay on outside interactions.
- * Stores a cleanup function in `_moveOverlayCleanup`.
- * @param {HTMLDivElement} overlay
- * @returns {void}
- */
+// Registers global listeners to close the overlay on outside interactions
 function registerGlobalOverlayCleanup(overlay){
   const onDocClick=(ev)=>{ if(!overlay.contains(ev.target)) closeMoveOverlay(); };
   const onKey=(ev)=>{ if(ev.key==="Escape") closeMoveOverlay(); };
@@ -264,59 +166,32 @@ function registerGlobalOverlayCleanup(overlay){
   };
 }
 
-/**
- * Animates the closing of an overlay and invokes a completion callback.
- * @param {HTMLDivElement} el - The overlay element being closed.
- * @param {() => void} after - Callback run after the animation finishes.
- * @returns {void}
- */
+// Animates the closing of an overlay and invokes a completion callback
 function animateClose(el, after){
   el.style.transform="translate(0,0) scale(0.98)"; el.style.opacity="0"; el.classList.remove("is-open");
   let done=false; const onEnd=()=>{ if(done) return; done=true; el.removeEventListener("transitionend", onEnd); after(); };
   el.addEventListener("transitionend", onEnd, {once:true}); setTimeout(onEnd, 240);
 }
 
-/**
- * Executes the stored overlay cleanup (if any) and clears the reference.
- * @returns {void}
- */
+// Executes the stored overlay cleanup (if any) and clears the reference
 function runMoveOverlayCleanup(){ if(_moveOverlayCleanup){ _moveOverlayCleanup(); _moveOverlayCleanup=null; } }
 
-/**
- * Finds the previous/next sibling that has the `ticket` class.
- * @param {Element} el - Starting ticket element.
- * @param {"prev"|"next"} dir - Direction to search.
- * @returns {Element|null}
- */
+// Finds the previous/next sibling that has the ticket class
 function getSiblingTicket(el, dir){
   let sib = dir==="prev" ? el.previousElementSibling : el.nextElementSibling;
   while (sib && !sib.classList.contains("ticket")) sib = dir==="prev" ? sib.previousElementSibling : sib.nextElementSibling;
   return sib;
 }
 
-/**
- * Notifies external code that the order of tickets has changed.
- * Calls a global hook if it exists.
- * @param {Element} parent - The column container whose order changed.
- * @returns {void}
- */
+// Notifies external code that the order of tickets has changed
 function notifyOrderChanged(parent){ if (typeof window.onTaskOrderChanged === "function") window.onTaskOrderChanged(parent); }
 
-/**
- * Resolves the DOM container for a logical column key.
- * @param {string} targetColumn - Column key (e.g., "todo").
- * @returns {HTMLElement|null}
- */
+// Resolves the DOM container for a logical column key
 function findTargetContainer(targetColumn){
   return document.querySelector(`[data-column="${targetColumn}"]`) || document.getElementById(targetColumn);
 }
 
-/**
- * Creates a draggable ticket element for the board.
- * @param {Task} task - Task payload to render.
- * @param {string} taskId - Unique task id used as DOM id.
- * @returns {HTMLDivElement} The ticket element.
- */
+// Creates a draggable ticket element for the board
 export function createTaskElement(task, taskId) {
   const ticket = document.createElement("div");
   ticket.classList.add("ticket");
@@ -327,12 +202,7 @@ export function createTaskElement(task, taskId) {
   return ticket;
 }
 
-/**
- * Renders assigned contacts into the task overlay once the container exists.
- * Safe to call before the overlay is attached; it retries briefly.
- * @param {Task} task
- * @returns {void}
- */
+// Renders assigned contacts into the task overlay once the container exists
 export function renderAssignedContacts(task) {
   const contacts = resolveContacts(task);
   retryUntilFound("overlay-members", (container)=>{
@@ -340,28 +210,17 @@ export function renderAssignedContacts(task) {
   });
 }
 
-/** Expose for inline handlers if needed. */
+// Expose for inline handlers if needed
 window.renderAssignedContacts = renderAssignedContacts;
 
-/**
- * Renders the subtasks section inside the task overlay.
- * @param {Task} task
- * @returns {void}
- */
+// Renders the subtasks section inside the task overlay
 export function renderSubtasks(task) {
   const container = /** @type {HTMLElement} */($("overlay-subtasks"));
   if (task.subtasks && task.subtasks.length) container.innerHTML = toSubtasksHtml(task.subtasks);
   else renderNoSubtasks(container);
 }
 
-/**
- * Opens (or toggles) the move overlay anchored to the plus/minus button.
- * Ensures any previously open overlay is closed first.
- * @param {Element} anchorEl - Anchor for positioning.
- * @param {string} taskId - Task id for actions.
- * @param {string} currentColumn - Current logical column of the ticket.
- * @returns {void}
- */
+// Opens (or toggles) the move overlay anchored to the plus/minus button
 function openMoveOverlay(anchorEl, taskId, currentColumn) {
   if (_currentMoveOverlay && _currentMoveOverlay.dataset.taskId === String(taskId)) { closeMoveOverlay(); return; }
   closeMoveOverlay();
@@ -373,10 +232,7 @@ function openMoveOverlay(anchorEl, taskId, currentColumn) {
   _currentMoveOverlay = overlay;
 }
 
-/**
- * Closes the active move overlay (if any) and cleans up listeners.
- * @returns {void}
- */
+// Closes the active move overlay (if any) and cleans up listeners
 function closeMoveOverlay() {
   if (_currentMoveOverlay) {
     const el = _currentMoveOverlay; _currentMoveOverlay = null;
@@ -386,11 +242,7 @@ function closeMoveOverlay() {
   runMoveOverlayCleanup();
 }
 
-/**
- * Moves the ticket one position up within its current column.
- * @param {string} taskId
- * @returns {void}
- */
+// Moves the ticket one position up within its current column
 function moveTaskUp(taskId){
   const ticket = /** @type {HTMLElement|null} */(document.getElementById(String(taskId))); if(!ticket) return;
   const parent = ticket.parentElement; if(!parent) return;
@@ -398,11 +250,7 @@ function moveTaskUp(taskId){
   if (prev) { parent.insertBefore(ticket, prev); notifyOrderChanged(parent); }
 }
 
-/**
- * Moves the ticket one position down within its current column.
- * @param {string} taskId
- * @returns {void}
- */
+// Moves the ticket one position down within its current column
 function moveTaskDown(taskId){
   const ticket = /** @type {HTMLElement|null} */(document.getElementById(String(taskId))); if(!ticket) return;
   const parent = ticket.parentElement; if(!parent) return;
@@ -410,12 +258,7 @@ function moveTaskDown(taskId){
   if (next) { parent.insertBefore(next, ticket); notifyOrderChanged(parent); }
 }
 
-/**
- * Moves the ticket to a different column. If a bridge hook exists, use it.
- * @param {string} taskId
- * @param {"todo"|"inProgress"|"awaitFeedback"|"done"|string} targetColumn
- * @returns {void}
- */
+// Moves the ticket to a different column. If a bridge hook exists, use it
 function moveTaskToColumn(taskId, targetColumn){
   const ticket = /** @type {HTMLElement|null} */(document.getElementById(String(taskId))); if(!ticket) return;
   const source = getCurrentColumnForTicket(ticket);
@@ -425,11 +268,7 @@ function moveTaskToColumn(taskId, targetColumn){
   if (typeof window.onTaskColumnChanged === "function") window.onTaskColumnChanged(taskId, targetColumn, source);
 }
 
-/**
- * Infers the logical column from a ticket element or its closest container.
- * @param {HTMLElement} ticketEl
- * @returns {string} Logical column key or empty string if unknown.
- */
+// Infers the logical column from a ticket element or its closest container
 function getCurrentColumnForTicket(ticketEl){
   if (ticketEl?.dataset?.column) return ticketEl.dataset.column;
   const colEl = ticketEl.closest("[data-column]") || ticketEl.closest(".column");
@@ -437,11 +276,7 @@ function getCurrentColumnForTicket(ticketEl){
   return "";
 }
 
-/**
- * Normalizes various DOM ids/data attributes to the app's column keys.
- * @param {string} raw
- * @returns {"todo"|"inProgress"|"awaitFeedback"|"done"|string}
- */
+// Normalizes various DOM ids/data attributes to the app's column keys
 function normalizeColumnName(raw){
   if(!raw) return ""; const v=String(raw).toLowerCase().replace(/\s+/g,"");
   if(v==="todo"||v.includes("to-do-column")) return "todo";
@@ -450,11 +285,7 @@ function normalizeColumnName(raw){
   if(v==="done"||v.includes("done-column")) return "done"; return raw;
 }
 
-/**
- * Returns allowed move targets for a given current column.
- * @param {string} currentColumn
- * @returns {{label:string,col:"todo"|"inProgress"|"awaitFeedback"|"done"}[]}
- */
+// Returns allowed move targets for a given current column
 function getMoveTargetsFor(currentColumn){
   const map={ todo:[{label:"progress",col:"inProgress"}], inProgress:[{label:"to-do",col:"todo"},{label:"awaiting",col:"awaitFeedback"}], awaitFeedback:[{label:"progress",col:"inProgress"},{label:"done",col:"done"}], done:[{label:"awaiting",col:"awaitFeedback"}] };
   return map[normalizeColumnName(currentColumn)]||[];

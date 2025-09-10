@@ -1,14 +1,7 @@
-/**
- * Shorthand for document.getElementById.
- * @param {string} id
- * @returns {HTMLElement|null}
- */
+// Shorthand for document.getElementById
 let $ = (id) => document.getElementById(id);
 
-/**
- * Toggle the profile dropdown visibility and bind/unbind outside click handler.
- * @returns {void}
- */
+// Toggle the profile dropdown visibility and bind/unbind outside click handler
 function toggleProfileNavbar() {
   const profileNavbar = $("profile-navbar");
   if (!profileNavbar) return;
@@ -20,11 +13,7 @@ function toggleProfileNavbar() {
   }
 }
 
-/**
- * Close the profile dropdown when clicking outside of it or its toggle.
- * @param {MouseEvent} ev
- * @returns {void}
- */
+// Close the profile dropdown when clicking outside of it or its toggle
 function closeProfileNavbar(ev) {
   if (!ev) return;
   const profileNavbar = $("profile-navbar");
@@ -39,39 +28,27 @@ function closeProfileNavbar(ev) {
   }
 }
 
-/**
- * Initialize header initials opacity and restore cached value on DOMContentLoaded.
- * @returns {void}
- */
+// Initialize header initials opacity and restore cached value on DOMContentLoaded
 (() => {
   const style = document.createElement("style");
   style.textContent = `#person-icon-header-text { opacity: 0; }`;
   document.head.appendChild(style);
 })();
 
-/** @typedef {{displayName?: string, email?: string}} User */
+// User type definition
 
-/** LocalStorage key for caching header text. */
- /** @type {string} */
+// LocalStorage key for caching header text
 const HEADER_KEY = "headerTextCache";
 
-/** DOM id of the header initials element. */
- /** @type {string} */
+// DOM id of the header initials element
 const HEADER_EL_ID = "person-icon-header-text";
 
-/**
- * Get the header element that displays the user's initials.
- * @returns {HTMLElement|null} The header element or null if not found.
- */
+// Get the header element that displays the user's initials
 function getHeaderEl() {
   return document.getElementById(HEADER_EL_ID);
 }
 
-/**
- * Build a base string to derive initials from (name > email local-part).
- * @param {User} user - The authenticated user object.
- * @returns {string} Display name or email local-part; empty string if none.
- */
+// Build a base string to derive initials from (name > email local-part)
 function getUserBase(user) {
   const name = (user.displayName || "").trim();
   if (name) return name;
@@ -79,52 +56,31 @@ function getUserBase(user) {
   return email.split("@")[0] || "";
 }
 
-/**
- * Split a base string into alphanumeric name parts (Unicode-aware).
- * @param {string} base - Source string for name parsing.
- * @returns {string[]} Non-empty parts.
- */
+// Split a base string into alphanumeric name parts (Unicode-aware)
 function nameParts(base) {
   return base.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 }
 
-/**
- * Compute initials from name parts (first letters of first two parts).
- * @param {string[]} parts - Parsed name parts.
- * @returns {string} Uppercased initials or empty string.
- */
+// Compute initials from name parts (first letters of first two parts)
 function initialsFromParts(parts) {
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   if (parts.length === 1) return parts[0][0].toUpperCase();
   return "";
 }
 
-/**
- * Clear the header UI and remove any cached value.
- * @param {HTMLElement} el - Header target element.
- * @returns {void}
- */
+// Clear the header UI and remove any cached value
 function clearHeader(el) {
   localStorage.removeItem(HEADER_KEY);
   el.textContent = "";
   el.style.fontSize = "";
 }
 
-/**
- * Determine font size for the initials.
- * @param {string} initials - Computed initials.
- * @returns {string} CSS font-size value.
- */
+// Determine font size for the initials
 function fontSizeForInitials(initials) {
   return initials.length === 2 ? "22px" : "30px";
 }
 
-/**
- * Apply initials to the header element and cache them.
- * @param {HTMLElement} el - Header target element.
- * @param {string} initials - Computed initials to display.
- * @returns {void}
- */
+// Apply initials to the header element and cache them
 function applyHeader(el, initials) {
   const prevText = el.textContent || "";
 
@@ -139,12 +95,7 @@ function applyHeader(el, initials) {
 }
 
 
-/**
- * Update the header with the user's initials (or clear if not derivable).
- * Side effects: touches DOM and localStorage.
- * @param {User|null|undefined} user - Current user.
- * @returns {void}
- */
+// Update the header with the user's initials (or clear if not derivable)
 window.updateUserInitials = function (user) {
   if (!user) return;
   const el = getHeaderEl();
@@ -155,10 +106,7 @@ window.updateUserInitials = function (user) {
   applyHeader(el, initials);
 };
 
-/**
- * Clear cached header initials and hide the text visually.
- * @returns {void}
- */
+// Clear cached header initials and hide the text visually
 window.clearHeaderTextCache = function () {
   localStorage.removeItem("headerTextCache");
   const el = $("person-icon-header-text");
@@ -169,11 +117,7 @@ window.clearHeaderTextCache = function () {
   }
 };
 
-/**
- * Toggle header UI sections based on auth state.
- * @param {boolean} isLoggedIn
- * @returns {void}
- */
+// Toggle header UI sections based on auth state
 function setHeaderUIForAuth(isLoggedIn) {
   const headerMenu = document.querySelector("[data-role='header-menu']") || document.querySelector("#header-menu") || document.querySelector("#person-icon-header");
   const headerLogin = document.querySelector("[data-role='header-login']") || document.querySelector("#header-login");
@@ -184,44 +128,28 @@ function setHeaderUIForAuth(isLoggedIn) {
 const FIREBASE_MODULE_PATH = "./scripts/firebase.js";
 const REDIRECT = "index.html";
 
-/**
- * Determine whether the current page is public (no auth required).
- * @returns {boolean}
- */
+// Determine whether the current page is public (no auth required)
 function isPublicPage() {
   const p = location.pathname.replace(/\/+$/, "").toLowerCase();
   return /(?:^|\/)(index|privacy-policy|legal-notice|help)(?:\.html)?$/.test(p) || p === "";
 }
 
-/** @typedef {{ displayName?: string, email?: string }} User */
+// User type definition
 
-/** Query single element helper. */
-/// @param {string} sel
-/// @returns {Element|null}
+// Query single element helper
 function qs(sel) { return document.querySelector(sel); }
 
-/**
- * Get the header element that holds the initials.
- * @returns {HTMLElement|null}
- */
+// Get the header element that holds the initials
 function getInitialsEl() {
   return document.getElementById("person-icon-header-text");
 }
 
-/**
- * Toggle .d-none on an element.
- * @param {Element|null} el
- * @param {boolean} hidden
- * @returns {void}
- */
+// Toggle .d-none on an element
 function toggleHidden(el, hidden) {
   el?.classList.toggle("d-none", hidden);
 }
 
-/**
- * Show navigation for authenticated users.
- * @returns {void}
- */
+// Show navigation for authenticated users
 function showAuthedNav() {
   toggleHidden(qs(".nav"), false);
   toggleHidden(qs(".nav-box"), false);
@@ -229,10 +157,7 @@ function showAuthedNav() {
   toggleHidden(qs(".nav-login-box-mobile"), true);
 }
 
-/**
- * Show navigation for anonymous users.
- * @returns {void}
- */
+// Show navigation for anonymous users
 function showAnonNav() {
   toggleHidden(qs(".nav"), true);
   toggleHidden(qs(".nav-box"), true);
@@ -240,11 +165,7 @@ function showAnonNav() {
   toggleHidden(qs(".nav-login-box-mobile"), false);
 }
 
-/**
- * Clear initials UI (and leave cache clearing to external helper).
- * @param {HTMLElement|null} el
- * @returns {void}
- */
+// Clear initials UI (and leave cache clearing to external helper)
 function resetInitials(el) {
   if (!el) return;
   el.textContent = "";
@@ -252,21 +173,14 @@ function resetInitials(el) {
   el.style.opacity = "0";
 }
 
-/**
- * Redirect to index if the page is not public.
- * @returns {void}
- */
+// Redirect to index if the page is not public
 function redirectIfNotPublic() {
   if (typeof isPublicPage === "function" && !isPublicPage()) {
     location.replace("index.html");
   }
 }
 
-/**
- * Handle Firebase auth state changes and update UI.
- * @param {User|null} user
- * @returns {void}
- */
+// Handle Firebase auth state changes and update UI
 function handleAuthChange(user) {
   const el = getInitialsEl();
   if (user) {
@@ -281,10 +195,7 @@ function handleAuthChange(user) {
   redirectIfNotPublic();
 }
 
-/**
- * Initialize Firebase Auth listener and wire the UI.
- * @returns {Promise<void>}
- */
+// Initialize Firebase Auth listener and wire the UI
 async function initAuthUI() {
   try {
     const [{ auth }, { onAuthStateChanged }] = await Promise.all([
@@ -298,32 +209,22 @@ async function initAuthUI() {
   }
 }
 
-// Kick off on load (kept as IIFE like your original)
+
 (async () => { await initAuthUI(); })();
 
 
-/**
- * Check if current page is index.html.
- * @returns {boolean}
- */
+// Check if current page is index.html
 function isIndexPage() {
   const p = location.pathname.toLowerCase();
   return p === "/" || p.endsWith("/index.html");
 }
 
-/**
- * Get the header initials element.
- * @returns {HTMLElement|null}
- */
+// Get the header initials element
 function getHeaderEl() {
   return document.getElementById("person-icon-header-text");
 }
 
-/**
- * Handle UI when user is authenticated.
- * @param {any} user
- * @returns {void}
- */
+// Handle UI when user is authenticated
 function onUserAuthenticated(user) {
   applyHeaderNavByAuth?.(user);
   window.updateUserInitials?.(user);
@@ -331,10 +232,7 @@ function onUserAuthenticated(user) {
   if (el) el.style.opacity = "1";
 }
 
-/**
- * Handle UI when no user is authenticated.
- * @returns {void}
- */
+// Handle UI when no user is authenticated
 function onUserUnauthenticated() {
   applyHeaderNavByAuth?.(null);
   localStorage.removeItem("headerTextCache");
@@ -347,11 +245,7 @@ function onUserUnauthenticated() {
   if (!isPublicPage()) location.replace("index.html");
 }
 
-/**
- * onAuthStateChanged callback wrapper.
- * @param {any|null} user
- * @returns {void}
- */
+// onAuthStateChanged callback wrapper
 function handleAuthStateChange(user) {
   if (user) {
     onUserAuthenticated(user);
@@ -360,10 +254,7 @@ function handleAuthStateChange(user) {
   onUserUnauthenticated();
 }
 
-/**
- * Initialize auth state listener to apply header nav state.
- * @returns {void}
- */
+// Initialize auth state listener to apply header nav state
 (async () => {
   try {
     const [{ auth }, { onAuthStateChanged }] = await Promise.all([
@@ -377,10 +268,7 @@ function handleAuthStateChange(user) {
 })();
 
 
-/**
- * Sign out the current user and redirect to index.
- * @returns {Promise<void>}
- */
+// Sign out the current user and redirect to index
 async function doLogout() {
   if (window.__loggingOut) return;
   window.__loggingOut = true;
@@ -397,10 +285,7 @@ async function doLogout() {
   }
 }
 
-/**
- * Attach a global click handler to trigger logout links with data-logout.
- * @returns {void}
- */
+// Attach a global click handler to trigger logout links with data-logout
 function attachLogoutListener() {
   if (window.__logoutListenerAttached) return; // Guard
   window.__logoutListenerAttached = true;
@@ -414,11 +299,7 @@ function attachLogoutListener() {
 attachLogoutListener();
 
 
-/**
- * Show/hide navigation UI depending on authentication.
- * @param {unknown} user
- * @returns {void}
- */
+// Show/hide navigation UI depending on authentication
 function applyHeaderNavByAuth(user) {
   const showNav = !!user;
   const nav = document.querySelector(".nav");
