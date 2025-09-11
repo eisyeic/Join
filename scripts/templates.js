@@ -189,15 +189,7 @@ function getAddtaskTemplate() {
               alt="Arrow Down Icon" />
           </div>
           <div id="contact-list-box" class="contact-list-box d-none">
-            <!-- contacts template -->
-
-            <li id="">
-              <div>
-                <div class="contact-initial">AS</div>
-                Anja Schulze
-              </div>
-              <img class="contact-initials-checkbox" src="./assets/icons/add_task/check_default.svg" alt="Check Box" />
-            </li>
+            <!-- contacts will be loaded dynamically -->
           </div>
           <!-- initials under select contact-box -->
           <div id="contact-initials" class="contact-initials d-none"></div>
@@ -277,7 +269,7 @@ function renderSubtasks() {
 function createContactListItemTemplate(contact, id) {
   return `
     <div>
-      <div class="contact-initial" style="background-image: url(./assets/icons/contact/color${contact.colorIndex}.svg)">
+      <div class="contact-initial" style="background-image: url(./assets/general_elements/icons/color${contact.colorIndex}.svg)">
         ${contact.initials}
       </div>
       ${contact.name}

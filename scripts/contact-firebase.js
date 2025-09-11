@@ -32,7 +32,7 @@ let loadedContacts = {};
 
 // Prepare the contacts container; show empty state if no data
 function initializeContactContainer(data) {
-  const box = $("all-contacts");
+  const box = document.getElementById("all-contacts");
   box.innerHTML = "";
   if (!data) {
     box.innerHTML = `<div class="no-contacts">No Contacts</div>`;
@@ -102,21 +102,21 @@ function showAllData() {
 
 // Collect new-contact form values
 function getNewContactData() {
-  const name = $("name-new-contact").value || "";
+  const name = document.getElementById("name-new-contact")?.value || "";
   return {
     name,
-    email: $("email-new-contact").value || "",
-    phone: $("phone-new-contact").value || "",
+    email: document.getElementById("email-new-contact")?.value || "",
+    phone: document.getElementById("phone-new-contact")?.value || "",
     colorIndex: window.colorIndex,
-    initials: getInitials(name), // external helper
+    initials: window.getInitials?.(name) || "",
   };
 }
 
 // Handle successful save: toggle UI status and refresh list
 function handleSaveSuccess(data) {
-  const el = $("check-status-add-contact");
+  const el = document.getElementById("check-status-add-contact");
   if (el) {
-    toggleAddContact(); // external: close modal
+    if (window.toggleAddContact) window.toggleAddContact();
     el.classList.remove("d-none");
     setTimeout(() => el.classList.add("d-none"), 4000);
   }

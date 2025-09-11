@@ -74,7 +74,7 @@ function renderContactsTo(container, contacts){
     const idx = Number.isFinite(c?.colorIndex)?c.colorIndex:0;
     const initials = c?.initials||"";
     const name = c?.name||initials;
-    return `<div class="member"><div class="initial-circle" style="background-image:url(../assets/icons/contact/color${idx}.svg)">${initials}</div><span>${name}</span></div>`;
+    return `<div class="member"><div class="initial-circle" style="background-image:url(./assets/general_elements/icons/color${idx}.svg)">${initials}</div><span>${name}</span></div>`;
   }).join("");
 }
 

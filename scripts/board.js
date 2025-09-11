@@ -176,10 +176,10 @@ export function renderAssignedInitials(contacts = []) {
     if (hasOverflow && idx === maxShown - 1) {
       return `<div class="initial-circle ${pos} initial-circle--more" title="+${overflowCount}">+${overflowCount}</div>`;
     }
-    const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
+    const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 1;
     const initials = c?.initials || "";
     const title = c?.name || initials;
-    return `<div class="initial-circle ${pos}" style="background-image: url(../assets/icons/contact/color${colorIdx}.svg)" title="${title}">${initials}</div>`;
+    return `<div class="initial-circle ${pos}" style="background-image: url(./assets/general_elements/icons/color${colorIdx}.svg)" title="${title}">${initials}</div>`;
   }).join("");
 }
 
