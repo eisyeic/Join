@@ -1,32 +1,9 @@
 // Current contact object
 let currentContact = {};
 
-// Build a contact list item (compact row) as HTML string
-function getContactPerson(key, id) {
-  let savedColorIndex = key.colorIndex;
-  if (!savedColorIndex) {
-    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
-  }
-  const initials = key.initials || getInitials(key.name);
-  return /*html*/ `
-        <div class="contact-placeholder">
-            <img src="./assets/contacts/img/Vector 10.svg" />
-        </div>
-        <div class="contact-person" onclick="showContactDetails('${key.name}', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
-            <div class="contact-person-icon">
-                <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
-                <p>${initials}</p>
-            </div>
-            <div class="contact-person-name">
-                <h5>${key.name}</h5>
-                <a>${key.email}</a>
-            </div>
-        </div>`;
-}
-
 // Render the desktop contact details view into the given container
 function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
-  detailSection.innerHTML = /*html*/ `
+  detailSection.innerHTML = `
         <div class="contact-single-person-content-head">
             <div class="contact-person-icon-big">
                 <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
@@ -58,7 +35,7 @@ function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
 // Render the mobile contact details layout into the given container
 function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = ``;
-  detailSection.innerHTML = /*html*/ `
+  detailSection.innerHTML = `
     <div class="contact-single-person-content-mobile-headline">
         <h5>Contact Information</h5>
         <a class="help-a-tag-back-button" onclick="detailsMobileBack()">
@@ -100,7 +77,7 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
 
 // Render the Task To-do summary tile for mobile
 function getMobileTaskTodo() {
-  $("mobile-task-to-do").innerHTML = /*html*/ `
+  $("mobile-task-to-do").innerHTML = `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
             <div class="task-tile-todo-content">
               <div class="task-tile-icon-container">
@@ -117,7 +94,7 @@ function getMobileTaskTodo() {
 
 // Render the Task on Board summary tile for mobile
 function getMobileTaskOnBoard() {
-  $("mobile-task-on-board").innerHTML = /*html*/ `
+  $("mobile-task-on-board").innerHTML = `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
             <div class="task-tile-board-overview-content">
               <div class="task-tile-icon-container">
@@ -134,7 +111,7 @@ function getMobileTaskOnBoard() {
 
 // Build a standardized inline error message HTML
 function getErrorMessage(message) {
-  return /*html*/ `<p class="error-message">${message}</p>`;
+  return `<p class="error-message">${message}</p>`;
 }
 
 // Return the full Add-Task form markup
@@ -230,41 +207,6 @@ function getAddtaskTemplate() {
       `;
 }
 
-// Render the editable subtasks list (titles only)
-function renderSubtasks() {
-  const normalized = (
-    window.subtasks || typeof subtasks !== "undefined"
-      ? window.subtasks || subtasks
-      : []
-  )
-    .map((st) => (typeof st === "string" ? st : st && st.name ? st.name : ""))
-    .filter(Boolean);
-
-  try {
-    subtasks = normalized;
-  } catch (_) {}
-  window.subtasks = normalized;
-
-  $("subtask-list").innerHTML = normalized
-    .map(
-      (subtask, index) => `
-      <li class="subtask-item" data-index="${index}">
-        <span class="subtask-text">${subtask}</span>
-        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
-        <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
-          <div class="vertical-spacer first-spacer"></div>
-          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-          <div class="vertical-spacer second-spacer d-none"></div>
-          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
-        </div>
-      </li>`
-    )
-    .join("");
-  addEditEvents();
-  deleteEvent();
-}
-
 // Build the contact dropdown option template used in Assigned to
 function createContactListItemTemplate(contact, id) {
   return `
@@ -310,3 +252,12 @@ if (typeof window !== "undefined") {
     }
   }
 })();
+
+
+
+
+
+
+
+
+
