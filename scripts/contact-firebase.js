@@ -77,8 +77,25 @@ function renderSingleContact(id, contact, container, currentLetter) {
 function renderContactList(data, container) {
   const entries = getSortedContacts(data);
   const currentLetter = { value: "" };
+  const usedColors = new Set();
+  
   entries.forEach(([id, c], i) => {
-    if (!c.colorIndex) c.colorIndex = (i % 15) + 1;
+    if (!c.colorIndex) {
+      // Find next available color
+      let colorIndex = 1;
+      while (usedColors.has(colorIndex) && colorIndex <= 15) {
+        colorIndex++;
+      }
+      if (colorIndex > 15) colorIndex = (i % 15) + 1;
+      c.colorIndex = colorIndex;
+      
+      // Save color to Firebase
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
+        .then(({ update, ref }) => {
+          update(ref(db, `contacts/${id}`), { colorIndex });
+        });
+    }
+    usedColors.add(c.colorIndex);
     renderSingleContact(id, c, container, currentLetter);
   });
 }
@@ -144,10 +161,23 @@ window.deleteContact = async () => {
   }
 };
 
+// Get next available color index
+function getNextColorIndex() {
+  const usedColors = new Set();
+  Object.values(loadedContacts).forEach(contact => {
+    if (contact.colorIndex) usedColors.add(contact.colorIndex);
+  });
+  
+  for (let i = 1; i <= 15; i++) {
+    if (!usedColors.has(i)) return i;
+  }
+  return Math.floor(Math.random() * 15) + 1;
+}
+
 // Validate and save a new contact
 window.dataSave = () => {
   if (!validateAddContactForm()) return; // external validator
-  window.colorIndex = (window.colorIndex % 15) + 1;
+  window.colorIndex = getNextColorIndex();
   saveToFirebase(getNewContactData());
 };
 
