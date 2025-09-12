@@ -1,0 +1,71 @@
+/* Native Date Picker - komplett versteckt */
+#datepicker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Verstecke alle nativen Date-Picker Elemente */
+#datepicker::-webkit-calendar-picker-indicator,
+#datepicker::-webkit-inner-spin-button,
+#datepicker::-webkit-outer-spin-button,
+#datepicker::-webkit-datetime-edit {
+  display: none;
+  opacity: 0;
+}
+
+/* Custom Date Display */
+.date-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% - 30px);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: #a8a8a8;
+  font-size: 19px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.date-display {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% - 30px);
+  height: 100%;
+  display: none;
+  align-items: center;
+  color: #000;
+  font-size: 19px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.date-input.has-value .date-placeholder {
+  display: none;
+}
+
+.date-input.has-value .date-display {
+  display: flex;
+}
+
+.date-input {
+  position: relative;
+  cursor: pointer;
+}
+
+.date-input img {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: none;
+}

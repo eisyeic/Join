@@ -11,23 +11,62 @@ window.SubtaskIO = window.SubtaskIO || {
   rerender() { renderSubtasks(); addEditEvents(); }
 };
 
-// Initialize flatpickr on #datepicker
-let picker = flatpickr("#datepicker", {
-  minDate: "today",
-  dateFormat: "d/m/Y",
-  disableMobile: true,
-  onChange(selectedDates, dateStr) {
-    if (selectedDates && selectedDates.length > 0 && dateStr) {
-      $("datepicker-wrapper").style.borderColor = "";
-      $("due-date-error").innerHTML = "";
+// Setup native date picker
+function setupDatePicker() {
+  const datePicker = document.getElementById('datepicker');
+  const wrapper = document.getElementById('datepicker-wrapper');
+  const display = document.getElementById('date-display');
+  
+  if (datePicker && wrapper && display) {
+    const today = new Date().toISOString().split('T')[0];
+    datePicker.min = today;
+    
+    function updateDisplay() {
+      if (datePicker.value) {
+        const date = new Date(datePicker.value + 'T00:00:00');
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        display.textContent = `${day}/${month}/${year}`;
+        wrapper.classList.add('has-value');
+        $("datepicker-wrapper").style.borderColor = "";
+        $("due-date-error").innerHTML = "";
+      } else {
+        wrapper.classList.remove('has-value');
+      }
     }
-  },
-});
+    
+    datePicker.addEventListener('change', updateDisplay);
+    datePicker.addEventListener('input', updateDisplay);
+    updateDisplay();
+  }
+}
+
+// Initialize date picker when template is ready
+document.addEventListener('addtask:template-ready', setupDatePicker);
+setupDatePicker(); // Also try immediately in case template is already loaded
 
 // Open the native datepicker by clicking the wrapper
-$("datepicker-wrapper").addEventListener("click", () => {
-  document.querySelector("#datepicker")?.click();
-});
+function setupDatePickerWrapper() {
+  const wrapper = $("datepicker-wrapper");
+  if (wrapper) {
+    wrapper.addEventListener("click", () => {
+      const picker = document.querySelector("#datepicker");
+      if (picker) {
+        if (picker.showPicker) {
+          picker.showPicker();
+        } else {
+          picker.focus();
+          picker.click();
+        }
+      }
+    });
+  }
+}
+
+// Setup wrapper click handler when template is ready
+document.addEventListener('addtask:template-ready', setupDatePickerWrapper);
+setupDatePickerWrapper(); // Also try immediately
 
 // Priority buttons: set active state and update selectedPriority
 document.querySelectorAll(".priority-button").forEach((button) => {
@@ -162,7 +201,12 @@ $("cancel-button").addEventListener("click", () => {
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
   $("addtask-textarea").value = "";
-  try { picker.clear(); } catch { $("datepicker").value = ""; }
+  const datePicker = $("datepicker");
+  const wrapper = $("datepicker-wrapper");
+  if (datePicker) {
+    datePicker.value = "";
+    wrapper?.classList.remove('has-value');
+  }
   $("datepicker-wrapper").style.borderColor = "";
   $("due-date-error").innerHTML = "";
   $("category-select").querySelector("span").textContent = "Select task category";
