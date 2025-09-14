@@ -1,4 +1,19 @@
-// Close the category dropdown within a given container
+/**
+ * Initialize all dropdown outside-click handlers for add/edit task overlays.
+ * @returns {void}
+ */
+(function initDropdownHandlers() {
+  setupDropdownOutsideCloseIn($('overlay-add-task'));
+  setupDropdownOutsideCloseIn($('task-overlay'));
+  const editWrapper = document.querySelector('#task-overlay .edit-addtask-wrapper');
+  if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
+})();
+
+/**
+ * Close the category dropdown within a given container.
+ * @param {HTMLElement} scope - The container element that holds the category dropdown and icon.
+ * @returns {void}
+ */
 function closeCategoryDropdown(scope) {
   const panel = scope.querySelector('#category-selection');
   const icon = scope.querySelector('#category-icon');
@@ -9,7 +24,11 @@ function closeCategoryDropdown(scope) {
   }
 }
 
-// Close the assigned contacts dropdown within a given container and update UI
+/**
+ * Close the assigned contacts dropdown within a given container and update the initials UI.
+ * @param {HTMLElement} scope - The container element that holds the assigned contacts dropdown and initials box.
+ * @returns {void}
+ */
 function closeAssignedDropdown(scope) {
   const list = scope.querySelector('#contact-list-box');
   const icon = scope.querySelector('#assigned-icon');
@@ -26,7 +45,12 @@ function closeAssignedDropdown(scope) {
   }
 }
 
-// Attach a capture-phase outside-click handler for Category & Assigned inside a container
+/**
+ * Attach an outside-click capture handler to close category and assigned dropdowns within a container.
+ * Ensures only one handler is attached per container.
+ * @param {HTMLElement} container - The container element (e.g., add-task overlay, edit overlay).
+ * @returns {void}
+ */
 function setupDropdownOutsideCloseIn(container) {
   if (!container || container.dataset.outsideCloserAttached === '1') return;
   const onClickCapture = (e) => {
@@ -41,7 +65,14 @@ function setupDropdownOutsideCloseIn(container) {
   container.dataset.outsideCloserAttached = '1';
 }
 
-// Handle subtask outside-click: save if input has value (add mode), then close UI
+/**
+ * Handle clicks outside the subtask input zone.
+ * - In add mode, saves a subtask if input has value.
+ * - Always resets the subtask input UI.
+ * @param {MouseEvent} event - The click event.
+ * @param {boolean} [editMode=false] - True if in edit mode; prevents auto-add.
+ * @returns {void}
+ */
 function handleSubtaskClickOutside(event, editMode = false) {
   const scope = event.currentTarget || document;
   const subZone = scope.querySelector('.subtask-select');
@@ -57,15 +88,3 @@ function handleSubtaskClickOutside(event, editMode = false) {
   if (plus) plus.classList.remove('d-none');
   if (input) input.blur();
 }
-
-
-// Initialize all dropdown outside-click handlers
-function initDropdownHandlers() {
-  setupDropdownOutsideCloseIn($('overlay-add-task'));
-  setupDropdownOutsideCloseIn($('task-overlay'));
-  const editWrapper = document.querySelector('#task-overlay .edit-addtask-wrapper');
-  if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
-}
-
-// Initialize on page load
-initDropdownHandlers();

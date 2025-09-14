@@ -1,51 +1,99 @@
+/**
+ * @file Add Task – UI logic for date picker, priorities, categories, and subtasks.
+ * Refactored into small, single-responsibility functions (≤14 lines) with JSDoc.
+ *
+ * @typedef {Object} SubtaskItem
+ * @property {string} name
+ */
+window.renderSubtasks = renderSubtasks;
+
+/**
+ * Global event wiring for Add-Task UI (template readiness & document-level pointer handling).
+ */
+document.addEventListener('pointerdown', onDocumentPointerDown, true);
+
+// Initialize date picker when template is ready
+document.addEventListener('addtask:template-ready', setupDatePicker());
+document.addEventListener('addtask:template-ready', setupDatePickerWrapper());
+
+
 // Global variables
 window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
 let subtasks = window.subtasks;
 let selectedPriority = "medium";
 const contactInitialsBox = document.querySelector(".contact-initials"); 
-const MAX_VISIBLE_INITIALS = 3;
 
+/**
+ * @typedef {Object} SubtaskIOAPI
+ * @property {(index:number, value:string) => void} set - Set a subtask's value by index.
+ * @property {(index:number) => void} remove - Remove a subtask by index.
+ * @property {() => void} rerender - Re-render the subtask list and rebind handlers.
+ */
+/** @type {SubtaskIOAPI} */
 window.SubtaskIO = window.SubtaskIO || {
   set(index, value) { subtasks[index] = value; },
   remove(index) { subtasks.splice(index, 1); },
   rerender() { renderSubtasks(); addEditEvents(); }
 };
 
-// Setup native date picker
-function setupDatePicker() {
-  const datePicker = document.getElementById('datepicker');
-  const wrapper = document.getElementById('datepicker-wrapper');
-  const display = document.getElementById('date-display');
-  
-  if (datePicker && wrapper && display) {
-    const today = new Date().toISOString().split('T')[0];
-    datePicker.min = today;
-    
-    function updateDisplay() {
-      if (datePicker.value) {
-        const date = new Date(datePicker.value + 'T00:00:00');
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        display.textContent = `${day}/${month}/${year}`;
-        wrapper.classList.add('has-value');
-        $("datepicker-wrapper").style.borderColor = "";
-        $("due-date-error").innerHTML = "";
-      } else {
-        wrapper.classList.remove('has-value');
-      }
-    }
-    
-    datePicker.addEventListener('change', updateDisplay);
-    datePicker.addEventListener('input', updateDisplay);
-    updateDisplay();
+/**
+ * Apply min attribute (today) to the native date input.
+ * @param {HTMLInputElement} datePicker
+ * @returns {void}
+ */
+function setDatePickerMin(datePicker) {
+  const today = new Date().toISOString().split('T')[0];
+  datePicker.min = today;
+}
+
+/**
+ * Format a YYYY-MM-DD into DD/MM/YYYY for UI display.
+ * @param {string} isoDate
+ * @returns {string}
+ */
+function formatDateForDisplay(isoDate) {
+  const d = new Date(isoDate + 'T00:00:00');
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  return `${day}/${month}/${d.getFullYear()}`;
+}
+
+/**
+ * Update the date display and wrapper styles based on picker value.
+ * @param {HTMLInputElement} datePicker
+ * @param {HTMLElement} wrapper
+ * @param {HTMLElement} display
+ * @returns {void}
+ */
+function updateDateDisplay(datePicker, wrapper, display) {
+  if (datePicker.value) {
+    display.textContent = formatDateForDisplay(datePicker.value);
+    wrapper.classList.add('has-value');
+    $("datepicker-wrapper").style.borderColor = "";
+    $("due-date-error").innerHTML = "";
+  } else {
+    wrapper.classList.remove('has-value');
   }
 }
 
-// Initialize date picker when template is ready
-document.addEventListener('addtask:template-ready', setupDatePicker);
-setupDatePicker(); // Also try immediately in case template is already loaded
+/**
+ * Bind change/input listeners to a date picker to keep UI in sync.
+ * @param {HTMLInputElement} datePicker
+ * @param {HTMLElement} wrapper
+ * @param {HTMLElement} display
+ * @returns {void}
+ */
+function bindDatePickerEvents(datePicker, wrapper, display) {
+  const sync = () => updateDateDisplay(datePicker, wrapper, display);
+  datePicker.addEventListener('change', sync);
+  datePicker.addEventListener('input', sync);
+  sync();
+}
 
+/**
+ * Wire the wrapper so clicking it opens the native datepicker (or focuses it as fallback).
+ * @returns {void}
+ */
 // Open the native datepicker by clicking the wrapper
 function setupDatePickerWrapper() {
   const wrapper = $("datepicker-wrapper");
@@ -64,10 +112,6 @@ function setupDatePickerWrapper() {
   }
 }
 
-// Setup wrapper click handler when template is ready
-document.addEventListener('addtask:template-ready', setupDatePickerWrapper);
-setupDatePickerWrapper(); // Also try immediately
-
 // Priority buttons: set active state and update selectedPriority
 document.querySelectorAll(".priority-button").forEach((button) => {
   button.addEventListener("click", () => {
@@ -79,37 +123,16 @@ document.querySelectorAll(".priority-button").forEach((button) => {
   });
 });
 
-// Reset the entire Add-Task form priority to medium
+/**
+ * Reset priority buttons to default (medium) and active state.
+ * @returns {void}
+ */
 function resetPrioritySelection() {
   document.querySelectorAll(".priority-button").forEach((btn) => btn.classList.remove("active"));
   selectedPriority = "medium";
   const mediumButton = document.querySelector(".medium-button");
   if (mediumButton) mediumButton.classList.add("active");
 }
-
-function applyAssignedInitialsCap() {
-  capAssignedInitialsIn(contactInitialsBox, MAX_VISIBLE_INITIALS);
-}
-
-window.applyAssignedInitialsCap = applyAssignedInitialsCap;
-
-$("assigned-select-box").addEventListener("click", () => {
-  $("contact-list-box").classList.toggle("d-none");
-  const isListVisible = !$("contact-list-box").classList.contains("d-none");
-  $("assigned-icon").classList.toggle("arrow-up", isListVisible);
-  $("assigned-icon").classList.toggle("arrow-down", !isListVisible);
-  if (isListVisible) {
-    contactInitialsBox?.classList.add("d-none");
-  } else {
-    const selectedContacts = $("contact-list-box").querySelectorAll("li.selected");
-    if (selectedContacts.length > 0) {
-      contactInitialsBox?.classList.remove("d-none");
-    } else {
-      contactInitialsBox?.classList.add("d-none");
-    }
-    applyAssignedInitialsCap();
-  }
-});
 
 // Handle category option clicks and update the select label
 $("category-selection").querySelectorAll("li").forEach((item) => {
@@ -129,35 +152,6 @@ document.addEventListener("click", (event) => {
   handleCategoryClickOutside(event);
   handleAssignedClickOutside(event);
 });
-
-// Close category dropdown if the click was outside category elements
-function handleCategoryClickOutside(event) {
-  const target = event.target;
-  const isInsideCategory = $("category-select").contains(target) || $("category-selection").contains(target);
-  if (!isInsideCategory) {
-    $("category-selection").classList.add("d-none");
-    $("category-icon").classList.remove("arrow-up");
-    $("category-icon").classList.add("arrow-down");
-  }
-}
-
-// Close assigned contacts dropdown if the click was outside assigned elements
-function handleAssignedClickOutside(event) {
-  const target = event.target;
-  const isInsideAssigned = $("assigned-select-box").contains(target) || $("contact-list-box").contains(target);
-  if (!isInsideAssigned) {
-    $("contact-list-box").classList.add("d-none");
-    applyAssignedInitialsCap();
-    const selectedContacts = document.querySelectorAll("#contact-list-box li.selected");
-    if (selectedContacts.length > 0) {
-      contactInitialsBox?.classList.remove("d-none");
-    } else {
-      contactInitialsBox?.classList.add("d-none");
-    }
-    $("assigned-icon").classList.remove("arrow-up");
-    $("assigned-icon").classList.add("arrow-down");
-  }
-}
 
 // Toggle the category dropdown when clicking the select
 $("category-select").addEventListener("click", () => {
@@ -224,18 +218,10 @@ $("cancel-button").addEventListener("click", () => {
   resetPrioritySelection();
 });
 
-// Remove all selected contacts and clear the initials box
-function clearAssignedContacts() {
-  document.querySelectorAll("#contact-list-box li.selected").forEach((li) => {
-    li.classList.remove("selected");
-    const checkboxIcon = li.querySelectorAll("img")[0];
-    if (checkboxIcon) checkboxIcon.src = "./assets/icons/add_task/check_default.svg";
-  });
-  contactInitialsBox?.classList.add("d-none");
-  if (contactInitialsBox) contactInitialsBox.innerHTML = "";
-}
-
-// Attach edit click listeners for all subtask edit icons
+/**
+ * Attach edit click listeners for all subtask edit icons.
+ * @returns {void}
+ */
 function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
     editBtn.addEventListener("click", () => enterEditMode(editBtn));
@@ -243,7 +229,11 @@ function addEditEvents() {
 }
 window.addEditEvents = addEditEvents;
 
-// Put a subtask item into edit mode and bind Enter-to-save
+/**
+ * Put a subtask item into edit mode and bind Enter-to-save.
+ * @param {HTMLElement} editBtn
+ * @returns {void}
+ */
 function enterEditMode(editBtn) {
   const item = editBtn.closest(".subtask-item");
   const input = item?.querySelector(".subtask-edit-input");
@@ -253,7 +243,12 @@ function enterEditMode(editBtn) {
 }
 window.enterEditMode = enterEditMode;
 
-// Reveal edit input fields of a subtask item and focus the input
+/**
+ * Reveal edit input fields for a subtask item and focus the input.
+ * @param {HTMLElement} item
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
 function showEditFields(item, input) {
   item.querySelector(".subtask-text")?.classList.add("d-none");
   input.classList.remove("d-none");
@@ -267,7 +262,12 @@ function showEditFields(item, input) {
   item.querySelector(".subtask-save-icon")?.classList.remove("d-none");
 }
 
-// Bind Enter key to save subtask edit
+/**
+ * Bind Enter key on the edit input to trigger save for the subtask.
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement} item
+ * @returns {void}
+ */
 function setupEnterKeyToSave(input, item) {
   const handler = (e) => {
     if (e.key === "Enter") {
@@ -304,56 +304,51 @@ $("sub-input").addEventListener("keydown", function (event) {
   renderSubtasks();
 });
 
-// Attach delete event listeners to subtask delete icons
-function deleteEvent() {
-  document.querySelectorAll(".subtask-delete-icon").forEach((deleteBtn) => {
-    deleteBtn.addEventListener("click", () => {
-      const item = deleteBtn.closest(".subtask-item");
-      if (!item) return;
-      const index = Number(item.getAttribute("data-index"));
-      if (Number.isFinite(index)) {
-        subtasks.splice(index, 1);
-        renderSubtasks();
-        addEditEvents();
-      }
-    });
-  });
+/**
+ * Read edit context from a save button inside a subtask item.
+ * @param {HTMLElement} saveBtn
+ * @returns {{ index:number|null, input: HTMLInputElement|null, item: HTMLElement|null }}
+ */
+function getEditContext(saveBtn) {
+  const item = saveBtn.closest('.subtask-item');
+  const input = item ? item.querySelector('.subtask-edit-input') : null;
+  const index = item ? Number(item.getAttribute('data-index')) : NaN;
+  return { index: Number.isFinite(index) ? index : null, input: /** @type {HTMLInputElement|null} */(input), item };
 }
 
-// Clear the new-subtask input via the clear (X) icon
-$("sub-clear").addEventListener("click", () => {
-  $("sub-input").value = "";
-  $("subtask-func-btn").classList.add("d-none");
-  $("subtask-plus-box").classList.remove("d-none");
-});
-
-// Provide a default suggestion on plus click if there are no subtasks yet
-$("sub-plus").addEventListener("click", () => {
-  if (subtasks.length === 0) {
-    $("sub-input").value = "Contact Form";
-    $("subtask-plus-box").classList.add("d-none");
-    $("subtask-func-btn").classList.remove("d-none");
-  }
-});
-
-// Persist an edited subtask triggered by clicking the save icon
-function saveEditedSubtask(saveBtn) {
-  const item = saveBtn.closest(".subtask-item");
-  if (!item) return;
-  const index = Number(item.getAttribute("data-index"));
-  const input = item.querySelector(".subtask-edit-input");
-  if (!Number.isFinite(index) || !input) return;
-  const newValue = input.value.trim();
-  if (!newValue) {
+/**
+ * Apply the edited value into the subtasks array (delete if empty).
+ * @param {number} index
+ * @param {string} value
+ * @returns {void}
+ */
+function applyEditedSubtask(index, value) {
+  const trimmed = value.trim();
+  if (!trimmed) {
     subtasks.splice(index, 1);
   } else {
-    subtasks[index] = newValue;
+    subtasks[index] = trimmed;
   }
+}
+
+/**
+ * Persist an edited subtask triggered by clicking the save icon.
+ * @param {HTMLElement} saveBtn
+ * @returns {void}
+ */
+function saveEditedSubtask(saveBtn) {
+  const { index, input } = getEditContext(saveBtn);
+  if (index === null || !input) return;
+  applyEditedSubtask(index, input.value);
   renderSubtasks();
   addEditEvents();
 }
 window.saveEditedSubtask = saveEditedSubtask;
 
+/**
+ * Delegated handler to save a subtask when its save icon is clicked.
+ * @returns {void}
+ */
 // Delegated save click for subtask items
 $("subtask-list").addEventListener("click", (event) => {
   if (event.target.classList?.contains("subtask-save-icon")) {
@@ -361,60 +356,65 @@ $("subtask-list").addEventListener("click", (event) => {
   }
 });
 
-// Render the editable subtasks list (titles only)
-function renderSubtasks() {
-  const normalized = (
-    window.subtasks || typeof subtasks !== "undefined"
-      ? window.subtasks || subtasks
-      : []
-  )
-    .map((st) => (typeof st === "string" ? st : st && st.name ? st.name : ""))
-    .filter(Boolean);
-
-  try {
-    subtasks = normalized;
-  } catch (_) {}
-  window.subtasks = normalized;
-
-  $("subtask-list").innerHTML = normalized
-    .map(
-      (subtask, index) => `
-      <li class="subtask-item" data-index="${index}">
-        <span class="subtask-text">${subtask}</span>
-        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
-        <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
-          <div class="vertical-spacer first-spacer"></div>
-          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-          <div class="vertical-spacer second-spacer d-none"></div>
-          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
-        </div>
-      </li>`
-    )
+/**
+ * Build the HTML for the subtask list.
+ * @param {string[]} items
+ * @returns {string}
+ */
+function buildSubtasksHTML(items) {
+  return items
+    .map((subtask, index) => (
+      `\n      <li class="subtask-item" data-index="${index}">\n        <span class="subtask-text">${subtask}</span>\n        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />\n        <div class="subtask-func-btn d-none">\n          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>\n          <div class="vertical-spacer first-spacer"></div>\n          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />\n          <div class="vertical-spacer second-spacer d-none"></div>\n          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />\n        </div>\n      </li>`
+    ))
     .join("");
+}
+
+/**
+ * Attach edit/delete handlers after rendering the list.
+ * @returns {void}
+ */
+function attachSubtaskHandlers() {
   addEditEvents();
   deleteEvent();
 }
-window.renderSubtasks = renderSubtasks;
 
-// Auto-save editing subtask when clicking outside its bounds
-document.addEventListener('pointerdown', (event) => {
-  const target = event.target;
+/**
+ * Commit edits of any subtask items currently in editing state when clicking outside.
+ * @param {EventTarget} target
+ * @returns {boolean} True if any edit was committed.
+ */
+function commitEditingSubtasksOutside(target) {
   const editingItems = document.querySelectorAll('.subtask-item.editing');
-  const hadEditing = editingItems.length > 0;
-  editingItems.forEach((subtaskItem) => {
-    if (!subtaskItem.contains(target)) {
-      const saveBtn = subtaskItem.querySelector('.subtask-save-icon');
-      if (saveBtn) window.saveEditedSubtask(saveBtn);
+  let committed = false;
+  editingItems.forEach((item) => {
+    if (!item.contains(target)) {
+      const saveBtn = item.querySelector('.subtask-save-icon');
+      if (saveBtn) { window.saveEditedSubtask(saveBtn); committed = true; }
     }
   });
-  if (!hadEditing) {
-    const subInput = document.getElementById('sub-input');
-    if (subInput && subInput.value.trim() && !subInput.contains(target)) {
-      const funcBox = document.getElementById('subtask-func-btn');
-      if (!funcBox || !funcBox.contains(target)) {
-        document.getElementById('sub-check')?.click();
-      }
-    }
-  }
-}, true);
+  return committed;
+}
+
+/**
+ * If the new-subtask input has text and click is outside input & controls, add the subtask.
+ * @param {EventTarget} target
+ * @returns {void}
+ */
+function autoAddNewSubtaskIfPending(target) {
+  const subInput = document.getElementById('sub-input');
+  if (!subInput || !subInput.value.trim()) return;
+  const funcBox = document.getElementById('subtask-func-btn');
+  const outside = !(subInput.contains(target) || (funcBox && funcBox.contains(target)));
+  if (outside) document.getElementById('sub-check')?.click();
+}
+
+/**
+ * Handle pointerdown at document level for subtask UX.
+ * @param {PointerEvent} event
+ * @returns {void}
+ */
+function onDocumentPointerDown(event) {
+  const target = event.target;
+  const hadEdits = commitEditingSubtasksOutside(target);
+  if (!hadEdits) autoAddNewSubtaskIfPending(target);
+}

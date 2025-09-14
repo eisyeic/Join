@@ -1,6 +1,4 @@
-// Auth UI logic: login/sign-up flows, password toggles, email validation, guest login, theme animation, and basic error rendering
 
-// Firebase Imports
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,7 +6,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { auth } from "./firebase.js";
 
-// Current UI mode: login or signup
 let currentMode = "login";
 
 
@@ -47,7 +44,6 @@ function setupResizeListener() {
   window.addEventListener("resize", updateSignUpBoxDisplay);
 }
 
-// Set the theme (background and logo) and adjust sign-up box display
 function setThemeWhite(isWhite) {
   $("layout").classList.toggle("bg-white", isWhite);
   $("layout").classList.toggle("bg-blue", !isWhite);
@@ -56,7 +52,6 @@ function setThemeWhite(isWhite) {
   updateSignUpBoxDisplay();
 }
 
-// Switch to the Sign Up view and reset related inputs/state
 function showSignUpForm() {
   currentMode = "signup";
   setThemeWhite(false);
@@ -70,7 +65,7 @@ function showSignUpForm() {
   initializePasswordFields("sign-up");
 }
 
-// Switch to the Login view and reset related inputs/state
+
 function showLoginForm() {
   currentMode = "login";
   setThemeWhite(true);
@@ -87,7 +82,7 @@ function showLoginForm() {
   initializePasswordFields("login");
 }
 
-// Update visibility of the top-right sign-up box and the mobile bottom box based on current mode and viewport width
+
 function updateSignUpBoxDisplay() {
   const topRight = $("sign-up-top-right-box");
   const bottomMobile = $("sign-up-bottom-box-mobile");
@@ -108,7 +103,7 @@ function updateSignUpBoxDisplay() {
 
 
 
-// Initialize password fields and their toggles for the given context
+
 function initializePasswordFields(context) {
   let fields = {
     login: [["login-password", "togglePassword"]],
@@ -126,7 +121,7 @@ function initializePasswordFields(context) {
   );
 }
 
-// Wire up a single password input with its visibility toggle and error box
+
 function setupPasswordToggle(inputId, toggleId, errorBox) {
   let input = $(inputId);
   let toggle = $(toggleId);
@@ -138,7 +133,6 @@ function setupPasswordToggle(inputId, toggleId, errorBox) {
   updatePasswordIcon(input, toggle, isVisible);
 }
 
-// Toggle password input type and icon
 function togglePasswordVisibility(input, toggle, visible) {
   if (!input.value) return;
   input.type = visible ? "text" : "password";

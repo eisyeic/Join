@@ -1,20 +1,35 @@
-// Switch overlay to edit mode and preload form
-function openEditInsideOverlay(task) {
+// Switch overlay to edit mode and preload form (accepts task object or taskId)
+function openEditInsideOverlay(taskOrId) {
   switchToEditView();
   moveFormIntoEdit();
+  attachEditDateInputHandlers();
+
+  if (typeof taskOrId === 'string') {
+    // Fetch the task by id then proceed
+    loadTaskById(taskOrId).then((task) => {
+      if (!task) return;
+      task.id = taskOrId;
+      proceedEditWithTask(task);
+    });
+  } else if (taskOrId && typeof taskOrId === 'object') {
+    proceedEditWithTask(taskOrId);
+  }
+}
+
+// Proceed to fill the edit form once a task object is available
+function proceedEditWithTask(task) {
+  attachEditDateInputHandlers();
   markEditingId(task);
   populateEditForm(task);
-  if (typeof window.applyAssignedInitialsCap === "function") {
+  if (typeof window.applyAssignedInitialsCap === 'function') {
     queueMicrotask(() => applyAssignedInitialsCap());
   }
   setTimeout(() => {
     populateEditForm(task);
-    if (typeof window.applyAssignedInitialsCap === "function") {
-      applyAssignedInitialsCap();
-    }
+    if (typeof window.applyAssignedInitialsCap === 'function') applyAssignedInitialsCap();
   }, 0);
   syncAssignedSelectionToList();
-  if (typeof window.addEditEvents === "function") window.addEditEvents();
+  if (typeof window.addEditEvents === 'function') window.addEditEvents();
 }
 
 
@@ -33,6 +48,68 @@ function moveFormIntoEdit() {
     document.querySelector(".edit-addtask .addtask-wrapper");
   const dst = document.querySelector(".edit-addtask");
   if (src && dst && src.parentElement !== dst) dst.replaceChildren(src);
+}
+
+// Attach focus/blur handlers to allow editing the date via native picker
+function attachEditDateInputHandlers() {
+  const input = /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
+  const wrapper = document.getElementById('datepicker-wrapper');
+  const display = document.getElementById('date-display');
+  const placeholder = document.getElementById('date-placeholder');
+  if (!input) return;
+  if (input.dataset.editHandlersBound === '1') return;
+
+  input.addEventListener('focus', () => {
+    // Switch to native picker and prefill as ISO if we currently have dd/mm/yyyy
+    const val = input.value.trim();
+    if (val && /^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
+      const [dd, mm, yyyy] = val.split('/');
+      input.value = `${yyyy}-${mm}-${dd}`; // ISO for date input
+    }
+    input.type = 'date';
+    // Ensure focus and open the native picker immediately on first click
+    input.focus();
+    if (typeof input.showPicker === 'function') {
+      // Some browsers require async to open reliably on first interaction
+      requestAnimationFrame(() => { try { input.showPicker(); } catch (_) {} });
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    const raw = input.value.trim();
+    let ddmmyyyy = '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      const [yyyy, mm, dd] = raw.split('-');
+      ddmmyyyy = `${dd}/${mm}/${yyyy}`;
+    } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+      ddmmyyyy = raw;
+    }
+
+    input.type = 'text';
+    input.value = ddmmyyyy;
+
+    if (ddmmyyyy) {
+      wrapper?.classList.add('has-value');
+      if (display) display.textContent = ddmmyyyy;
+      if (placeholder) placeholder.style.display = 'none';
+    } else {
+      wrapper?.classList.remove('has-value');
+      if (display) display.textContent = '';
+      if (placeholder) placeholder.style.display = '';
+    }
+  });
+
+  if (wrapper) {
+    wrapper.addEventListener('click', () => {
+      if (input.type !== 'date') input.type = 'date';
+      input.focus();
+      if (typeof input.showPicker === 'function') {
+        requestAnimationFrame(() => { try { input.showPicker(); } catch (_) {} });
+      }
+    });
+  }
+
+  input.dataset.editHandlersBound = '1';
 }
 
 // Store the editing task id on the wrapper dataset
@@ -74,18 +151,29 @@ function setTitleAndDescription(task) {
   if (descEl) /** @type {HTMLTextAreaElement} */ (descEl).value = task.description || "";
 }
 
-// Fill due date input (keeps dd/mm/yyyy if string)
+// Fill due date input (only dd/mm/yyyy supported)
 function setDueDateField(task) {
-  const dateEl = document.getElementById("datepicker");
+  const dateEl = /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
+  const wrapper = document.getElementById('datepicker-wrapper');
+  const display = document.getElementById('date-display');
+  const placeholder = document.getElementById('date-placeholder');
   if (!dateEl) return;
-  const d = task.dueDate ? new Date(task.dueDate) : null;
-  if (d && !Number.isNaN(d.getTime())) {
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yyyy = String(d.getFullYear());
-    /** @type {HTMLInputElement} */ (dateEl).value = `${dd}/${mm}/${yyyy}`;
+
+  const ddmmyyyy = task?.dueDate && /^\d{2}\/\d{2}\/\d{4}$/.test(task.dueDate)
+    ? task.dueDate
+    : '';
+
+  if (dateEl.type === 'date') dateEl.type = 'text';
+  dateEl.value = ddmmyyyy;
+
+  if (ddmmyyyy) {
+    wrapper?.classList.add('has-value');
+    if (display) display.textContent = ddmmyyyy;
+    if (placeholder) placeholder.style.display = 'none';
   } else {
-    /** @type {HTMLInputElement} */ (dateEl).value = task.dueDate || "";
+    wrapper?.classList.remove('has-value');
+    if (display) display.textContent = '';
+    if (placeholder) placeholder.style.display = '';
   }
 }
 
@@ -176,6 +264,20 @@ function syncAssignedSelectionToList() {
   });
 }
 
+// Load a task by id from Firebase Realtime Database
+async function loadTaskById(taskId) {
+  try {
+    const RTDB = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    const { app } = await import('./firebase.js');
+    const db = RTDB.getDatabase(app);
+    const snap = await RTDB.get(RTDB.ref(db, `tasks/${taskId}`));
+    return snap.exists() ? snap.val() : null;
+  } catch (e) {
+    console.error('Failed to load task', e);
+    return null;
+  }
+}
+
 // Remove a task and its category mirrors
 window.deleteTaskFromDatabase = async function(taskId) {
   if (!taskId) throw new Error("Missing taskId");
@@ -185,3 +287,8 @@ window.deleteTaskFromDatabase = async function(taskId) {
   await RTDB.remove(RTDB.ref(db, `tasks/${taskId}`));
 };
 
+(function ensureGlobalOpenEdit() {
+  if (typeof window.openEditInsideOverlay !== 'function' && typeof openEditInsideOverlay === 'function') {
+    window.openEditInsideOverlay = openEditInsideOverlay;
+  }
+})();

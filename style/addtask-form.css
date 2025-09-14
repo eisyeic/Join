@@ -11,6 +11,7 @@
 }
 
 .addtask-wrapper {
+  margin-left: 30px;
   top: 4px;
   position: relative;
   height: calc(100vh - 140px);

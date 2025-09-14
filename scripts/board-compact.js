@@ -1,3 +1,7 @@
+/**
+ * @file Board (compact) — renders columns, drag & drop, search, and placeholders.
+ * Functions are kept short (≤14 lines) and single-purpose, with JSDoc annotations.
+ */
 import {
   getDatabase,
   ref,
@@ -16,12 +20,23 @@ const columnMap = {
   done: "done-column",
 };
 
+/** Start the app when DOM is ready. */
+document.addEventListener("DOMContentLoaded", initBoard);
+
+/**
+ * Listen for auth changes and project user initials if available.
+ * @returns {void}
+ */
 function setupAuthListener() {
   onAuthStateChanged(auth, (user) => {
     if (window.updateUserInitials) window.updateUserInitials(user);
   });
 }
 
+/**
+ * Load tasks from Firebase and render them.
+ * @returns {void}
+ */
 function loadTasksFromFirebase() {
   const tasksRef = ref(db, "tasks");
   onValue(tasksRef, (snapshot) => {
@@ -30,27 +45,58 @@ function loadTasksFromFirebase() {
   });
 }
 
+/**
+ * Return task ids sorted by their movedAt value (ascending, fallback 0).
+ * @param {Record<string, any>} tasks
+ * @returns {string[]}
+ */
+function getSortedTaskIds(tasks) {
+  return Object.keys(tasks).sort((a, b) => (tasks[a].movedAt || 0) - (tasks[b].movedAt || 0));
+}
+
 function renderAllColumns(tasks) {
   clearAllColumns();
-  const sortedIds = Object.keys(tasks).sort((a, b) => (tasks[a].movedAt || 0) - (tasks[b].movedAt || 0));
-  sortedIds.forEach((taskId) => renderTask(tasks[taskId], taskId));
+  getSortedTaskIds(tasks).forEach((taskId) => renderTask(tasks[taskId], taskId));
   Object.keys(columnMap).forEach((k) => checkAndShowPlaceholder(columnMap[k]));
 }
 
+/**
+ * Clear all board columns.
+ * @returns {void}
+ */
 function clearAllColumns() {
   for (const key in columnMap) $(columnMap[key]).innerHTML = "";
 }
 
-function renderTask(task, taskId) {
-  const targetColumnId = columnMap[task.column] || "to-do-column";
-  const columnElement = $(targetColumnId);
-  const taskElement = createTaskElement(task, taskId);
-  if (!taskElement.id) taskElement.id = String(taskId);
-  taskElement.setAttribute("draggable", "true");
-  taskElement.addEventListener("dragstart", onTaskDragStart);
-  columnElement.appendChild(taskElement);
+/**
+ * Create a draggable DOM element for a task.
+ * @param {any} task
+ * @param {string} taskId
+ * @returns {HTMLElement}
+ */
+function buildTaskElement(task, taskId) {
+  const el = createTaskElement(task, taskId);
+  if (!el.id) el.id = String(taskId);
+  el.setAttribute("draggable", "true");
+  el.addEventListener("dragstart", onTaskDragStart);
+  return el;
 }
 
+/**
+ * Render a single task into its column.
+ * @param {any} task
+ * @param {string} taskId
+ * @returns {void}
+ */
+function renderTask(task, taskId) {
+  const targetColumnId = columnMap[task.column] || "to-do-column";
+  $(targetColumnId).appendChild(buildTaskElement(task, taskId));
+}
+
+/**
+ * Placeholder texts keyed by column DOM id.
+ * @type {Record<string,string>}
+ */
 const placeholderTexts = {
   "to-do-column": "No tasks to do",
   "in-progress-column": "No tasks in progressing",
@@ -58,104 +104,71 @@ const placeholderTexts = {
   "done-column": "No tasks done",
 };
 
+/**
+ * Count real task cards in a column (excluding placeholder).
+ * @param {HTMLElement} column
+ * @returns {number}
+ */
+function countTasks(column) {
+  return Array.from(column.children).filter((el) => !el.classList.contains("no-tasks")).length;
+}
+
+/**
+ * Append a placeholder to a column.
+ * @param {HTMLElement} column
+ * @param {string} columnId
+ * @returns {void}
+ */
+function appendPlaceholder(column, columnId) {
+  const ph = document.createElement("div");
+  ph.classList.add("no-tasks");
+  ph.textContent = placeholderTexts[columnId] || "No tasks";
+  column.appendChild(ph);
+}
+
+/**
+ * Check and show/hide placeholder in a column based on tasks.
+ * @param {string} columnId
+ * @returns {void}
+ */
 function checkAndShowPlaceholder(columnId) {
   const column = $(columnId);
-  const taskCards = Array.from(column.children).filter(el => !el.classList.contains("no-tasks"));
   const existing = column.querySelector(".no-tasks");
-  if (taskCards.length === 0 && !existing) {
-    const ph = document.createElement("div");
-    ph.classList.add("no-tasks");
-    ph.textContent = placeholderTexts[columnId] || "No tasks";
-    column.appendChild(ph);
-  } else if (taskCards.length > 0 && existing) {
-    existing.remove();
-  }
+  const count = countTasks(column);
+  if (count === 0 && !existing) appendPlaceholder(column, columnId);
+  else if (count > 0 && existing) existing.remove();
 }
 
-let IS_DRAGGING = false;
-
-function onTaskDragStart(e) {
-  const id = e.currentTarget?.id || e.target.id;
-  if (id) {
-    e.dataTransfer?.setData("text/plain", id);
-    e.dataTransfer?.setData("text", id);
-  }
-  if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
-  IS_DRAGGING = true;
-  e.currentTarget?.addEventListener("dragend", () => {
-    IS_DRAGGING = false;
-    resetColumnBackgrounds();
-  }, { once: true });
+/**
+ * Resolve task id and involved columns for a drop event.
+ * @param {DragEvent} event
+ * @returns {{taskId:string|null, taskElement:HTMLElement|null, newColumn:HTMLElement|null, oldColumn:HTMLElement|null}}
+ */
+function getDropContext(event) {
+  const taskId = event.dataTransfer?.getData("text/plain") || event.dataTransfer?.getData("text") || null;
+  const taskElement = taskId ? document.getElementById(taskId) : null;
+  const newColumn = (event.currentTarget.closest?.(".task-list") || event.currentTarget);
+  const oldColumn = taskElement?.parentElement || null;
+  return { taskId, taskElement, newColumn, oldColumn };
 }
 
-window.drag = onTaskDragStart;
-
-function initDnDListeners() {
-  document.querySelectorAll(".task-list").forEach((list) => {
-    list.addEventListener("dragenter", (e) => {
-      if (!IS_DRAGGING) return;
-      e.preventDefault();
-      highlightColumn(list);
-    });
-    list.addEventListener("dragover", (e) => {
-      if (!IS_DRAGGING) return;
-      e.preventDefault();
-      if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-      highlightColumn(list);
-    });
-    list.addEventListener("dragleave", (e) => {
-      const elUnder = document.elementFromPoint(e.clientX, e.clientY);
-      if (elUnder && list.contains(elUnder)) return;
-      unhighlightColumn(list);
-    });
-  });
-}
-
-function highlightColumn(el) {
-  document.querySelectorAll(".task-list").forEach(n => n.classList.remove("highlight-column"));
-  el.classList.add("highlight-column");
-}
-
-function unhighlightColumn(el) {
-  el.classList.remove("highlight-column");
-}
-
-function resetColumnBackgrounds() {
-  document.querySelectorAll(".task-list").forEach(el => el.classList.remove("highlight-column"));
-}
-
-const DOM_TO_LOGICAL = {
-  "to-do-column": "todo",
-  "in-progress-column": "inProgress",
-  "await-feedback-column": "awaitFeedback",
-  "done-column": "done",
-};
-
-const LOGICAL_TO_DOM = {
-  todo: "to-do-column",
-  inProgress: "in-progress-column",
-  awaitFeedback: "await-feedback-column",
-  review: "await-feedback-column",
-  done: "done-column",
-};
-
-window.drop = function handleDrop(event) {
-  event.preventDefault();
-  const taskId = event.dataTransfer?.getData("text/plain") || event.dataTransfer?.getData("text");
-  if (!taskId) return;
-  const taskElement = document.getElementById(taskId);
-  const newColumn = event.currentTarget.closest(".task-list") || event.currentTarget;
-  const oldColumn = taskElement?.parentElement;
-  if (!taskElement || !newColumn || !oldColumn) return;
+/**
+ * Move task element to the new column and update dataset column value.
+ * @param {HTMLElement} taskElement
+ * @param {HTMLElement} newColumn
+ * @returns {void}
+ */
+function moveTaskDom(taskElement, newColumn) {
   newColumn.appendChild(taskElement);
   taskElement.dataset.column = DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
-  updateTaskColumn(taskId, newColumn.id);
-  checkAndShowPlaceholder(oldColumn.id);
-  checkAndShowPlaceholder(newColumn.id);
-  IS_DRAGGING = false;
-  resetColumnBackgrounds();
-};
+}
 
+/**
+ * Update a task's column in Firebase and set movedAt timestamp.
+ * @param {string} taskId
+ * @param {string} newColumnId
+ * @returns {Promise<void>}
+ */
 function updateTaskColumn(taskId, newColumnId) {
   const dbRef = ref(db, `tasks/${taskId}`);
   const newColumnValue = DOM_TO_LOGICAL[newColumnId] || "todo";
@@ -164,25 +177,59 @@ function updateTaskColumn(taskId, newColumnId) {
   );
 }
 
+/**
+ * Determine how many overflow contacts should be shown in the +N bubble.
+ * @param {number} total
+ * @param {number} maxShown
+ * @returns {number}
+ */
+function computeOverflow(total, maxShown) {
+  return total > maxShown ? total - (maxShown - 1) : 0;
+}
+
+/**
+ * Build HTML for an overflow "+N" circle.
+ * @param {number} n
+ * @param {string} posClass
+ * @returns {string}
+ */
+function buildMoreCircle(n, posClass) {
+  return `<div class="initial-circle ${posClass} initial-circle--more" title="+${n}">+${n}</div>`;
+}
+
+/**
+ * Build HTML for a regular initials circle.
+ * @param {{initials?:string,name?:string,colorIndex?:number}} c
+ * @param {string} posClass
+ * @returns {string}
+ */
+function buildInitialsCircle(c, posClass) {
+  const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
+  const initials = c?.initials || "";
+  const title = c?.name || initials;
+  return `<div class="initial-circle ${posClass}" style="background-image: url(../assets/icons/contact/color${colorIdx}.svg)" title="${title}">${initials}</div>`;
+}
+
 export function renderAssignedInitials(contacts = []) {
   const maxShown = 3;
   if (!Array.isArray(contacts) || contacts.length === 0) return "";
   const shown = contacts.slice(0, maxShown);
   const hasOverflow = contacts.length > maxShown;
-  const overflowCount = hasOverflow ? contacts.length - (maxShown - 1) : 0;
-  
+  const overflowCount = computeOverflow(contacts.length, maxShown);
   return shown.map((c, idx) => {
     const pos = ["first-initial", "second-initial", "third-initial"][idx] || "";
-    if (hasOverflow && idx === maxShown - 1) {
-      return `<div class="initial-circle ${pos} initial-circle--more" title="+${overflowCount}">+${overflowCount}</div>`;
-    }
-    const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 0;
-    const initials = c?.initials || "";
-    const title = c?.name || initials;
-    return `<div class="initial-circle ${pos}" style="background-image: url(../assets/icons/contact/color${colorIdx}.svg)" title="${title}">${initials}</div>`;
+    if (hasOverflow && idx === maxShown - 1) return buildMoreCircle(overflowCount, pos);
+    return buildInitialsCircle(c, pos);
   }).join("");
 }
 
+/**
+ * Debounce a function by waiting `wait` ms after the last call.
+ * @template {(...a:any[])=>any} F
+ * @param {F} fn
+ * @param {number} [wait=200]
+ * @returns {F}
+ */
 function debounce(fn, wait = 200) {
   let t;
   return (...args) => {
@@ -191,26 +238,44 @@ function debounce(fn, wait = 200) {
   };
 }
 
-function setupSearchHandlers() {
-  const searchInput = $("search-input");
-  const searchButton = $("search-btn");
-  if (!searchInput) return;
-  const run = () => {
-    const term = (searchInput.value || "").toLowerCase().trim();
-    if (term.length >= 3) {
-      filterTasks(term);
-    } else {
-      filterTasks("");
-    }
-  };
-  const debouncedRun = debounce(run, 200);
-  searchInput.addEventListener("input", debouncedRun);
-  searchInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") run();
-  });
-  searchButton?.addEventListener("click", run);
+/**
+ * Run the search: filter tasks by the current search input value.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function runSearch(input) {
+  const term = (input.value || "").toLowerCase().trim();
+  filterTasks(term.length >= 3 ? term : "");
 }
 
+/**
+ * Bind events for search input and button.
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement|null} btn
+ * @returns {void}
+ */
+function bindSearchEvents(input, btn) {
+  const debouncedRun = debounce(() => runSearch(input), 200);
+  input.addEventListener("input", debouncedRun);
+  input.addEventListener("keypress", (e) => { if (e.key === "Enter") runSearch(input); });
+  btn?.addEventListener("click", () => runSearch(input));
+}
+
+/**
+ * Initialize search input with debounced filtering and Enter key support.
+ * @returns {void}
+ */
+function setupSearchHandlers() {
+  const searchInput = $("search-input");
+  if (!searchInput) return;
+  bindSearchEvents(searchInput, $("search-btn"));
+}
+
+/**
+ * Show only tasks whose title or description includes the search term.
+ * @param {string} searchTerm
+ * @returns {void}
+ */
 function filterTasks(searchTerm) {
   const allTasks = document.querySelectorAll(".ticket");
   allTasks.forEach((taskEl) => {
@@ -222,10 +287,19 @@ function filterTasks(searchTerm) {
   updateAllPlaceholders();
 }
 
+/**
+ * Update placeholders in all columns after a filter change.
+ * @returns {void}
+ */
 function updateAllPlaceholders() {
   for (const key in columnMap) updatePlaceholderForColumn(columnMap[key]);
 }
 
+/**
+ * Update placeholder in a single column, based on visible tasks.
+ * @param {string} columnId
+ * @returns {void}
+ */
 function updatePlaceholderForColumn(columnId) {
   const column = document.getElementById(columnId);
   const visibleTasks = Array.from(column.querySelectorAll(".ticket")).filter(
@@ -242,26 +316,73 @@ function updatePlaceholderForColumn(columnId) {
   }
 }
 
-window.onTaskColumnChanged = function (taskId, targetLogical) {
+/**
+ * Move a task DOM node to a target column by logical id.
+ * @param {string} taskId
+ * @param {string} targetLogical
+ * @returns {{taskEl:HTMLElement|null, oldColumnEl:HTMLElement|null, newColumnEl:HTMLElement|null}}
+ */
+function moveTaskDomByLogical(taskId, targetLogical) {
   const taskEl = document.getElementById(String(taskId));
-  if (!taskEl) return;
-  const oldColumnEl = taskEl.closest(".task-list") || taskEl.parentElement;
+  const oldColumnEl = taskEl?.closest(".task-list") || taskEl?.parentElement || null;
   const newDomId = LOGICAL_TO_DOM[targetLogical] || targetLogical;
   const newColumnEl = document.getElementById(newDomId);
-  if (!newColumnEl || !oldColumnEl) return;
-  newColumnEl.appendChild(taskEl);
-  taskEl.dataset.column = DOM_TO_LOGICAL[newColumnEl.id] || taskEl.dataset.column;
-  updateTaskColumn(String(taskId), newColumnEl.id);
+  if (taskEl && newColumnEl) newColumnEl.appendChild(taskEl);
+  return { taskEl, oldColumnEl, newColumnEl };
+}
+
+/**
+ * After moving a task, sync attributes, db, and placeholders.
+ * @param {string} taskId
+ * @param {HTMLElement|null} oldColumnEl
+ * @param {HTMLElement|null} newColumnEl
+ * @returns {void}
+ */
+function syncAfterMove(taskId, oldColumnEl, newColumnEl) {
+  if (!(oldColumnEl && newColumnEl)) return;
+  const domId = newColumnEl.id;
+  const logical = DOM_TO_LOGICAL[domId];
+  const el = document.getElementById(String(taskId));
+  if (el && logical) el.dataset.column = logical;
+  updateTaskColumn(String(taskId), domId);
   checkAndShowPlaceholder(oldColumnEl.id);
   checkAndShowPlaceholder(newColumnEl.id);
   resetColumnBackgrounds();
+}
+
+/**
+ * Public API: move a task to a new logical column and persist it.
+ * @param {string|number} taskId
+ * @param {string} targetLogical
+ * @returns {void}
+ */
+window.onTaskColumnChanged = function (taskId, targetLogical) {
+  const { oldColumnEl, newColumnEl } = moveTaskDomByLogical(String(taskId), targetLogical);
+  syncAfterMove(String(taskId), oldColumnEl, newColumnEl);
 };
 
+const DOM_TO_LOGICAL = {
+  "to-do-column": "todo",
+  "in-progress-column": "inProgress",
+  "await-feedback-column": "awaitFeedback",
+  "done-column": "done",
+};
+
+const LOGICAL_TO_DOM = {
+  todo: "to-do-column",
+  inProgress: "in-progress-column",
+  awaitFeedback: "await-feedback-column",
+  review: "await-feedback-column",
+  done: "done-column",
+};
+
+/**
+ * Initialize the board: auth, DnD, Firebase, and search.
+ * @returns {void}
+ */
 function initBoard() {
   setupAuthListener();
   initDnDListeners();
   loadTasksFromFirebase();
   setupSearchHandlers();
 }
-
-document.addEventListener("DOMContentLoaded", initBoard);

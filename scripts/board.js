@@ -1,3 +1,7 @@
+/**
+ * @file Board – renders columns, drag & drop, search, and placeholders.
+ * All functions are short (≤14 Zeilen) und haben eine Aufgabe. JSDoc überall.
+ */
 import {
   getDatabase,
   ref,
@@ -16,12 +20,34 @@ const columnMap = {
   done: "done-column",
 };
 
+/**
+ * Initialisiert Board: Auth, DnD, Firebase-Stream, Suche.
+ * @returns {void}
+ */
+function initBoard() {
+  setupAuthListener();
+  initDnDListeners();
+  loadTasksFromFirebase();
+  setupSearchHandlers();
+}
+
+/** Startet Initialisierung, wenn DOM geladen ist. */
+document.addEventListener("DOMContentLoaded", initBoard);
+
+/**
+ * Auth-Listener: setzt User-Initialen, wenn verfügbar.
+ * @returns {void}
+ */
 function setupAuthListener() {
   onAuthStateChanged(auth, (user) => {
     if (window.updateUserInitials) window.updateUserInitials(user);
   });
 }
 
+/**
+ * Lädt Tasks aus Firebase und rendert alle Spalten.
+ * @returns {void}
+ */
 function loadTasksFromFirebase() {
   const tasksRef = ref(db, "tasks");
   onValue(tasksRef, (snapshot) => {
@@ -30,27 +56,60 @@ function loadTasksFromFirebase() {
   });
 }
 
+/**
+ * Liefert Task-IDs sortiert nach movedAt (aufsteigend, Fallback 0).
+ * @param {Record<string, any>} tasks
+ * @returns {string[]}
+ */
+function getSortedTaskIds(tasks) {
+  return Object.keys(tasks).sort((a, b) => (tasks[a].movedAt || 0) - (tasks[b].movedAt || 0));
+}
+
+/**
+ * Rendert alle Spalten mit Tasks.
+ * @param {Record<string, any>} tasks
+ * @returns {void}
+ */
 function renderAllColumns(tasks) {
   clearAllColumns();
-  const sortedIds = Object.keys(tasks).sort((a, b) => (tasks[a].movedAt || 0) - (tasks[b].movedAt || 0));
-  sortedIds.forEach((taskId) => renderTask(tasks[taskId], taskId));
+  getSortedTaskIds(tasks).forEach((taskId) => renderTask(tasks[taskId], taskId));
   Object.keys(columnMap).forEach((k) => checkAndShowPlaceholder(columnMap[k]));
 }
 
+/**
+ * Leert alle Board-Spalten.
+ * @returns {void}
+ */
 function clearAllColumns() {
   for (const key in columnMap) $(columnMap[key]).innerHTML = "";
 }
 
-function renderTask(task, taskId) {
-  const targetColumnId = columnMap[task.column] || "to-do-column";
-  const columnElement = $(targetColumnId);
-  const taskElement = createTaskElement(task, taskId);
-  if (!taskElement.id) taskElement.id = String(taskId);
-  taskElement.setAttribute("draggable", "true");
-  taskElement.addEventListener("dragstart", onTaskDragStart);
-  columnElement.appendChild(taskElement);
+/**
+ * Baut ein draggable Task-Element.
+ * @param {any} task
+ * @param {string} taskId
+ * @returns {HTMLElement}
+ */
+function buildTaskElement(task, taskId) {
+  const el = createTaskElement(task, taskId);
+  if (!el.id) el.id = String(taskId);
+  el.setAttribute("draggable", "true");
+  el.addEventListener("dragstart", onTaskDragStart);
+  return el;
 }
 
+/**
+ * Rendert einen Task in die passende Spalte.
+ * @param {any} task
+ * @param {string} taskId
+ * @returns {void}
+ */
+function renderTask(task, taskId) {
+  const targetColumnId = columnMap[task.column] || "to-do-column";
+  $(targetColumnId).appendChild(buildTaskElement(task, taskId));
+}
+
+/** @type {Record<string,string>} Platzhalter-Texte pro Spalte */
 const placeholderTexts = {
   "to-do-column": "No tasks to do",
   "in-progress-column": "No tasks in progressing",
@@ -58,22 +117,58 @@ const placeholderTexts = {
   "done-column": "No tasks done",
 };
 
+/**
+ * Anzahl realer Task-Karten in einer Spalte (ohne Placeholder).
+ * @param {HTMLElement} column
+ * @returns {number}
+ */
+function countTasks(column) {
+  return Array.from(column.children).filter((el) => !el.classList.contains("no-tasks")).length;
+}
+
+/**
+ * Fügt einen Placeholder in die Spalte ein.
+ * @param {HTMLElement} column
+ * @param {string} columnId
+ * @returns {void}
+ */
+function appendPlaceholder(column, columnId) {
+  const ph = document.createElement("div");
+  ph.classList.add("no-tasks");
+  ph.textContent = placeholderTexts[columnId] || "No tasks";
+  column.appendChild(ph);
+}
+
+/**
+ * Stellt sicher, dass bei leerer Spalte ein Placeholder gezeigt wird.
+ * @param {string} columnId
+ * @returns {void}
+ */
 function checkAndShowPlaceholder(columnId) {
   const column = $(columnId);
-  const taskCards = Array.from(column.children).filter(el => !el.classList.contains("no-tasks"));
   const existing = column.querySelector(".no-tasks");
-  if (taskCards.length === 0 && !existing) {
-    const ph = document.createElement("div");
-    ph.classList.add("no-tasks");
-    ph.textContent = placeholderTexts[columnId] || "No tasks";
-    column.appendChild(ph);
-  } else if (taskCards.length > 0 && existing) {
-    existing.remove();
-  }
+  const count = countTasks(column);
+  if (count === 0 && !existing) appendPlaceholder(column, columnId);
+  else if (count > 0 && existing) existing.remove();
 }
 
 let IS_DRAGGING = false;
 
+/**
+ * Drag-End: Status zurücksetzen und Highlights entfernen.
+ * @param {Event} _
+ * @returns {void}
+ */
+function onDragEndFinalize(_) {
+  IS_DRAGGING = false;
+  resetColumnBackgrounds();
+}
+
+/**
+ * Drag-Start: ID setzen und Move-Effekt erlauben.
+ * @param {DragEvent} e
+ * @returns {void}
+ */
 function onTaskDragStart(e) {
   const id = e.currentTarget?.id || e.target.id;
   if (id) {
@@ -82,48 +177,51 @@ function onTaskDragStart(e) {
   }
   if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
   IS_DRAGGING = true;
-  e.currentTarget?.addEventListener("dragend", () => {
-    IS_DRAGGING = false;
-    resetColumnBackgrounds();
-  }, { once: true });
+  e.currentTarget?.addEventListener("dragend", onDragEndFinalize, { once: true });
 }
 
 window.drag = onTaskDragStart;
 
-function initDnDListeners() {
-  document.querySelectorAll(".task-list").forEach((list) => {
-    list.addEventListener("dragenter", (e) => {
-      if (!IS_DRAGGING) return;
-      e.preventDefault();
-      highlightColumn(list);
-    });
-    list.addEventListener("dragover", (e) => {
-      if (!IS_DRAGGING) return;
-      e.preventDefault();
-      if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-      highlightColumn(list);
-    });
-    list.addEventListener("dragleave", (e) => {
-      const elUnder = document.elementFromPoint(e.clientX, e.clientY);
-      if (elUnder && list.contains(elUnder)) return;
-      unhighlightColumn(list);
-    });
+/**
+ * DnD-Events für eine Spalte.
+ * @param {HTMLElement} list
+ * @returns {void}
+ */
+function attachDnDToList(list) {
+  list.addEventListener("dragenter", (e) => {
+    if (!IS_DRAGGING) return; e.preventDefault(); highlightColumn(list);
+  });
+  list.addEventListener("dragover", (e) => {
+    if (!IS_DRAGGING) return; e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = "move"; highlightColumn(list);
+  });
+  list.addEventListener("dragleave", (e) => {
+    const elUnder = document.elementFromPoint(e.clientX, e.clientY);
+    if (elUnder && list.contains(elUnder)) return; unhighlightColumn(list);
   });
 }
 
+/** Initialisiert Drag&Drop-Listener für alle Spalten. */
+function initDnDListeners() {
+  document.querySelectorAll(".task-list").forEach((list) => attachDnDToList(list));
+}
+
+/** Markiert eine Spalte visuell als Drop-Ziel. */
 function highlightColumn(el) {
   document.querySelectorAll(".task-list").forEach(n => n.classList.remove("highlight-column"));
   el.classList.add("highlight-column");
 }
 
+/** Entfernt die Hervorhebung von einer Spalte. */
 function unhighlightColumn(el) {
   el.classList.remove("highlight-column");
 }
 
+/** Entfernt Hervorhebung von allen Spalten. */
 function resetColumnBackgrounds() {
   document.querySelectorAll(".task-list").forEach(el => el.classList.remove("highlight-column"));
 }
 
+/** Map DOM-IDs → logische Spaltennamen. */
 const DOM_TO_LOGICAL = {
   "to-do-column": "todo",
   "in-progress-column": "inProgress",
@@ -131,6 +229,7 @@ const DOM_TO_LOGICAL = {
   "done-column": "done",
 };
 
+/** Map logische Spaltennamen → DOM-IDs. */
 const LOGICAL_TO_DOM = {
   todo: "to-do-column",
   inProgress: "in-progress-column",
@@ -139,23 +238,59 @@ const LOGICAL_TO_DOM = {
   done: "done-column",
 };
 
-window.drop = function handleDrop(event) {
-  event.preventDefault();
-  const taskId = event.dataTransfer?.getData("text/plain") || event.dataTransfer?.getData("text");
-  if (!taskId) return;
-  const taskElement = document.getElementById(taskId);
-  const newColumn = event.currentTarget.closest(".task-list") || event.currentTarget;
-  const oldColumn = taskElement?.parentElement;
-  if (!taskElement || !newColumn || !oldColumn) return;
+/**
+ * Ermittelt Kontext eines Drop-Events.
+ * @param {DragEvent} event
+ * @returns {{taskId:string|null, taskElement:HTMLElement|null, newColumn:HTMLElement|null, oldColumn:HTMLElement|null}}
+ */
+function getDropContext(event) {
+  const taskId = event.dataTransfer?.getData("text/plain") || event.dataTransfer?.getData("text") || null;
+  const taskElement = taskId ? document.getElementById(taskId) : null;
+  const newColumn = (event.currentTarget.closest?.(".task-list") || event.currentTarget);
+  const oldColumn = taskElement?.parentElement || null;
+  return { taskId, taskElement, newColumn, oldColumn };
+}
+
+/**
+ * Verschiebt Task-Element ins Ziel und aktualisiert dataset.column.
+ * @param {HTMLElement} taskElement
+ * @param {HTMLElement} newColumn
+ * @returns {void}
+ */
+function moveTaskDom(taskElement, newColumn) {
   newColumn.appendChild(taskElement);
   taskElement.dataset.column = DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
+}
+
+/**
+ * Finalisiert Drop: DB-Update, Placeholder & Visuals aktualisieren.
+ * @param {string} taskId
+ * @param {HTMLElement} oldColumn
+ * @param {HTMLElement} newColumn
+ * @returns {void}
+ */
+function finalizeDrop(taskId, oldColumn, newColumn) {
   updateTaskColumn(taskId, newColumn.id);
   checkAndShowPlaceholder(oldColumn.id);
   checkAndShowPlaceholder(newColumn.id);
   IS_DRAGGING = false;
   resetColumnBackgrounds();
+}
+
+window.drop = function handleDrop(event) {
+  event.preventDefault();
+  const { taskId, taskElement, newColumn, oldColumn } = getDropContext(event);
+  if (!(taskId && taskElement && newColumn && oldColumn)) return;
+  moveTaskDom(taskElement, newColumn);
+  finalizeDrop(String(taskId), oldColumn, newColumn);
 };
 
+/**
+ * Aktualisiert die Spalte eines Tasks in Firebase und setzt movedAt.
+ * @param {string} taskId
+ * @param {string} newColumnId
+ * @returns {Promise<void>}
+ */
 function updateTaskColumn(taskId, newColumnId) {
   const dbRef = ref(db, `tasks/${taskId}`);
   const newColumnValue = DOM_TO_LOGICAL[newColumnId] || "todo";
@@ -164,25 +299,63 @@ function updateTaskColumn(taskId, newColumnId) {
   );
 }
 
+/**
+ * Ermittelt Overflow-Anzahl für +N-Badge.
+ * @param {number} total
+ * @param {number} maxShown
+ * @returns {number}
+ */
+function computeOverflow(total, maxShown) {
+  return total > maxShown ? total - (maxShown - 1) : 0;
+}
+
+/**
+ * Baut HTML für ein +N-Kreissymbol.
+ * @param {number} n
+ * @param {string} posClass
+ * @returns {string}
+ */
+function buildMoreCircle(n, posClass) {
+  return `<div class="initial-circle ${posClass} initial-circle--more" title="+${n}">+${n}</div>`;
+}
+
+/**
+ * Baut HTML für einen Initialen-Kreis.
+ * @param {{initials?:string,name?:string,colorIndex?:number}} c
+ * @param {string} posClass
+ * @returns {string}
+ */
+function buildInitialsCircle(c, posClass) {
+  const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 1;
+  const initials = c?.initials || "";
+  const title = c?.name || initials;
+  return `<div class="initial-circle ${posClass}" style="background-image: url(./assets/general_elements/icons/color${colorIdx}.svg)" title="${title}">${initials}</div>`;
+}
+
+/**
+ * Rendert bis zu 3 Initialen-Kreise (+N als dritter, wenn Overflow).
+ * @param {Array<{initials?:string,name?:string,colorIndex?:number}>} contacts
+ * @returns {string}
+ */
 export function renderAssignedInitials(contacts = []) {
   const maxShown = 3;
   if (!Array.isArray(contacts) || contacts.length === 0) return "";
   const shown = contacts.slice(0, maxShown);
-  const hasOverflow = contacts.length > maxShown;
-  const overflowCount = hasOverflow ? contacts.length - (maxShown - 1) : 0;
-  
+  const overflowCount = computeOverflow(contacts.length, maxShown);
   return shown.map((c, idx) => {
     const pos = ["first-initial", "second-initial", "third-initial"][idx] || "";
-    if (hasOverflow && idx === maxShown - 1) {
-      return `<div class="initial-circle ${pos} initial-circle--more" title="+${overflowCount}">+${overflowCount}</div>`;
-    }
-    const colorIdx = Number.isFinite(c?.colorIndex) ? c.colorIndex : 1;
-    const initials = c?.initials || "";
-    const title = c?.name || initials;
-    return `<div class="initial-circle ${pos}" style="background-image: url(./assets/general_elements/icons/color${colorIdx}.svg)" title="${title}">${initials}</div>`;
+    if (overflowCount && idx === maxShown - 1) return buildMoreCircle(overflowCount, pos);
+    return buildInitialsCircle(c, pos);
   }).join("");
 }
 
+/**
+ * Debounce: wartet `wait` ms nach letztem Aufruf.
+ * @template {(...a:any[])=>any} F
+ * @param {F} fn
+ * @param {number} [wait=200]
+ * @returns {F}
+ */
 function debounce(fn, wait = 200) {
   let t;
   return (...args) => {
@@ -191,77 +364,36 @@ function debounce(fn, wait = 200) {
   };
 }
 
+/**
+ * Führt Suche aus (ab 3 Zeichen), sonst reset.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function runSearch(input) {
+  const term = (input.value || "").toLowerCase().trim();
+  filterTasks(term.length >= 3 ? term : "");
+}
+
+/**
+ * Bindet Input- und Button-Events für die Suche.
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement|null} btn
+ * @returns {void}
+ */
+function bindSearchEvents(input, btn) {
+  const debouncedRun = debounce(() => runSearch(input), 200);
+  input.addEventListener("input", debouncedRun);
+  input.addEventListener("keypress", (e) => { if (e.key === "Enter") runSearch(input); });
+  btn?.addEventListener("click", () => runSearch(input));
+}
+
+/**
+ * Initialisiert die Suche (debounced + Enter-Key).
+ * @returns {void}
+ */
 function setupSearchHandlers() {
   const searchInput = $("search-input");
-  const searchButton = $("search-btn");
   if (!searchInput) return;
-  const run = () => {
-    const term = (searchInput.value || "").toLowerCase().trim();
-    if (term.length >= 3) {
-      filterTasks(term);
-    } else {
-      filterTasks("");
-    }
-  };
-  const debouncedRun = debounce(run, 200);
-  searchInput.addEventListener("input", debouncedRun);
-  searchInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") run();
-  });
-  searchButton?.addEventListener("click", run);
+  bindSearchEvents(searchInput, $("search-btn"));
 }
 
-function filterTasks(searchTerm) {
-  const allTasks = document.querySelectorAll(".ticket");
-  allTasks.forEach((taskEl) => {
-    const title = taskEl.querySelector(".ticket-title")?.textContent.toLowerCase() || "";
-    const description = taskEl.querySelector(".ticket-text")?.textContent.toLowerCase() || "";
-    const matches = title.includes(searchTerm) || description.includes(searchTerm);
-    taskEl.style.display = matches || searchTerm === "" ? "" : "none";
-  });
-  updateAllPlaceholders();
-}
-
-function updateAllPlaceholders() {
-  for (const key in columnMap) updatePlaceholderForColumn(columnMap[key]);
-}
-
-function updatePlaceholderForColumn(columnId) {
-  const column = document.getElementById(columnId);
-  const visibleTasks = Array.from(column.querySelectorAll(".ticket")).filter(
-    (el) => el.style.display !== "none"
-  );
-  const placeholder = column.querySelector(".no-tasks");
-  if (visibleTasks.length === 0 && !placeholder) {
-    const ph = document.createElement("div");
-    ph.classList.add("no-tasks");
-    ph.textContent = placeholderTexts[columnId] || "No tasks";
-    column.appendChild(ph);
-  } else if (visibleTasks.length > 0 && placeholder) {
-    placeholder.remove();
-  }
-}
-
-window.onTaskColumnChanged = function (taskId, targetLogical) {
-  const taskEl = document.getElementById(String(taskId));
-  if (!taskEl) return;
-  const oldColumnEl = taskEl.closest(".task-list") || taskEl.parentElement;
-  const newDomId = LOGICAL_TO_DOM[targetLogical] || targetLogical;
-  const newColumnEl = document.getElementById(newDomId);
-  if (!newColumnEl || !oldColumnEl) return;
-  newColumnEl.appendChild(taskEl);
-  taskEl.dataset.column = DOM_TO_LOGICAL[newColumnEl.id] || taskEl.dataset.column;
-  updateTaskColumn(String(taskId), newColumnEl.id);
-  checkAndShowPlaceholder(oldColumnEl.id);
-  checkAndShowPlaceholder(newColumnEl.id);
-  resetColumnBackgrounds();
-};
-
-function initBoard() {
-  setupAuthListener();
-  initDnDListeners();
-  loadTasksFromFirebase();
-  setupSearchHandlers();
-}
-
-document.addEventListener("DOMContentLoaded", initBoard);

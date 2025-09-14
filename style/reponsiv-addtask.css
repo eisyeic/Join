@@ -21,6 +21,7 @@
     }
 
     .addtask-wrapper {
+        margin-left: 0;
         justify-content: flex-start;
         height: calc(100vh - 348px);
     }

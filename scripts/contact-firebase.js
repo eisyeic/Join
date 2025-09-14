@@ -1,3 +1,14 @@
+/**
+ * @file Contacts: Firebase subscription, alphabetical rendering, add/delete contacts.
+ * Functions are ≤14 lines and single-purpose. Public APIs unchanged.
+ *
+ * @typedef {Object} Contact
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {number} colorIndex
+ * @property {string} initials
+ */
 // Contacts module: Firebase subscription, alphabetical rendering, add/delete contacts
 
 import {
@@ -12,25 +23,24 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 import { app, auth } from "./firebase.js";
 
 
-
+/** Listen to auth changes and delegate to handler. */
 function setupAuthListener() {
   onAuthStateChanged(auth, handleAuthChange);
 }
-// Projects user initials to the UI (if hook is present)
+/** Projects user initials to the UI (if hook is present). */
 function handleAuthChange(user) {
   if (window.updateUserInitials) window.updateUserInitials(user);
 }
 
 
-
-// Firebase DB handle and contacts ref
+/** Firebase DB handle and contacts ref */
 const db = getDatabase(app);
 const dataRef = ref(db, "contacts");
 let loadedContacts = {};
 
 
 
-// Prepare the contacts container; show empty state if no data
+/** Prepare contacts container; shows empty state if no data. */
 function initializeContactContainer(data) {
   const box = document.getElementById("all-contacts");
   box.innerHTML = "";
@@ -41,14 +51,14 @@ function initializeContactContainer(data) {
   return box;
 }
 
-// Return entries sorted by name (case-insensitive)
+/** Return entries sorted by name (case-insensitive). */
 function getSortedContacts(data) {
   return Object.entries(data).sort(([, a], [, b]) =>
     (a?.name || "").localeCompare(b?.name || "", undefined, { sensitivity: "base" })
   );
 }
 
-// Add an alphabet letter header if the letter changed
+/** Add an alphabet letter header if the letter changed. */
 function addLetterHeaderIfNeeded(firstLetter, container, currentLetter) {
   if (firstLetter === currentLetter.value) return;
   const hdr = document.createElement("div");
@@ -58,7 +68,7 @@ function addLetterHeaderIfNeeded(firstLetter, container, currentLetter) {
   currentLetter.value = firstLetter;
 }
 
-// Append a single rendered contact element
+/** Append a single rendered contact element. */
 function createContactElement(id, contact, container) {
   const wrapper = document.createElement("div");
   wrapper.classList.add("rendered-contacts");
@@ -66,47 +76,55 @@ function createContactElement(id, contact, container) {
   container.appendChild(wrapper);
 }
 
-// Render one contact with optional letter header
+/** Render one contact with optional letter header. */
 function renderSingleContact(id, contact, container, currentLetter) {
   const first = (contact.name || "").charAt(0).toUpperCase();
   addLetterHeaderIfNeeded(first, container, currentLetter);
   createContactElement(id, contact, container);
 }
 
-// Render the full contact list with alphabetical headers
+/**
+ * Assign a colorIndex if missing and persist to Firebase. Returns ensured color.
+ * @param {string} id
+ * @param {Contact} c
+ * @param {Set<number>} usedColors
+ * @param {number} i
+ * @returns {number}
+ */
+function ensureAndPersistColorIndex(id, c, usedColors, i) {
+  if (c.colorIndex) return c.colorIndex;
+  let colorIndex = 1;
+  while (usedColors.has(colorIndex) && colorIndex <= 15) colorIndex++;
+  if (colorIndex > 15) colorIndex = (i % 15) + 1;
+  c.colorIndex = colorIndex;
+  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
+    .then(({ update, ref }) => { update(ref(db, `contacts/${id}`), { colorIndex }); });
+  return colorIndex;
+}
+
+/**
+ * Render the full contact list with alphabetical headers.
+ * @param {Record<string, Contact>} data
+ * @param {HTMLElement} container
+ */
 function renderContactList(data, container) {
   const entries = getSortedContacts(data);
   const currentLetter = { value: "" };
   const usedColors = new Set();
-  
   entries.forEach(([id, c], i) => {
-    if (!c.colorIndex) {
-      // Find next available color
-      let colorIndex = 1;
-      while (usedColors.has(colorIndex) && colorIndex <= 15) {
-        colorIndex++;
-      }
-      if (colorIndex > 15) colorIndex = (i % 15) + 1;
-      c.colorIndex = colorIndex;
-      
-      // Save color to Firebase
-      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
-        .then(({ update, ref }) => {
-          update(ref(db, `contacts/${id}`), { colorIndex });
-        });
-    }
-    usedColors.add(c.colorIndex);
+    const color = ensureAndPersistColorIndex(id, c, usedColors, i);
+    usedColors.add(color);
     renderSingleContact(id, c, container, currentLetter);
   });
 }
 
-// Process Firebase data and render the contact list
+/** Process Firebase data and render the contact list. */
 function processContactData(data) {
   const container = initializeContactContainer(data);
   if (container) renderContactList(/** @type {Record<string, any>} */ (data), container);
 }
 
-// Subscribe to /contacts and render on every change
+/** Subscribe to /contacts and render on every change. */
 function showAllData() {
   onValue(dataRef, (snapshot) => {
     const data = snapshot.val();
@@ -117,7 +135,7 @@ function showAllData() {
 
 
 
-// Collect new-contact form values
+/** Collect new-contact form values. */
 function getNewContactData() {
   const name = document.getElementById("name-new-contact")?.value || "";
   return {
@@ -129,7 +147,7 @@ function getNewContactData() {
   };
 }
 
-// Handle successful save: toggle UI status and refresh list
+/** Handle successful save: toggle UI status and refresh list. */
 function handleSaveSuccess(data) {
   const el = document.getElementById("check-status-add-contact");
   if (el) {
@@ -139,14 +157,14 @@ function handleSaveSuccess(data) {
   }
 }
 
-// Push a new contact into Firebase
+/** Push a new contact into Firebase. */
 function saveToFirebase(data) {
   push(dataRef, data)
     .then(() => handleSaveSuccess(data))
     .catch((err) => console.error("Save failed:", err));
 }
 
-// Delete the currently selected contact
+/** Delete the currently selected contact. */
 window.deleteContact = async () => {
   const key = typeof currentContact?.id === "string" ? currentContact.id.trim() : "";
   if (!key) {
@@ -161,7 +179,7 @@ window.deleteContact = async () => {
   }
 };
 
-// Get next available color index
+/** Get next available color index (1..15). */
 function getNextColorIndex() {
   const usedColors = new Set();
   Object.values(loadedContacts).forEach(contact => {
@@ -174,14 +192,14 @@ function getNextColorIndex() {
   return Math.floor(Math.random() * 15) + 1;
 }
 
-// Validate and save a new contact
+/** Validate and save a new contact. */
 window.dataSave = () => {
   if (!validateAddContactForm()) return; // external validator
   window.colorIndex = getNextColorIndex();
   saveToFirebase(getNewContactData());
 };
 
-// Renders contacts for AddTask dropdown with selection functionality
+/** Renders contacts for AddTask dropdown with selection functionality. */
 window.renderContactsForAddTask = function(contacts, container) {
   for (const id in contacts) {
     const contact = contacts[id];
@@ -190,11 +208,10 @@ window.renderContactsForAddTask = function(contacts, container) {
   }
 };
 
-// Creates contact list item for AddTask with selection functionality
-function createAddTaskContactItem(contact, id) {
-  let li = document.createElement("li");
-  li.id = id;
-  li.innerHTML = `
+/** Build inner HTML for an AddTask contact list item. */
+/** @param {Contact} contact */
+function getAddTaskItemHTML(contact) {
+  return `
     <div>
       <div class="contact-initial" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
         ${contact.initials}
@@ -203,19 +220,36 @@ function createAddTaskContactItem(contact, id) {
     </div>
     <img src="./assets/icons/add_task/check_default.svg" alt="checkbox" />
   `;
-  li.addEventListener("click", () => {
-    li.classList.toggle("selected");
-    let checkboxIcon = li.querySelector("img");
-    let isSelected = li.classList.contains("selected");
-    checkboxIcon.src = isSelected
-      ? "./assets/icons/add_task/check_white.svg"
-      : "./assets/icons/add_task/check_default.svg";
-    renderSelectedContactInitials();
-  });
+}
+
+/** Toggle selected state and checkbox icon for a <li>. */
+/** @param {HTMLLIElement} li */
+function toggleListItemSelection(li) {
+  li.classList.toggle("selected");
+  const icon = li.querySelector("img");
+  if (!icon) return;
+  icon.src = li.classList.contains("selected")
+    ? "./assets/icons/add_task/check_white.svg"
+    : "./assets/icons/add_task/check_default.svg";
+}
+
+/** Handle click on AddTask contact item. */
+/** @param {HTMLLIElement} li */
+function onAddTaskItemClick(li) {
+  toggleListItemSelection(li);
+  renderSelectedContactInitials();
+}
+
+/** Creates contact list item for AddTask with selection functionality */
+function createAddTaskContactItem(contact, id) {
+  const li = document.createElement("li");
+  li.id = id;
+  li.innerHTML = getAddTaskItemHTML(contact);
+  li.addEventListener("click", () => onAddTaskItemClick(li));
   return li;
 }
 
-// Renders selected contact initials for AddTask
+/** Renders selected contact initials for AddTask. */
 function renderSelectedContactInitials() {
   let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
   let contactInitialsBox = document.getElementById("contact-initials");
@@ -230,29 +264,50 @@ function renderSelectedContactInitials() {
   });
 }
 
-// Filters contacts for AddTask input
+/** Normalize search input value to lowercase trimmed string. */
+/** @param {Event} e
+ * @returns {string}
+ */
+function getSearchValue(e) {
+  return String(e.target.value || "").trim().toLowerCase();
+}
+
+/** Filter contacts by name parts starting with value. 
+ * @param {string} value
+ * @param {Record<string, Contact>} contacts
+ * @returns {Record<string, Contact>}
+ */
+function filterContactsByValue(value, contacts) {
+  if (!value) return { ...(contacts || {}) };
+  const filtered = {};
+  for (const id in (contacts || {})) {
+    const name = String(contacts[id].name || "").toLowerCase();
+    const parts = name.split(" ").filter(Boolean);
+    if (parts.some((p) => p.startsWith(value))) filtered[id] = contacts[id];
+  }
+  return filtered;
+}
+
+/** Re-render the AddTask contact list box with provided contacts.
+ * @param {HTMLElement} listBox
+ * @param {Record<string, Contact>} contactsMap
+ */
+function rerenderAddTaskList(listBox, contactsMap) {
+  listBox.innerHTML = "";
+  window.renderContactsForAddTask(contactsMap, listBox);
+}
+
+/** Filters contacts for AddTask input. */
 window.onContactInputForAddTask = function(e) {
-  const value = String(e.target.value || "").trim().toLowerCase();
+  const value = getSearchValue(e);
   const listBox = document.getElementById("contact-list-box");
   if (!listBox) return;
   listBox.classList.remove("d-none");
-  const filtered = {};
-  if (value.length === 0) {
-    Object.assign(filtered, loadedContacts || {});
-  } else {
-    for (const id in (loadedContacts || {})) {
-      const contact = loadedContacts[id];
-      const nameParts = String(contact.name || "").trim().toLowerCase().split(" ");
-      if (nameParts.some((part) => part.startsWith(value))) {
-        filtered[id] = contact;
-      }
-    }
-  }
-  listBox.innerHTML = "";
-  window.renderContactsForAddTask(filtered, listBox);
+  const filtered = filterContactsByValue(value, loadedContacts);
+  rerenderAddTaskList(listBox, filtered);
 };
 
-// Initialize the contact module
+/** Initialize the contact module. */
 function initContacts() {
   setupAuthListener();
   showAllData();
@@ -260,3 +315,84 @@ function initContacts() {
 
 // Start initialization on page load
 initContacts();
+
+
+/**
+ * Validates the name field; sets UI error if invalid.
+ * @param {string} name
+ * @returns {boolean}
+ */
+function validateEditNameField(name) {
+  if (!name) {
+    showFieldError("edit-name-input", "Name is required");
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Validates the email field; sets UI error if invalid.
+ * @param {string} email
+ * @returns {boolean}
+ */
+function validateEditEmailField(email) {
+  if (!email) {
+    showFieldError("edit-email-input", "E-Mail is required");
+    return false;
+  } else if (!isValidEmail(email)) {
+    showFieldError("edit-email-input", "Please enter a valid email address");
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Validates the phone field; sets UI error if invalid.
+ * @param {string} phone
+ * @returns {boolean}
+ */
+function validateEditPhoneField(phone) {
+  if (!phone) {
+    showFieldError("edit-phone-input", "Phone is required");
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Validates all edit contact fields and returns whether the form is valid.
+ * @param {{name:string,email:string,phone:string}} values
+ * @returns {boolean}
+ */
+function validateEditFormFields(values) {
+  const nameValid = validateEditNameField(values.name);
+  const emailValid = validateEditEmailField(values.email);
+  const phoneValid = validateEditPhoneField(values.phone);
+
+  return nameValid && emailValid && phoneValid;
+}
+
+/** Validates the edit contact form by reading values and applying validators. */
+function validateEditContactForm() {
+  const values = getEditFormValues();
+  clearEditFormErrors();
+  return validateEditFormFields(values);
+}
+
+/** Validate & save edited contact; updates Firebase and guards against menu re-open. */
+function saveEditedContact() {
+  const ev = (typeof window !== 'undefined' && window.event) ? window.event : null;
+  ev?.stopPropagation?.();
+  _swallowNextDocClick = true; setTimeout(() => { _swallowNextDocClick = false; }, 300);
+  _suppressMobileNavbar = true; setTimeout(()=>{ _suppressMobileNavbar = false; }, 350);
+  if (!validateEditContactForm()) return;
+  getUpdatedContactData();
+  updateContactInFirebase();
+}
+
+/** Delete current contact and navigate back in mobile layout. */
+function deleteContactAndGoBack(event) {
+  event.stopPropagation();
+  deleteContact();
+  detailsMobileBack();
+}

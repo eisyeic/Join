@@ -226,7 +226,33 @@ function createContactListItemTemplate(contact, id) {
   `;
 }
 
-
+/**
+ * Build a contact list item (compact row) as HTML string.
+ * @param {{name:string,email:string,phone:string,colorIndex?:number,initials?:string}} key
+ * @param {string} id
+ * @returns {string}
+ */
+function getContactPerson(key, id) {
+  let savedColorIndex = key.colorIndex;
+  if (!savedColorIndex) {
+    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
+  }
+  const initials = key.initials || getInitials(key.name);
+  return /*html*/ `
+        <div class="contact-placeholder">
+            <img src="./assets/contacts/img/Vector 10.svg" />
+        </div>
+        <div class="contact-person" onclick="showContactDetails('${key.name}', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
+            <div class="contact-person-icon">
+                <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
+                <p>${initials}</p>
+            </div>
+            <div class="contact-person-name">
+                <h5>${key.name}</h5>
+                <a>${key.email}</a>
+            </div>
+        </div>`;
+}
 
 
 

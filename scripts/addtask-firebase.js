@@ -6,31 +6,83 @@ let db = getDatabase(app);
 let loadedContacts = {};
 let currentEditingTaskId = "";
 
+/**
+ * @file Add Task – Firebase integration & form orchestration.
+ * Loads contacts, reads/validates form data, and persists tasks to Firebase Realtime Database.
+ *
+ * External dependencies:
+ * - Firebase v10.12.0 (database/auth) via CDN imports
+ * - `app`, `auth` from local firebase config (./firebase.js)
+ * - DOM helpers like `$` and globals `selectedPriority`, `subtasks`
+ *
+ * @typedef {Object} Contact
+ * @property {string} id
+ * @property {string} name
+ * @property {string} initials
+ * @property {number} colorIndex
+ *
+ * @typedef {Object} Subtask
+ * @property {string} name
+ * @property {boolean} checked
+ *
+ * @typedef {Object} BaseTask
+ * @property {string} column
+ * @property {string} title
+ * @property {string} description
+ * @property {string} dueDate
+ * @property {string} category
+ * @property {string} priority
+ * @property {Subtask[]} subtasks
+ *
+ * @typedef {Object} FullTask
+ * @property {string} [editingId]
+ * @property {Contact[]} assignedContacts
+ * @property {string} [createdAt]
+ * @property {string} [updatedAt]
+ * @property {string} column
+ * @property {string} title
+ * @property {string} description
+ * @property {string} dueDate
+ * @property {string} category
+ * @property {string} priority
+ * @property {Subtask[]} subtasks
+ */
 
-
-// Sets the current editing task ID and updates the wrapper dataset attribute
+/**
+ * Set the current editing task id and mirror it to the wrapper dataset.
+ * @param {string} id
+ * @returns {void}
+ */
 window.setCurrentEditingTaskId = function (id) {
   currentEditingTaskId = id || "";
   const wrapper = document.querySelector('.addtask-wrapper');
   if (wrapper) wrapper.dataset.editingId = currentEditingTaskId;
 };
 
-// Returns the task id that is currently being edited
+/**
+ * Get the current editing task id from in-memory state.
+ * @returns {string}
+ */
 window.getCurrentEditingTaskId = function () {
   return currentEditingTaskId;
 };
 
-
-// Initializes the Add Task module: loads contacts, sets up listeners, and ensures the UI is ready
-function initAddTask() {
+/**
+ * Initialize Add Task: contacts, auth listener, input filter, and buttons.
+ * @returns {void}
+ */
+(function initAddTask() {
   loadContactsAndRender();
   setupAuthListener();
   setupContactInputListener();
   setupCreateButton();
   setupOkButtons();
-}
+})();
 
-// Resolves the active editing id from in-memory state, global helpers, or DOM dataset
+/**
+ * Resolve the active editing id from memory, globals, or DOM dataset.
+ * @returns {string}
+ */
 function getEditingId() {
   return (
     currentEditingTaskId ||
@@ -42,14 +94,21 @@ function getEditingId() {
   );
 }
 
-// Normalize a contact record by id
+/**
+ * Normalize a contact by id from the loadedContacts cache.
+ * @param {string} id
+ * @returns {Contact}
+ */
 function mapContact(id) {
   const c = loadedContacts[id] || {};
   const initials = c.initials || (c.name ? c.name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase() : "");
   return { id, name: c.name || String(id), colorIndex: c.colorIndex ?? 1, initials };
 }
 
-// Read selected contact ids from the dataset
+/**
+ * Read selected contact ids from the assigned-select-box dataset.
+ * @returns {string[]}
+ */
 function getIdsFromDataset() {
   try {
     const raw = $("assigned-select-box")?.dataset.selected || "[]";
@@ -60,7 +119,10 @@ function getIdsFromDataset() {
   }
 }
 
-// Collect assigned contacts from UI (selected lis or dataset)
+/**
+ * Collect assigned contacts from selected <li> nodes; fallback to dataset ids.
+ * @returns {Contact[]}
+ */
 function getAssignedContactsFromUI() {
   const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
   if (selectedLis.length > 0) return Array.from(selectedLis, li => mapContact(li.id));
@@ -68,37 +130,40 @@ function getAssignedContactsFromUI() {
   return ids.map(mapContact);
 }
 
+/**
+ * Format a value from the native datepicker (YYYY-MM-DD) to DD/MM/YYYY.
+ * Returns empty string for falsy/invalid inputs.
+ * @param {string} iso
+ * @returns {string}
+ */
+function formatPickerToDDMMYYYY(iso) {
+  if (!iso || typeof iso !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
 
-// Reads core task fields from the Add Task form and returns the base task payload
+/**
+ * Read base task fields from the Add Task form.
+ * @returns {BaseTask}
+ */
 function baseTaskFromForm() {
+  const rawDate = $("datepicker")?.value || "";
+  const dueDate = formatPickerToDDMMYYYY(rawDate);
   return {
     column: "todo",
     title: $("addtask-title").value.trim(),
     description: $("addtask-textarea").value.trim(),
-    dueDate: $("datepicker").value.trim(),
+    dueDate: dueDate,
     category: $("category-select").querySelector("span").textContent,
     priority: selectedPriority,
     subtasks: subtasks.map((name) => ({ name, checked: false })),
   };
 }
 
-// Shows the slide-in confirmation banner and dims the overlay
-function showBanner() {
-  const overlay = $("overlay-bg");
-  const banner = $("slide-in-banner");
-  if (overlay) overlay.style.display = "block";
-  if (banner) banner.classList.add("visible");
-}
-
-// Hides the slide-in confirmation banner and restores overlay opacity
-function hideBanner() {
-  const overlay = $("overlay-bg");
-  const banner = $("slide-in-banner");
-  if (banner) banner.classList.remove("visible");
-  if (overlay) overlay.style.display = "none";
-}
-
-// Completes the create-task flow: hides banner, resets UI, and navigates to board if needed
+/**
+ * Complete the create flow: hide banner, reset UI, and navigate if not on board.
+ * @returns {void}
+ */
 function finishCreateFlow() {
   setTimeout(() => {
     hideBanner();
@@ -109,7 +174,10 @@ function finishCreateFlow() {
   }, 1200);
 }
 
-// Completes the update-task flow: hides banner/overlay and returns to board when appropriate
+/**
+ * Complete the update flow: hide banner/overlay & return to board when appropriate.
+ * @returns {void}
+ */
 function finishUpdateFlow() {
   setTimeout(() => {
     hideBanner();
@@ -120,20 +188,32 @@ function finishUpdateFlow() {
   }, 900);
 }
 
-// Clears all validation error messages in the Add Task form
+/**
+ * Clear all validation error messages in the Add Task form.
+ * @returns {void}
+ */
 function resetFormErrors() {
   $("addtask-error").innerHTML = "";
   $("due-date-error").innerHTML = "";
   $("category-selection-error").innerHTML = "";
 }
 
-// Renders a single validation error and optionally highlights a field border
+/**
+ * Render a validation error and optionally highlight a field.
+ * @param {string} msgId - Element id to place the message.
+ * @param {string} [borderId] - Element id whose border should be highlighted.
+ * @param {string} msg - Error text.
+ * @returns {void}
+ */
 function setError(msgId, borderId, msg) {
   $(msgId).innerHTML = msg;
   if (borderId) $(borderId).style.borderColor = "var(--error-color)";
 }
 
-// Auth listener to project user initials into the UI when available
+/**
+ * Listen for auth changes and project user initials into the UI, if supported.
+ * @returns {void}
+ */
 function setupAuthListener() {
   onAuthStateChanged(auth, (user) => {
     if (window.updateUserInitials) {
@@ -142,7 +222,10 @@ function setupAuthListener() {
   });
 }
 
-// Loads contacts from Firebase and renders them into the contact list box
+/**
+ * Load contacts from Firebase and render them to the contact list box.
+ * @returns {void}
+ */
 function loadContactsAndRender() {
   let contactListBox = $("contact-list-box");
   if (!contactListBox) return;
@@ -157,7 +240,10 @@ function loadContactsAndRender() {
   });
 }
 
-// Setup contact input listener
+/**
+ * Wire the contact input filter to the input event.
+ * @returns {void}
+ */
 function setupContactInputListener() {
   const contactInput = $("contact-input");
   if (contactInput && window.onContactInputForAddTask) {
@@ -165,8 +251,10 @@ function setupContactInputListener() {
   }
 }
 
-
-// Aggregates the full task payload from the form, including assigned contacts and editing id
+/**
+ * Aggregate full task payload including assigned contacts and editing id.
+ * @returns {FullTask}
+ */
 function collectFormData() {
   const base = baseTaskFromForm();
   return {
@@ -176,7 +264,11 @@ function collectFormData() {
   };
 }
 
-// Validates the title field
+/**
+ * Validate the title.
+ * @param {FullTask|BaseTask} data
+ * @returns {boolean}
+ */
 function validateTitle(data) {
   if (!data.title) {
     setError("addtask-error", "addtask-title", "This field is required");
@@ -185,7 +277,11 @@ function validateTitle(data) {
   return true;
 }
 
-// Validates the due date field
+/**
+ * Validate the dueDate.
+ * @param {FullTask|BaseTask} data
+ * @returns {boolean}
+ */
 function validateDueDate(data) {
   if (!data.dueDate) {
     setError("due-date-error", "datepicker-wrapper", "Please select a due date");
@@ -194,7 +290,11 @@ function validateDueDate(data) {
   return true;
 }
 
-// Validates the category dropdown selection
+/**
+ * Validate the category.
+ * @param {FullTask|BaseTask} data
+ * @returns {boolean}
+ */
 function validateCategory(data) {
   if (data.category === "Select task category") {
     setError("category-selection-error", "category-select", "Please choose category");
@@ -203,12 +303,20 @@ function validateCategory(data) {
   return true;
 }
 
-// Validates that a priority has been selected
+/**
+ * Validate the priority.
+ * @param {FullTask|BaseTask} data
+ * @returns {boolean}
+ */
 function validatePriority(data) {
   return !!data.priority;
 }
 
-// Runs all form validators, mutating the UI error state, and returns the combined result
+/**
+ * Run all validators and mutate UI state.
+ * @param {FullTask|BaseTask} data
+ * @returns {boolean}
+ */
 function validateFormData(data) {
   resetFormErrors();
   let ok = true;
@@ -219,7 +327,10 @@ function validateFormData(data) {
   return ok;
 }
 
-// Handles saving when editing: validates, preserves column, and updates the task
+/**
+ * Handle clicking OK in edit mode: validate and update task, preserving column.
+ * @returns {Promise<void>}
+ */
 async function handleEditOkClick() {
   const taskData = collectFormData();
   if (!validateFormData(taskData)) return;
@@ -234,7 +345,10 @@ async function handleEditOkClick() {
 }
 window.handleEditOkClick = handleEditOkClick;
 
-// Handles creating a new task from the Add Task form after validation
+/**
+ * Handle clicking Create: validate and persist a new task.
+ * @returns {void}
+ */
 function handleCreateClick() {
   const data = collectFormData();
   if (!validateFormData(data)) return;
@@ -242,13 +356,19 @@ function handleCreateClick() {
   if (!window.location.pathname.endsWith("addtask.html")) window.toggleAddTaskBoard();
 }
 
-// Setup create button event listener
+/**
+ * Wire the Create button click handler.
+ * @returns {void}
+ */
 function setupCreateButton() {
   const createBtn = $("create-button");
   if (createBtn) createBtn.addEventListener("click", handleCreateClick);
 }
 
-// Wires explicit click handlers for save/edit OK buttons to prevent double triggers
+/**
+ * Wire the edit OK buttons to prevent double triggers.
+ * @returns {void}
+ */
 function setupOkButtons() {
   const okBtn = $("ok-button");
   if (okBtn) okBtn.addEventListener("click", handleEditOkClick);
@@ -256,7 +376,11 @@ function setupOkButtons() {
   if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
 }
 
-// Persists a new task to Firebase under /tasks and triggers the create flow UI
+/**
+ * Persist a new task to Firebase under /tasks and start the create-flow UI.
+ * @param {FullTask} taskData
+ * @returns {void}
+ */
 function sendTaskToFirebase(taskData) {
   const tasksRef = ref(db, "tasks");
   const newRef = push(tasksRef);
@@ -266,7 +390,12 @@ function sendTaskToFirebase(taskData) {
     .catch((e) => console.error("Fehler beim Speichern:", e));
 }
 
-// Updates an existing task in Firebase and triggers the update flow UI
+/**
+ * Update an existing task in Firebase and start the update-flow UI.
+ * @param {string} taskId
+ * @param {FullTask} taskData
+ * @returns {void}
+ */
 function updateTaskInFirebase(taskId, taskData) {
   const taskRef = ref(db, `tasks/${taskId}`);
   const toSave = {
@@ -284,6 +413,3 @@ function updateTaskInFirebase(taskId, taskData) {
     .then(() => { showBanner(); finishUpdateFlow(); })
     .catch((e) => console.error("Fehler beim Aktualisieren:", e));
 }
-
-// Run initialization immediately on script load
-initAddTask();
