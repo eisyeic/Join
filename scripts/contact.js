@@ -15,7 +15,6 @@
   setupEscapeHandler();
 })();
 
-window.getContactPerson = getContactPerson;
 window.showContactDetails = showContactDetails;
 window.detailsMobileBack = detailsMobileBack;
 window.addDetailsMobileNavbar = addDetailsMobileNavbar;
@@ -305,9 +304,7 @@ function getNormalizedEvent(e){
  * @returns {boolean}
  */
 function isAllowedEditTrigger(target){
-  if (!target) return false;
-  if (target.closest('.contact-person')) return false;
-  return !!(target.closest('#single-person-content-mobile-navbar') || target.closest('#edit-contact-button') || target.closest('[data-role="edit-contact-trigger"]'));
+  return true;
 }
 
 /**
