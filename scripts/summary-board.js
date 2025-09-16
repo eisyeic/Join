@@ -1,14 +1,24 @@
-// Imports
+/**
+ * @file Summary Board logic.
+ * Loads tasks from Firebase, updates counters/deadlines, shows user info,
+ * and runs mobile-only intro animations.
+ */
+
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { auth, app } from "./firebase.js";
 
 const db = getDatabase(app);
 
+// --------------------------------------------------
+// Utilities
+// --------------------------------------------------
 
-// Utility functions
-
-// Returns uppercase initials from a full name
+/**
+ * Returns uppercase initials from a full name.
+ * @param {string} name - Full name.
+ * @returns {string} Uppercase initials.
+ */
 function getInitials(name) {
   return name
     .split(" ")
@@ -16,7 +26,10 @@ function getInitials(name) {
     .join("");
 }
 
-// Generates a time-of-day greeting based on the current hour
+/**
+ * Returns a time-of-day greeting based on the current hour.
+ * @returns {"Good Night"|"Good Morning"|"Good Afternoon"|"Good Evening"}
+ */
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 5) return "Good Night";
@@ -25,15 +38,24 @@ function getGreeting() {
   return "Good Evening";
 }
 
-// Shorthand for document.getElementById
+/**
+ * Shorthand for document.getElementById.
+ * @param {string} id - Element ID.
+ * @returns {HTMLElement|null}
+ */
 function $(id) {
   return document.getElementById(id);
 }
 
+// --------------------------------------------------
+// Task Management
+// --------------------------------------------------
 
-// Task management
-
-// Subscribes to Firebase tasks, aggregates counters and earliest urgent date, then updates the UI
+/**
+ * Subscribes to Firebase tasks, computes counters and the earliest urgent date,
+ * then updates the UI.
+ * @returns {void}
+ */
 function loadTaskCounts() {
   const tasksRef = ref(db, "tasks");
   onValue(tasksRef, (snapshot) => {
@@ -55,7 +77,10 @@ function loadTaskCounts() {
   });
 }
 
-// Creates an initial counters object for task board statistics
+/**
+ * Creates the initial counters object.
+ * @returns {{todo:number,inProgress:number,awaitFeedback:number,done:number,urgent:number,total:number}}
+ */
 function initializeCounts() {
   return {
     todo: 0,
@@ -67,7 +92,13 @@ function initializeCounts() {
   };
 }
 
-// Updates counters for a single task and tracks earliest urgent due date
+/**
+ * Updates counters for a single task and tracks the earliest urgent due date.
+ * @param {any} task - Task object from Firebase.
+ * @param {ReturnType<initializeCounts>} counts - Counters object.
+ * @param {(date: Date) => void} updateEarliestDate - Callback for earliest date.
+ * @returns {void}
+ */
 function processTask(task, counts, updateEarliestDate) {
   counts.total++;
   if (task.column === 'todo') counts.todo++;
@@ -84,7 +115,11 @@ function processTask(task, counts, updateEarliestDate) {
   }
 }
 
-// Parses a date string in DD/MM/YYYY format to a Date object
+/**
+ * Parses a date string in DD/MM/YYYY format to a Date object.
+ * @param {string} dateStr
+ * @returns {Date|null}
+ */
 function parseTaskDate(dateStr) {
   const [day, month, year] = dateStr.split('/');
   const correctedDate = `${month}/${day}/${year}`;
@@ -92,7 +127,11 @@ function parseTaskDate(dateStr) {
   return isNaN(taskDate) ? null : taskDate;
 }
 
-// Writes the earliest urgent deadline date into desktop and mobile elements
+/**
+ * Writes the earliest urgent deadline into the UI.
+ * @param {Date|null} earliestDate
+ * @returns {void}
+ */
 function updateUrgentDeadline(earliestDate) {
   const desktopDeadline = $("urgent-deadline");
   const mobileDeadline = $("urgent-deadline-mobile");
@@ -102,7 +141,11 @@ function updateUrgentDeadline(earliestDate) {
   if (mobileDeadline) mobileDeadline.textContent = displayDate;
 }
 
-// Formats a Date as Month D, YYYY for display or returns Nothing if null
+/**
+ * Formats a Date as "Month D, YYYY", or returns "Nothing" if null.
+ * @param {Date|null} date
+ * @returns {string}
+ */
 function formatUrgentDate(date) {
   if (!date) return "Nothing";
   const month = date.toLocaleDateString('en-US', { month: 'long' });
@@ -111,7 +154,11 @@ function formatUrgentDate(date) {
   return `${month} ${day}, ${year}`;
 }
 
-// Updates (and animates) task counters in desktop and mobile widgets
+/**
+ * Updates and animates task counters for desktop and mobile widgets.
+ * @param {ReturnType<initializeCounts>} counts
+ * @returns {void}
+ */
 function updateTaskCountElements(counts) {
   const elements = {
     todo: $("task-to-do-text"),
@@ -135,7 +182,12 @@ function updateTaskCountElements(counts) {
   }
 }
 
-// Animates a numeric counter from 0 to its target, then snaps to the final value
+/**
+ * Animates a numeric counter from 0 up to its target value.
+ * @param {HTMLElement|null} element - Target element.
+ * @param {number} target - Final value.
+ * @returns {void}
+ */
 function animateCounter(element, target) {
   if (!element || isNaN(target)) return;
   let current = 0;
@@ -152,10 +204,15 @@ function animateCounter(element, target) {
   }, delay);
 }
 
+// --------------------------------------------------
+// User Authentication
+// --------------------------------------------------
 
-// User authentication
-
-// Projects the authenticated user's name, greeting, and initials into the UI
+/**
+ * Projects the user's name, greeting, and initials into the UI.
+ * @param {import("firebase/auth").User} user - Firebase user.
+ * @returns {void}
+ */
 function updateUserInterface(user) {
   const name = user.displayName || "User";
   const greeting = getGreeting();
@@ -177,18 +234,24 @@ function updateUserInterface(user) {
   }
 }
 
-
+// --------------------------------------------------
 // Animations
+// --------------------------------------------------
 
-// Initializes mobile-only intro animations for the summary board
+/**
+ * Runs mobile-only intro animations.
+ * @returns {void}
+ */
 function initMobileAnimations() {
   if (window.innerWidth > 900) return;
-
   animateDashboardHeader();
   animateTaskDashboardMobile();
 }
 
-// Slides the dashboard header upward after a short delay
+/**
+ * Slides the dashboard header upward.
+ * @returns {void}
+ */
 function animateDashboardHeader() {
   setTimeout(() => {
     const header = document.querySelector('.dashboard-header');
@@ -199,7 +262,10 @@ function animateDashboardHeader() {
   }, 1800);
 }
 
-// Fades and slides in the mobile task dashboard after the header animation
+/**
+ * Fades and slides in the mobile task dashboard.
+ * @returns {void}
+ */
 function animateTaskDashboardMobile() {
   setTimeout(() => {
     const dashboardMobile = document.querySelector('.task-dashboard-mobile');
@@ -211,17 +277,31 @@ function animateTaskDashboardMobile() {
   }, 2100);
 }
 
-
+// --------------------------------------------------
 // Initialization
+// --------------------------------------------------
 
+/**
+ * Subscribes to Firebase Auth state changes.
+ * @returns {void}
+ */
 function setupAuthListener() {
   onAuthStateChanged(auth, handleAuthChange);
 }
-// Handles Firebase auth state changes and updates the UI for signed-in users
+
+/**
+ * Handles Auth state changes and updates the UI for signed-in users.
+ * @param {import("firebase/auth").User|null} user
+ * @returns {void}
+ */
 function handleAuthChange(user) {
   if (user) updateUserInterface(user);
 }
 
+/**
+ * Initializes the Summary Board: auth listener, animations, and task counters.
+ * @returns {void}
+ */
 function initSummaryBoard() {
   setupAuthListener();
   initMobileAnimations();

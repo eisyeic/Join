@@ -1,7 +1,36 @@
-// Current contact object
+/**
+ * @file Contacts & Add-Task templates.
+ * Renders contact details (desktop/mobile), mobile summary tiles,
+ * and provides HTML templates for the Add-Task form (including sections).
+ *
+ * Dependencies:
+ * - Global helpers: `$` (getElementById), `getInitials(name: string): string`
+ */
+
+/**
+ * Minimal contact structure used by templates in this file.
+ * @typedef {Object} Contact
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {number} [colorIndex]
+ * @property {string} [initials]
+ * @property {string} [id]
+ */
+
+/** Currently selected contact (managed elsewhere). */
 let currentContact = {};
 
-// Render the desktop contact details view into the given container
+/**
+ * Renders the desktop contact details view into a container.
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {HTMLElement} detailSection - Target container.
+ * @param {string} id
+ * @returns {void}
+ */
 function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
   detailSection.innerHTML = `
         <div class="contact-single-person-content-head">
@@ -32,7 +61,15 @@ function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
         </div>`;
 }
 
-// Render the mobile contact details layout into the given container
+/**
+ * Renders the mobile layout for contact details.
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {HTMLElement} detailSection - Target container.
+ * @returns {void}
+ */
 function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
   detailSection.innerHTML = ``;
   detailSection.innerHTML = `
@@ -75,7 +112,10 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
     `;
 }
 
-// Render the Task To-do summary tile for mobile
+/**
+ * Renders the mobile “Task To-do” summary tile.
+ * @returns {void}
+ */
 function getMobileTaskTodo() {
   $("mobile-task-to-do").innerHTML = `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
@@ -92,7 +132,10 @@ function getMobileTaskTodo() {
           </div>`;
 }
 
-// Render the Task on Board summary tile for mobile
+/**
+ * Renders the mobile “Task on Board” summary tile.
+ * @returns {void}
+ */
 function getMobileTaskOnBoard() {
   $("mobile-task-on-board").innerHTML = `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
@@ -109,12 +152,19 @@ function getMobileTaskOnBoard() {
           </div>`;
 }
 
-// Build a standardized inline error message HTML
+/**
+ * Builds a standardized inline error message.
+ * @param {string} message
+ * @returns {string} HTML string for the error.
+ */
 function getErrorMessage(message) {
   return `<p class="error-message">${message}</p>`;
 }
 
-// Template sections
+/**
+ * Section: Title / Description / Due Date for the Add-Task form.
+ * @returns {string} HTML string.
+ */
 function getTaskTitleSection() {
   return `<div class="addtask-main-content">
     <div>
@@ -131,7 +181,7 @@ function getTaskTitleSection() {
       <div class="date-input" id="datepicker-wrapper">
         <input type="date" id="datepicker" />
         <span id="date-placeholder" class="date-placeholder">dd/mm/yyyy</span>
-        <span id="date-display" class="date-display"></span>
+      <span id="date-display" class="date-display"></span>
         <img src="./assets/icons/add_task/event.svg" alt="Calendar Icon" />
       </div>
       <div class="addtask-error" id="due-date-error"></div>
@@ -139,6 +189,10 @@ function getTaskTitleSection() {
   </div>`;
 }
 
+/**
+ * Section: Priority buttons for the Add-Task form.
+ * @returns {string} HTML string.
+ */
 function getPrioritySection() {
   return `<div class="priority-wrapper">
     <span class="label-main">Priority</span>
@@ -159,6 +213,10 @@ function getPrioritySection() {
   </div>`;
 }
 
+/**
+ * Section: “Assigned to” field with search and list.
+ * @returns {string} HTML string.
+ */
 function getAssignedSection() {
   return `<div class="assigned-box">
     <span class="label-main">Assigned to</span>
@@ -172,6 +230,10 @@ function getAssignedSection() {
   </div>`;
 }
 
+/**
+ * Section: Category selection for the Add-Task form.
+ * @returns {string} HTML string.
+ */
 function getCategorySection() {
   return `<div class="category-box">
     <span class="label-main">Category</span>
@@ -187,6 +249,10 @@ function getCategorySection() {
   </div>`;
 }
 
+/**
+ * Section: Subtasks with input and list.
+ * @returns {string} HTML string.
+ */
 function getSubtaskSection() {
   return `<div class="subtask-box">
     <div>
@@ -208,12 +274,22 @@ function getSubtaskSection() {
   </div>`;
 }
 
-// Return the full Add-Task form markup
+/**
+ * Returns the full Add-Task form HTML (concatenates all sections).
+ * @returns {string}
+ */
 function getAddtaskTemplate() {
   return getTaskTitleSection() + getPrioritySection() + getAssignedSection() + getCategorySection() + getSubtaskSection();
 }
 
-// Build the contact dropdown option template used in Assigned to
+/**
+ * Builds a contact option for the “Assigned to” dropdown.
+ * (You also have a second, similar function below—both remain,
+ * as they appear to be used separately.)
+ * @param {Contact} contact
+ * @param {string} id
+ * @returns {string} HTML string for the dropdown option.
+ */
 function createContactListItemTemplate(contact, id) {
   return `
     <div>
@@ -227,10 +303,10 @@ function createContactListItemTemplate(contact, id) {
 }
 
 /**
- * Build a contact list item (compact row) as HTML string.
+ * Builds a compact contact row as HTML.
  * @param {{name:string,email:string,phone:string,colorIndex?:number,initials?:string}} key
  * @param {string} id
- * @returns {string}
+ * @returns {string} HTML string for the contact row.
  */
 function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
@@ -253,8 +329,3 @@ function getContactPerson(key, id) {
             </div>
         </div>`;
 }
-
-
-
-
-

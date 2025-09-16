@@ -1,3 +1,13 @@
+/**
+ * @file Task Overlay & Add-Task Overlay logic.
+ * Opens/hides the task overlay, renders content, wires edit/delete actions,
+ * normalizes subtasks, and controls the Add-Task overlay.
+ *
+ * Assumptions:
+ * - Global helper function `$` (getElementById).
+ * - The HTML structure contains the IDs/classes referenced here.
+ */
+
 import {
   getDatabase,
   update,
@@ -6,13 +16,37 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { renderAssignedContacts, renderSubtasks } from "./template.modul.js";
 
-// Firebase Realtime Database instance
+/**
+ * Subtask shape.
+ * @typedef {Object} Subtask
+ * @property {string} name
+ * @property {boolean} [checked]
+ */
+
+/**
+ * Minimal Task shape used here.
+ * @typedef {Object} Task
+ * @property {string} [id]
+ * @property {string} [title]
+ * @property {string} [description]
+ * @property {string} [dueDate]           - Expected "DD/MM/YYYY".
+ * @property {"urgent"|"medium"|"low"} [priority]
+ * @property {string} [category]
+ * @property {Subtask[]} [subtasks]
+ */
+
+/** Firebase Realtime Database instance */
 const db = getDatabase();
 
-// Task categories
+/** Supported board columns. */
 const TASK_CATEGORIES = ["toDo", "inProgress", "awaitFeedback", "done"];
 
-// Open the task overlay for a given task id
+/**
+ * Opens the task overlay for a given task ID.
+ * Loads the task, normalizes subtasks, renders UI, wires buttons, and shows the overlay.
+ * @param {string} taskId
+ * @returns {Promise<void>}
+ */
 window.showTaskOverlay = async function (taskId) {
   try {
     const task = await fetchTask(taskId);
@@ -27,7 +61,10 @@ window.showTaskOverlay = async function (taskId) {
   }
 };
 
-// Hide the task overlay with animation
+/**
+ * Hides the task overlay with a fade-out animation.
+ * @returns {void}
+ */
 window.hideOverlay = function () {
   const bg = $("task-overlay-bg");
   const overlay = $("task-overlay");
@@ -42,16 +79,24 @@ window.hideOverlay = function () {
   }, 300);
 };
 
-// Fetch a task by id and attach its id on the object
+/**
+ * Fetches a task by ID from RTDB and attaches the ID to the object.
+ * @param {string} taskId
+ * @returns {Promise<Task|null>}
+ */
 async function fetchTask(taskId) {
   const snap = await get(ref(db, `tasks/${taskId}`));
   if (!snap.exists()) return null;
-  const task = snap.val();
+  const task = /** @type {Task} */ (snap.val());
   task.id = taskId;
   return task;
 }
 
-// Render all overlay sections for a task
+/**
+ * Renders all overlay sections for a task.
+ * @param {Task} task
+ * @returns {void}
+ */
 function fillTaskOverlay(task) {
   renderCategory(task.category);
   renderTitleDescDate(task);
@@ -61,7 +106,11 @@ function fillTaskOverlay(task) {
   setupSubtaskListeners(task);
 }
 
-// Render category label and class on overlay
+/**
+ * Renders the category label text and CSS class.
+ * @param {string} [category]
+ * @returns {void}
+ */
 function renderCategory(category) {
   const el = $("overlay-user-story");
   el.textContent = category || "";
@@ -69,14 +118,22 @@ function renderCategory(category) {
   el.classList.add(getLabelClass(category));
 }
 
-// Render title, description and due date
+/**
+ * Renders title, description, and due date.
+ * @param {Task} task
+ * @returns {void}
+ */
 function renderTitleDescDate(task) {
   $("overlay-title").innerHTML = task.title || "";
   $("overlay-description").textContent = task.description || "";
   $("overlay-due-date").textContent = task.dueDate || "";
 }
 
-// Render priority text + icon on overlay
+/**
+ * Renders priority text and icon.
+ * @param {"urgent"|"medium"|"low"} [priority]
+ * @returns {void}
+ */
 export function renderPriority(priority) {
   const icons = {
     urgent: "./assets/icons/board/Urgent.svg",
@@ -87,43 +144,59 @@ export function renderPriority(priority) {
   $("overlay-priority-icon").src = icons[priority] || "";
 }
 
-// Capitalize first letter of a string
+/**
+ * Capitalizes the first character of a string.
+ * @param {string} [str]
+ * @returns {string}
+ */
 function capitalize(str) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 }
 
-// Attach subtask checkbox listeners and visuals
+/**
+ * Wires subtask checkbox/label pairs (UI + status updates).
+ * @param {Task} task
+ * @returns {void}
+ */
 function setupSubtaskListeners(task) {
   const pairs =
     getPairsByDataIndex() || getPairsByIdPattern() || /** @type {any[]} */ ([]);
   pairs.forEach(({ checkbox, label, img, idx }) => {
-    if (checkbox && label) attachSubtaskEvents(checkbox, label, img, task.id, idx);
+    if (checkbox && label) attachSubtaskEvents(checkbox, label, img, /** @type {string} */(task.id), idx);
   });
 }
 
-// Find checkbox/label/img pairs via data-subtask-index
+/**
+ * Finds checkbox/label/img pairs via data-subtask-index attribute.
+ * @returns {{checkbox: HTMLInputElement, label: HTMLLabelElement|null, img: HTMLImageElement|null, idx: number}[]|null}
+ */
 function getPairsByDataIndex() {
   const nodes = document.querySelectorAll("[data-subtask-index]");
   if (!nodes.length) return null;
+  /** @type {{checkbox: HTMLInputElement, label: HTMLLabelElement|null, img: HTMLImageElement|null, idx: number}[]} */
   const out = [];
   nodes.forEach((el) => {
     const idx = parseInt(el.getAttribute("data-subtask-index") || "", 10);
     const checkbox =
-      el.matches('input[type="checkbox"]') ? el : el.querySelector('input[type="checkbox"]');
+      el.matches('input[type="checkbox"]') ? /** @type {HTMLInputElement} */ (el) : el.querySelector('input[type="checkbox"]');
     if (!checkbox || Number.isNaN(idx)) return;
     const label =
       document.querySelector(`label[for="${checkbox.id}"]`) ||
       /** @type {HTMLLabelElement} */ (checkbox.nextElementSibling);
-    const img = label ? label.querySelector("img") : null;
+    const img = label ? /** @type {HTMLImageElement|null} */ (label.querySelector("img")) : null;
     out.push({ checkbox, label, img, idx });
   });
   return out;
 }
 
-// Find checkbox/label/img pairs via id pattern (subtaskN)
+/**
+ * Finds checkbox/label/img pairs via ID pattern "subtaskN".
+ * @returns {{checkbox: HTMLInputElement, label: HTMLLabelElement|null, img: HTMLImageElement|null, idx: number}[]|null}
+ */
 function getPairsByIdPattern() {
   const boxes = document.querySelectorAll('input[type="checkbox"][id^="subtask"]');
   if (!boxes.length) return null;
+  /** @type {{checkbox: HTMLInputElement, label: HTMLLabelElement|null, img: HTMLImageElement|null, idx: number}[]} */
   const out = [];
   boxes.forEach((checkbox) => {
     const m = (checkbox.id || "").match(/(\d+)$/);
@@ -132,20 +205,28 @@ function getPairsByIdPattern() {
     const label =
       document.querySelector(`label[for="${checkbox.id}"]`) ||
       /** @type {HTMLLabelElement} */ (checkbox.nextElementSibling);
-    const img = label ? label.querySelector("img") : null;
-    out.push({ checkbox, label, img, idx });
+    const img = label ? /** @type {HTMLImageElement|null} */ (label.querySelector("img")) : null;
+    out.push({ checkbox: /** @type {HTMLInputElement} */ (checkbox), label, img, idx });
   });
   return out;
 }
 
-// Wire the edit button inside overlay
+/**
+ * Wires the edit button inside the overlay.
+ * @param {Task} task
+ * @returns {void}
+ */
 function wireEditButton(task) {
   const btn = $("edit-task-btn");
   if (!btn) return;
   btn.onclick = () => openEditInsideOverlay(task);
 }
 
-// Wire the delete button inside overlay
+/**
+ * Wires the delete button inside the overlay.
+ * @param {string} taskId
+ * @returns {void}
+ */
 function wireDeleteButton(taskId) {
   const btn = $("delete-task-btn");
   if (!btn) return;
@@ -159,7 +240,10 @@ function wireDeleteButton(taskId) {
   };
 }
 
-// Show overlay background and animate in
+/**
+ * Shows the overlay background and plays the animate-in transition.
+ * @returns {void}
+ */
 function showOverlayUI() {
   const bg = $("task-overlay-bg");
   const overlay = $("task-overlay");
@@ -169,7 +253,15 @@ function showOverlayUI() {
   overlay.classList.add("animate-in");
 }
 
-// Attach subtask checkbox listeners for status and icon
+/**
+ * Attaches subtask checkbox listeners for UI/hover icon + backend status.
+ * @param {HTMLInputElement} checkbox
+ * @param {HTMLLabelElement} label
+ * @param {HTMLImageElement|null} img
+ * @param {string} taskId
+ * @param {number} index
+ * @returns {void}
+ */
 function attachSubtaskEvents(checkbox, label, img, taskId, index) {
   const updateImage = () => {
     if (!img) return;
@@ -188,7 +280,12 @@ function attachSubtaskEvents(checkbox, label, img, taskId, index) {
   label.addEventListener("mouseleave", updateImage);
 }
 
-// Ensure subtasks are normalized to {name,checked} shape
+/**
+ * Normalizes subtasks to the shape { name, checked }.
+ * @param {string} taskId
+ * @param {Task} task
+ * @returns {Promise<void>}
+ */
 async function normalizeSubtasks(taskId, task) {
   if (!Array.isArray(task.subtasks)) return;
   const normalized = task.subtasks.map((st) =>
@@ -198,11 +295,17 @@ async function normalizeSubtasks(taskId, task) {
   task.subtasks = normalized;
 }
 
-// Update a single subtask's checked status
+/**
+ * Updates a single subtask "checked" state in RTDB.
+ * @param {string} taskId
+ * @param {number} subtaskIndex
+ * @param {boolean} isChecked
+ * @returns {Promise<void>}
+ */
 export async function updateSubtaskStatus(taskId, subtaskIndex, isChecked) {
   const taskRef = ref(db, `tasks/${taskId}`);
   const snap = await get(taskRef);
-  const task = snap.val();
+  const task = /** @type {Task} */ (snap.val());
   if (!task?.subtasks?.[subtaskIndex]) return;
   const updated = task.subtasks.map((st, i) =>
     i === subtaskIndex
@@ -212,7 +315,10 @@ export async function updateSubtaskStatus(taskId, subtaskIndex, isChecked) {
   await update(taskRef, { subtasks: updated });
 }
 
-// Opens the Add Task overlay and resets the form
+/**
+ * Opens the Add Task overlay and resets the form.
+ * @returns {void}
+ */
 function openOverlay() {
   overlay.classList.remove("d-none");
   overlayContent.classList.remove("slide-out");
@@ -227,7 +333,10 @@ function openOverlay() {
     );
 }
 
-// Closes the Add Task overlay with a slide-out animation
+/**
+ * Closes the Add Task overlay with a slide-out animation.
+ * @returns {void}
+ */
 function closeOverlay() {
   overlayContent.classList.remove("slide-in");
   overlayContent.classList.add("slide-out");
@@ -237,28 +346,42 @@ function closeOverlay() {
     overlayContent.removeEventListener("animationend", handler);
   });
 }
-// Toggles the Add Task overlay visibility
+
+/**
+ * Toggles the Add Task overlay (open/close) and moves the form back to the aside.
+ * @returns {void}
+ */
 window.toggleAddTaskBoard = function () {
   if (overlay.classList.contains("d-none")) openOverlay();
   else closeOverlay();
   moveFormBackToAside();
 };
 
-// Moves the add-task form back to the aside placeholder
+/**
+ * Moves the Add Task form back to the aside placeholder.
+ * @returns {void}
+ */
 function moveFormBackToAside() {
   const src = document.querySelector(".edit-addtask .addtask-wrapper");
   const dst = document.querySelector(".addtask-aside-clone");
   if (src && dst) dst.replaceChildren(src);
 }
 
-// Toggles the task overlay into edit mode and moves the form into place
+/**
+ * Wires the edit button inside the Add-Task overlay.
+ * @returns {void}
+ */
 function setupEditTaskButton() {
   const editBtn = $("edit-task-btn");
   if (editBtn) {
     editBtn.addEventListener("click", onEditTaskBtnClick);
   }
 }
-// Handle edit task button click
+
+/**
+ * Handler for the edit button in the Add-Task overlay.
+ * @returns {void}
+ */
 function onEditTaskBtnClick() {
   $("task-overlay-content").classList.toggle("d-none");
   document.querySelector(".edit-addtask-wrapper").classList.toggle("d-none");
@@ -267,24 +390,33 @@ function onEditTaskBtnClick() {
   if (src && dst) dst.replaceChildren(src);
 }
 
-// Overlay root element
+/** Overlay root element */
 const overlay = $("overlay-add-task");
-// Overlay content element
+/** Overlay content element */
 const overlayContent = document.querySelector(".add-task-overlay-content");
 
-// Setup overlay backdrop click listener
+/**
+ * Wires a click listener on the overlay backdrop to close it.
+ * @returns {void}
+ */
 function setupOverlayListener() {
   overlay?.addEventListener("click", onOverlayBackdropClick);
 }
 
-// Initialize task overlay
-function initTaskOverlay() {
+/**
+ * Initializes the task overlay (buttons & listeners).
+ * @returns {void}
+ */
+(function initTaskOverlay() {
   setupEditTaskButton();
   setupOverlayListener();
-}
+}());
 
-initTaskOverlay();
-// Closes the Add Task overlay if the backdrop is clicked
+/**
+ * Closes the Add-Task overlay when the backdrop is clicked.
+ * @param {MouseEvent} e
+ * @returns {void}
+ */
 function onOverlayBackdropClick(e) {
   if (e.target !== overlay || overlay.classList.contains("d-none")) return;
   document.querySelector(".edit-addtask-wrapper")?.classList.add("d-none");
@@ -292,7 +424,11 @@ function onOverlayBackdropClick(e) {
   window.toggleAddTaskBoard();
 }
 
-// Renders a subtask progress bar and label
+/**
+ * Renders the subtask progress bar + label.
+ * @param {Subtask[]} subtasks
+ * @returns {string} HTML string
+ */
 export function renderSubtaskProgress(subtasks) {
   const total = subtasks.length;
   const done = subtasks.filter((st) => st.checked).length;
@@ -307,7 +443,11 @@ export function renderSubtaskProgress(subtasks) {
   `;
 }
 
-// Maps a task category to a CSS class for labels
+/**
+ * Maps a task category to a CSS label class.
+ * @param {string} [category]
+ * @returns {string}
+ */
 export function getLabelClass(category) {
   return (
     {

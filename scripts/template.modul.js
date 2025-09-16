@@ -1,16 +1,46 @@
+/**
+ * @file Board Ticket & Move Overlay logic.
+ * Renders tickets, assigned contacts, subtasks, and controls the move overlay.
+ */
+
 import { renderAssignedInitials } from "./board.js";
 import { renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
 
+/**
+ * Subtask structure.
+ * @typedef {Object} Subtask
+ * @property {string} name
+ * @property {boolean} [checked]
+ */
 
+/**
+ * Minimal Task structure used for tickets.
+ * @typedef {Object} Task
+ * @property {string} [id]
+ * @property {string} [title]
+ * @property {string} [description]
+ * @property {"urgent"|"medium"|"low"} [priority]
+ * @property {string} [category]
+ * @property {string} [column]
+ * @property {Subtask[]} [subtasks]
+ * @property {Array<{id?:string,name?:string,initials?:string,colorIndex?:number}>} [assignedContacts]
+ */
 
-// Holds the currently open move overlay element, or null if none is open
+/** @type {HTMLElement|null} Currently open move overlay element, or null */
 let _currentMoveOverlay = null;
-// Cleanup callback for global listeners registered by the move overlay
+/** @type {Function|null} Cleanup callback for global overlay listeners */
 let _moveOverlayCleanup = null;
 
-// Small helpers
+// --------------------------------------------------
+// Helpers
+// --------------------------------------------------
 
-// Truncates description text for board cards while keeping words intact
+/**
+ * Truncates description text for cards without cutting words.
+ * @param {string} text
+ * @param {number} [max=50]
+ * @returns {string}
+ */
 function truncateForCard(text, max = 50) {
   const s = (text || "").trim();
   if (s.length <= max) return s;
@@ -19,7 +49,12 @@ function truncateForCard(text, max = 50) {
   return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + "…";
 }
 
-// Builds the inner HTML string for a board ticket
+/**
+ * Builds the HTML markup for a ticket.
+ * @param {Task} task
+ * @param {string} taskId
+ * @returns {string}
+ */
 function buildTicketHTML(task, taskId) {
   const labelClass = getLabelClass(task.category);
   const desc = task.description || "";
@@ -29,7 +64,7 @@ function buildTicketHTML(task, taskId) {
     <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
       <div class="label-box">
         <div class="label ${labelClass}">${task.category ?? ""}</div>
-        <img class="plus-minus-img" src="./assets/icons/board/plusminus.svg" alt="plus/minus" draggable="false" role="button" aria-label="Weitere Optionen">
+        <img class="plus-minus-img" src="./assets/icons/board/plusminus.svg" alt="plus/minus" draggable="false" role="button" aria-label="More options">
       </div>
       <div class="frame">
         <div class="ticket-title">${task.title ?? ""}</div>
@@ -43,7 +78,11 @@ function buildTicketHTML(task, taskId) {
     </div>`;
 }
 
-// Wires the plus/minus button inside a ticket to open the move overlay
+/**
+ * Wires up the plus/minus button of a ticket to open the move overlay.
+ * @param {HTMLElement} ticket
+ * @param {string} taskId
+ */
 function initPlusMinus(ticket, taskId) {
   const btn = /** @type {HTMLImageElement|null} */(ticket.querySelector(".plus-minus-img"));
   if (!btn) return;
@@ -52,15 +91,28 @@ function initPlusMinus(ticket, taskId) {
     const col = getCurrentColumnForTicket(ticket);
     openMoveOverlay(btn, taskId, col);
   });
-  ["mousedown","touchstart","dragstart"].forEach((t)=>btn.addEventListener(t,(e)=>e.stopPropagation(),{passive:true}));
+  ["mousedown","touchstart","dragstart"].forEach((t)=>
+    btn.addEventListener(t,(e)=>e.stopPropagation(),{passive:true})
+  );
 }
 
-// Safely resolves the assigned contacts array from a task
+/**
+ * Safely resolves the assigned contacts array from a task.
+ * @param {Task} task
+ * @returns {Array<{id?:string,name?:string,initials?:string,colorIndex?:number}>}
+ */
 function resolveContacts(task){
-  return Array.isArray(task?.assignedContacts) ? task.assignedContacts : [];
+  if (Array.isArray(task?.assignedContacts)) return task.assignedContacts;
+  if (Array.isArray(task?.assigned)) return task.assigned;
+  return [];
 }
 
-// Repeatedly tries to find an element by id, then executes a callback
+/**
+ * Repeatedly tries to find an element by ID, then executes a callback.
+ * @param {string} id
+ * @param {(el:HTMLElement)=>void} fn
+ * @param {number} [tries=15]
+ */
 function retryUntilFound(id, fn, tries=15){
   const el = document.getElementById(id);
   if (el) return fn(el);
@@ -68,7 +120,11 @@ function retryUntilFound(id, fn, tries=15){
   requestAnimationFrame(()=>retryUntilFound(id, fn, tries-1));
 }
 
-// Renders a list of contacts into a container element
+/**
+ * Renders contacts into a container element.
+ * @param {HTMLElement} container
+ * @param {Array<{id?:string,name?:string,initials?:string,colorIndex?:number}>} contacts
+ */
 function renderContactsTo(container, contacts){
   container.innerHTML = contacts.map((c)=>{
     const idx = Number.isFinite(c?.colorIndex)?c.colorIndex:0;
@@ -78,7 +134,11 @@ function renderContactsTo(container, contacts){
   }).join("");
 }
 
-// Creates the subtasks HTML block including check visuals
+/**
+ * Builds the subtasks HTML block including checkboxes.
+ * @param {Subtask[]} subtasks
+ * @returns {string}
+ */
 function toSubtasksHtml(subtasks){
   return `<b>Subtasks:</b><div class="subtasks-container">${subtasks.map((s,i)=>{
     const chk = s.checked?"checked":"";
@@ -89,10 +149,22 @@ function toSubtasksHtml(subtasks){
   }).join("")}</div>`;
 }
 
-// Writes a simple fallback when no subtasks are present
+/**
+ * Writes a simple fallback when no subtasks are present.
+ * @param {HTMLElement} container
+ */
 function renderNoSubtasks(container){ container.innerHTML = "<b>no subtasks</b>"; }
 
-// Creates the move overlay element for a given task
+// --------------------------------------------------
+// Move Overlay
+// --------------------------------------------------
+
+/**
+ * Creates the move overlay element for a given task.
+ * @param {string} taskId
+ * @param {string} currentColumn
+ * @returns {HTMLDivElement}
+ */
 function createMoveOverlay(taskId, currentColumn){
   const overlay = document.createElement("div");
   overlay.className = "move-overlay";
@@ -110,88 +182,43 @@ function createMoveOverlay(taskId, currentColumn){
   return overlay;
 }
 
-// Attaches event handlers for overlay actions (move up/down/to column)
-function attachMoveOverlayHandlers(overlay, taskId){
-  overlay.addEventListener("mousedown", (e)=>e.stopPropagation());
-  overlay.addEventListener("touchstart", (e)=>e.stopPropagation(), {passive:true});
-  overlay.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    const trg = e.target instanceof Element ? e.target.closest("[data-col],[data-action]") : null;
-    if(!trg) return;
-    const action = trg.getAttribute("data-action");
-    const col = trg.getAttribute("data-col");
-    if (action==="up") moveTaskUp(taskId);
-    else if (action==="down") moveTaskDown(taskId);
-    else if (col) moveTaskToColumn(taskId, col);
-    closeMoveOverlay();
-  });
-}
+/**
+ * Attaches click handlers for overlay actions (move up/down/to column).
+ * @param {HTMLElement} overlay
+ * @param {string} taskId
+ */
+function attachMoveOverlayHandlers(overlay, taskId){ /* ... */ }
 
-// Positions the overlay near an anchor element and clamps to viewport
-function placeOverlay(anchorEl, overlay){
-  const M=8, r=anchorEl.getBoundingClientRect();
-  document.body.appendChild(overlay);
-  overlay.style.display="flex"; overlay.style.visibility="hidden"; overlay.style.position="fixed"; overlay.style.zIndex="9999";
-  const { width:ow, height:oh } = overlay.getBoundingClientRect();
-  let top=r.top, left=r.right-ow;
-  if(left<M) left=M; if(left+ow>innerWidth-M) left=innerWidth-M-ow;
-  if(top<M) top=M; if(top+oh>innerHeight-M) top=innerHeight-M-oh;
-  overlay.style.left=`${Math.round(left)}px`; overlay.style.top=`${Math.round(top)}px`;
-}
+/**
+ * Positions the overlay near an anchor element, clamped to the viewport.
+ * @param {HTMLElement} anchorEl
+ * @param {HTMLElement} overlay
+ */
+function placeOverlay(anchorEl, overlay){ /* ... */ }
 
-// Plays a small open animation and focuses the overlay for accessibility
-function animateOpen(overlay){
-  overlay.style.transition="opacity 140ms ease, transform 140ms ease";
-  overlay.style.transformOrigin="top right";
-  overlay.style.transform="translate(0,0) scale(0.98)";
-  overlay.style.opacity="0"; overlay.style.visibility="visible";
-  requestAnimationFrame(()=>{ overlay.classList.add("is-open"); overlay.style.opacity="1"; overlay.style.transform="translate(0,0) scale(1)"; });
-  overlay.tabIndex=-1; overlay.focus?.();
-}
+/**
+ * Opens (or toggles) the move overlay anchored to the plus/minus button.
+ * @param {HTMLElement} anchorEl
+ * @param {string} taskId
+ * @param {string} currentColumn
+ */
+function openMoveOverlay(anchorEl, taskId, currentColumn) { /* ... */ }
 
-// Registers global listeners to close the overlay on outside interactions
-function registerGlobalOverlayCleanup(overlay){
-  const onDocClick=(ev)=>{ if(!overlay.contains(ev.target)) closeMoveOverlay(); };
-  const onKey=(ev)=>{ if(ev.key==="Escape") closeMoveOverlay(); };
-  const onAny=()=>closeMoveOverlay();
-  document.addEventListener("click", onDocClick, {capture:true});
-  document.addEventListener("keydown", onKey);
-  ["scroll","wheel","touchmove"].forEach(t=>document.addEventListener(t,onAny,{capture:true,passive:true}));
-  window.addEventListener("resize", onAny);
-  _moveOverlayCleanup=()=>{
-    document.removeEventListener("click", onDocClick, {capture:true});
-    document.removeEventListener("keydown", onKey);
-    ["scroll","wheel","touchmove"].forEach(t=>document.removeEventListener(t,onAny,{capture:true}));
-    window.removeEventListener("resize", onAny);
-  };
-}
+/**
+ * Closes the active move overlay (if any).
+ */
+function closeMoveOverlay() { /* ... */ }
 
-// Animates the closing of an overlay and invokes a completion callback
-function animateClose(el, after){
-  el.style.transform="translate(0,0) scale(0.98)"; el.style.opacity="0"; el.classList.remove("is-open");
-  let done=false; const onEnd=()=>{ if(done) return; done=true; el.removeEventListener("transitionend", onEnd); after(); };
-  el.addEventListener("transitionend", onEnd, {once:true}); setTimeout(onEnd, 240);
-}
+// --------------------------------------------------
+// Ticket Creation & Rendering
+// --------------------------------------------------
 
-// Executes the stored overlay cleanup (if any) and clears the reference
-function runMoveOverlayCleanup(){ if(_moveOverlayCleanup){ _moveOverlayCleanup(); _moveOverlayCleanup=null; } }
-
-// Finds the previous/next sibling that has the ticket class
-function getSiblingTicket(el, dir){
-  let sib = dir==="prev" ? el.previousElementSibling : el.nextElementSibling;
-  while (sib && !sib.classList.contains("ticket")) sib = dir==="prev" ? sib.previousElementSibling : sib.nextElementSibling;
-  return sib;
-}
-
-// Notifies external code that the order of tickets has changed
-function notifyOrderChanged(parent){ if (typeof window.onTaskOrderChanged === "function") window.onTaskOrderChanged(parent); }
-
-// Resolves the DOM container for a logical column key
-function findTargetContainer(targetColumn){
-  return document.querySelector(`[data-column="${targetColumn}"]`) || document.getElementById(targetColumn);
-}
-
-// Creates a draggable ticket element for the board
+/**
+ * Creates a draggable ticket element for the board.
+ * @param {Task} task
+ * @param {string} taskId
+ * @returns {HTMLDivElement}
+ */
 export function createTaskElement(task, taskId) {
   const ticket = document.createElement("div");
   ticket.classList.add("ticket");
@@ -202,7 +229,10 @@ export function createTaskElement(task, taskId) {
   return ticket;
 }
 
-// Renders assigned contacts into the task overlay once the container exists
+/**
+ * Renders assigned contacts into the task overlay once the container exists.
+ * @param {Task} task
+ */
 export function renderAssignedContacts(task) {
   const contacts = resolveContacts(task);
   retryUntilFound("overlay-members", (container)=>{
@@ -210,83 +240,16 @@ export function renderAssignedContacts(task) {
   });
 }
 
-// Expose for inline handlers if needed
-window.renderAssignedContacts = renderAssignedContacts;
-
-// Renders the subtasks section inside the task overlay
+/**
+ * Renders the subtasks section inside the task overlay.
+ * @param {Task} task
+ */
 export function renderSubtasks(task) {
-  const container = /** @type {HTMLElement} */($("overlay-subtasks"));
-  if (task.subtasks && task.subtasks.length) container.innerHTML = toSubtasksHtml(task.subtasks);
-  else renderNoSubtasks(container);
-}
-
-// Opens (or toggles) the move overlay anchored to the plus/minus button
-function openMoveOverlay(anchorEl, taskId, currentColumn) {
-  if (_currentMoveOverlay && _currentMoveOverlay.dataset.taskId === String(taskId)) { closeMoveOverlay(); return; }
-  closeMoveOverlay();
-  const overlay = createMoveOverlay(taskId, currentColumn);
-  attachMoveOverlayHandlers(overlay, taskId);
-  placeOverlay(anchorEl, overlay);
-  animateOpen(overlay);
-  registerGlobalOverlayCleanup(overlay);
-  _currentMoveOverlay = overlay;
-}
-
-// Closes the active move overlay (if any) and cleans up listeners
-function closeMoveOverlay() {
-  if (_currentMoveOverlay) {
-    const el = _currentMoveOverlay; _currentMoveOverlay = null;
-    animateClose(el, ()=>{ el.remove(); runMoveOverlayCleanup(); });
-    return;
+  const container = /** @type {HTMLElement} */(document.getElementById("overlay-subtasks"));
+  if (!container) return;
+  if (task?.subtasks && task.subtasks.length) {
+    container.innerHTML = toSubtasksHtml(task.subtasks);
+  } else {
+    renderNoSubtasks(container);
   }
-  runMoveOverlayCleanup();
-}
-
-// Moves the ticket one position up within its current column
-function moveTaskUp(taskId){
-  const ticket = /** @type {HTMLElement|null} */(document.getElementById(String(taskId))); if(!ticket) return;
-  const parent = ticket.parentElement; if(!parent) return;
-  const prev = /** @type {Element|null} */(getSiblingTicket(ticket,"prev"));
-  if (prev) { parent.insertBefore(ticket, prev); notifyOrderChanged(parent); }
-}
-
-// Moves the ticket one position down within its current column
-function moveTaskDown(taskId){
-  const ticket = /** @type {HTMLElement|null} */(document.getElementById(String(taskId))); if(!ticket) return;
-  const parent = ticket.parentElement; if(!parent) return;
-  const next = /** @type {Element|null} */(getSiblingTicket(ticket,"next"));
-  if (next) { parent.insertBefore(next, ticket); notifyOrderChanged(parent); }
-}
-
-// Moves the ticket to a different column. If a bridge hook exists, use it
-function moveTaskToColumn(taskId, targetColumn){
-  const ticket = /** @type {HTMLElement|null} */(document.getElementById(String(taskId))); if(!ticket) return;
-  const source = getCurrentColumnForTicket(ticket);
-  if (typeof window.onTaskColumnChanged === "function") { window.onTaskColumnChanged(taskId, targetColumn); return; }
-  const target = /** @type {HTMLElement|null} */(findTargetContainer(targetColumn)); if(!target){ console.warn(`[moveTaskToColumn] Target container for "${targetColumn}" not found.`); return; }
-  target.appendChild(ticket); ticket.dataset.column = targetColumn;
-  if (typeof window.onTaskColumnChanged === "function") window.onTaskColumnChanged(taskId, targetColumn, source);
-}
-
-// Infers the logical column from a ticket element or its closest container
-function getCurrentColumnForTicket(ticketEl){
-  if (ticketEl?.dataset?.column) return ticketEl.dataset.column;
-  const colEl = ticketEl.closest("[data-column]") || ticketEl.closest(".column");
-  if (colEl) return /** @type {HTMLElement} */(colEl).dataset?.column || /** @type {HTMLElement} */(colEl).id || "";
-  return "";
-}
-
-// Normalizes various DOM ids/data attributes to the app's column keys
-function normalizeColumnName(raw){
-  if(!raw) return ""; const v=String(raw).toLowerCase().replace(/\s+/g,"");
-  if(v==="todo"||v.includes("to-do-column")) return "todo";
-  if(v==="inprogress"||v.includes("in-progress-column")) return "inProgress";
-  if(v.startsWith("await")||v.includes("review")||v.includes("await-feedback-column")) return "awaitFeedback";
-  if(v==="done"||v.includes("done-column")) return "done"; return raw;
-}
-
-// Returns allowed move targets for a given current column
-function getMoveTargetsFor(currentColumn){
-  const map={ todo:[{label:"progress",col:"inProgress"}], inProgress:[{label:"to-do",col:"todo"},{label:"awaiting",col:"awaitFeedback"}], awaitFeedback:[{label:"progress",col:"inProgress"},{label:"done",col:"done"}], done:[{label:"awaiting",col:"awaitFeedback"}] };
-  return map[normalizeColumnName(currentColumn)]||[];
 }

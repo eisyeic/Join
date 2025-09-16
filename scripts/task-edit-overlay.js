@@ -1,11 +1,20 @@
-// Switch overlay to edit mode and preload form (accepts task object or taskId)
+/**
+ * @file Edit Overlay logic for tasks.
+ * Handles switching to edit mode, populating the form, attaching handlers,
+ * and synchronizing data with Firebase.
+ */
+
+/**
+ * Opens the edit overlay and loads the task into the form.
+ * @param {object|string} taskOrId - Task object or task ID (string).
+ * @returns {void}
+ */
 function openEditInsideOverlay(taskOrId) {
   switchToEditView();
   moveFormIntoEdit();
   attachEditDateInputHandlers();
 
   if (typeof taskOrId === 'string') {
-    // Fetch the task by id then proceed
     loadTaskById(taskOrId).then((task) => {
       if (!task) return;
       task.id = taskOrId;
@@ -16,7 +25,11 @@ function openEditInsideOverlay(taskOrId) {
   }
 }
 
-// Proceed to fill the edit form once a task object is available
+/**
+ * Continues editing with a loaded task object.
+ * @param {any} task - Task object.
+ * @returns {void}
+ */
 function proceedEditWithTask(task) {
   attachEditDateInputHandlers();
   markEditingId(task);
@@ -32,8 +45,10 @@ function proceedEditWithTask(task) {
   if (typeof window.addEditEvents === 'function') window.addEditEvents();
 }
 
-
-// Show edit wrapper and hide read-only content
+/**
+ * Switches overlay view from content to edit mode.
+ * @returns {void}
+ */
 function switchToEditView() {
   const taskContent = document.getElementById("task-overlay-content");
   const editWrap = document.querySelector(".edit-addtask-wrapper");
@@ -41,7 +56,10 @@ function switchToEditView() {
   editWrap?.classList.remove("d-none");
 }
 
-// Move the addtask form into the overlay edit container
+/**
+ * Moves the Add Task form into the edit container.
+ * @returns {void}
+ */
 function moveFormIntoEdit() {
   const src =
     document.querySelector(".addtask-aside-clone .addtask-wrapper") ||
@@ -50,7 +68,34 @@ function moveFormIntoEdit() {
   if (src && dst && src.parentElement !== dst) dst.replaceChildren(src);
 }
 
-// Attach focus/blur handlers to allow editing the date via native picker
+/**
+ * Convert a dd/mm/yyyy string to ISO yyyy-mm-dd.
+ * @param {string} s
+ * @returns {string} ISO string or empty string if invalid.
+ */
+function ddmmyyyyToISO(s) {
+  const m = /^\s*(\d{2})\/(\d{2})\/(\d{4})\s*$/.exec(s || "");
+  if (!m) return "";
+  const [, dd, mm, yyyy] = m;
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/**
+ * Convert an ISO yyyy-mm-dd string to dd/mm/yyyy.
+ * @param {string} s
+ * @returns {string} dd/mm/yyyy or empty string if invalid.
+ */
+function isoToDDMMYYYY(s) {
+  const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(s || "");
+  if (!m) return "";
+  const [, yyyy, mm, dd] = m;
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+/**
+ * Attaches focus/blur handlers to the date input in edit mode.
+ * @returns {void}
+ */
 function attachEditDateInputHandlers() {
   const input = /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
   const wrapper = document.getElementById('datepicker-wrapper');
@@ -59,34 +104,45 @@ function attachEditDateInputHandlers() {
   if (!input) return;
   if (input.dataset.editHandlersBound === '1') return;
 
+  // Ensure the input keeps a valid ISO value for native validation/valueAsDate,
+  // while the UI shows dd/mm/yyyy in the display span.
+  const syncFromDisplayToInput = () => {
+    const ui = (display?.textContent || "").trim();
+    const iso = ui ? ddmmyyyyToISO(ui) : "";
+    input.type = 'date';
+    input.value = iso || "";
+  };
+
   input.addEventListener('focus', () => {
-    // Switch to native picker and prefill as ISO if we currently have dd/mm/yyyy
+    // Keep type=date and ensure an ISO value for opening the native picker
     const val = input.value.trim();
-    if (val && /^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
-      const [dd, mm, yyyy] = val.split('/');
-      input.value = `${yyyy}-${mm}-${dd}`; // ISO for date input
+    // If the text input somehow contains dd/mm/yyyy, normalize to ISO
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(val) && display) {
+      const iso = ddmmyyyyToISO(display.textContent || "");
+      if (iso) input.value = iso;
     }
     input.type = 'date';
-    // Ensure focus and open the native picker immediately on first click
     input.focus();
     if (typeof input.showPicker === 'function') {
-      // Some browsers require async to open reliably on first interaction
       requestAnimationFrame(() => { try { input.showPicker(); } catch (_) {} });
     }
   });
 
   input.addEventListener('blur', () => {
+    // Read current value (likely ISO because type=date), mirror UI as dd/mm/yyyy,
+    // but KEEP the input as type=date with an ISO value so native validation works.
     const raw = input.value.trim();
-    let ddmmyyyy = '';
+    let iso = "";
     if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-      const [yyyy, mm, dd] = raw.split('-');
-      ddmmyyyy = `${dd}/${mm}/${yyyy}`;
+      iso = raw;
     } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
-      ddmmyyyy = raw;
+      iso = ddmmyyyyToISO(raw);
     }
+    const ddmmyyyy = iso ? isoToDDMMYYYY(iso) : "";
 
-    input.type = 'text';
-    input.value = ddmmyyyy;
+    // Keep input as a valid date control
+    input.type = 'date';
+    input.value = iso || "";
 
     if (ddmmyyyy) {
       wrapper?.classList.add('has-value');
@@ -101,7 +157,12 @@ function attachEditDateInputHandlers() {
 
   if (wrapper) {
     wrapper.addEventListener('click', () => {
-      if (input.type !== 'date') input.type = 'date';
+      input.type = 'date';
+      // Make sure we have an ISO value before opening picker
+      if (display && !/^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
+        const iso = ddmmyyyyToISO(display.textContent || "");
+        if (iso) input.value = iso;
+      }
       input.focus();
       if (typeof input.showPicker === 'function') {
         requestAnimationFrame(() => { try { input.showPicker(); } catch (_) {} });
@@ -109,16 +170,28 @@ function attachEditDateInputHandlers() {
     });
   }
 
+  // Also keep input in sync if someone updates the display text externally
+  const mo = new MutationObserver(() => syncFromDisplayToInput());
+  if (display) mo.observe(display, { characterData: true, childList: true, subtree: true });
+
   input.dataset.editHandlersBound = '1';
 }
 
-// Store the editing task id on the wrapper dataset
+/**
+ * Stores the currently editing task ID in the wrapper.
+ * @param {any} task
+ * @returns {void}
+ */
 function markEditingId(task) {
   const wrap = document.querySelector(".addtask-wrapper");
   if (wrap && task?.id) wrap.dataset.editingId = String(task.id);
 }
 
-// Populate the edit form via provided hook or fallback
+/**
+ * Populates the form with task data (via hook or fallback).
+ * @param {any} task
+ * @returns {void}
+ */
 function populateEditForm(task) {
   if (typeof window.enterAddTaskEditMode === "function") {
     try {
@@ -131,7 +204,11 @@ function populateEditForm(task) {
   populateEditFormFallback(task);
 }
 
-// Fallback population for edit form fields
+/**
+ * Fallback method to populate the form with task data.
+ * @param {any} task
+ * @returns {void}
+ */
 function populateEditFormFallback(task) {
   if (!task) return;
   markEditingId(task);
@@ -143,7 +220,11 @@ function populateEditFormFallback(task) {
   setSubtasksArray(task);
 }
 
-// Set title and description fields
+/**
+ * Sets task title and description into form fields.
+ * @param {any} task
+ * @returns {void}
+ */
 function setTitleAndDescription(task) {
   const titleEl = document.getElementById("addtask-title");
   const descEl = document.getElementById("addtask-textarea");
@@ -151,7 +232,11 @@ function setTitleAndDescription(task) {
   if (descEl) /** @type {HTMLTextAreaElement} */ (descEl).value = task.description || "";
 }
 
-// Fill due date input (only dd/mm/yyyy supported)
+/**
+ * Sets due date into the input field (dd/mm/yyyy).
+ * @param {any} task
+ * @returns {void}
+ */
 function setDueDateField(task) {
   const dateEl = /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
   const wrapper = document.getElementById('datepicker-wrapper');
@@ -159,12 +244,15 @@ function setDueDateField(task) {
   const placeholder = document.getElementById('date-placeholder');
   if (!dateEl) return;
 
+  // Task.dueDate is expected as dd/mm/yyyy; keep the input as a real date control with ISO value
   const ddmmyyyy = task?.dueDate && /^\d{2}\/\d{2}\/\d{4}$/.test(task.dueDate)
     ? task.dueDate
     : '';
 
-  if (dateEl.type === 'date') dateEl.type = 'text';
-  dateEl.value = ddmmyyyy;
+  const iso = ddmmyyyy ? ddmmyyyyToISO(ddmmyyyy) : '';
+
+  dateEl.type = 'date';
+  dateEl.value = iso || '';
 
   if (ddmmyyyy) {
     wrapper?.classList.add('has-value');
@@ -177,7 +265,11 @@ function setDueDateField(task) {
   }
 }
 
-// Set category label and data value
+/**
+ * Sets the category selection in the form.
+ * @param {any} task
+ * @returns {void}
+ */
 function setCategorySelection(task) {
   const sel = document.getElementById("category-select");
   const span = sel ? sel.querySelector("span") : null;
@@ -185,7 +277,11 @@ function setCategorySelection(task) {
   if (sel) sel.dataset.value = task.category || "";
 }
 
-// Activate the correct priority button
+/**
+ * Activates the correct priority button.
+ * @param {any} task
+ * @returns {void}
+ */
 function setPriorityButtons(task) {
   document.querySelectorAll(".prio-buttons .priority-button")
     .forEach((b) => b.classList.remove("active"));
@@ -194,7 +290,11 @@ function setPriorityButtons(task) {
   document.querySelector(map[key] || ".medium-button")?.classList.add("active");
 }
 
-// Render assigned initials and store selected ids
+/**
+ * Renders assigned contacts and saves the selection.
+ * @param {any} task
+ * @returns {void}
+ */
 function setAssignedContactsUI(task) {
   const assigned = Array.isArray(task.assignedContacts)
     ? task.assignedContacts
@@ -207,7 +307,12 @@ function setAssignedContactsUI(task) {
   if (selectBox) selectBox.dataset.selected = JSON.stringify(assigned.map((p) => p.id).filter(Boolean));
 }
 
-// Update initials preview box markup
+/**
+ * Updates the initials preview element.
+ * @param {HTMLElement} box
+ * @param {any[]} assigned
+ * @returns {void}
+ */
 function updateInitialsBox(box, assigned) {
   if (!assigned.length) {
     box.classList.add("d-none");
@@ -228,10 +333,14 @@ function updateInitialsBox(box, assigned) {
   box.classList.remove("d-none");
 }
 
-// Sync global subtasks array for the edit UI
+/**
+ * Syncs the global subtasks array with the task.
+ * @param {any} task
+ * @returns {void}
+ */
 function setSubtasksArray(task) {
   if (!Array.isArray(task.subtasks)) return;
- try {
+  try {
     const list = task.subtasks
       .map((st) => (typeof st === "string" ? st : st?.name || ""))
       .filter(Boolean);
@@ -243,7 +352,10 @@ function setSubtasksArray(task) {
   } catch {}
 }
 
-// Mirror selected contacts to the list UI
+/**
+ * Mirrors assigned selections into the contact list.
+ * @returns {void}
+ */
 function syncAssignedSelectionToList() {
   const list = document.getElementById("contact-list-box");
   const selectBox = document.getElementById("assigned-select-box");
@@ -264,7 +376,11 @@ function syncAssignedSelectionToList() {
   });
 }
 
-// Load a task by id from Firebase Realtime Database
+/**
+ * Loads a task by ID from Firebase RTDB.
+ * @param {string} taskId
+ * @returns {Promise<any|null>}
+ */
 async function loadTaskById(taskId) {
   try {
     const RTDB = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
@@ -278,7 +394,11 @@ async function loadTaskById(taskId) {
   }
 }
 
-// Remove a task and its category mirrors
+/**
+ * Deletes a task (and related category mirrors) from Firebase RTDB.
+ * @param {string} taskId
+ * @returns {Promise<void>}
+ */
 window.deleteTaskFromDatabase = async function(taskId) {
   if (!taskId) throw new Error("Missing taskId");
   const RTDB = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
@@ -287,6 +407,10 @@ window.deleteTaskFromDatabase = async function(taskId) {
   await RTDB.remove(RTDB.ref(db, `tasks/${taskId}`));
 };
 
+/**
+ * Ensures that openEditInsideOverlay is available globally.
+ * @returns {void}
+ */
 (function ensureGlobalOpenEdit() {
   if (typeof window.openEditInsideOverlay !== 'function' && typeof openEditInsideOverlay === 'function') {
     window.openEditInsideOverlay = openEditInsideOverlay;
