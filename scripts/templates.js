@@ -303,29 +303,53 @@ function createContactListItemTemplate(contact, id) {
 }
 
 /**
- * Builds a compact contact row as HTML.
- * @param {{name:string,email:string,phone:string,colorIndex?:number,initials?:string}} key
- * @param {string} id
+ * HTML template for a contact person row.
+ * @param {{name:string,email:string,phone:string,initials:string,savedColorIndex:number,id:string}} contact
  * @returns {string} HTML string for the contact row.
  */
-function getContactPerson(key, id) {
-  let savedColorIndex = key.colorIndex;
-  if (!savedColorIndex) {
-    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
-  }
-  const initials = key.initials || getInitials(key.name);
-  return /*html*/ `
+function contactPersonTemplate(contact) {
+  return  `
         <div class="contact-placeholder">
             <img src="./assets/contacts/img/Vector 10.svg" />
         </div>
-        <div class="contact-person" onclick="showContactDetails('${key.name}', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
+        <div class="contact-person" onclick="showContactDetails('${contact.name}', '${contact.email}', '${contact.phone}', ${contact.savedColorIndex}, '${contact.id}')">
             <div class="contact-person-icon">
-                <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
-                <p>${initials}</p>
+                <img src="./assets/general_elements/icons/color${contact.savedColorIndex}.svg" />
+                <p>${contact.initials}</p>
             </div>
             <div class="contact-person-name">
-                <h5>${key.name}</h5>
-                <a>${key.email}</a>
+                <h5>${contact.name}</h5>
+                <a>${contact.email}</a>
             </div>
         </div>`;
 }
+
+// Make contactPersonTemplate globally available
+window.contactPersonTemplate = contactPersonTemplate;
+
+/**
+ * HTML template for a board ticket.
+ * @param {{taskId:string,labelClass:string,category:string,title:string,truncatedDesc:string,subtasksHtml:string,initials:string,priority:string}} ticket
+ * @returns {string} HTML string for the ticket.
+ */
+function ticketTemplate(ticket) {
+  return  `
+    <div class="ticket-content" onclick="showTaskOverlay('${ticket.taskId}')">
+      <div class="label-box">
+        <div class="label ${ticket.labelClass}">${ticket.category}</div>
+        <img class="plus-minus-img" src="./assets/icons/board/plusminus.svg" alt="plus/minus" draggable="false" role="button" aria-label="More options">
+      </div>
+      <div class="frame">
+        <div class="ticket-title">${ticket.title}</div>
+        <div class="ticket-text">${ticket.truncatedDesc}</div>
+      </div>
+      ${ticket.subtasksHtml}
+      <div class="initials-icon-box">
+        <div class="initials">${ticket.initials}</div>
+        <img src="./assets/icons/board/${ticket.priority}.svg" alt="${ticket.priority}">
+      </div>
+    </div>`;
+}
+
+// Make ticketTemplate globally available
+window.ticketTemplate = ticketTemplate;

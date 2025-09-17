@@ -462,5 +462,31 @@ function deleteContactAndGoBack(event) {
   detailsMobileBack();
 }
 
+/**
+ * Builds a compact contact row as HTML.
+ * @param {{name:string,email:string,phone:string,colorIndex?:number,initials?:string}} key
+ * @param {string} id
+ * @returns {string} HTML string for the contact row.
+ */
+function getContactPerson(key, id) {
+  let savedColorIndex = key.colorIndex;
+  if (!savedColorIndex) {
+    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
+  }
+  const initials = key.initials || getInitials(key.name);
+  
+  return window.contactPersonTemplate({
+    name: key.name,
+    email: key.email,
+    phone: key.phone,
+    initials: initials,
+    savedColorIndex: savedColorIndex,
+    id: id
+  });
+}
+
+// Make getContactPerson globally available
+window.getContactPerson = getContactPerson;
+
 
 

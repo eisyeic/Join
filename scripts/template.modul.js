@@ -60,22 +60,18 @@ function buildTicketHTML(task, taskId) {
   const desc = task.description || "";
   const truncated = truncateForCard(desc, 50);
   const initials = task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : "";
-  return `
-    <div class="ticket-content" onclick="showTaskOverlay('${taskId}')">
-      <div class="label-box">
-        <div class="label ${labelClass}">${task.category ?? ""}</div>
-        <img class="plus-minus-img" src="./assets/icons/board/plusminus.svg" alt="plus/minus" draggable="false" role="button" aria-label="More options">
-      </div>
-      <div class="frame">
-        <div class="ticket-title">${task.title ?? ""}</div>
-        <div class="ticket-text">${truncated}</div>
-      </div>
-      ${task.subtasks?.length ? renderSubtaskProgress(task.subtasks) : ""}
-      <div class="initials-icon-box">
-        <div class="initials">${initials}</div>
-        <img src="./assets/icons/board/${task.priority}.svg" alt="${task.priority}">
-      </div>
-    </div>`;
+  const subtasksHtml = task.subtasks?.length ? renderSubtaskProgress(task.subtasks) : "";
+  
+  return window.ticketTemplate({
+    taskId: taskId,
+    labelClass: labelClass,
+    category: task.category ?? "",
+    title: task.title ?? "",
+    truncatedDesc: truncated,
+    subtasksHtml: subtasksHtml,
+    initials: initials,
+    priority: task.priority
+  });
 }
 
 /**
