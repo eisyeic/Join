@@ -7,48 +7,6 @@ let loadedContacts = {};
 let currentEditingTaskId = "";
 
 /**
- * @file Add Task – Firebase integration & form orchestration.
- * Loads contacts, reads/validates form data, and persists tasks to Firebase Realtime Database.
- *
- * External dependencies:
- * - Firebase v10.12.0 (database/auth) via CDN imports
- * - `app`, `auth` from local firebase config (./firebase.js)
- * - DOM helpers like `$` and globals `selectedPriority`, `subtasks`
- *
- * @typedef {Object} Contact
- * @property {string} id
- * @property {string} name
- * @property {string} initials
- * @property {number} colorIndex
- *
- * @typedef {Object} Subtask
- * @property {string} name
- * @property {boolean} checked
- *
- * @typedef {Object} BaseTask
- * @property {string} column
- * @property {string} title
- * @property {string} description
- * @property {string} dueDate
- * @property {string} category
- * @property {string} priority
- * @property {Subtask[]} subtasks
- *
- * @typedef {Object} FullTask
- * @property {string} [editingId]
- * @property {Contact[]} assignedContacts
- * @property {string} [createdAt]
- * @property {string} [updatedAt]
- * @property {string} column
- * @property {string} title
- * @property {string} description
- * @property {string} dueDate
- * @property {string} category
- * @property {string} priority
- * @property {Subtask[]} subtasks
- */
-
-/**
  * Set the current editing task id and mirror it to the wrapper dataset.
  * @param {string} id
  * @returns {void}
@@ -201,8 +159,6 @@ function resetFormErrors() {
 /**
  * Render a validation error and optionally highlight a field.
  * @param {string} msgId - Element id to place the message.
- * @param {string} [borderId] - Element id whose border should be highlighted.
- * @param {string} msg - Error text.
  * @returns {void}
  */
 function setError(msgId, borderId, msg) {

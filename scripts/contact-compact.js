@@ -2,7 +2,6 @@
  * @file Contacts (compact): details view, edit overlay, validation, and Firebase updates.
  * Functions follow single-responsibility and are kept ≤14 lines each. Public APIs unchanged.
  */
-
 /** Initialize contact module: observers, click guards, escape handling. */
 (function initContact() {
   setupMobileNavbarObserver();

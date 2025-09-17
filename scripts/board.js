@@ -396,4 +396,3 @@ function setupSearchHandlers() {
   if (!searchInput) return;
   bindSearchEvents(searchInput, $("search-btn"));
 }
-

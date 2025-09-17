@@ -1,7 +1,6 @@
 /**
  * @file Add Task – UI logic for date picker, priorities, categories, and subtasks.
  * Refactored into small, single-responsibility functions (≤14 lines) with JSDoc.
- *
  * @typedef {Object} SubtaskItem
  * @property {string} name
  */
@@ -11,11 +10,8 @@ window.renderSubtasks = renderSubtasks;
  * Global event wiring for Add-Task UI (template readiness & document-level pointer handling).
  */
 document.addEventListener('pointerdown', onDocumentPointerDown, true);
-
-// Initialize date picker when template is ready
 document.addEventListener('addtask:template-ready', setupDatePicker());
 document.addEventListener('addtask:template-ready', setupDatePickerWrapper());
-
 
 // Global variables
 window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
@@ -61,8 +57,6 @@ function formatDateForDisplay(isoDate) {
 /**
  * Update the date display and wrapper styles based on picker value.
  * @param {HTMLInputElement} datePicker
- * @param {HTMLElement} wrapper
- * @param {HTMLElement} display
  * @returns {void}
  */
 function updateDateDisplay(datePicker, wrapper, display) {
@@ -79,8 +73,6 @@ function updateDateDisplay(datePicker, wrapper, display) {
 /**
  * Bind change/input listeners to a date picker to keep UI in sync.
  * @param {HTMLInputElement} datePicker
- * @param {HTMLElement} wrapper
- * @param {HTMLElement} display
  * @returns {void}
  */
 function bindDatePickerEvents(datePicker, wrapper, display) {
@@ -94,22 +86,26 @@ function bindDatePickerEvents(datePicker, wrapper, display) {
  * Wire the wrapper so clicking it opens the native datepicker (or focuses it as fallback).
  * @returns {void}
  */
-// Open the native datepicker by clicking the wrapper
 function setupDatePickerWrapper() {
-  const wrapper = $("datepicker-wrapper");
-  if (wrapper) {
-    wrapper.addEventListener("click", () => {
-      const picker = document.querySelector("#datepicker");
-      if (picker) {
-        if (picker.showPicker) {
-          picker.showPicker();
-        } else {
-          picker.focus();
-          picker.click();
-        }
+const wrapper = document.getElementById('datepicker-wrapper');
+const input   = /** @type {HTMLInputElement} */(document.getElementById('datepicker'));
+
+if (wrapper && input) {
+  wrapper.addEventListener('pointerdown', (ev) => {
+    if (typeof ev.button === 'number' && ev.button !== 0) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    input.type = 'date';
+    try {
+      if (typeof input.showPicker === 'function') {
+        input.showPicker(); 
+      } else {
+        input.focus(); 
       }
-    });
-  }
+    } catch (_) {
+    }
+  }, { passive: false });
+}
 }
 
 // Priority buttons: set active state and update selectedPriority
@@ -349,7 +345,6 @@ window.saveEditedSubtask = saveEditedSubtask;
  * Delegated handler to save a subtask when its save icon is clicked.
  * @returns {void}
  */
-// Delegated save click for subtask items
 $("subtask-list").addEventListener("click", (event) => {
   if (event.target.classList?.contains("subtask-save-icon")) {
     saveEditedSubtask(event.target);
@@ -406,15 +401,4 @@ function autoAddNewSubtaskIfPending(target) {
   const funcBox = document.getElementById('subtask-func-btn');
   const outside = !(subInput.contains(target) || (funcBox && funcBox.contains(target)));
   if (outside) document.getElementById('sub-check')?.click();
-}
-
-/**
- * Handle pointerdown at document level for subtask UX.
- * @param {PointerEvent} event
- * @returns {void}
- */
-function onDocumentPointerDown(event) {
-  const target = event.target;
-  const hadEdits = commitEditingSubtasksOutside(target);
-  if (!hadEdits) autoAddNewSubtaskIfPending(target);
 }

@@ -369,3 +369,14 @@ function hideBanner() {
   if (banner) banner.classList.remove("visible");
   if (overlay) overlay.style.display = "none";
 }
+
+/**
+ * Handle pointerdown at document level for subtask UX.
+ * @param {PointerEvent} event
+ * @returns {void}
+ */
+function onDocumentPointerDown(event) {
+  const target = event.target;
+  const hadEdits = commitEditingSubtasksOutside(target);
+  if (!hadEdits) autoAddNewSubtaskIfPending(target);
+}
