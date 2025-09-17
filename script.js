@@ -12,61 +12,22 @@ const REDIRECT = "index.html";
 let $ = (id) => document.getElementById(id);
 
 /**
- * Toggles profile dropdown visibility and manages click handlers
+ * Immediately invoked async function to initialize authentication UI.
+ * 
+ * - Injects a style to hide the `#person-icon-header-text` by default.
+ * - Appends the style element to the document head.
+ * - Calls and awaits `initAuthUI()` to set up authentication-related UI.
+ * 
+ * @async
+ * @function
+ * @returns {Promise<void>} Resolves once the auth UI has been initialized.
  */
-function toggleProfileNavbar() {
-  const profileNavbar = $("profile-navbar");
-  if (!profileNavbar) return;
-  
-  profileNavbar.classList.toggle("d-none");
-  
-  if (isProfileNavbarVisible(profileNavbar)) {
-    setupOutsideClickHandler();
-  } else {
-    removeOutsideClickHandler();
-  }
-}
-
-/**
- * Checks if profile navbar is visible
- * @param {HTMLElement} navbar - Profile navbar element
- * @returns {boolean} True if visible
- */
-function isProfileNavbarVisible(navbar) {
-  return !navbar.classList.contains("d-none");
-}
-
-/**
- * Sets up outside click handler with delay
- */
-function setupOutsideClickHandler() {
-  setTimeout(() => document.addEventListener("click", closeProfileNavbar), 0);
-}
-
-/**
- * Removes outside click handler
- */
-function removeOutsideClickHandler() {
-  document.removeEventListener("click", closeProfileNavbar);
-}
-
-/**
- * Closes profile dropdown when clicking outside
- * @param {Event} ev - Click event
- */
-function closeProfileNavbar(ev) {
-  if (!ev) return;
-  
-  const profileNavbar = $("profile-navbar");
-  if (!profileNavbar) return;
-  
-  const toggle = findProfileToggle();
-  const target = ev.target;
-  
-  if (shouldCloseNavbar(profileNavbar, toggle, target)) {
-    hideProfileNavbar(profileNavbar);
-  }
-}
+(async () => {
+  const style = document.createElement("style");
+  style.textContent = `#person-icon-header-text { opacity: 0; }`;
+  document.head.appendChild(style);
+  await initAuthUI();
+})();
 
 /**
  * Finds profile toggle element
@@ -306,35 +267,6 @@ function getInitialsEl() {
 }
 
 /**
- * Toggles d-none class on element
- * @param {HTMLElement} element - Element to toggle
- * @param {boolean} hidden - Whether to hide element
- */
-function toggleHidden(element, hidden) {
-  element?.classList.toggle("d-none", hidden);
-}
-
-/**
- * Shows navigation for authenticated users
- */
-function showAuthedNav() {
-  toggleHidden(qs(".nav"), false);
-  toggleHidden(qs(".nav-box"), false);
-  toggleHidden(qs(".nav-login-box"), true);
-  toggleHidden(qs(".nav-login-box-mobile"), true);
-}
-
-/**
- * Shows navigation for anonymous users
- */
-function showAnonNav() {
-  toggleHidden(qs(".nav"), true);
-  toggleHidden(qs(".nav-box"), true);
-  toggleHidden(qs(".nav-login-box"), false);
-  toggleHidden(qs(".nav-login-box-mobile"), false);
-}
-
-/**
  * Clears initials UI
  * @param {HTMLElement} element - Initials element
  */
@@ -347,21 +279,11 @@ function resetInitials(element) {
 }
 
 /**
- * Redirects to index if page is not public
- */
-function redirectIfNotPublic() {
-  if (!isPublicPage()) {
-    location.replace("index.html");
-  }
-}
-
-/**
  * Handles Firebase auth state changes and updates UI
  * @param {Object|null} user - User object or null
  */
 function handleAuthChange(user) {
   const element = getInitialsEl();
-  
   if (user) {
     handleUserAuthenticated(user, element);
   } else {
@@ -422,9 +344,7 @@ async function loadFirebaseModules() {
  */
 async function doLogout() {
   if (window.__loggingOut) return;
-  
   window.__loggingOut = true;
-  
   try {
     await performLogout();
   } catch (err) {
@@ -460,12 +380,11 @@ async function loadLogoutModules() {
 /**
  * Attaches global click handler for logout links
  */
-function attachLogoutListener() {
+(function attachLogoutListener() {
   if (window.__logoutListenerAttached) return;
-  
   window.__logoutListenerAttached = true;
   document.addEventListener("click", handleLogoutClick);
-}
+}());
 
 /**
  * Handles logout click events
@@ -474,57 +393,6 @@ function attachLogoutListener() {
 function handleLogoutClick(e) {
   const element = e.target.closest("[data-logout]");
   if (!element) return;
-  
   e.preventDefault();
   doLogout();
-}
-
-/**
- * Shows/hides navigation UI based on authentication
- * @param {Object|null} user - User object or null
- */
-function applyHeaderNavByAuth(user) {
-  const showNav = !!user;
-  const navElements = getNavigationElements();
-  
-  toggleNavigationVisibility(navElements, showNav);
-}
-
-/**
- * Gets navigation elements
- * @returns {Object} Navigation elements
- */
-function getNavigationElements() {
-  return {
-    nav: document.querySelector(".nav"),
-    navBox: document.querySelector(".nav-box"),
-    navLoginBox: document.querySelector(".nav-login-box"),
-    navLoginBoxMobile: document.querySelector(".nav-login-box-mobile")
-  };
-}
-
-/**
- * Toggles navigation visibility
- * @param {Object} elements - Navigation elements
- * @param {boolean} showNav - Whether to show navigation
- */
-function toggleNavigationVisibility(elements, showNav) {
-  elements.nav?.classList.toggle("d-none", !showNav);
-  elements.navBox?.classList.toggle("d-none", !showNav);
-  elements.navLoginBox?.classList.toggle("d-none", showNav);
-  elements.navLoginBoxMobile?.classList.toggle("d-none", showNav);
-}
-
-// Event Listeners
-attachLogoutListener();
-
-// Initialization
-(async () => {
-  // Initialize header opacity style
-  const style = document.createElement("style");
-  style.textContent = `#person-icon-header-text { opacity: 0; }`;
-  document.head.appendChild(style);
-  
-  // Initialize auth UI
-  await initAuthUI();
-})();
+};
