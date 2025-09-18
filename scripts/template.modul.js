@@ -50,27 +50,129 @@ function truncateForCard(text, max = 50) {
 }
 
 /**
+ * Gets task description or empty string
+ * @param {Task} task
+ * @returns {string}
+ */
+function getTaskDescription(task) {
+  return task.description || "";
+}
+
+/**
+ * Gets task category or empty string
+ * @param {Task} task
+ * @returns {string}
+ */
+function getTaskCategory(task) {
+  return task.category ?? "";
+}
+
+/**
+ * Gets task title or empty string
+ * @param {Task} task
+ * @returns {string}
+ */
+function getTaskTitle(task) {
+  return task.title ?? "";
+}
+
+/**
+ * Renders initials for assigned contacts
+ * @param {Task} task
+ * @returns {string}
+ */
+function renderTaskInitials(task) {
+  return task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : "";
+}
+
+/**
+ * Renders subtasks progress HTML
+ * @param {Task} task
+ * @returns {string}
+ */
+function renderTaskSubtasks(task) {
+  return task.subtasks?.length ? renderSubtaskProgress(task.subtasks) : "";
+}
+
+/**
+ * Creates ticket template data object
+ * @param {Task} task
+ * @param {string} taskId
+ * @returns {Object}
+ */
+function createTicketTemplateData(task, taskId) {
+  return {
+    taskId: taskId,
+    labelClass: getLabelClass(task.category),
+    category: getTaskCategory(task),
+    title: getTaskTitle(task),
+    truncatedDesc: truncateForCard(getTaskDescription(task), 50),
+    subtasksHtml: renderTaskSubtasks(task),
+    initials: renderTaskInitials(task),
+    priority: task.priority
+  };
+}
+
+/**
  * Builds the HTML markup for a ticket.
  * @param {Task} task
  * @param {string} taskId
  * @returns {string}
  */
 function buildTicketHTML(task, taskId) {
-  const labelClass = getLabelClass(task.category);
-  const desc = task.description || "";
-  const truncated = truncateForCard(desc, 50);
-  const initials = task.assignedContacts ? renderAssignedInitials(task.assignedContacts) : "";
-  const subtasksHtml = task.subtasks?.length ? renderSubtaskProgress(task.subtasks) : "";
-  
-  return window.ticketTemplate({
-    taskId: taskId,
-    labelClass: labelClass,
-    category: task.category ?? "",
-    title: task.title ?? "",
-    truncatedDesc: truncated,
-    subtasksHtml: subtasksHtml,
-    initials: initials,
-    priority: task.priority
+  const templateData = createTicketTemplateData(task, taskId);
+  return window.ticketTemplate(templateData);
+}
+
+/**
+ * Finds plus/minus button in ticket
+ * @param {HTMLElement} ticket
+ * @returns {HTMLImageElement|null}
+ */
+function findPlusMinusButton(ticket) {
+  return /** @type {HTMLImageElement|null} */(ticket.querySelector(".plus-minus-img"));
+}
+
+/**
+ * Handles plus/minus button click
+ * @param {Event} e
+ * @param {HTMLElement} btn
+ * @param {HTMLElement} ticket
+ * @param {string} taskId
+ */
+function handlePlusMinusClick(e, btn, ticket, taskId) {
+  e.stopPropagation();
+  const col = getCurrentColumnForTicket(ticket);
+  openMoveOverlay(btn, taskId, col);
+}
+
+/**
+ * Adds click event listener to plus/minus button
+ * @param {HTMLElement} btn
+ * @param {HTMLElement} ticket
+ * @param {string} taskId
+ */
+function addPlusMinusClickListener(btn, ticket, taskId) {
+  btn.addEventListener("click", (e) => {
+    handlePlusMinusClick(e, btn, ticket, taskId);
+  });
+}
+
+/**
+ * Prevents event propagation
+ * @param {Event} e
+ */
+function stopEventPropagation(e) {
+  e.stopPropagation();
+}
+
+/**
+ * Adds drag prevention listeners to plus/minus button
+ * @param {HTMLElement} btn
+ */
+function addDragPreventionListeners(btn) {
+  ["mousedown","touchstart","dragstart"].forEach((eventType) => {
+    btn.addEventListener(eventType, stopEventPropagation, {passive:true});
   });
 }
 
@@ -80,16 +182,10 @@ function buildTicketHTML(task, taskId) {
  * @param {string} taskId
  */
 function initPlusMinus(ticket, taskId) {
-  const btn = /** @type {HTMLImageElement|null} */(ticket.querySelector(".plus-minus-img"));
+  const btn = findPlusMinusButton(ticket);
   if (!btn) return;
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const col = getCurrentColumnForTicket(ticket);
-    openMoveOverlay(btn, taskId, col);
-  });
-  ["mousedown","touchstart","dragstart"].forEach((t)=>
-    btn.addEventListener(t,(e)=>e.stopPropagation(),{passive:true})
-  );
+  addPlusMinusClickListener(btn, ticket, taskId);
+  addDragPreventionListeners(btn);
 }
 
 /**
@@ -117,17 +213,139 @@ function retryUntilFound(id, fn, tries=15){
 }
 
 /**
+ * Gets contact color index or default
+ * @param {Object} contact
+ * @returns {number}
+ */
+function getContactColorIndex(contact) {
+  return Number.isFinite(contact?.colorIndex) ? contact.colorIndex : 0;
+}
+
+/**
+ * Gets contact initials or empty string
+ * @param {Object} contact
+ * @returns {string}
+ */
+function getContactInitials(contact) {
+  return contact?.initials || "";
+}
+
+/**
+ * Gets contact name or falls back to initials
+ * @param {Object} contact
+ * @returns {string}
+ */
+function getContactName(contact) {
+  return contact?.name || getContactInitials(contact);
+}
+
+/**
+ * Creates HTML for a single contact member
+ * @param {Object} contact
+ * @returns {string}
+ */
+function createContactMemberHTML(contact) {
+  const idx = getContactColorIndex(contact);
+  const initials = getContactInitials(contact);
+  const name = getContactName(contact);
+  return `<div class="member"><div class="initial-circle" style="background-image:url(./assets/general_elements/icons/color${idx}.svg)">${initials}</div><span>${name}</span></div>`;
+}
+
+/**
+ * Maps contacts to HTML strings
+ * @param {Array<Object>} contacts
+ * @returns {string[]}
+ */
+function mapContactsToHTML(contacts) {
+  return contacts.map(createContactMemberHTML);
+}
+
+/**
  * Renders contacts into a container element.
  * @param {HTMLElement} container
  * @param {Array<{id?:string,name?:string,initials?:string,colorIndex?:number}>} contacts
  */
 function renderContactsTo(container, contacts){
-  container.innerHTML = contacts.map((c)=>{
-    const idx = Number.isFinite(c?.colorIndex)?c.colorIndex:0;
-    const initials = c?.initials||"";
-    const name = c?.name||initials;
-    return `<div class="member"><div class="initial-circle" style="background-image:url(./assets/general_elements/icons/color${idx}.svg)">${initials}</div><span>${name}</span></div>`;
-  }).join("");
+  const htmlArray = mapContactsToHTML(contacts);
+  container.innerHTML = htmlArray.join("");
+}
+
+/**
+ * Gets checked attribute string for subtask
+ * @param {Subtask} subtask
+ * @returns {string}
+ */
+function getSubtaskCheckedAttr(subtask) {
+  return subtask.checked ? "checked" : "";
+}
+
+/**
+ * Gets subtask ID
+ * @param {number} index
+ * @returns {string}
+ */
+function getSubtaskId(index) {
+  return `subtask${index}`;
+}
+
+/**
+ * Gets subtask icon path
+ * @param {Subtask} subtask
+ * @returns {string}
+ */
+function getSubtaskIcon(subtask) {
+  return subtask.checked 
+    ? "./assets/icons/add_task/check_checked.svg" 
+    : "./assets/icons/add_task/check_default.svg";
+}
+
+/**
+ * Gets subtask CSS class
+ * @param {Subtask} subtask
+ * @returns {string}
+ */
+function getSubtaskClass(subtask) {
+  return subtask.checked ? "checked" : "";
+}
+
+/**
+ * Creates HTML for a single subtask
+ * @param {Subtask} subtask
+ * @param {number} index
+ * @returns {string}
+ */
+function createSubtaskHTML(subtask, index) {
+  const chk = getSubtaskCheckedAttr(subtask);
+  const id = getSubtaskId(index);
+  const icon = getSubtaskIcon(subtask);
+  const cls = getSubtaskClass(subtask);
+  return `<div class="subtask"><input type="checkbox" id="${id}" ${chk} style="display:none"/><label for="${id}" class="${cls}"><img src="${icon}" />${subtask.name}</label></div>`;
+}
+
+/**
+ * Maps subtasks to HTML strings
+ * @param {Subtask[]} subtasks
+ * @returns {string[]}
+ */
+function mapSubtasksToHTML(subtasks) {
+  return subtasks.map(createSubtaskHTML);
+}
+
+/**
+ * Creates subtasks container HTML
+ * @param {string} subtasksHTML
+ * @returns {string}
+ */
+function createSubtasksContainer(subtasksHTML) {
+  return `<div class="subtasks-container">${subtasksHTML}</div>`;
+}
+
+/**
+ * Creates subtasks title
+ * @returns {string}
+ */
+function createSubtasksTitle() {
+  return "<b>Subtasks:</b>";
 }
 
 /**
@@ -136,13 +354,10 @@ function renderContactsTo(container, contacts){
  * @returns {string}
  */
 function toSubtasksHtml(subtasks){
-  return `<b>Subtasks:</b><div class="subtasks-container">${subtasks.map((s,i)=>{
-    const chk = s.checked?"checked":"";
-    const id = `subtask${i}`;
-    const icon = s.checked?"./assets/icons/add_task/check_checked.svg":"./assets/icons/add_task/check_default.svg";
-    const cls = s.checked?"checked":"";
-    return `<div class="subtask"><input type="checkbox" id="${id}" ${chk} style="display:none"/><label for="${id}" class="${cls}"><img src="${icon}" />${s.name}</label></div>`;
-  }).join("")}</div>`;
+  const title = createSubtasksTitle();
+  const htmlArray = mapSubtasksToHTML(subtasks);
+  const container = createSubtasksContainer(htmlArray.join(""));
+  return title + container;
 }
 
 /**
@@ -156,25 +371,120 @@ function renderNoSubtasks(container){ container.innerHTML = "<b>no subtasks</b>"
 // --------------------------------------------------
 
 /**
+ * Creates base overlay element
+ * @returns {HTMLDivElement}
+ */
+function createBaseOverlayElement() {
+  const overlay = document.createElement("div");
+  overlay.className = "move-overlay";
+  overlay.setAttribute("role", "menu");
+  return overlay;
+}
+
+/**
+ * Sets overlay task ID
+ * @param {HTMLElement} overlay
+ * @param {string} taskId
+ */
+function setOverlayTaskId(overlay, taskId) {
+  overlay.dataset.taskId = taskId;
+}
+
+/**
+ * Gets column order mapping
+ * @returns {Object}
+ */
+function getColumnOrder() {
+  return {todo:0, inProgress:1, awaitFeedback:2, done:3};
+}
+
+/**
+ * Determines move direction
+ * @param {Object} order
+ * @param {string} targetCol
+ * @param {string} currentCol
+ * @returns {string}
+ */
+function getMoveDirection(order, targetCol, currentCol) {
+  return (order[targetCol] ?? 0) < (order[currentCol] ?? 0) ? "up" : "down";
+}
+
+/**
+ * Gets arrow icon for direction
+ * @param {string} direction
+ * @returns {string}
+ */
+function getArrowIcon(direction) {
+  return direction === "up" ? "arrow_upward.svg" : "arrow_downward.svg";
+}
+
+/**
+ * Creates move option button HTML
+ * @param {Object} target
+ * @param {string} icon
+ * @returns {string}
+ */
+function createMoveOptionHTML(target, icon) {
+  return `<button type="button" class="move-option" data-col="${target.col}" role="menuitem" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 0;color:inherit;cursor:pointer;text-align:left;width:100%;"><img src="./assets/icons/board/${icon}" alt="" width="16" height="16"><span>${target.label}</span></button>`;
+}
+
+/**
+ * Creates move overlay title
+ * @returns {string}
+ */
+function createMoveOverlayTitle() {
+  return `<div class="move-overlay__title">Move to</div>`;
+}
+
+/**
+ * Maps targets to HTML buttons
+ * @param {Array} targets
+ * @param {Object} order
+ * @param {string} currentColumn
+ * @returns {string[]}
+ */
+function mapTargetsToHTML(targets, order, currentColumn) {
+  const norm = normalizeColumnName(currentColumn);
+  return targets.map(target => {
+    const dir = getMoveDirection(order, target.col, norm);
+    const icon = getArrowIcon(dir);
+    return createMoveOptionHTML(target, icon);
+  });
+}
+
+/**
+ * Creates overlay body HTML
+ * @param {string} currentColumn
+ * @returns {string[]}
+ */
+function createOverlayBodyHTML(currentColumn) {
+  const order = getColumnOrder();
+  const targets = getMoveTargetsFor(currentColumn);
+  const title = createMoveOverlayTitle();
+  const buttons = mapTargetsToHTML(targets, order, currentColumn);
+  return [title].concat(buttons);
+}
+
+/**
+ * Sets overlay innerHTML
+ * @param {HTMLElement} overlay
+ * @param {string[]} bodyHTML
+ */
+function setOverlayContent(overlay, bodyHTML) {
+  overlay.innerHTML = bodyHTML.join("\n");
+}
+
+/**
  * Creates the move overlay element for a given task.
  * @param {string} taskId
  * @param {string} currentColumn
  * @returns {HTMLDivElement}
  */
 function createMoveOverlay(taskId, currentColumn){
-  const overlay = document.createElement("div");
-  overlay.className = "move-overlay";
-  overlay.setAttribute("role","menu");
-  overlay.dataset.taskId = taskId;
-  const order={todo:0,inProgress:1,awaitFeedback:2,done:3};
-  const norm=normalizeColumnName(currentColumn);
-  const targets=getMoveTargetsFor(currentColumn);
-  const body=[`<div class="move-overlay__title">Move to</div>`].concat(targets.map(t=>{
-    const dir=(order[t.col]??0)<(order[norm]??0)?"up":"down";
-    const icon=dir==="up"?"arrow_upward.svg":"arrow_downward.svg";
-    return `<button type="button" class="move-option" data-col="${t.col}" role="menuitem" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 0;color:inherit;cursor:pointer;text-align:left;width:100%;"><img src="./assets/icons/board/${icon}" alt="" width="16" height="16"><span>${t.label}</span></button>`;
-  }));
-  overlay.innerHTML = body.join("\n");
+  const overlay = createBaseOverlayElement();
+  setOverlayTaskId(overlay, taskId);
+  const bodyHTML = createOverlayBodyHTML(currentColumn);
+  setOverlayContent(overlay, bodyHTML);
   return overlay;
 }
 
@@ -210,17 +520,83 @@ function closeMoveOverlay() { /* ... */ }
 // --------------------------------------------------
 
 /**
+ * Creates base ticket element
+ * @returns {HTMLDivElement}
+ */
+function createBaseTicketElement() {
+  return document.createElement("div");
+}
+
+/**
+ * Adds ticket CSS class
+ * @param {HTMLElement} ticket
+ */
+function addTicketClass(ticket) {
+  ticket.classList.add("ticket");
+}
+
+/**
+ * Sets ticket ID
+ * @param {HTMLElement} ticket
+ * @param {string} taskId
+ */
+function setTicketId(ticket, taskId) {
+  ticket.id = taskId;
+}
+
+/**
+ * Makes ticket draggable
+ * @param {HTMLElement} ticket
+ */
+function makeTicketDraggable(ticket) {
+  ticket.draggable = true;
+  ticket.setAttribute("ondragstart", "drag(event)");
+}
+
+/**
+ * Sets ticket column data
+ * @param {HTMLElement} ticket
+ * @param {Task} task
+ */
+function setTicketColumnData(ticket, task) {
+  if (task.column) {
+    ticket.dataset.column = task.column;
+  }
+}
+
+/**
+ * Sets ticket HTML content
+ * @param {HTMLElement} ticket
+ * @param {Task} task
+ * @param {string} taskId
+ */
+function setTicketContent(ticket, task, taskId) {
+  ticket.innerHTML = buildTicketHTML(task, taskId);
+}
+
+/**
+ * Configures ticket element properties
+ * @param {HTMLElement} ticket
+ * @param {Task} task
+ * @param {string} taskId
+ */
+function configureTicketElement(ticket, task, taskId) {
+  addTicketClass(ticket);
+  setTicketId(ticket, taskId);
+  makeTicketDraggable(ticket);
+  setTicketColumnData(ticket, task);
+  setTicketContent(ticket, task, taskId);
+}
+
+/**
  * Creates a draggable ticket element for the board.
  * @param {Task} task
  * @param {string} taskId
  * @returns {HTMLDivElement}
  */
 export function createTaskElement(task, taskId) {
-  const ticket = document.createElement("div");
-  ticket.classList.add("ticket");
-  ticket.id = taskId; ticket.draggable = true; ticket.setAttribute("ondragstart","drag(event)");
-  if (task.column) ticket.dataset.column = task.column;
-  ticket.innerHTML = buildTicketHTML(task, taskId);
+  const ticket = createBaseTicketElement();
+  configureTicketElement(ticket, task, taskId);
   initPlusMinus(ticket, taskId);
   return ticket;
 }
@@ -237,14 +613,41 @@ export function renderAssignedContacts(task) {
 }
 
 /**
+ * Gets subtasks overlay container
+ * @returns {HTMLElement|null}
+ */
+function getSubtasksContainer() {
+  return /** @type {HTMLElement} */(document.getElementById("overlay-subtasks"));
+}
+
+/**
+ * Checks if task has subtasks
+ * @param {Task} task
+ * @returns {boolean}
+ */
+function hasSubtasks(task) {
+  return task?.subtasks && task.subtasks.length > 0;
+}
+
+/**
+ * Renders subtasks HTML to container
+ * @param {HTMLElement} container
+ * @param {Subtask[]} subtasks
+ */
+function renderSubtasksHTML(container, subtasks) {
+  container.innerHTML = toSubtasksHtml(subtasks);
+}
+
+/**
  * Renders the subtasks section inside the task overlay.
  * @param {Task} task
  */
 export function renderSubtasks(task) {
-  const container = /** @type {HTMLElement} */(document.getElementById("overlay-subtasks"));
+  const container = getSubtasksContainer();
   if (!container) return;
-  if (task?.subtasks && task.subtasks.length) {
-    container.innerHTML = toSubtasksHtml(task.subtasks);
+  
+  if (hasSubtasks(task)) {
+    renderSubtasksHTML(container, task.subtasks);
   } else {
     renderNoSubtasks(container);
   }

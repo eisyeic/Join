@@ -11,18 +11,98 @@ import {
 
 
 /**
+ * Prepares edit overlay UI
+ */
+function prepareEditOverlay() {
+  switchToEditView();
+  moveFormIntoEdit();
+  ensureDateHandlersBound();
+}
+
+/**
+ * Checks if input is a string (task ID)
+ * @param {object|string} taskOrId
+ * @returns {boolean}
+ */
+function isTaskId(taskOrId) {
+  return typeof taskOrId === 'string';
+}
+
+/**
+ * Checks if input is a task object
+ * @param {object|string} taskOrId
+ * @returns {boolean}
+ */
+function isTaskObject(taskOrId) {
+  return taskOrId && typeof taskOrId === 'object';
+}
+
+/**
+ * Handles task loading by ID
+ * @param {string} taskId
+ */
+function handleTaskIdInput(taskId) {
+  loadTaskById(taskId).then((task) => {
+    if (task) {
+      proceedEditWithTask({ ...task, id: taskId });
+    }
+  });
+}
+
+/**
+ * Handles direct task object input
+ * @param {object} task
+ */
+function handleTaskObjectInput(task) {
+  proceedEditWithTask(task);
+}
+
+/**
+ * Routes task input to appropriate handler
+ * @param {object|string} taskOrId
+ */
+function routeTaskInput(taskOrId) {
+  if (isTaskId(taskOrId)) {
+    handleTaskIdInput(taskOrId);
+  } else if (isTaskObject(taskOrId)) {
+    handleTaskObjectInput(taskOrId);
+  }
+}
+
+/**
  * Open the edit overlay and load a task.
  * @param {object|string} taskOrId Task object or task ID.
  * @returns {void}
  */
 function openEditInsideOverlay(taskOrId) {
-  switchToEditView();
-  moveFormIntoEdit();
+  prepareEditOverlay();
+  routeTaskInput(taskOrId);
+}
+
+/**
+ * Sets up task for editing
+ * @param {any} task
+ */
+function setupTaskForEditing(task) {
   ensureDateHandlersBound();
-  if (typeof taskOrId === 'string') {
-    loadTaskById(taskOrId).then((task) => task && proceedEditWithTask({ ...task, id: taskOrId }));
-  } else if (taskOrId && typeof taskOrId === 'object') {
-    proceedEditWithTask(taskOrId);
+  markEditingId(task);
+  populateEditForm(task);
+}
+
+/**
+ * Applies UI enhancements
+ */
+function applyUIEnhancements() {
+  queueMicrotask(applyInitialsCapIfAny);
+  syncAssignedSelectionToList();
+}
+
+/**
+ * Adds edit events if available
+ */
+function addEditEventsIfAvailable() {
+  if (typeof window.addEditEvents === 'function') {
+    window.addEditEvents();
   }
 }
 
@@ -32,13 +112,10 @@ function openEditInsideOverlay(taskOrId) {
  * @returns {void}
  */
 function proceedEditWithTask(task) {
-  ensureDateHandlersBound();
-  markEditingId(task);
-  populateEditForm(task);
-  queueMicrotask(applyInitialsCapIfAny);
+  setupTaskForEditing(task);
+  applyUIEnhancements();
   deferPopulateAndCap(task);
-  syncAssignedSelectionToList();
-  if (typeof window.addEditEvents === 'function') window.addEditEvents();
+  addEditEventsIfAvailable();
 }
 
 /** Apply initials cap if hook exists. */
@@ -55,14 +132,82 @@ function deferPopulateAndCap(task) {
 }
 
 /**
+ * Gets task overlay content element
+ * @returns {HTMLElement|null}
+ */
+function getTaskOverlayContent() {
+  return document.getElementById("task-overlay-content");
+}
+
+/**
+ * Gets edit wrapper element
+ * @returns {HTMLElement|null}
+ */
+function getEditWrapper() {
+  return document.querySelector(".edit-addtask-wrapper");
+}
+
+/**
+ * Hides task overlay content
+ * @param {HTMLElement} element
+ */
+function hideTaskContent(element) {
+  element?.classList.add("d-none");
+}
+
+/**
+ * Shows edit wrapper
+ * @param {HTMLElement} element
+ */
+function showEditWrapper(element) {
+  element?.classList.remove("d-none");
+}
+
+/**
  * Show edit view.
  * @returns {void}
  */
 function switchToEditView() {
-  const taskContent = document.getElementById("task-overlay-content");
-  const editWrap = document.querySelector(".edit-addtask-wrapper");
-  taskContent?.classList.add("d-none");
-  editWrap?.classList.remove("d-none");
+  const taskContent = getTaskOverlayContent();
+  const editWrap = getEditWrapper();
+  hideTaskContent(taskContent);
+  showEditWrapper(editWrap);
+}
+
+/**
+ * Finds form source element
+ * @returns {HTMLElement|null}
+ */
+function findFormSource() {
+  return document.querySelector(".addtask-aside-clone .addtask-wrapper") ||
+         document.querySelector(".edit-addtask .addtask-wrapper");
+}
+
+/**
+ * Finds form destination element
+ * @returns {HTMLElement|null}
+ */
+function findFormDestination() {
+  return document.querySelector(".edit-addtask");
+}
+
+/**
+ * Checks if form needs to be moved
+ * @param {HTMLElement} src
+ * @param {HTMLElement} dst
+ * @returns {boolean}
+ */
+function shouldMoveForm(src, dst) {
+  return src && dst && src.parentElement !== dst;
+}
+
+/**
+ * Moves form to destination
+ * @param {HTMLElement} src
+ * @param {HTMLElement} dst
+ */
+function moveFormToDestination(src, dst) {
+  dst.replaceChildren(src);
 }
 
 /**
@@ -70,11 +215,38 @@ function switchToEditView() {
  * @returns {void}
  */
 function moveFormIntoEdit() {
-  const src =
-    document.querySelector(".addtask-aside-clone .addtask-wrapper") ||
-    document.querySelector(".edit-addtask .addtask-wrapper");
-  const dst = document.querySelector(".edit-addtask");
-  if (src && dst && src.parentElement !== dst) dst.replaceChildren(src);
+  const src = findFormSource();
+  const dst = findFormDestination();
+  
+  if (shouldMoveForm(src, dst)) {
+    moveFormToDestination(src, dst);
+  }
+}
+
+/**
+ * Gets addtask wrapper element
+ * @returns {HTMLElement|null}
+ */
+function getAddtaskWrapper() {
+  return document.querySelector(".addtask-wrapper");
+}
+
+/**
+ * Checks if task has valid ID
+ * @param {any} task
+ * @returns {boolean}
+ */
+function hasValidTaskId(task) {
+  return task?.id !== undefined && task?.id !== null;
+}
+
+/**
+ * Sets editing ID on wrapper
+ * @param {HTMLElement} wrapper
+ * @param {string} taskId
+ */
+function setEditingIdOnWrapper(wrapper, taskId) {
+  wrapper.dataset.editingId = String(taskId);
 }
 
 /**
@@ -83,8 +255,46 @@ function moveFormIntoEdit() {
  * @returns {void}
  */
 function markEditingId(task) {
-  const wrap = document.querySelector(".addtask-wrapper");
-  if (wrap && task?.id) wrap.dataset.editingId = String(task.id);
+  const wrap = getAddtaskWrapper();
+  
+  if (wrap && hasValidTaskId(task)) {
+    setEditingIdOnWrapper(wrap, task.id);
+  }
+}
+
+/**
+ * Checks if custom edit mode function exists
+ * @returns {boolean}
+ */
+function hasCustomEditMode() {
+  return typeof window.enterAddTaskEditMode === "function";
+}
+
+/**
+ * Tries to use custom edit mode
+ * @param {any} task
+ * @returns {boolean} Success status
+ */
+function tryCustomEditMode(task) {
+  try {
+    window.enterAddTaskEditMode(task);
+    return true;
+  } catch (e) {
+    console.warn("enterAddTaskEditMode failed, using fallback", e);
+    return false;
+  }
+}
+
+/**
+ * Uses custom edit mode if available
+ * @param {any} task
+ * @returns {boolean} Whether custom mode was used
+ */
+function useCustomEditModeIfAvailable(task) {
+  if (hasCustomEditMode()) {
+    return tryCustomEditMode(task);
+  }
+  return false;
 }
 
 /**
@@ -93,10 +303,38 @@ function markEditingId(task) {
  * @returns {void}
  */
 function populateEditForm(task) {
-  if (typeof window.enterAddTaskEditMode === "function") {
-    try { window.enterAddTaskEditMode(task); return; } catch (e) { console.warn("enterAddTaskEditMode failed, using fallback", e); }
+  if (!useCustomEditModeIfAvailable(task)) {
+    populateEditFormFallback(task);
   }
-  populateEditFormFallback(task);
+}
+
+/**
+ * Validates task for form population
+ * @param {any} task
+ * @returns {boolean}
+ */
+function isValidTaskForPopulation(task) {
+  return task !== null && task !== undefined;
+}
+
+/**
+ * Populates basic form fields
+ * @param {any} task
+ */
+function populateBasicFields(task) {
+  setTitleAndDescription(task);
+  setDueDateField(task);
+  setCategorySelection(task);
+  setPriorityButtons(task);
+}
+
+/**
+ * Populates relationship fields
+ * @param {any} task
+ */
+function populateRelationshipFields(task) {
+  setAssignedContactsUI(task);
+  setSubtasksArray(task);
 }
 
 /**
@@ -105,14 +343,45 @@ function populateEditForm(task) {
  * @returns {void}
  */
 function populateEditFormFallback(task) {
-  if (!task) return;
+  if (!isValidTaskForPopulation(task)) return;
+  
   markEditingId(task);
-  setTitleAndDescription(task);
-  setDueDateField(task);
-  setCategorySelection(task);
-  setPriorityButtons(task);
-  setAssignedContactsUI(task);
-  setSubtasksArray(task);
+  populateBasicFields(task);
+  populateRelationshipFields(task);
+}
+
+/**
+ * Gets title input element
+ * @returns {HTMLInputElement|null}
+ */
+function getTitleElement() {
+  return /** @type {HTMLInputElement|null} */ (document.getElementById("addtask-title"));
+}
+
+/**
+ * Gets description textarea element
+ * @returns {HTMLTextAreaElement|null}
+ */
+function getDescriptionElement() {
+  return /** @type {HTMLTextAreaElement|null} */ (document.getElementById("addtask-textarea"));
+}
+
+/**
+ * Sets title value
+ * @param {HTMLInputElement} element
+ * @param {any} task
+ */
+function setTitleValue(element, task) {
+  element.value = task.title || "";
+}
+
+/**
+ * Sets description value
+ * @param {HTMLTextAreaElement} element
+ * @param {any} task
+ */
+function setDescriptionValue(element, task) {
+  element.value = task.description || "";
 }
 
 /**
@@ -121,10 +390,54 @@ function populateEditFormFallback(task) {
  * @returns {void}
  */
 function setTitleAndDescription(task) {
-  const titleEl = document.getElementById("addtask-title");
-  const descEl = document.getElementById("addtask-textarea");
-  if (titleEl) /** @type {HTMLInputElement} */ (titleEl).value = task.title || "";
-  if (descEl) /** @type {HTMLTextAreaElement} */ (descEl).value = task.description || "";
+  const titleEl = getTitleElement();
+  const descEl = getDescriptionElement();
+  
+  if (titleEl) setTitleValue(titleEl, task);
+  if (descEl) setDescriptionValue(descEl, task);
+}
+
+/**
+ * Gets datepicker element
+ * @returns {HTMLInputElement|null}
+ */
+function getDatepickerElement() {
+  return /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
+}
+
+/**
+ * Gets date wrapper elements
+ * @returns {Object}
+ */
+function getDateWrapperElements() {
+  return {
+    wrapper: document.getElementById('datepicker-wrapper'),
+    display: document.getElementById('date-display'),
+    placeholder: document.getElementById('date-placeholder')
+  };
+}
+
+/**
+ * Applies date input value
+ * @param {HTMLInputElement} dateEl
+ * @param {string} iso
+ */
+function applyDateInputValue(dateEl, iso) {
+  applyDateInput(dateEl, iso);
+}
+
+/**
+ * Applies date UI state to elements
+ * @param {Object} elements
+ * @param {string} ddmmyyyy
+ */
+function applyDateUIToElements(elements, ddmmyyyy) {
+  applyDateUIState(
+    elements.wrapper,
+    elements.display,
+    elements.placeholder,
+    ddmmyyyy
+  );
 }
 
 /**
@@ -133,16 +446,67 @@ function setTitleAndDescription(task) {
  * @returns {void}
  */
 function setDueDateField(task) {
-  const dateEl = /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
+  const dateEl = getDatepickerElement();
   if (!dateEl) return;
+  
   const { iso, ddmmyyyy } = computeDateStrings(task?.dueDate);
-  applyDateInput(dateEl, iso);
-  applyDateUIState(
-    document.getElementById('datepicker-wrapper'),
-    document.getElementById('date-display'),
-    document.getElementById('date-placeholder'),
-    ddmmyyyy
-  );
+  const elements = getDateWrapperElements();
+  
+  applyDateInputValue(dateEl, iso);
+  applyDateUIToElements(elements, ddmmyyyy);
+}
+
+/**
+ * Gets category select element
+ * @returns {HTMLElement|null}
+ */
+function getCategorySelectElement() {
+  return document.getElementById("category-select");
+}
+
+/**
+ * Gets category span element
+ * @param {HTMLElement} selectElement
+ * @returns {HTMLElement|null}
+ */
+function getCategorySpan(selectElement) {
+  return selectElement ? selectElement.querySelector("span") : null;
+}
+
+/**
+ * Gets category text or default
+ * @param {any} task
+ * @returns {string}
+ */
+function getCategoryText(task) {
+  return task.category || "Select task category";
+}
+
+/**
+ * Gets category value or empty string
+ * @param {any} task
+ * @returns {string}
+ */
+function getCategoryValue(task) {
+  return task.category || "";
+}
+
+/**
+ * Sets category span text
+ * @param {HTMLElement} span
+ * @param {string} text
+ */
+function setCategorySpanText(span, text) {
+  span.textContent = text;
+}
+
+/**
+ * Sets category select value
+ * @param {HTMLElement} select
+ * @param {string} value
+ */
+function setCategorySelectValue(select, value) {
+  select.dataset.value = value;
 }
 
 /**
@@ -151,10 +515,61 @@ function setDueDateField(task) {
  * @returns {void}
  */
 function setCategorySelection(task) {
-  const sel = document.getElementById("category-select");
-  const span = sel ? sel.querySelector("span") : null;
-  if (span) span.textContent = task.category || "Select task category";
-  if (sel) sel.dataset.value = task.category || "";
+  const sel = getCategorySelectElement();
+  const span = getCategorySpan(sel);
+  
+  if (span) setCategorySpanText(span, getCategoryText(task));
+  if (sel) setCategorySelectValue(sel, getCategoryValue(task));
+}
+
+/**
+ * Gets all priority buttons
+ * @returns {NodeListOf<Element>}
+ */
+function getAllPriorityButtons() {
+  return document.querySelectorAll(".prio-buttons .priority-button");
+}
+
+/**
+ * Clears active state from all priority buttons
+ */
+function clearActivePriorityButtons() {
+  getAllPriorityButtons().forEach((b) => b.classList.remove("active"));
+}
+
+/**
+ * Gets priority button selector map
+ * @returns {Object}
+ */
+function getPriorityButtonMap() {
+  return { urgent: ".urgent-button", medium: ".medium-button", low: ".low-button" };
+}
+
+/**
+ * Gets normalized priority key
+ * @param {any} task
+ * @returns {string}
+ */
+function getNormalizedPriorityKey(task) {
+  return (task.priority || "medium").toLowerCase();
+}
+
+/**
+ * Gets priority button selector
+ * @param {string} key
+ * @returns {string}
+ */
+function getPriorityButtonSelector(key) {
+  const map = getPriorityButtonMap();
+  return map[key] || ".medium-button";
+}
+
+/**
+ * Activates priority button
+ * @param {string} selector
+ */
+function activatePriorityButton(selector) {
+  document.querySelector(selector)?.classList.add("active");
 }
 
 /**
@@ -163,11 +578,53 @@ function setCategorySelection(task) {
  * @returns {void}
  */
 function setPriorityButtons(task) {
-  document.querySelectorAll(".prio-buttons .priority-button")
-    .forEach((b) => b.classList.remove("active"));
-  const map = { urgent: ".urgent-button", medium: ".medium-button", low: ".low-button" };
-  const key = (task.priority || "medium").toLowerCase();
-  document.querySelector(map[key] || ".medium-button")?.classList.add("active");
+  clearActivePriorityButtons();
+  const key = getNormalizedPriorityKey(task);
+  const selector = getPriorityButtonSelector(key);
+  activatePriorityButton(selector);
+}
+
+/**
+ * Gets contact initials box element
+ * @returns {HTMLElement|null}
+ */
+function getContactInitialsBox() {
+  return document.getElementById("contact-initials");
+}
+
+/**
+ * Gets assigned select box element
+ * @returns {HTMLElement|null}
+ */
+function getAssignedSelectBox() {
+  return document.getElementById("assigned-select-box");
+}
+
+/**
+ * Renders initials in box
+ * @param {HTMLElement} initialsBox
+ * @param {Array} assigned
+ */
+function renderInitialsInBox(initialsBox, assigned) {
+  renderInitials(initialsBox, assigned);
+}
+
+/**
+ * Extracts contact IDs from assigned array
+ * @param {Array} assigned
+ * @returns {Array}
+ */
+function extractContactIds(assigned) {
+  return assigned.map((p) => p.id).filter(Boolean);
+}
+
+/**
+ * Sets selected data on select box
+ * @param {HTMLElement} selectBox
+ * @param {Array} contactIds
+ */
+function setSelectedData(selectBox, contactIds) {
+  selectBox.dataset.selected = JSON.stringify(contactIds);
 }
 
 /**
@@ -177,10 +634,70 @@ function setPriorityButtons(task) {
  */
 function setAssignedContactsUI(task) {
   const assigned = getAssignedArray(task);
-  const initialsBox = document.getElementById("contact-initials");
-  const selectBox = document.getElementById("assigned-select-box");
-  if (initialsBox) renderInitials(initialsBox, assigned);
-  if (selectBox) selectBox.dataset.selected = JSON.stringify(assigned.map((p) => p.id).filter(Boolean));
+  const initialsBox = getContactInitialsBox();
+  const selectBox = getAssignedSelectBox();
+  
+  if (initialsBox) renderInitialsInBox(initialsBox, assigned);
+  if (selectBox) {
+    const contactIds = extractContactIds(assigned);
+    setSelectedData(selectBox, contactIds);
+  }
+}
+
+/**
+ * Validates subtasks array
+ * @param {any} task
+ * @returns {boolean}
+ */
+function hasValidSubtasksArray(task) {
+  return Array.isArray(task.subtasks);
+}
+
+/**
+ * Processes subtasks data
+ * @param {Array} subtasks
+ * @returns {Array}
+ */
+function processSubtasksData(subtasks) {
+  return normalizeSubtasks(subtasks);
+}
+
+/**
+ * Syncs subtasks to global state
+ * @param {Array} normalizedList
+ */
+function syncSubtasksToGlobal(normalizedList) {
+  ensureGlobalSubtasks();
+  overwriteGlobalSubtasks(normalizedList);
+}
+
+/**
+ * Renders subtasks UI
+ */
+function renderSubtasksUI() {
+  renderSubtasksIfAny();
+}
+
+/**
+ * Adds edit events for subtasks
+ */
+function addSubtaskEditEvents() {
+  if (typeof window.addEditEvents === "function") {
+    window.addEditEvents();
+  }
+}
+
+/**
+ * Processes subtasks safely
+ * @param {Array} subtasks
+ */
+function processSubtasksSafely(subtasks) {
+  try {
+    const list = processSubtasksData(subtasks);
+    syncSubtasksToGlobal(list);
+    renderSubtasksUI();
+    addSubtaskEditEvents();
+  } catch {}
 }
 
 /**
@@ -189,14 +706,53 @@ function setAssignedContactsUI(task) {
  * @returns {void}
  */
 function setSubtasksArray(task) {
-  if (!Array.isArray(task.subtasks)) return;
-  try {
-    const list = normalizeSubtasks(task.subtasks);
-    ensureGlobalSubtasks();
-    overwriteGlobalSubtasks(list);
-    renderSubtasksIfAny();
-    if (typeof window.addEditEvents === "function") window.addEditEvents();
-  } catch {}
+  if (!hasValidSubtasksArray(task)) return;
+  processSubtasksSafely(task.subtasks);
+}
+
+/**
+ * Gets contact list box element
+ * @returns {HTMLElement|null}
+ */
+function getContactListBox() {
+  return document.getElementById("contact-list-box");
+}
+
+/**
+ * Validates list sync elements
+ * @param {HTMLElement|null} list
+ * @param {HTMLElement|null} selectBox
+ * @returns {boolean}
+ */
+function areListSyncElementsValid(list, selectBox) {
+  return list !== null && selectBox !== null;
+}
+
+/**
+ * Creates selected IDs set
+ * @param {HTMLElement} selectBox
+ * @returns {Set}
+ */
+function createSelectedIdsSet(selectBox) {
+  return new Set(getSelectedIds(selectBox));
+}
+
+/**
+ * Gets all list items
+ * @param {HTMLElement} list
+ * @returns {NodeListOf<Element>}
+ */
+function getAllListItems(list) {
+  return list.querySelectorAll("li");
+}
+
+/**
+ * Toggles selection state for all list items
+ * @param {NodeListOf<Element>} listItems
+ * @param {Set} idSet
+ */
+function toggleAllListItemsSelection(listItems, idSet) {
+  listItems.forEach((li) => toggleLiSelected(li, idSet));
 }
 
 /**
@@ -204,11 +760,94 @@ function setSubtasksArray(task) {
  * @returns {void}
  */
 function syncAssignedSelectionToList() {
-  const list = document.getElementById("contact-list-box");
-  const selectBox = document.getElementById("assigned-select-box");
-  if (!list || !selectBox) return;
-  const idSet = new Set(getSelectedIds(selectBox));
-  list.querySelectorAll("li").forEach((li) => toggleLiSelected(li, idSet));
+  const list = getContactListBox();
+  const selectBox = getAssignedSelectBox();
+  
+  if (!areListSyncElementsValid(list, selectBox)) return;
+  
+  const idSet = createSelectedIdsSet(selectBox);
+  const listItems = getAllListItems(list);
+  toggleAllListItemsSelection(listItems, idSet);
+}
+
+/**
+ * Imports Firebase RTDB module
+ * @returns {Promise<Object>}
+ */
+async function importFirebaseRTDB() {
+  return await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+}
+
+/**
+ * Imports Firebase app
+ * @returns {Promise<Object>}
+ */
+async function importFirebaseApp() {
+  return await import('./firebase.js');
+}
+
+/**
+ * Gets Firebase database instance
+ * @param {Object} RTDB
+ * @param {Object} app
+ * @returns {Object}
+ */
+function getFirebaseDatabase(RTDB, app) {
+  return RTDB.getDatabase(app);
+}
+
+/**
+ * Creates task reference
+ * @param {Object} RTDB
+ * @param {Object} db
+ * @param {string} taskId
+ * @returns {Object}
+ */
+function createTaskReference(RTDB, db, taskId) {
+  return RTDB.ref(db, `tasks/${taskId}`);
+}
+
+/**
+ * Fetches task snapshot
+ * @param {Object} RTDB
+ * @param {Object} taskRef
+ * @returns {Promise<Object>}
+ */
+async function fetchTaskSnapshot(RTDB, taskRef) {
+  return await RTDB.get(taskRef);
+}
+
+/**
+ * Extracts task data from snapshot
+ * @param {Object} snapshot
+ * @returns {any|null}
+ */
+function extractTaskData(snapshot) {
+  return snapshot.exists() ? snapshot.val() : null;
+}
+
+/**
+ * Handles task loading error
+ * @param {Error} e
+ * @returns {null}
+ */
+function handleTaskLoadError(e) {
+  console.error('Failed to load task', e);
+  return null;
+}
+
+/**
+ * Loads task data from Firebase
+ * @param {string} taskId
+ * @returns {Promise<any|null>}
+ */
+async function loadTaskFromFirebase(taskId) {
+  const RTDB = await importFirebaseRTDB();
+  const { app } = await importFirebaseApp();
+  const db = getFirebaseDatabase(RTDB, app);
+  const taskRef = createTaskReference(RTDB, db, taskId);
+  const snapshot = await fetchTaskSnapshot(RTDB, taskRef);
+  return extractTaskData(snapshot);
 }
 
 /**
@@ -218,15 +857,43 @@ function syncAssignedSelectionToList() {
  */
 async function loadTaskById(taskId) {
   try {
-    const RTDB = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-    const { app } = await import('./firebase.js');
-    const db = RTDB.getDatabase(app);
-    const snap = await RTDB.get(RTDB.ref(db, `tasks/${taskId}`));
-    return snap.exists() ? snap.val() : null;
+    return await loadTaskFromFirebase(taskId);
   } catch (e) {
-    console.error('Failed to load task', e);
-    return null;
+    return handleTaskLoadError(e);
   }
+}
+
+/**
+ * Validates task ID for deletion
+ * @param {string} taskId
+ * @throws {Error} If taskId is missing
+ */
+function validateTaskIdForDeletion(taskId) {
+  if (!taskId) throw new Error("Missing taskId");
+}
+
+/**
+ * Removes task from Firebase
+ * @param {Object} RTDB
+ * @param {Object} db
+ * @param {string} taskId
+ * @returns {Promise<void>}
+ */
+async function removeTaskFromFirebase(RTDB, db, taskId) {
+  const taskRef = createTaskReference(RTDB, db, taskId);
+  await RTDB.remove(taskRef);
+}
+
+/**
+ * Performs task deletion from Firebase
+ * @param {string} taskId
+ * @returns {Promise<void>}
+ */
+async function performTaskDeletionFromFirebase(taskId) {
+  const RTDB = await importFirebaseRTDB();
+  const { app } = await importFirebaseApp();
+  const db = getFirebaseDatabase(RTDB, app);
+  await removeTaskFromFirebase(RTDB, db, taskId);
 }
 
 /**
@@ -235,11 +902,8 @@ async function loadTaskById(taskId) {
  * @returns {Promise<void>}
  */
 window.deleteTaskFromDatabase = async function(taskId) {
-  if (!taskId) throw new Error("Missing taskId");
-  const RTDB = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-  const { app } = await import("./firebase.js");
-  const db = RTDB.getDatabase(app);
-  await RTDB.remove(RTDB.ref(db, `tasks/${taskId}`));
+  validateTaskIdForDeletion(taskId);
+  await performTaskDeletionFromFirebase(taskId);
 };
 
 /** Ensure global access to openEditInsideOverlay. */

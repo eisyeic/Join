@@ -14,34 +14,93 @@ import { auth } from "./firebase.js";
 let currentMode = "login";
 
 /**
+ * Sets initial theme with delay
+ */
+function setInitialTheme() {
+  setTimeout(() => setThemeWhite(true), 500);
+}
+
+/**
+ * Disables sign-up button initially
+ */
+function disableSignUpButton() {
+  $("sign-up-button").style.pointerEvents = "none";
+}
+
+/**
+ * Sets up all initial configurations
+ */
+function setupInitialConfigurations() {
+  setupEmailValidation();
+  setupSignupEventListeners();
+  setupResizeListener();
+}
+
+/**
  * Initializes the sign-up view after DOM load:
  * sets theme, email validation, event listeners, 
  * resize listener, and disables sign-up button initially.
  * @returns {void}
  */
 function initSignup() {
-  setTimeout(() => setThemeWhite(true), 500);
-  setupEmailValidation();
-  setupSignupEventListeners();
-  setupResizeListener();
-  $("sign-up-button").style.pointerEvents = "none";
+  setInitialTheme();
+  setupInitialConfigurations();
+  disableSignUpButton();
 }
 document.addEventListener("DOMContentLoaded", initSignup);
+
+/**
+ * Adds event listener to element if it exists
+ * @param {string} id
+ * @param {string} event
+ * @param {Function} handler
+ */
+function addEventListenerIfExists(id, event, handler) {
+  const element = $(id) || document.getElementById(id);
+  element?.addEventListener(event, handler);
+}
+
+/**
+ * Handles confirm checkbox toggle
+ */
+function handleConfirmToggle() {
+  $("confirm").classList.toggle("checked");
+  const isChecked = $("confirm").classList.contains("checked");
+  $("sign-up-button").style.pointerEvents = isChecked ? "" : "none";
+}
+
+/**
+ * Sets up sign-up form button listeners
+ */
+function setupSignUpFormListeners() {
+  addEventListenerIfExists("sign-up-page-button", "click", showSignUpForm);
+  addEventListenerIfExists("sign-up-bottom-button", "click", showSignUpForm);
+  addEventListenerIfExists("sign-up-bottom-box-mobile", "click", showSignUpForm);
+}
+
+/**
+ * Sets up action button listeners
+ */
+function setupActionButtonListeners() {
+  addEventListenerIfExists("sign-up-button", "click", handleSignUp);
+  addEventListenerIfExists("go-back", "click", showLoginForm);
+}
+
+/**
+ * Sets up checkbox listeners
+ */
+function setupCheckboxListeners() {
+  addEventListenerIfExists("confirm", "click", handleConfirmToggle);
+}
 
 /**
  * Registers event listeners for sign-up related buttons and checkboxes.
  * @returns {void}
  */
 function setupSignupEventListeners() {
-  $("sign-up-page-button")?.addEventListener("click", showSignUpForm);
-  $("sign-up-bottom-button")?.addEventListener("click", showSignUpForm);
-  document.getElementById("sign-up-bottom-box-mobile")?.addEventListener("click", showSignUpForm);
-  $("sign-up-button")?.addEventListener("click", handleSignUp);
-  $("go-back")?.addEventListener("click", showLoginForm);
-  $("confirm")?.addEventListener("click", () => {
-    $("confirm").classList.toggle("checked");
-    $("sign-up-button").style.pointerEvents = $("confirm").classList.contains("checked") ? "" : "none";
-  });
+  setupSignUpFormListeners();
+  setupActionButtonListeners();
+  setupCheckboxListeners();
 }
 
 /**
@@ -53,16 +112,70 @@ function setupResizeListener() {
 }
 
 /**
+ * Sets layout background classes
+ * @param {boolean} isWhite
+ */
+function setLayoutBackground(isWhite) {
+  $("layout").classList.toggle("bg-white", isWhite);
+  $("layout").classList.toggle("bg-blue", !isWhite);
+}
+
+/**
+ * Sets logo visibility based on theme
+ * @param {boolean} isWhite
+ */
+function setLogoVisibility(isWhite) {
+  $("logo-white").style.opacity = isWhite ? "0" : "1";
+  $("logo-blue").style.opacity = isWhite ? "1" : "0";
+}
+
+/**
  * Switches between white and blue theme and updates sign-up box visibility.
  * @param {boolean} isWhite - true = white theme, false = blue theme
  * @returns {void}
  */
 function setThemeWhite(isWhite) {
-  $("layout").classList.toggle("bg-white", isWhite);
-  $("layout").classList.toggle("bg-blue", !isWhite);
-  $("logo-white").style.opacity = isWhite ? "0" : "1";
-  $("logo-blue").style.opacity = isWhite ? "1" : "0";
+  setLayoutBackground(isWhite);
+  setLogoVisibility(isWhite);
   updateSignUpBoxDisplay();
+}
+
+/**
+ * Sets current mode to signup
+ */
+function setSignupMode() {
+  currentMode = "signup";
+}
+
+/**
+ * Hides mobile signup box if on mobile
+ */
+function hideMobileSignupBox() {
+  if (window.innerWidth <= 720) {
+    $("sign-up-bottom-box-mobile").style.display = "none";
+  }
+}
+
+/**
+ * Hides top right signup box
+ */
+function hideTopRightSignupBox() {
+  $("sign-up-top-right-box").style.display = "none";
+}
+
+/**
+ * Shows signup form and hides login form
+ */
+function toggleFormVisibility() {
+  $("sign-up-box").classList.remove("d-none");
+  $("login-box").classList.add("d-none");
+}
+
+/**
+ * Clears login form inputs
+ */
+function clearLoginInputs() {
+  clearFormInputs(["login-email", "login-password"], $("errorMessage"));
 }
 
 /**
@@ -71,16 +184,51 @@ function setThemeWhite(isWhite) {
  * @returns {void}
  */
 function showSignUpForm() {
-  currentMode = "signup";
+  setSignupMode();
   setThemeWhite(false);
-  if (window.innerWidth <= 720) {
-    $("sign-up-bottom-box-mobile").style.display = "none";
-  }
-  $("sign-up-top-right-box").style.display = "none";
-  $("sign-up-box").classList.remove("d-none");
-  $("login-box").classList.add("d-none");
-  clearFormInputs(["login-email", "login-password"], $("errorMessage"));
+  hideMobileSignupBox();
+  hideTopRightSignupBox();
+  toggleFormVisibility();
+  clearLoginInputs();
   initializePasswordFields("sign-up");
+}
+
+/**
+ * Sets current mode to login
+ */
+function setLoginMode() {
+  currentMode = "login";
+}
+
+/**
+ * Shows mobile signup box if on mobile
+ */
+function showMobileSignupBox() {
+  if (window.innerWidth <= 720) {
+    $("sign-up-bottom-box-mobile").style.display = "flex";
+  }
+}
+
+/**
+ * Shows top right signup box
+ */
+function showTopRightSignupBox() {
+  $("sign-up-top-right-box").style.display = "flex";
+}
+
+/**
+ * Shows login form and hides signup form
+ */
+function toggleLoginFormVisibility() {
+  $("login-box").classList.remove("d-none");
+  $("sign-up-box").classList.add("d-none");
+}
+
+/**
+ * Clears signup form inputs
+ */
+function clearSignupInputs() {
+  clearFormInputs(["name", "sign-up-email", "sign-up-password", "confirm-password"], $("error-sign-up"));
 }
 
 /**
@@ -89,16 +237,88 @@ function showSignUpForm() {
  * @returns {void}
  */
 function showLoginForm() {
-  currentMode = "login";
+  setLoginMode();
   setThemeWhite(true);
-  if (window.innerWidth <= 720) {
-    $("sign-up-bottom-box-mobile").style.display = "flex";
-  }
-  $("sign-up-top-right-box").style.display = "flex";
-  $("login-box").classList.remove("d-none");
-  $("sign-up-box").classList.add("d-none");
-  clearFormInputs(["name", "sign-up-email", "sign-up-password", "confirm-password"], $("error-sign-up"));
+  showMobileSignupBox();
+  showTopRightSignupBox();
+  toggleLoginFormVisibility();
+  clearSignupInputs();
   initializePasswordFields("login");
+}
+
+/**
+ * Gets signup box elements
+ * @returns {Object}
+ */
+function getSignupBoxElements() {
+  return {
+    topRight: $("sign-up-top-right-box"),
+    bottomMobile: $("sign-up-bottom-box-mobile")
+  };
+}
+
+/**
+ * Checks if elements are valid for display update
+ * @param {Object} elements
+ * @returns {boolean}
+ */
+function areSignupBoxElementsValid(elements) {
+  return elements.topRight !== null;
+}
+
+/**
+ * Checks if current mode is signup
+ * @returns {boolean}
+ */
+function isSignupMode() {
+  return currentMode === "signup";
+}
+
+/**
+ * Checks if viewport is mobile
+ * @returns {boolean}
+ */
+function isMobileViewport() {
+  return window.innerWidth <= 720;
+}
+
+/**
+ * Hides both signup boxes
+ * @param {Object} elements
+ */
+function hideBothSignupBoxes(elements) {
+  elements.topRight.classList.add("d-none");
+  elements.bottomMobile?.classList.add("d-none");
+}
+
+/**
+ * Shows mobile signup box and hides desktop
+ * @param {Object} elements
+ */
+function showMobileHideDesktop(elements) {
+  elements.topRight.classList.add("d-none");
+  elements.bottomMobile?.classList.remove("d-none");
+}
+
+/**
+ * Shows desktop signup box and hides mobile
+ * @param {Object} elements
+ */
+function showDesktopHideMobile(elements) {
+  elements.topRight.classList.remove("d-none");
+  elements.bottomMobile?.classList.add("d-none");
+}
+
+/**
+ * Updates signup boxes for login mode
+ * @param {Object} elements
+ */
+function updateSignupBoxesForLogin(elements) {
+  if (isMobileViewport()) {
+    showMobileHideDesktop(elements);
+  } else {
+    showDesktopHideMobile(elements);
+  }
 }
 
 /**
@@ -107,20 +327,13 @@ function showLoginForm() {
  * @returns {void}
  */
 function updateSignUpBoxDisplay() {
-  const topRight = $("sign-up-top-right-box");
-  const bottomMobile = $("sign-up-bottom-box-mobile");
-  if (!topRight) return;
-  if (currentMode === "signup") {
-    topRight.classList.add("d-none");
-    bottomMobile?.classList.add("d-none");
+  const elements = getSignupBoxElements();
+  if (!areSignupBoxElementsValid(elements)) return;
+  
+  if (isSignupMode()) {
+    hideBothSignupBoxes(elements);
   } else {
-    if (window.innerWidth <= 720) {
-      topRight.classList.add("d-none");
-      bottomMobile?.classList.remove("d-none");
-    } else {
-      topRight.classList.remove("d-none");
-      bottomMobile?.classList.add("d-none");
-    }
+    updateSignupBoxesForLogin(elements);
   }
 }
 
@@ -138,19 +351,93 @@ function setupEmailValidation() {
 }
 
 /**
+ * Gets signup form values
+ * @returns {Object}
+ */
+function getSignupFormValues() {
+  return {
+    name: $("name").value.trim(),
+    email: $("sign-up-email").value.trim(),
+    password: $("sign-up-password").value,
+    confirm: $("confirm-password").value,
+    accepted: $("confirm").classList.contains("checked")
+  };
+}
+
+/**
+ * Disables signup button
+ */
+function disableSignupButton() {
+  $("sign-up-button").style.pointerEvents = "none";
+}
+
+/**
+ * Processes signup if validation passes
+ * @param {Object} values
+ */
+function processSignupIfValid(values) {
+  const { name, email, password, confirm, accepted } = values;
+  if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
+  registerUser(email, password);
+  disableSignupButton();
+}
+
+/**
  * Handles sign-up button click:
  * validates inputs and registers the user.
  * @returns {void}
  */
 function handleSignUp() {
-  const name = $("name").value.trim();
-  const email = $("sign-up-email").value.trim();
-  const password = $("sign-up-password").value;
-  const confirm = $("confirm-password").value;
-  const accepted = $("confirm").classList.contains("checked");
-  if (!validateSignUpInputs(name, email, password, confirm, accepted)) return;
-  registerUser(email, password);
-  $("sign-up-button").style.pointerEvents = "none";
+  const values = getSignupFormValues();
+  processSignupIfValid(values);
+}
+
+/**
+ * Checks if all required fields are filled
+ * @param {string} name
+ * @param {string} email
+ * @param {string} pw
+ * @param {string} confirmPw
+ * @returns {boolean}
+ */
+function areAllFieldsFilled(name, email, pw, confirmPw) {
+  return !(!name || !email || !pw || !confirmPw);
+}
+
+/**
+ * Validates email format
+ * @param {string} email
+ * @returns {boolean}
+ */
+function isValidEmailFormat(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+/**
+ * Validates password length
+ * @param {string} password
+ * @returns {boolean}
+ */
+function isValidPasswordLength(password) {
+  return password.length >= 6;
+}
+
+/**
+ * Checks if passwords match
+ * @param {string} pw
+ * @param {string} confirmPw
+ * @returns {boolean}
+ */
+function doPasswordsMatch(pw, confirmPw) {
+  return pw === confirmPw;
+}
+
+/**
+ * Gets error element for signup
+ * @returns {HTMLElement}
+ */
+function getSignupErrorElement() {
+  return $("error-sign-up");
 }
 
 /**
@@ -163,17 +450,91 @@ function handleSignUp() {
  * @returns {boolean} true if valid, false otherwise
  */
 function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
-  if (!name || !email || !pw || !confirmPw)
-    return showError($("error-sign-up"), "Please fill out all fields.");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    return showError($("error-sign-up"), "Invalid email.");
-  if (pw.length < 6)
-    return showError($("error-sign-up"), "Password must be at least 6 characters.");
-  if (pw !== confirmPw)
-    return showError($("error-sign-up"), "Passwords do not match.");
+  const errorElement = getSignupErrorElement();
+  
+  if (!areAllFieldsFilled(name, email, pw, confirmPw))
+    return showError(errorElement, "Please fill out all fields.");
+  if (!isValidEmailFormat(email))
+    return showError(errorElement, "Invalid email.");
+  if (!isValidPasswordLength(pw))
+    return showError(errorElement, "Password must be at least 6 characters.");
+  if (!doPasswordsMatch(pw, confirmPw))
+    return showError(errorElement, "Passwords do not match.");
   if (!accepted)
-    return showError($("error-sign-up"), "You must accept the privacy policy.");
+    return showError(errorElement, "You must accept the privacy policy.");
   return true;
+}
+
+/**
+ * Gets user name from form
+ * @returns {string}
+ */
+function getUserNameFromForm() {
+  return $("name").value.trim();
+}
+
+/**
+ * Creates Firebase user account
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise}
+ */
+function createFirebaseUser(email, password) {
+  return createUserWithEmailAndPassword(auth, email, password);
+}
+
+/**
+ * Updates user profile with display name
+ * @param {Object} userCredential
+ * @param {string} name
+ * @returns {Promise}
+ */
+function updateUserProfile(userCredential, name) {
+  return updateProfile(userCredential.user, { displayName: name });
+}
+
+/**
+ * Shows success banner
+ */
+function showSuccessBanner() {
+  $("layout").style.opacity = "0.5";
+  $("slide-in-banner").classList.add("visible");
+}
+
+/**
+ * Hides success banner
+ */
+function hideSuccessBanner() {
+  $("slide-in-banner").classList.remove("visible");
+  $("layout").style.opacity = "1";
+}
+
+/**
+ * Resets form state after successful registration
+ */
+function resetFormAfterSuccess() {
+  showLoginForm();
+  $("confirm").classList.toggle("checked");
+  $("sign-up-button").style.pointerEvents = "";
+}
+
+/**
+ * Handles successful registration
+ */
+function handleRegistrationSuccess() {
+  showSuccessBanner();
+  setTimeout(() => {
+    hideSuccessBanner();
+    resetFormAfterSuccess();
+  }, 1200);
+}
+
+/**
+ * Handles registration error
+ * @param {Error} err
+ */
+function handleRegistrationError(err) {
+  showError(getSignupErrorElement(), err.message);
 }
 
 /**
@@ -184,21 +545,11 @@ function validateSignUpInputs(name, email, pw, confirmPw, accepted) {
  * @returns {void}
  */
 function registerUser(email, password) {
-  const name = $("name").value.trim();
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => updateProfile(userCredential.user, { displayName: name }))
-    .then(() => {
-      $("layout").style.opacity = "0.5";
-      $("slide-in-banner").classList.add("visible");
-      setTimeout(() => {
-        $("slide-in-banner").classList.remove("visible");
-        $("layout").style.opacity = "1";
-        showLoginForm();
-        $("confirm").classList.toggle("checked");
-        $("sign-up-button").style.pointerEvents = "";
-      }, 1200);
-    })
-    .catch((err) => showError($("error-sign-up"), err.message));
+  const name = getUserNameFromForm();
+  createFirebaseUser(email, password)
+    .then((userCredential) => updateUserProfile(userCredential, name))
+    .then(handleRegistrationSuccess)
+    .catch(handleRegistrationError);
 }
 
 /* --- Shared helpers --- */
@@ -215,6 +566,57 @@ function initializePasswordFields(context) {
 }
 
 /**
+ * Gets password toggle elements
+ * @param {string} inputId
+ * @param {string} toggleId
+ * @returns {Object|null}
+ */
+function getPasswordToggleElements(inputId, toggleId) {
+  const input = $(inputId);
+  const toggle = $(toggleId);
+  return (input && toggle) ? { input, toggle } : null;
+}
+
+/**
+ * Creates toggle click handler
+ * @param {HTMLElement} input
+ * @param {HTMLElement} toggle
+ * @param {Object} visibilityState
+ * @returns {Function}
+ */
+function createToggleClickHandler(input, toggle, visibilityState) {
+  return () => {
+    visibilityState.isVisible = !visibilityState.isVisible;
+    togglePasswordVisibility(input, toggle, visibilityState.isVisible);
+  };
+}
+
+/**
+ * Creates input change handler
+ * @param {HTMLElement} input
+ * @param {HTMLElement} toggle
+ * @param {HTMLElement} errorBox
+ * @returns {Function}
+ */
+function createInputChangeHandler(input, toggle, errorBox) {
+  return () => resetPasswordField(input, toggle, errorBox);
+}
+
+/**
+ * Sets up password field event handlers
+ * @param {Object} elements
+ * @param {HTMLElement} errorBox
+ */
+function setupPasswordFieldHandlers(elements, errorBox) {
+  const { input, toggle } = elements;
+  const visibilityState = { isVisible: false };
+  
+  toggle.onclick = createToggleClickHandler(input, toggle, visibilityState);
+  input.oninput = createInputChangeHandler(input, toggle, errorBox);
+  updatePasswordIcon(input, toggle, visibilityState.isVisible);
+}
+
+/**
  * Sets up toggle behavior for password fields.
  * @param {string} inputId
  * @param {string} toggleId
@@ -222,13 +624,27 @@ function initializePasswordFields(context) {
  * @returns {void}
  */
 function setupPasswordToggle(inputId, toggleId, errorBox) {
-  const input = $(inputId);
-  const toggle = $(toggleId);
-  if (!input || !toggle) return;
-  let isVisible = false;
-  toggle.onclick = () => togglePasswordVisibility(input, toggle, (isVisible = !isVisible));
-  input.oninput = () => resetPasswordField(input, toggle, errorBox);
-  updatePasswordIcon(input, toggle, isVisible);
+  const elements = getPasswordToggleElements(inputId, toggleId);
+  if (!elements) return;
+  setupPasswordFieldHandlers(elements, errorBox);
+}
+
+/**
+ * Checks if input has value
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+function hasInputValue(input) {
+  return !!input.value;
+}
+
+/**
+ * Sets input type based on visibility
+ * @param {HTMLInputElement} input
+ * @param {boolean} visible
+ */
+function setInputType(input, visible) {
+  input.type = visible ? "text" : "password";
 }
 
 /**
@@ -239,8 +655,8 @@ function setupPasswordToggle(inputId, toggleId, errorBox) {
  * @returns {void}
  */
 function togglePasswordVisibility(input, toggle, visible) {
-  if (!input.value) return;
-  input.type = visible ? "text" : "password";
+  if (!hasInputValue(input)) return;
+  setInputType(input, visible);
   updatePasswordIcon(input, toggle, visible);
 }
 
@@ -258,6 +674,37 @@ function resetPasswordField(input, toggle, errorBox) {
 }
 
 /**
+ * Gets appropriate icon path based on state
+ * @param {boolean} hasValue
+ * @param {boolean} isVisible
+ * @returns {string}
+ */
+function getIconPath(hasValue, isVisible) {
+  if (!hasValue) return "./assets/icons/login/lock.svg";
+  return isVisible 
+    ? "./assets/icons/login/visibility.svg"
+    : "./assets/icons/login/visibility_off.svg";
+}
+
+/**
+ * Sets toggle icon source
+ * @param {HTMLImageElement} toggle
+ * @param {string} iconPath
+ */
+function setToggleIconSource(toggle, iconPath) {
+  toggle.src = iconPath;
+}
+
+/**
+ * Sets toggle cursor style
+ * @param {HTMLImageElement} toggle
+ * @param {boolean} hasValue
+ */
+function setToggleCursor(toggle, hasValue) {
+  toggle.classList.toggle("cursor-pointer", hasValue);
+}
+
+/**
  * Updates the password toggle icon based on input state.
  * @param {HTMLInputElement} input
  * @param {HTMLImageElement} toggle
@@ -265,12 +712,11 @@ function resetPasswordField(input, toggle, errorBox) {
  * @returns {void}
  */
 function updatePasswordIcon(input, toggle, isVisible) {
-  toggle.src = input.value
-    ? isVisible
-      ? "./assets/icons/login/visibility.svg"
-      : "./assets/icons/login/visibility_off.svg"
-    : "./assets/icons/login/lock.svg";
-  toggle.classList.toggle("cursor-pointer", !!input.value);
+  const hasValue = hasInputValue(input);
+  const iconPath = getIconPath(hasValue, isVisible);
+  
+  setToggleIconSource(toggle, iconPath);
+  setToggleCursor(toggle, hasValue);
 }
 
 /**

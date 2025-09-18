@@ -12,21 +12,35 @@ const REDIRECT = "index.html";
 let $ = (id) => document.getElementById(id);
 
 /**
- * Immediately invoked async function to initialize authentication UI.
- * 
- * - Injects a style to hide the `#person-icon-header-text` by default.
- * - Appends the style element to the document head.
- * - Calls and awaits `initAuthUI()` to set up authentication-related UI.
- * 
- * @async
- * @function
- * @returns {Promise<void>} Resolves once the auth UI has been initialized.
+ * Creates style element for hiding header text
+ * @returns {HTMLStyleElement} Style element
  */
-(async () => {
+function createHeaderHideStyle() {
   const style = document.createElement("style");
   style.textContent = `#person-icon-header-text { opacity: 0; }`;
+  return style;
+}
+
+/**
+ * Injects style to document head
+ * @param {HTMLStyleElement} style - Style element to inject
+ */
+function injectStyle(style) {
   document.head.appendChild(style);
+}
+
+/**
+ * Initializes the application
+ */
+async function initializeApp() {
+  const style = createHeaderHideStyle();
+  injectStyle(style);
   await initAuthUI();
+}
+
+// Initialize the application
+(async () => {
+  await initializeApp();
 })();
 
 /**
@@ -53,12 +67,18 @@ function shouldCloseNavbar(navbar, toggle, target) {
 }
 
 /**
- * Hides profile navbar and removes listener
+ * Hides profile navbar
  * @param {HTMLElement} navbar - Profile navbar element
  */
 function hideProfileNavbar(navbar) {
   navbar.classList.add("d-none");
-  removeOutsideClickHandler();
+}
+
+/**
+ * Removes outside click handler
+ */
+function removeOutsideClickHandler() {
+  // Implementation depends on how the handler was attached
 }
 
 /**
@@ -107,13 +127,28 @@ function initialsFromParts(parts) {
 }
 
 /**
+ * Removes cached header value
+ */
+function removeCachedHeader() {
+  localStorage.removeItem(HEADER_KEY);
+}
+
+/**
+ * Clears header element content
+ * @param {HTMLElement} element - Header element
+ */
+function clearHeaderElement(element) {
+  element.textContent = "";
+  element.style.fontSize = "";
+}
+
+/**
  * Clears header UI and removes cached value
  * @param {HTMLElement} element - Header element
  */
 function clearHeader(element) {
-  localStorage.removeItem(HEADER_KEY);
-  element.textContent = "";
-  element.style.fontSize = "";
+  removeCachedHeader();
+  clearHeaderElement(element);
 }
 
 /**
@@ -126,15 +161,31 @@ function fontSizeForInitials(initials) {
 }
 
 /**
+ * Shows header element
+ * @param {HTMLElement} element - Header element
+ */
+function showHeaderElement(element) {
+  element.style.opacity = "1";
+}
+
+/**
+ * Checks if initials are already displayed
+ * @param {HTMLElement} element - Header element
+ * @param {string} initials - Initials to check
+ * @returns {boolean} True if already displayed
+ */
+function areInitialsAlreadyDisplayed(element, initials) {
+  return (element.textContent || "") === initials;
+}
+
+/**
  * Applies initials to header element and caches them
  * @param {HTMLElement} element - Header element
  * @param {string} initials - Initials to apply
  */
 function applyHeader(element, initials) {
-  const previousText = element.textContent || "";
-  
-  if (previousText === initials) {
-    element.style.opacity = "1";
+  if (areInitialsAlreadyDisplayed(element, initials)) {
+    showHeaderElement(element);
     return;
   }
   
@@ -183,11 +234,19 @@ window.updateUserInitials = function (user) {
 };
 
 /**
+ * Gets header text element by ID
+ * @returns {HTMLElement|null} Header text element
+ */
+function getHeaderTextElement() {
+  return $("person-icon-header-text");
+}
+
+/**
  * Clears cached header initials and hides text visually
  */
 window.clearHeaderTextCache = function () {
-  localStorage.removeItem("headerTextCache");
-  const element = $("person-icon-header-text");
+  removeCachedHeader();
+  const element = getHeaderTextElement();
   
   if (element) {
     resetHeaderElement(element);
@@ -205,19 +264,34 @@ function resetHeaderElement(element) {
 }
 
 /**
+ * Shows or hides header menu
+ * @param {boolean} show - Whether to show menu
+ */
+function toggleHeaderMenu(show) {
+  const headerMenu = findHeaderMenu();
+  if (headerMenu) {
+    headerMenu.classList.toggle("d-none", !show);
+  }
+}
+
+/**
+ * Shows or hides header login
+ * @param {boolean} show - Whether to show login
+ */
+function toggleHeaderLogin(show) {
+  const headerLogin = findHeaderLogin();
+  if (headerLogin) {
+    headerLogin.classList.toggle("d-none", !show);
+  }
+}
+
+/**
  * Toggles header UI sections based on auth state
  * @param {boolean} isLoggedIn - Whether user is logged in
  */
 function setHeaderUIForAuth(isLoggedIn) {
-  const headerMenu = findHeaderMenu();
-  const headerLogin = findHeaderLogin();
-  
-  if (headerMenu) {
-    headerMenu.classList.toggle("d-none", !isLoggedIn);
-  }
-  if (headerLogin) {
-    headerLogin.classList.toggle("d-none", isLoggedIn);
-  }
+  toggleHeaderMenu(isLoggedIn);
+  toggleHeaderLogin(!isLoggedIn);
 }
 
 /**
@@ -258,13 +332,7 @@ function qs(selector) {
   return document.querySelector(selector);
 }
 
-/**
- * Gets header element that holds initials
- * @returns {HTMLElement|null} Initials element
- */
-function getInitialsEl() {
-  return document.getElementById("person-icon-header-text");
-}
+
 
 /**
  * Clears initials UI
@@ -283,7 +351,7 @@ function resetInitials(element) {
  * @param {Object|null} user - User object or null
  */
 function handleAuthChange(user) {
-  const element = getInitialsEl();
+  const element = getHeaderEl();
   if (user) {
     handleUserAuthenticated(user, element);
   } else {
@@ -292,14 +360,60 @@ function handleAuthChange(user) {
 }
 
 /**
+ * Updates user initials in UI
+ * @param {Object} user - User object
+ */
+function updateUserInitialsInUI(user) {
+  window.updateUserInitials?.(user);
+}
+
+/**
+ * Shows authenticated navigation
+ */
+function showAuthedNav() {
+  setHeaderUIForAuth(true);
+}
+
+/**
+ * Shows element with opacity
+ * @param {HTMLElement} element - Element to show
+ */
+function showElement(element) {
+  if (element) element.style.opacity = "1";
+}
+
+/**
  * Handles authenticated user state
  * @param {Object} user - User object
  * @param {HTMLElement} element - Initials element
  */
 function handleUserAuthenticated(user, element) {
-  window.updateUserInitials?.(user);
-  if (element) element.style.opacity = "1";
+  updateUserInitialsInUI(user);
+  showElement(element);
   showAuthedNav();
+}
+
+/**
+ * Clears user data from UI
+ */
+function clearUserDataFromUI() {
+  window.clearHeaderTextCache?.();
+}
+
+/**
+ * Shows anonymous navigation
+ */
+function showAnonNav() {
+  setHeaderUIForAuth(false);
+}
+
+/**
+ * Redirects if not on public page
+ */
+function redirectIfNotPublic() {
+  if (!isPublicPage()) {
+    location.replace(REDIRECT);
+  }
 }
 
 /**
@@ -307,9 +421,26 @@ function handleUserAuthenticated(user, element) {
  * @param {HTMLElement} element - Initials element
  */
 function handleUserUnauthenticated(element) {
-  window.clearHeaderTextCache?.();
+  clearUserDataFromUI();
   resetInitials(element);
   showAnonNav();
+  redirectIfNotPublic();
+}
+
+/**
+ * Sets up Firebase auth state listener
+ * @param {Object} modules - Firebase modules
+ */
+function setupAuthStateListener(modules) {
+  modules.onAuthStateChanged(modules.auth, handleAuthChange);
+}
+
+/**
+ * Handles auth initialization error
+ * @param {Error} err - Error object
+ */
+function handleAuthInitError(err) {
+  console.error("Auth initialization failed:", err);
   redirectIfNotPublic();
 }
 
@@ -319,10 +450,9 @@ function handleUserUnauthenticated(element) {
 async function initAuthUI() {
   try {
     const modules = await loadFirebaseModules();
-    modules.onAuthStateChanged(modules.auth, handleAuthChange);
+    setupAuthStateListener(modules);
   } catch (err) {
-    console.error("Auth initialization failed:", err);
-    redirectIfNotPublic();
+    handleAuthInitError(err);
   }
 }
 
@@ -340,19 +470,68 @@ async function loadFirebaseModules() {
 
 
 /**
+ * Checks if logout is in progress
+ * @returns {boolean} True if logout in progress
+ */
+function isLogoutInProgress() {
+  return window.__loggingOut;
+}
+
+/**
+ * Sets logout in progress flag
+ * @param {boolean} inProgress - Whether logout is in progress
+ */
+function setLogoutInProgress(inProgress) {
+  window.__loggingOut = inProgress;
+}
+
+/**
+ * Redirects to index page
+ */
+function redirectToIndex() {
+  location.replace("index.html");
+}
+
+/**
+ * Handles logout error
+ * @param {Error} err - Error object
+ */
+function handleLogoutError(err) {
+  console.error("Logout failed:", err);
+}
+
+/**
  * Signs out current user and redirects to index
  */
 async function doLogout() {
-  if (window.__loggingOut) return;
-  window.__loggingOut = true;
+  if (isLogoutInProgress()) return;
+  setLogoutInProgress(true);
   try {
     await performLogout();
   } catch (err) {
-    console.error("Logout failed:", err);
+    handleLogoutError(err);
   } finally {
-    window.__loggingOut = false;
-    location.replace("index.html");
+    setLogoutInProgress(false);
+    redirectToIndex();
   }
+}
+
+/**
+ * Hides profile navbar by ID
+ */
+function hideProfileNavbarById() {
+  const navbar = $("profile-navbar");
+  if (navbar) {
+    hideProfileNavbar(navbar);
+  }
+}
+
+/**
+ * Signs out from Firebase
+ * @param {Object} modules - Firebase modules
+ */
+async function signOutFromFirebase(modules) {
+  await modules.signOut(modules.auth);
 }
 
 /**
@@ -360,9 +539,9 @@ async function doLogout() {
  */
 async function performLogout() {
   const modules = await loadLogoutModules();
-  hideProfileNavbar($("profile-navbar"));
-  window.clearHeaderTextCache?.();
-  await modules.signOut(modules.auth);
+  hideProfileNavbarById();
+  clearUserDataFromUI();
+  await signOutFromFirebase(modules);
 }
 
 /**
@@ -378,21 +557,63 @@ async function loadLogoutModules() {
 }
 
 /**
+ * Checks if logout listener is already attached
+ * @returns {boolean} True if already attached
+ */
+function isLogoutListenerAttached() {
+  return window.__logoutListenerAttached;
+}
+
+/**
+ * Marks logout listener as attached
+ */
+function markLogoutListenerAttached() {
+  window.__logoutListenerAttached = true;
+}
+
+/**
+ * Adds logout click event listener
+ */
+function addLogoutClickListener() {
+  document.addEventListener("click", handleLogoutClick);
+}
+
+/**
  * Attaches global click handler for logout links
  */
-(function attachLogoutListener() {
-  if (window.__logoutListenerAttached) return;
-  window.__logoutListenerAttached = true;
-  document.addEventListener("click", handleLogoutClick);
-}());
+function attachLogoutListener() {
+  if (isLogoutListenerAttached()) return;
+  markLogoutListenerAttached();
+  addLogoutClickListener();
+}
+
+// Attach logout listener
+attachLogoutListener();
+
+/**
+ * Finds logout element from event target
+ * @param {Event} e - Click event
+ * @returns {HTMLElement|null} Logout element or null
+ */
+function findLogoutElement(e) {
+  return e.target.closest("[data-logout]");
+}
+
+/**
+ * Prevents default event behavior
+ * @param {Event} e - Event to prevent
+ */
+function preventDefault(e) {
+  e.preventDefault();
+}
 
 /**
  * Handles logout click events
  * @param {Event} e - Click event
  */
 function handleLogoutClick(e) {
-  const element = e.target.closest("[data-logout]");
+  const element = findLogoutElement(e);
   if (!element) return;
-  e.preventDefault();
+  preventDefault(e);
   doLogout();
-};
+}
