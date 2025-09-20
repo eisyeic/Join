@@ -191,7 +191,6 @@ function shouldShowOverflowAtIndex(hasOverflow, idx, maxShown) {
  */
 function renderSingleContact(contact, idx, hasOverflow, overflowCount, maxShown) {
   const pos = getPositionClass(idx);
-  
   if (shouldShowOverflowAtIndex(hasOverflow, idx, maxShown)) {
     return buildMoreCircle(overflowCount, pos);
   }
@@ -203,7 +202,7 @@ function renderSingleContact(contact, idx, hasOverflow, overflowCount, maxShown)
  * @param {any[]} contacts
  * @returns {string}
  */
-export function renderAssignedInitials(contacts = []) {
+function renderAssignedInitials(contacts = []) {
   const maxShown = 3;
   if (!isValidContactsArray(contacts)) {
     return "";
