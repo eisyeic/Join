@@ -7,11 +7,28 @@
 window.renderSubtasks = renderSubtasks;
 
 /**
- * Global event wiring for Add-Task UI (template readiness & document-level pointer handling).
+ * Document-level pointer capture for closing popovers/committing edits, etc.
+ * Registered in capture phase to run before element handlers.
+ * @param {PointerEvent} event
+ * @returns {void}
  */
 document.addEventListener('pointerdown', onDocumentPointerDown, true);
+
+/**
+ * Initialize the date picker once the Add-Task template is ready.
+ * Note: this calls the setup function on template-ready dispatch.
+ * @param {CustomEvent} event
+ * @returns {void}
+ */
 document.addEventListener('addtask:template-ready', setupDatePicker());
+
+/**
+ * Initialize the date picker wrapper binding when the template is ready.
+ * @param {CustomEvent} event
+ * @returns {void}
+ */
 document.addEventListener('addtask:template-ready', setupDatePickerWrapper());
+
 
 // Global variables
 window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
@@ -83,13 +100,13 @@ function bindDatePickerEvents(datePicker, wrapper, display) {
 }
 
 /**
- * Wire the wrapper so clicking it opens the native datepicker (or focuses it as fallback).
+ * Wire the datepicker wrapper so pointer interactions open the native date picker (or focus fallback).
+ * Prevents default to avoid losing focus and supports browsers without `showPicker()`.
  * @returns {void}
  */
 function setupDatePickerWrapper() {
 const wrapper = document.getElementById('datepicker-wrapper');
 const input   = /** @type {HTMLInputElement} */(document.getElementById('datepicker'));
-
 if (wrapper && input) {
   wrapper.addEventListener('pointerdown', (ev) => {
     if (typeof ev.button === 'number' && ev.button !== 0) return;
@@ -108,7 +125,10 @@ if (wrapper && input) {
 }
 }
 
-// Priority buttons: set active state and update selectedPriority
+/**
+ * Handle clicks on priority buttons; ensures single active and updates `selectedPriority`.
+ * @returns {void}
+ */
 document.querySelectorAll(".priority-button").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".priority-button").forEach((btn) => {
@@ -130,7 +150,10 @@ function resetPrioritySelection() {
   if (mediumButton) mediumButton.classList.add("active");
 }
 
-// Handle category option clicks and update the select label
+/**
+ * Category list item selection: sets label, hides dropdown, resets error styles.
+ * @returns {void}
+ */
 $("category-selection").querySelectorAll("li").forEach((item) => {
   item.addEventListener("click", () => {
     const value = item.getAttribute("data-value") ?? "";
@@ -143,20 +166,31 @@ $("category-selection").querySelectorAll("li").forEach((item) => {
   });
 });
 
-// Global click: close dropdowns if clicking outside their areas
+/**
+ * Global click handler to close dropdowns or commit edits when clicking outside.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
 document.addEventListener("click", (event) => {
   handleCategoryClickOutside(event);
   handleAssignedClickOutside(event);
 });
 
-// Toggle the category dropdown when clicking the select
+/**
+ * Toggle visibility of the category selection dropdown and arrow icon state.
+ * @returns {void}
+ */
 $("category-select").addEventListener("click", () => {
   $("category-selection").classList.toggle("d-none");
   $("category-icon").classList.toggle("arrow-down");
   $("category-icon").classList.toggle("arrow-up");
 });
 
-// Toggle subtask input action buttons based on content presence
+/**
+ * Show/hide subtask control buttons depending on whether the input has text.
+ * @param {InputEvent} event
+ * @returns {void}
+ */
 $("sub-input").addEventListener("input", function () {
   if (this.value !== "") {
     $("subtask-plus-box").classList.add("d-none");
@@ -167,52 +201,100 @@ $("sub-input").addEventListener("input", function () {
   }
 });
 
-// Reveal subtask controls on hover
+/**
+ * Reveal subtask action buttons when hovering a subtask list item.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
 $("subtask-list").addEventListener("mouseover", (event) => {
   const item = event.target.closest(".subtask-item");
   item?.querySelector(".subtask-func-btn")?.classList.remove("d-none");
 });
 
-// Hide subtask controls when leaving the item
 $("subtask-list").addEventListener("mouseout", (event) => {
   const item = event.target.closest(".subtask-item");
   item?.querySelector(".subtask-func-btn")?.classList.add("d-none");
 });
 
-// Clear title error styles on user input
+/**
+ * Hide subtask action buttons when the pointer leaves a subtask list item.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
+
+/**
+ * Clear error styles while typing in the Add Task title input.
+ * @param {InputEvent} event
+ * @returns {void}
+ */
 $("addtask-title").addEventListener("input", function () {
   this.style.borderColor = "";
   $("addtask-error").innerHTML = "";
 });
 
-// Reset the entire Add Task form to defaults
-$("cancel-button").addEventListener("click", () => {
+/**
+ * Clear the Add Task title and description inputs and reset related error styles.
+ * Also clears any inline error messages.
+ * @returns {void}
+ */
+function clearTitleAndDescription() {
   $("addtask-title").value = "";
   $("addtask-title").style.borderColor = "";
   $("addtask-error").innerHTML = "";
   $("addtask-textarea").value = "";
+}
+
+/**
+ * Reset the date picker value and visual state.
+ * Removes the `has-value` class, clears border color and any due-date error message.
+ * @returns {void}
+ */
+function clearDatepicker() {
   const datePicker = $("datepicker");
   const wrapper = $("datepicker-wrapper");
   if (datePicker) {
     datePicker.value = "";
-    wrapper?.classList.remove('has-value');
+    wrapper?.classList.remove("has-value");
   }
   $("datepicker-wrapper").style.borderColor = "";
   $("due-date-error").innerHTML = "";
+}
+
+/**
+ * Reset the task category selection UI to its default prompt and clear errors.
+ * Sets the visible label to "Select task category" and clears border color and error text.
+ * @returns {void}
+ */
+function clearCategory() {
   $("category-select").querySelector("span").textContent = "Select task category";
   $("category-select").style.borderColor = "";
   $("category-selection-error").innerHTML = "";
+}
+
+/**
+ * Clear all current subtasks and reset the subtask input/controls UI.
+ * Empties the `subtasks` array, clears the input, toggles control visibility, and re-renders the list.
+ * @returns {void}
+ */
+function clearSubtasks() {
   subtasks.length = 0;
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
   renderSubtasks();
+}
+
+/**
+ * Reset assigned contacts selection and hide the contact list.
+ * Calls `clearAssignedContacts()`, resets the dataset on the select box, and hides the list container.
+ * @returns {void}
+ */
+function clearAssigned() {
   clearAssignedContacts();
   const asb = $("assigned-select-box");
   if (asb) asb.dataset.selected = "[]";
   $("contact-list-box").classList.add("d-none");
-  resetPrioritySelection();
-});
+}
 
 /**
  * Attach edit click listeners for all subtask edit icons.
@@ -276,7 +358,10 @@ function setupEnterKeyToSave(input, item) {
   input.addEventListener("keydown", handler);
 }
 
-// Add a subtask via the check icon
+/**
+ * Add a subtask when clicking the check icon; resets input and buttons, then re-renders.
+ * @returns {void}
+ */
 $("sub-check").addEventListener("click", () => {
   const subtaskText = $("sub-input").value.trim();
   if (!subtaskText) return;
@@ -287,7 +372,11 @@ $("sub-check").addEventListener("click", () => {
   renderSubtasks();
 });
 
-// Add a subtask when pressing Enter in the input
+/**
+ * Add a subtask on Enter keypress inside the input; prevents form submission.
+ * @param {KeyboardEvent} event
+ * @returns {void}
+ */
 $("sub-input").addEventListener("keydown", function (event) {
   if (event.key !== "Enter") return;
   event.preventDefault();
@@ -342,7 +431,8 @@ function saveEditedSubtask(saveBtn) {
 window.saveEditedSubtask = saveEditedSubtask;
 
 /**
- * Delegated handler to save a subtask when its save icon is clicked.
+ * Delegated handler for clicks inside the subtask list; saves a subtask when its save icon is clicked.
+ * @param {MouseEvent} event
  * @returns {void}
  */
 $("subtask-list").addEventListener("click", (event) => {
@@ -350,19 +440,6 @@ $("subtask-list").addEventListener("click", (event) => {
     saveEditedSubtask(event.target);
   }
 });
-
-/**
- * Build the HTML for the subtask list.
- * @param {string[]} items
- * @returns {string}
- */
-function buildSubtasksHTML(items) {
-  return items
-    .map((subtask, index) => (
-      `\n      <li class="subtask-item" data-index="${index}">\n        <span class="subtask-text">${subtask}</span>\n        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />\n        <div class="subtask-func-btn d-none">\n          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>\n          <div class="vertical-spacer first-spacer"></div>\n          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />\n          <div class="vertical-spacer second-spacer d-none"></div>\n          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />\n        </div>\n      </li>`
-    ))
-    .join("");
-}
 
 /**
  * Attach edit/delete handlers after rendering the list.

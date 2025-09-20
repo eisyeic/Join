@@ -18,8 +18,74 @@
  * @property {string} [id]
  */
 
-/** Currently selected contact (managed elsewhere). */
+/** 
+ * Currently selected contact (managed elsewhere).
+ * @type {Contact}
+ * @global
+ */
 let currentContact = {};
+
+/**
+ * ============================
+ * Global templates (exported on window)
+ * ============================
+ */
+
+/**
+ * HTML template for a contact person row.
+ * @function contactPersonTemplate
+ * @param {{name:string,email:string,phone:string,initials:string,savedColorIndex:number,id:string}} contact
+ * @returns {string} HTML string for the contact row.
+ * @global
+ */
+function contactPersonTemplate(contact) {
+  return  `
+        <div class="contact-placeholder">
+            <img src="./assets/contacts/img/Vector 10.svg" />
+        </div>
+        <div class="contact-person" onclick="showContactDetails('${contact.name}', '${contact.email}', '${contact.phone}', ${contact.savedColorIndex}, '${contact.id}')">
+            <div class="contact-person-icon">
+                <img src="./assets/general_elements/icons/color${contact.savedColorIndex}.svg" />
+                <p>${contact.initials}</p>
+            </div>
+            <div class="contact-person-name">
+                <h5>${contact.name}</h5>
+                <a>${contact.email}</a>
+            </div>
+        </div>`;
+}
+
+/** Make contactPersonTemplate globally available. */
+window.contactPersonTemplate = contactPersonTemplate;
+
+/**
+ * HTML template for a board ticket.
+ * @function ticketTemplate
+ * @param {{taskId:string,labelClass:string,category:string,title:string,truncatedDesc:string,subtasksHtml:string,initials:string,priority:string}} ticket
+ * @returns {string} HTML string for the ticket.
+ * @global
+ */
+function ticketTemplate(ticket) {
+  return  `
+    <div class="ticket-content" onclick="showTaskOverlay('${ticket.taskId}')">
+      <div class="label-box">
+        <div class="label ${ticket.labelClass}">${ticket.category}</div>
+        <img class="plus-minus-img" src="./assets/icons/board/plusminus.svg" alt="plus/minus" draggable="false" role="button" aria-label="More options">
+      </div>
+      <div class="frame">
+        <div class="ticket-title">${ticket.title}</div>
+        <div class="ticket-text">${ticket.truncatedDesc}</div>
+      </div>
+      ${ticket.subtasksHtml}
+      <div class="initials-icon-box">
+        <div class="initials">${ticket.initials}</div>
+        <img src="./assets/icons/board/${ticket.priority}.svg" alt="${ticket.priority}">
+      </div>
+    </div>`;
+}
+
+/** Make ticketTemplate globally available. */
+window.ticketTemplate = ticketTemplate;
 
 /**
  * Renders the desktop contact details view into a container.
@@ -114,6 +180,7 @@ function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
 
 /**
  * Renders the mobile “Task To-do” summary tile.
+ * @function getMobileTaskTodo
  * @returns {void}
  */
 function getMobileTaskTodo() {
@@ -134,6 +201,7 @@ function getMobileTaskTodo() {
 
 /**
  * Renders the mobile “Task on Board” summary tile.
+ * @function getMobileTaskOnBoard
  * @returns {void}
  */
 function getMobileTaskOnBoard() {
@@ -154,6 +222,7 @@ function getMobileTaskOnBoard() {
 
 /**
  * Builds a standardized inline error message.
+ * @function getErrorMessage
  * @param {string} message
  * @returns {string} HTML string for the error.
  */
@@ -163,6 +232,7 @@ function getErrorMessage(message) {
 
 /**
  * Section: Title / Description / Due Date for the Add-Task form.
+ * @function getTaskTitleSection
  * @returns {string} HTML string.
  */
 function getTaskTitleSection() {
@@ -191,6 +261,7 @@ function getTaskTitleSection() {
 
 /**
  * Section: Priority buttons for the Add-Task form.
+ * @function getPrioritySection
  * @returns {string} HTML string.
  */
 function getPrioritySection() {
@@ -215,6 +286,7 @@ function getPrioritySection() {
 
 /**
  * Section: “Assigned to” field with search and list.
+ * @function getAssignedSection
  * @returns {string} HTML string.
  */
 function getAssignedSection() {
@@ -232,6 +304,7 @@ function getAssignedSection() {
 
 /**
  * Section: Category selection for the Add-Task form.
+ * @function getCategorySection
  * @returns {string} HTML string.
  */
 function getCategorySection() {
@@ -251,6 +324,7 @@ function getCategorySection() {
 
 /**
  * Section: Subtasks with input and list.
+ * @function getSubtaskSection
  * @returns {string} HTML string.
  */
 function getSubtaskSection() {
@@ -276,6 +350,7 @@ function getSubtaskSection() {
 
 /**
  * Returns the full Add-Task form HTML (concatenates all sections).
+ * @function getAddtaskTemplate
  * @returns {string}
  */
 function getAddtaskTemplate() {
@@ -286,6 +361,7 @@ function getAddtaskTemplate() {
  * Builds a contact option for the “Assigned to” dropdown.
  * (You also have a second, similar function below—both remain,
  * as they appear to be used separately.)
+ * @function createContactListItemTemplate
  * @param {Contact} contact
  * @param {string} id
  * @returns {string} HTML string for the dropdown option.
@@ -303,53 +379,25 @@ function createContactListItemTemplate(contact, id) {
 }
 
 /**
- * HTML template for a contact person row.
- * @param {{name:string,email:string,phone:string,initials:string,savedColorIndex:number,id:string}} contact
- * @returns {string} HTML string for the contact row.
+ * Build the HTML for the subtask list.
+ * @function buildSubtasksHTML
+ * @param {string[]} items
+ * @returns {string}
  */
-function contactPersonTemplate(contact) {
-  return  `
-        <div class="contact-placeholder">
-            <img src="./assets/contacts/img/Vector 10.svg" />
-        </div>
-        <div class="contact-person" onclick="showContactDetails('${contact.name}', '${contact.email}', '${contact.phone}', ${contact.savedColorIndex}, '${contact.id}')">
-            <div class="contact-person-icon">
-                <img src="./assets/general_elements/icons/color${contact.savedColorIndex}.svg" />
-                <p>${contact.initials}</p>
-            </div>
-            <div class="contact-person-name">
-                <h5>${contact.name}</h5>
-                <a>${contact.email}</a>
-            </div>
-        </div>`;
+function buildSubtasksHTML(items) {
+  return items
+    .map((subtask, index) => (
+      `<li class="subtask-item" data-index="${index}">\n        
+        <span class="subtask-text">${subtask}</span>\n        
+          <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />\n        
+          <div class="subtask-func-btn d-none">\n          
+            <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>\n          
+            <div class="vertical-spacer first-spacer"></div>\n          
+            <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />\n          
+            <div class="vertical-spacer second-spacer d-none"></div>\n          
+            <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />\n        
+      </div>\n      
+      </li>`
+    ))
+    .join("");
 }
-
-// Make contactPersonTemplate globally available
-window.contactPersonTemplate = contactPersonTemplate;
-
-/**
- * HTML template for a board ticket.
- * @param {{taskId:string,labelClass:string,category:string,title:string,truncatedDesc:string,subtasksHtml:string,initials:string,priority:string}} ticket
- * @returns {string} HTML string for the ticket.
- */
-function ticketTemplate(ticket) {
-  return  `
-    <div class="ticket-content" onclick="showTaskOverlay('${ticket.taskId}')">
-      <div class="label-box">
-        <div class="label ${ticket.labelClass}">${ticket.category}</div>
-        <img class="plus-minus-img" src="./assets/icons/board/plusminus.svg" alt="plus/minus" draggable="false" role="button" aria-label="More options">
-      </div>
-      <div class="frame">
-        <div class="ticket-title">${ticket.title}</div>
-        <div class="ticket-text">${ticket.truncatedDesc}</div>
-      </div>
-      ${ticket.subtasksHtml}
-      <div class="initials-icon-box">
-        <div class="initials">${ticket.initials}</div>
-        <img src="./assets/icons/board/${ticket.priority}.svg" alt="${ticket.priority}">
-      </div>
-    </div>`;
-}
-
-// Make ticketTemplate globally available
-window.ticketTemplate = ticketTemplate;
