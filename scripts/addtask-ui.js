@@ -1,19 +1,32 @@
 /**
- * @file AddTask UI helper functions
- * Small, single-responsibility utilities for avatar capping, DOM readiness,
- * template injection, and Assigned-contacts dropdown behavior.
- *
- * Assumptions:
- * - `$` is a DOM helper that returns an element by id (e.g., $("my-id")).
- * - Global template function `window.getAddtaskTemplate()` may be provided.
+ * @module addtask-ui
+ * @description UI helpers for AddTask (initials capping, template injection, dropdown handling)
+ * @typedef {Object} Subtask
+ * @property {string} name - Title of the subtask
+ * @callback DomReadyCallback
+ * @returns {void}
+ * @global
+ * @function $
+ * @description Shortcut that returns an element by id (provided globally).
+ * @param {string} id
+ * @returns {HTMLElement}
+ * @global
+ * @function buildSubtasksHTML
+ * @description Builds the HTML string for the subtask list from an array of strings. Provided externally.
+ * @param {string[]} subtasks
+ * @returns {string}
  */
 
-// Make functions available globally (backwards compatibility)
+/**
+ * @global
+ * @name window.capAssignedInitialsIn
+ * @type {(container: HTMLElement, max?: number) => void}
+ * @description Global alias for {@link capAssignedInitialsIn} (legacy compatibility).
+ */
 window.capAssignedInitialsIn = capAssignedInitialsIn;
 window.applyCapToAllInitials = applyCapToAllInitials;
 window.applyAssignedInitialsCap = applyAssignedInitialsCap;
 
-// Event wiring (preserve current behavior)
 $("assigned-select-box").addEventListener('click', toggleAssignedDropdown);
 
 /**
@@ -56,13 +69,10 @@ function capAssignedInitialsIn(container, max = 5) {
   const chips = sortChips(container);
   chips.forEach((el) => el.classList.remove('d-none'));
   let plus = container.querySelector('[data-plus-badge="true"]');
-
   if (chips.length <= max) {
     plus?.remove?.();
     return;
   }
-
-  // Hide overflow and append/update +N badge
   for (let i = max; i < chips.length; i++) chips[i].classList.add('d-none');
   plus = ensurePlusBadge(container);
   plus.textContent = `+${chips.length - max}`;
@@ -172,7 +182,6 @@ function getAddtaskTemplate() {
   if (typeof window.getAddtaskTemplate === 'function') {
     return window.getAddtaskTemplate();
   }
-  // Fallback if templates.js not loaded yet
   return '';
 }
 
@@ -257,7 +266,6 @@ function toggleAssignedDropdown() {
     applyAssignedInitialsCap();
   } else {
     openAssignedList();
-    // Hide initials while the list is open (legacy behavior)
     document.querySelector('.contact-initials')?.classList.add('d-none');
   }
 }

@@ -5,6 +5,7 @@
 
 /** make global */
 window.drag = onTaskDragStart;
+window.drop = handleDrop;
 
 export { 
   onTaskDragStart, 
@@ -100,15 +101,12 @@ function addDragEndListener(element) {
  */
 function onTaskDragStart(e) {
   const id = getElementId(e);
-  
   if (id && e.dataTransfer) {
     setDragData(e.dataTransfer, id);
   }
-  
   if (e.dataTransfer) {
     setMoveEffect(e.dataTransfer);
   }
-  
   setDragState();
   addDragEndListener(e.currentTarget);
 }
@@ -151,11 +149,9 @@ function setDropEffect(dataTransfer) {
 function handleDragOver(e, list) {
   if (!isDragActive()) return;
   e.preventDefault();
-  
   if (e.dataTransfer) {
     setDropEffect(e.dataTransfer);
   }
-  
   highlightColumn(list);
 }
 
@@ -447,18 +443,10 @@ function isValidDropContext(taskId, taskElement, newColumn, oldColumn) {
  */
 function handleDrop(event) {
   event.preventDefault();
-  
   const { taskId, taskElement, newColumn, oldColumn } = getDropContext(event);
-  
   if (!isValidDropContext(taskId, taskElement, newColumn, oldColumn)) {
     return;
   }
-  
   moveTaskDom(taskElement, newColumn);
   finalizeDrop(String(taskId), oldColumn, newColumn);
 }
-
-/**
- * Drop handler - moves the card in the DOM, updates Firebase, and maintains placeholders.
- */
-window.drop = handleDrop;
