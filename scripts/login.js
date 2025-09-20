@@ -9,13 +9,33 @@ import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/1
 import { auth } from "./firebase.js";
 
 /**
- * Initializes the login view: sets up password fields,
- * event listeners, and keydown handler.
+ * Initializes the login view
  * @returns {void}
  */
 function initLogin() {
+  setupPasswordFields();
+  setupEventListeners();
+  setupKeyboardHandlers();
+}
+
+/**
+ * Sets up password fields
+ */
+function setupPasswordFields() {
   initializePasswordFields("login");
+}
+
+/**
+ * Sets up event listeners
+ */
+function setupEventListeners() {
   setupLoginEventListeners();
+}
+
+/**
+ * Sets up keyboard handlers
+ */
+function setupKeyboardHandlers() {
   document.addEventListener("keydown", handleKeyDown);
 }
 document.addEventListener("DOMContentLoaded", initLogin);
@@ -30,52 +50,157 @@ function setupLoginEventListeners() {
 }
 
 /**
- * Attempts login with Firebase using email and password.
- * Redirects on success, shows error on failure.
+ * Attempts login with Firebase using email and password
  * @returns {void}
  */
 function handleLogin() {
-  const email = $("login-email").value.trim();
-  const password = $("login-password").value;
-  if (password.length < 6)
-    return displayAuthError($("errorMessage"), $("login-password"));
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => (window.location.href = "summary-board.html"))
-    .catch(() =>
-      displayAuthError($("errorMessage"), $("login-password"), $("login-email"))
-    );
+  const credentials = getLoginCredentials();
+  if (!validatePassword(credentials.password)) {
+    return showPasswordError();
+  }
+  performLogin(credentials);
 }
 
 /**
- * Performs guest login with static credentials.
- * Redirects on success, shows error on failure.
+ * Gets login credentials from form
+ * @returns {Object} Email and password
+ */
+function getLoginCredentials() {
+  return {
+    email: $("login-email").value.trim(),
+    password: $("login-password").value
+  };
+}
+
+/**
+ * Validates password length
+ * @param {string} password - Password to validate
+ * @returns {boolean} True if valid
+ */
+function validatePassword(password) {
+  return password.length >= 6;
+}
+
+/**
+ * Shows password validation error
+ */
+function showPasswordError() {
+  displayAuthError($("errorMessage"), $("login-password"));
+}
+
+/**
+ * Performs Firebase login
+ * @param {Object} credentials - Email and password
+ */
+function performLogin(credentials) {
+  signInWithEmailAndPassword(auth, credentials.email, credentials.password)
+    .then(() => redirectToSummary())
+    .catch(() => showLoginError());
+}
+
+/**
+ * Redirects to summary page
+ */
+function redirectToSummary() {
+  window.location.href = "summary-board.html";
+}
+
+/**
+ * Shows login error
+ */
+function showLoginError() {
+  displayAuthError($("errorMessage"), $("login-password"), $("login-email"));
+}
+
+/**
+ * Performs guest login with static credentials
  * @returns {void}
  */
 function handleGuestLogin() {
-  signInWithEmailAndPassword(auth, "guest@login.de", "guestpassword")
-    .then(() => (window.location.href = "./summary-board.html"))
-    .catch(() => {
-      $("errorMessage").innerHTML = "Guest login failed.";
-    });
+  const guestCredentials = getGuestCredentials();
+  performGuestLogin(guestCredentials);
 }
 
 /**
- * Handles Enter key press:
- * - If the login box is hidden, triggers sign-up button.
- * - Otherwise, triggers login.
+ * Gets guest login credentials
+ * @returns {Object} Guest email and password
+ */
+function getGuestCredentials() {
+  return {
+    email: "guest@login.de",
+    password: "guestpassword"
+  };
+}
+
+/**
+ * Performs guest Firebase login
+ * @param {Object} credentials - Guest credentials
+ */
+function performGuestLogin(credentials) {
+  signInWithEmailAndPassword(auth, credentials.email, credentials.password)
+    .then(() => redirectToSummaryGuest())
+    .catch(() => showGuestError());
+}
+
+/**
+ * Redirects to summary page for guest
+ */
+function redirectToSummaryGuest() {
+  window.location.href = "./summary-board.html";
+}
+
+/**
+ * Shows guest login error
+ */
+function showGuestError() {
+  $("errorMessage").innerHTML = "Guest login failed.";
+}
+
+/**
+ * Handles Enter key press
  * @param {KeyboardEvent} e
  * @returns {void}
  */
 function handleKeyDown(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const isLoginHidden = $("login-box")?.classList.contains("d-none");
-    if (isLoginHidden) {
-      $("sign-up-button")?.click();
-    } else {
-      handleLogin();
-    }
+  if (!isEnterKey(e)) return;
+  
+  e.preventDefault();
+  executeEnterAction();
+}
+
+/**
+ * Checks if key is Enter
+ * @param {KeyboardEvent} e - Keyboard event
+ * @returns {boolean} True if Enter key
+ */
+function isEnterKey(e) {
+  return e.key === "Enter";
+}
+
+/**
+ * Executes appropriate action for Enter key
+ */
+function executeEnterAction() {
+  if (isLoginBoxHidden()) {
+    triggerSignUp();
+  } else {
+    handleLogin();
   }
+}
+
+/**
+ * Checks if login box is hidden
+ * @returns {boolean} True if hidden
+ */
+function isLoginBoxHidden() {
+  return $("login-box")?.classList.contains("d-none");
+}
+
+/**
+ * Triggers sign up button click
+ */
+function triggerSignUp() {
+  $("sign-up-button")?.click();
 }
 
 /* ---- Shared helpers for login ---- */
@@ -91,20 +216,53 @@ function initializePasswordFields(context) {
 }
 
 /**
- * Sets up toggle icon and input events for a password field.
+ * Sets up toggle icon and input events for a password field
  * @param {string} inputId - ID of the password input element
  * @param {string} toggleId - ID of the toggle icon
  * @param {HTMLElement} errorBox - Error container element
  * @returns {void}
  */
 function setupPasswordToggle(inputId, toggleId, errorBox) {
-  const input = $(inputId);
-  const toggle = $(toggleId);
-  if (!input || !toggle) return;
+  const elements = getPasswordElements(inputId, toggleId);
+  if (!elements.input || !elements.toggle) return;
+  
+  setupToggleEvents(elements, errorBox);
+  initializePasswordIcon(elements);
+}
+
+/**
+ * Gets password input and toggle elements
+ * @param {string} inputId - Input element ID
+ * @param {string} toggleId - Toggle element ID
+ * @returns {Object} Input and toggle elements
+ */
+function getPasswordElements(inputId, toggleId) {
+  return {
+    input: $(inputId),
+    toggle: $(toggleId)
+  };
+}
+
+/**
+ * Sets up toggle and input events
+ * @param {Object} elements - Input and toggle elements
+ * @param {HTMLElement} errorBox - Error container
+ */
+function setupToggleEvents(elements, errorBox) {
   let isVisible = false;
-  toggle.onclick = () => togglePasswordVisibility(input, toggle, (isVisible = !isVisible));
-  input.oninput = () => resetPasswordField(input, toggle, errorBox);
-  updatePasswordIcon(input, toggle, isVisible);
+  elements.toggle.onclick = () => {
+    isVisible = !isVisible;
+    togglePasswordVisibility(elements.input, elements.toggle, isVisible);
+  };
+  elements.input.oninput = () => resetPasswordField(elements.input, elements.toggle, errorBox);
+}
+
+/**
+ * Initializes password icon
+ * @param {Object} elements - Input and toggle elements
+ */
+function initializePasswordIcon(elements) {
+  updatePasswordIcon(elements.input, elements.toggle, false);
 }
 
 /**
@@ -121,16 +279,33 @@ function togglePasswordVisibility(input, toggle, visible) {
 }
 
 /**
- * Resets a password field to hidden and clears error styles.
+ * Resets a password field to hidden and clears error styles
  * @param {HTMLInputElement} input
  * @param {HTMLImageElement} toggle
  * @param {HTMLElement} errorBox
  * @returns {void}
  */
 function resetPasswordField(input, toggle, errorBox) {
-  input.type = "password";
-  updatePasswordIcon(input, toggle, false);
+  hidePassword(input);
+  resetPasswordIcon(input, toggle);
   clearFieldError(input, errorBox);
+}
+
+/**
+ * Hides password field
+ * @param {HTMLInputElement} input - Password input
+ */
+function hidePassword(input) {
+  input.type = "password";
+}
+
+/**
+ * Resets password icon to hidden state
+ * @param {HTMLInputElement} input - Password input
+ * @param {HTMLImageElement} toggle - Toggle icon
+ */
+function resetPasswordIcon(input, toggle) {
+  updatePasswordIcon(input, toggle, false);
 }
 
 /**

@@ -147,14 +147,29 @@ function getNewContactData() {
   };
 }
 
-/** Handle successful save: toggle UI status and refresh list. */
+/** Handle successful save: toggle UI status and refresh list */
 function handleSaveSuccess(data) {
-  const el = document.getElementById("check-status-add-contact");
-  if (el) {
-    if (window.toggleAddContact) window.toggleAddContact();
-    el.classList.remove("d-none");
-    setTimeout(() => el.classList.add("d-none"), 4000);
-  }
+  const statusElement = getCheckStatusElement();
+  if (!statusElement) return;
+  
+  toggleAddContactIfAvailable();
+  showTemporarySuccessStatus(statusElement);
+}
+
+/** Get check status element */
+function getCheckStatusElement() {
+  return document.getElementById("check-status-add-contact");
+}
+
+/** Toggle add contact if function is available */
+function toggleAddContactIfAvailable() {
+  if (window.toggleAddContact) window.toggleAddContact();
+}
+
+/** Show temporary success status */
+function showTemporarySuccessStatus(element) {
+  element.classList.remove("d-none");
+  setTimeout(() => element.classList.add("d-none"), 4000);
 }
 
 /** Push a new contact into Firebase. */
@@ -179,13 +194,23 @@ window.deleteContact = async () => {
   }
 };
 
-/** Get next available color index (1..15). */
+/** Get next available color index (1..15) */
 function getNextColorIndex() {
+  const usedColors = collectUsedColorIndices();
+  return findNextAvailableColorIndex(usedColors);
+}
+
+/** Collect used color indices from loaded contacts */
+function collectUsedColorIndices() {
   const usedColors = new Set();
   Object.values(loadedContacts).forEach(contact => {
     if (contact.colorIndex) usedColors.add(contact.colorIndex);
   });
-  
+  return usedColors;
+}
+
+/** Find next available color index or return random */
+function findNextAvailableColorIndex(usedColors) {
   for (let i = 1; i <= 15; i++) {
     if (!usedColors.has(i)) return i;
   }
@@ -222,13 +247,28 @@ function getAddTaskItemHTML(contact) {
   `;
 }
 
-/** Toggle selected state and checkbox icon for a <li>. */
+/** Toggle selected state and checkbox icon for a <li> */
 /** @param {HTMLLIElement} li */
 function toggleListItemSelection(li) {
+  toggleSelectionState(li);
+  updateCheckboxIcon(li);
+}
+
+/** Toggle selection state of list item */
+function toggleSelectionState(li) {
   li.classList.toggle("selected");
+}
+
+/** Update checkbox icon based on selection state */
+function updateCheckboxIcon(li) {
   const icon = li.querySelector("img");
   if (!icon) return;
-  icon.src = li.classList.contains("selected")
+  icon.src = getCheckboxIconPath(li);
+}
+
+/** Get checkbox icon path based on selection */
+function getCheckboxIconPath(li) {
+  return li.classList.contains("selected")
     ? "./assets/icons/add_task/check_white.svg"
     : "./assets/icons/add_task/check_default.svg";
 }

@@ -262,21 +262,31 @@ function toggleAssignedDropdown() {
   }
 }
 
-// Clear the new-subtask input via the clear (X) icon
-$("sub-clear").addEventListener("click", () => {
+/**
+ * Clear subtask input and reset UI.
+ * @returns {void}
+ */
+function clearSubtaskInput() {
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
-});
+}
 
-// Provide a default suggestion on plus click if there are no subtasks yet
-$("sub-plus").addEventListener("click", () => {
+/**
+ * Add default subtask suggestion if none exist.
+ * @returns {void}
+ */
+function addDefaultSubtaskSuggestion() {
   if (subtasks.length === 0) {
     $("sub-input").value = "Contact Form";
     $("subtask-plus-box").classList.add("d-none");
     $("subtask-func-btn").classList.remove("d-none");
   }
-});
+}
+
+// Event listeners
+$("sub-clear").addEventListener("click", clearSubtaskInput);
+$("sub-plus").addEventListener("click", addDefaultSubtaskSuggestion);
 
 /**
  * Normalize the global subtasks array into a string array.

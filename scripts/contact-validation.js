@@ -9,63 +9,179 @@ function isValidEmail(email) {
 }
 
 /**
- * Keydown filter for name fields.
- * Allows letters, umlauts, spaces, hyphens, apostrophes, and control keys.
+ * Keydown filter for name fields
+ * Allows letters, umlauts, spaces, hyphens, apostrophes, and control keys
  * @param {KeyboardEvent} event
  * @returns {void}
  */
 function validateNameInput(event) {
-  const allowedChars = /[a-zA-ZäöüÄÖÜß\s\-']/;
-  if (
-    !allowedChars.test(event.key) &&
-    !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(
-      event.key
-    )
-  ) {
+  if (!isValidNameKey(event.key)) {
     event.preventDefault();
   }
 }
 
 /**
- * Keydown filter for phone fields.
- * Accepts digits, one leading plus, control keys; enforces max length 20.
+ * Checks if key is valid for name input
+ * @param {string} key
+ * @returns {boolean}
+ */
+function isValidNameKey(key) {
+  return isAllowedNameChar(key) || isControlKey(key);
+}
+
+/**
+ * Checks if character is allowed in name
+ * @param {string} key
+ * @returns {boolean}
+ */
+function isAllowedNameChar(key) {
+  const allowedChars = /[a-zA-ZäöüÄÖÜß\s\-']/;
+  return allowedChars.test(key);
+}
+
+/**
+ * Checks if key is a control key
+ * @param {string} key
+ * @returns {boolean}
+ */
+function isControlKey(key) {
+  return ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(key);
+}
+
+/**
+ * Keydown filter for phone fields
+ * Accepts digits, one leading plus, control keys; enforces max length 20
  * @param {KeyboardEvent} e
  * @returns {void}
  */
 function validatePhoneInput(e) {
-  const t = e.target;
-  const k = e.key;
-  const ctrlCmd = e.ctrlKey || e.metaKey;
-  if (ctrlCmd && ['a','c','v','x','z','y'].includes(k.toLowerCase())) return;
-  if (['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(k)) return;
-  const selLen = (t.selectionEnd ?? t.value.length) - (t.selectionStart ?? 0);
-  const nextLen = t.value.length - selLen + 1;
-  if (k === '+') {
-    const atStart = (t.selectionStart ?? 0) === 0;
-    const hasPlus = t.value.startsWith('+');
-    if (!atStart || hasPlus || nextLen > 20) e.preventDefault();
-    return;
-  }
-  if (/^\d$/.test(k)) {
-    if (nextLen > 20) e.preventDefault();
-    return;
-  }
+  if (shouldAllowPhoneKey(e)) return;
+  
   e.preventDefault();
 }
 
 /**
- * Normalize phone value to digits and at most one leading plus; trim to 20 chars.
+ * Determines if phone key should be allowed
+ * @param {KeyboardEvent} e
+ * @returns {boolean}
+ */
+function shouldAllowPhoneKey(e) {
+  if (isPhoneControlKey(e)) return true;
+  if (isPhoneNavigationKey(e.key)) return true;
+  
+  return isValidPhoneChar(e);
+}
+
+/**
+ * Checks if key is a phone control key
+ * @param {KeyboardEvent} e
+ * @returns {boolean}
+ */
+function isPhoneControlKey(e) {
+  const ctrlCmd = e.ctrlKey || e.metaKey;
+  return ctrlCmd && ['a','c','v','x','z','y'].includes(e.key.toLowerCase());
+}
+
+/**
+ * Checks if key is a navigation key
+ * @param {string} key
+ * @returns {boolean}
+ */
+function isPhoneNavigationKey(key) {
+  return ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(key);
+}
+
+/**
+ * Validates phone character input
+ * @param {KeyboardEvent} e
+ * @returns {boolean}
+ */
+function isValidPhoneChar(e) {
+  const nextLength = calculateNextLength(e.target);
+  
+  if (e.key === '+') {
+    return isValidPlusInput(e.target, nextLength);
+  }
+  
+  if (/^\d$/.test(e.key)) {
+    return nextLength <= 20;
+  }
+  
+  return false;
+}
+
+/**
+ * Calculates next input length
+ * @param {HTMLInputElement} target
+ * @returns {number}
+ */
+function calculateNextLength(target) {
+  const selLen = (target.selectionEnd ?? target.value.length) - (target.selectionStart ?? 0);
+  return target.value.length - selLen + 1;
+}
+
+/**
+ * Validates plus sign input
+ * @param {HTMLInputElement} target
+ * @param {number} nextLength
+ * @returns {boolean}
+ */
+function isValidPlusInput(target, nextLength) {
+  const atStart = (target.selectionStart ?? 0) === 0;
+  const hasPlus = target.value.startsWith('+');
+  return atStart && !hasPlus && nextLength <= 20;
+}
+
+/**
+ * Normalize phone value to digits and at most one leading plus; trim to 20 chars
  * @param {InputEvent} e
  * @returns {void}
  */
 function sanitizePhoneOnInput(e) {
-  let v = e.target.value.replace(/[^\d+]/g, ''); 
-  if (v.startsWith('+')) {
-    v = '+' + v.slice(1).replace(/\+/g, ''); 
-  } else {
-    v = v.replace(/\+/g, ''); 
+  const sanitized = sanitizePhoneValue(e.target.value);
+  e.target.value = sanitized;
+}
+
+/**
+ * Sanitizes phone value
+ * @param {string} value
+ * @returns {string}
+ */
+function sanitizePhoneValue(value) {
+  const cleaned = removeInvalidChars(value);
+  const normalized = normalizePlusSign(cleaned);
+  return limitLength(normalized, 20);
+}
+
+/**
+ * Removes invalid characters
+ * @param {string} value
+ * @returns {string}
+ */
+function removeInvalidChars(value) {
+  return value.replace(/[^\d+]/g, '');
+}
+
+/**
+ * Normalizes plus sign to only one at start
+ * @param {string} value
+ * @returns {string}
+ */
+function normalizePlusSign(value) {
+  if (value.startsWith('+')) {
+    return '+' + value.slice(1).replace(/\+/g, '');
   }
-  e.target.value = v.slice(0, 20); 
+  return value.replace(/\+/g, '');
+}
+
+/**
+ * Limits string length
+ * @param {string} value
+ * @param {number} maxLength
+ * @returns {string}
+ */
+function limitLength(value, maxLength) {
+  return value.slice(0, maxLength);
 }
 
 /**
@@ -111,16 +227,44 @@ function setFieldErrorStyle(field, placeholder) {
 }
 
 /**
- * Set error message and styles for a field.
+ * Set error message and styles for a field
  * @param {string} fieldId
  * @param {string} message
  * @returns {void}
  */
 function showFieldError(fieldId, message) {
-  const field = $(fieldId);
-  const placeholder = $(fieldId + "-placeholder");
+  const elements = getFieldElements(fieldId);
+  displayErrorMessage(fieldId, message);
+  applyErrorStyles(elements);
+}
+
+/**
+ * Gets field elements
+ * @param {string} fieldId
+ * @returns {Object}
+ */
+function getFieldElements(fieldId) {
+  return {
+    field: $(fieldId),
+    placeholder: $(fieldId + "-placeholder")
+  };
+}
+
+/**
+ * Displays error message
+ * @param {string} fieldId
+ * @param {string} message
+ */
+function displayErrorMessage(fieldId, message) {
   setErrorMessage(fieldId, message);
-  setFieldErrorStyle(field, placeholder);
+}
+
+/**
+ * Applies error styles
+ * @param {Object} elements
+ */
+function applyErrorStyles(elements) {
+  setFieldErrorStyle(elements.field, elements.placeholder);
 }
 
 /**
@@ -150,15 +294,30 @@ function clearFieldErrorStyle(field, placeholder) {
 }
 
 /**
- * Clear both error message and styles for a field.
+ * Clear both error message and styles for a field
  * @param {string} fieldId
  * @returns {void}
  */
 function clearFieldError(fieldId) {
-  const field = $(fieldId);
-  const placeholder = $(fieldId + "-placeholder");
+  const elements = getFieldElements(fieldId);
+  removeErrorMessage(fieldId);
+  removeErrorStyles(elements);
+}
+
+/**
+ * Removes error message
+ * @param {string} fieldId
+ */
+function removeErrorMessage(fieldId) {
   clearErrorMessage(fieldId);
-  clearFieldErrorStyle(field, placeholder);
+}
+
+/**
+ * Removes error styles
+ * @param {Object} elements
+ */
+function removeErrorStyles(elements) {
+  clearFieldErrorStyle(elements.field, elements.placeholder);
 }
 
 /**
@@ -203,6 +362,19 @@ if (typeof window !== 'undefined') {
 }
 
 /**
+ * Validates the name field; sets UI error if invalid.
+ * @param {string} name
+ * @returns {boolean}
+ */
+function validateEditNameField(name) {
+  if (!name) {
+    showFieldError("edit-name-input", "Name is required");
+    return false;
+  }
+  return true;
+}
+
+/**
  * Validates the phone field; sets UI error if invalid.
  * @param {string} phone
  * @returns {boolean}
@@ -232,24 +404,59 @@ function validateEditEmailField(email) {
 }
 
 /**
- * Validates all edit contact fields and returns whether the form is valid.
+ * Validates all edit contact fields and returns whether the form is valid
  * @param {{name:string,email:string,phone:string}} values
  * @returns {boolean}
  */
 function validateEditFormFields(values) {
-  const nameValid = validateEditNameField(values.name);
-  const emailValid = validateEditEmailField(values.email);
-  const phoneValid = validateEditPhoneField(values.phone);
-
-  return nameValid && emailValid && phoneValid;
+  const validationResults = performAllValidations(values);
+  return areAllValidationsValid(validationResults);
 }
 
 /**
- * Validates the edit contact form by reading values and applying validators.
+ * Performs all field validations
+ * @param {Object} values
+ * @returns {Object}
+ */
+function performAllValidations(values) {
+  return {
+    name: validateEditNameField(values.name),
+    email: validateEditEmailField(values.email),
+    phone: validateEditPhoneField(values.phone)
+  };
+}
+
+/**
+ * Checks if all validations are valid
+ * @param {Object} results
+ * @returns {boolean}
+ */
+function areAllValidationsValid(results) {
+  return results.name && results.email && results.phone;
+}
+
+/**
+ * Validates the edit contact form by reading values and applying validators
  * @returns {boolean}
  */
 function validateEditContactForm() {
   const values = getEditFormValues();
+  resetFormErrors();
+  return performFormValidation(values);
+}
+
+/**
+ * Resets form errors
+ */
+function resetFormErrors() {
   clearEditFormErrors();
+}
+
+/**
+ * Performs form validation
+ * @param {Object} values
+ * @returns {boolean}
+ */
+function performFormValidation(values) {
   return validateEditFormFields(values);
 }

@@ -21,10 +21,17 @@ const columnMap = {
 };
 
 /**
- * Initialisiert Board: Auth, DnD, Firebase-Stream, Suche.
+ * Initialisiert Board: Auth, DnD, Firebase-Stream, Suche
  * @returns {void}
  */
 function initBoard() {
+  setupAllBoardComponents();
+}
+
+/**
+ * Setup all board components
+ */
+function setupAllBoardComponents() {
   setupAuthListener();
   initDnDListeners();
   loadTasksFromFirebase();
@@ -66,13 +73,35 @@ function getSortedTaskIds(tasks) {
 }
 
 /**
- * Rendert alle Spalten mit Tasks.
+ * Rendert alle Spalten mit Tasks
  * @param {Record<string, any>} tasks
  * @returns {void}
  */
 function renderAllColumns(tasks) {
+  prepareColumns();
+  renderAllTasks(tasks);
+  updateAllPlaceholders();
+}
+
+/**
+ * Prepare columns for rendering
+ */
+function prepareColumns() {
   clearAllColumns();
+}
+
+/**
+ * Render all tasks
+ * @param {Record<string, any>} tasks
+ */
+function renderAllTasks(tasks) {
   getSortedTaskIds(tasks).forEach((taskId) => renderTask(tasks[taskId], taskId));
+}
+
+/**
+ * Update all placeholders
+ */
+function updateAllPlaceholders() {
   Object.keys(columnMap).forEach((k) => checkAndShowPlaceholder(columnMap[k]));
 }
 
@@ -85,17 +114,51 @@ function clearAllColumns() {
 }
 
 /**
- * Baut ein draggable Task-Element.
+ * Baut ein draggable Task-Element
  * @param {any} task
  * @param {string} taskId
  * @returns {HTMLElement}
  */
 function buildTaskElement(task, taskId) {
   const el = createTaskElement(task, taskId);
-  if (!el.id) el.id = String(taskId);
-  el.setAttribute("draggable", "true");
-  el.addEventListener("dragstart", onTaskDragStart);
+  setupTaskElement(el, taskId);
   return el;
+}
+
+/**
+ * Setup task element properties
+ * @param {HTMLElement} el
+ * @param {string} taskId
+ */
+function setupTaskElement(el, taskId) {
+  ensureElementId(el, taskId);
+  makeDraggable(el);
+  attachDragHandler(el);
+}
+
+/**
+ * Ensure element has ID
+ * @param {HTMLElement} el
+ * @param {string} taskId
+ */
+function ensureElementId(el, taskId) {
+  if (!el.id) el.id = String(taskId);
+}
+
+/**
+ * Make element draggable
+ * @param {HTMLElement} el
+ */
+function makeDraggable(el) {
+  el.setAttribute("draggable", "true");
+}
+
+/**
+ * Attach drag handler
+ * @param {HTMLElement} el
+ */
+function attachDragHandler(el) {
+  el.addEventListener("dragstart", onTaskDragStart);
 }
 
 /**
@@ -140,16 +203,58 @@ function appendPlaceholder(column, columnId) {
 }
 
 /**
- * Stellt sicher, dass bei leerer Spalte ein Placeholder gezeigt wird.
+ * Stellt sicher, dass bei leerer Spalte ein Placeholder gezeigt wird
  * @param {string} columnId
  * @returns {void}
  */
 function checkAndShowPlaceholder(columnId) {
   const column = $(columnId);
-  const existing = column.querySelector(".no-tasks");
-  const count = countTasks(column);
-  if (count === 0 && !existing) appendPlaceholder(column, columnId);
-  else if (count > 0 && existing) existing.remove();
+  const placeholderState = getPlaceholderState(column);
+  updatePlaceholderVisibility(column, columnId, placeholderState);
+}
+
+/**
+ * Get placeholder state
+ * @param {HTMLElement} column
+ * @returns {Object}
+ */
+function getPlaceholderState(column) {
+  return {
+    existing: column.querySelector(".no-tasks"),
+    count: countTasks(column)
+  };
+}
+
+/**
+ * Update placeholder visibility
+ * @param {HTMLElement} column
+ * @param {string} columnId
+ * @param {Object} state
+ */
+function updatePlaceholderVisibility(column, columnId, state) {
+  if (shouldShowPlaceholder(state)) {
+    appendPlaceholder(column, columnId);
+  } else if (shouldHidePlaceholder(state)) {
+    state.existing.remove();
+  }
+}
+
+/**
+ * Check if placeholder should be shown
+ * @param {Object} state
+ * @returns {boolean}
+ */
+function shouldShowPlaceholder(state) {
+  return state.count === 0 && !state.existing;
+}
+
+/**
+ * Check if placeholder should be hidden
+ * @param {Object} state
+ * @returns {boolean}
+ */
+function shouldHidePlaceholder(state) {
+  return state.count > 0 && state.existing;
 }
 
 let IS_DRAGGING = false;
@@ -165,17 +270,43 @@ function onDragEndFinalize(_) {
 }
 
 /**
- * Drag-Start: ID setzen und Move-Effekt erlauben.
+ * Drag-Start: ID setzen und Move-Effekt erlauben
  * @param {DragEvent} e
  * @returns {void}
  */
 function onTaskDragStart(e) {
-  const id = e.currentTarget?.id || e.target.id;
-  if (id) {
-    e.dataTransfer?.setData("text/plain", id);
-    e.dataTransfer?.setData("text", id);
-  }
-  if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+  const id = getElementId(e);
+  setupDragTransfer(e, id);
+  initializeDragState(e);
+}
+
+/**
+ * Get element ID from event
+ * @param {DragEvent} e
+ * @returns {string}
+ */
+function getElementId(e) {
+  return e.currentTarget?.id || e.target.id;
+}
+
+/**
+ * Setup drag transfer data
+ * @param {DragEvent} e
+ * @param {string} id
+ */
+function setupDragTransfer(e, id) {
+  if (!id || !e.dataTransfer) return;
+  
+  e.dataTransfer.setData("text/plain", id);
+  e.dataTransfer.setData("text", id);
+  e.dataTransfer.effectAllowed = "move";
+}
+
+/**
+ * Initialize drag state
+ * @param {DragEvent} e
+ */
+function initializeDragState(e) {
   IS_DRAGGING = true;
   e.currentTarget?.addEventListener("dragend", onDragEndFinalize, { once: true });
 }
@@ -263,16 +394,41 @@ function moveTaskDom(taskElement, newColumn) {
 }
 
 /**
- * Finalisiert Drop: DB-Update, Placeholder & Visuals aktualisieren.
+ * Finalisiert Drop: DB-Update, Placeholder & Visuals aktualisieren
  * @param {string} taskId
  * @param {HTMLElement} oldColumn
  * @param {HTMLElement} newColumn
  * @returns {void}
  */
 function finalizeDrop(taskId, oldColumn, newColumn) {
-  updateTaskColumn(taskId, newColumn.id);
-  checkAndShowPlaceholder(oldColumn.id);
-  checkAndShowPlaceholder(newColumn.id);
+  updateDatabase(taskId, newColumn.id);
+  updatePlaceholders(oldColumn.id, newColumn.id);
+  resetDragState();
+}
+
+/**
+ * Update database
+ * @param {string} taskId
+ * @param {string} newColumnId
+ */
+function updateDatabase(taskId, newColumnId) {
+  updateTaskColumn(taskId, newColumnId);
+}
+
+/**
+ * Update placeholders for both columns
+ * @param {string} oldColumnId
+ * @param {string} newColumnId
+ */
+function updatePlaceholders(oldColumnId, newColumnId) {
+  checkAndShowPlaceholder(oldColumnId);
+  checkAndShowPlaceholder(newColumnId);
+}
+
+/**
+ * Reset drag state
+ */
+function resetDragState() {
   IS_DRAGGING = false;
   resetColumnBackgrounds();
 }
@@ -333,20 +489,61 @@ function buildInitialsCircle(c, posClass) {
 }
 
 /**
- * Rendert bis zu 3 Initialen-Kreise (+N als dritter, wenn Overflow).
+ * Rendert bis zu 3 Initialen-Kreise (+N als dritter, wenn Overflow)
  * @param {Array<{initials?:string,name?:string,colorIndex?:number}>} contacts
  * @returns {string}
  */
 export function renderAssignedInitials(contacts = []) {
+  if (!isValidContactsArray(contacts)) return "";
+  
+  return buildInitialsHTML(contacts);
+}
+
+/**
+ * Check if contacts array is valid
+ * @param {any} contacts
+ * @returns {boolean}
+ */
+function isValidContactsArray(contacts) {
+  return Array.isArray(contacts) && contacts.length > 0;
+}
+
+/**
+ * Build initials HTML
+ * @param {Array} contacts
+ * @returns {string}
+ */
+function buildInitialsHTML(contacts) {
   const maxShown = 3;
-  if (!Array.isArray(contacts) || contacts.length === 0) return "";
   const shown = contacts.slice(0, maxShown);
   const overflowCount = computeOverflow(contacts.length, maxShown);
+  
   return shown.map((c, idx) => {
-    const pos = ["first-initial", "second-initial", "third-initial"][idx] || "";
-    if (overflowCount && idx === maxShown - 1) return buildMoreCircle(overflowCount, pos);
-    return buildInitialsCircle(c, pos);
+    const pos = getPositionClass(idx);
+    return shouldShowOverflow(overflowCount, idx, maxShown) 
+      ? buildMoreCircle(overflowCount, pos)
+      : buildInitialsCircle(c, pos);
   }).join("");
+}
+
+/**
+ * Get position class for index
+ * @param {number} idx
+ * @returns {string}
+ */
+function getPositionClass(idx) {
+  return ["first-initial", "second-initial", "third-initial"][idx] || "";
+}
+
+/**
+ * Check if overflow should be shown
+ * @param {number} overflowCount
+ * @param {number} idx
+ * @param {number} maxShown
+ * @returns {boolean}
+ */
+function shouldShowOverflow(overflowCount, idx, maxShown) {
+  return overflowCount && idx === maxShown - 1;
 }
 
 /**
@@ -375,15 +572,44 @@ function runSearch(input) {
 }
 
 /**
- * Bindet Input- und Button-Events für die Suche.
+ * Bindet Input- und Button-Events für die Suche
  * @param {HTMLInputElement} input
  * @param {HTMLElement|null} btn
  * @returns {void}
  */
 function bindSearchEvents(input, btn) {
-  const debouncedRun = debounce(() => runSearch(input), 200);
+  const debouncedRun = createDebouncedSearch(input);
+  attachInputEvents(input, debouncedRun);
+  attachButtonEvent(btn, input);
+}
+
+/**
+ * Create debounced search function
+ * @param {HTMLInputElement} input
+ * @returns {Function}
+ */
+function createDebouncedSearch(input) {
+  return debounce(() => runSearch(input), 200);
+}
+
+/**
+ * Attach input events
+ * @param {HTMLInputElement} input
+ * @param {Function} debouncedRun
+ */
+function attachInputEvents(input, debouncedRun) {
   input.addEventListener("input", debouncedRun);
-  input.addEventListener("keypress", (e) => { if (e.key === "Enter") runSearch(input); });
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") runSearch(input);
+  });
+}
+
+/**
+ * Attach button event
+ * @param {HTMLElement|null} btn
+ * @param {HTMLInputElement} input
+ */
+function attachButtonEvent(btn, input) {
   btn?.addEventListener("click", () => runSearch(input));
 }
 

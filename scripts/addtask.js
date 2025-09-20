@@ -1,6 +1,6 @@
 /**
  * @file Add Task – UI logic for date picker, priorities, categories, and subtasks.
- * Refactored into small, single-responsibility functions (≤14 lines) with JSDoc.
+ * All functions follow Single Responsibility Principle.
  * @typedef {Object} SubtaskItem
  * @property {string} name
  */
@@ -37,6 +37,34 @@ let selectedPriority = "medium";
 const contactInitialsBox = document.querySelector(".contact-initials"); 
 
 /**
+ * Set subtask value by index.
+ * @param {number} index
+ * @param {string} value
+ * @returns {void}
+ */
+function setSubtaskValue(index, value) {
+  subtasks[index] = value;
+}
+
+/**
+ * Remove subtask by index.
+ * @param {number} index
+ * @returns {void}
+ */
+function removeSubtaskByIndex(index) {
+  subtasks.splice(index, 1);
+}
+
+/**
+ * Re-render subtasks and rebind events.
+ * @returns {void}
+ */
+function rerenderSubtasks() {
+  renderSubtasks();
+  addEditEvents();
+}
+
+/**
  * @typedef {Object} SubtaskIOAPI
  * @property {(index:number, value:string) => void} set - Set a subtask's value by index.
  * @property {(index:number) => void} remove - Remove a subtask by index.
@@ -44,257 +72,746 @@ const contactInitialsBox = document.querySelector(".contact-initials");
  */
 /** @type {SubtaskIOAPI} */
 window.SubtaskIO = window.SubtaskIO || {
-  set(index, value) { subtasks[index] = value; },
-  remove(index) { subtasks.splice(index, 1); },
-  rerender() { renderSubtasks(); addEditEvents(); }
+  set: setSubtaskValue,
+  remove: removeSubtaskByIndex,
+  rerender: rerenderSubtasks
 };
 
 /**
- * Apply min attribute (today) to the native date input.
+ * Get today's date in ISO format.
+ * @returns {string}
+ */
+function getTodayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+
+/**
+ * Set minimum date to today.
  * @param {HTMLInputElement} datePicker
  * @returns {void}
  */
 function setDatePickerMin(datePicker) {
-  const today = new Date().toISOString().split('T')[0];
-  datePicker.min = today;
+  datePicker.min = getTodayISO();
 }
 
 /**
- * Format a YYYY-MM-DD into DD/MM/YYYY for UI display.
+ * Create date object from ISO string.
+ * @param {string} isoDate
+ * @returns {Date}
+ */
+function createDateFromISO(isoDate) {
+  return new Date(isoDate + 'T00:00:00');
+}
+
+/**
+ * Pad number with leading zero.
+ * @param {number} num
+ * @returns {string}
+ */
+function padWithZero(num) {
+  return String(num).padStart(2, '0');
+}
+
+/**
+ * Format date for display as DD/MM/YYYY.
  * @param {string} isoDate
  * @returns {string}
  */
 function formatDateForDisplay(isoDate) {
-  const d = new Date(isoDate + 'T00:00:00');
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const d = createDateFromISO(isoDate);
+  const day = padWithZero(d.getDate());
+  const month = padWithZero(d.getMonth() + 1);
   return `${day}/${month}/${d.getFullYear()}`;
 }
 
 /**
- * Update the date display and wrapper styles based on picker value.
+ * Update date display text.
+ * @param {HTMLElement} display
+ * @param {string} formattedDate
+ * @returns {void}
+ */
+function updateDisplayText(display, formattedDate) {
+  display.textContent = formattedDate;
+}
+
+/**
+ * Add has-value class to wrapper.
+ * @param {HTMLElement} wrapper
+ * @returns {void}
+ */
+function addHasValueClass(wrapper) {
+  wrapper.classList.add('has-value');
+}
+
+/**
+ * Remove has-value class from wrapper.
+ * @param {HTMLElement} wrapper
+ * @returns {void}
+ */
+function removeHasValueClass(wrapper) {
+  wrapper.classList.remove('has-value');
+}
+
+/**
+ * Clear date picker error styles.
+ * @returns {void}
+ */
+function clearDatePickerErrors() {
+  $("datepicker-wrapper").style.borderColor = "";
+  $("due-date-error").innerHTML = "";
+}
+
+/**
+ * Update date display and wrapper styles.
  * @param {HTMLInputElement} datePicker
+ * @param {HTMLElement} wrapper
+ * @param {HTMLElement} display
  * @returns {void}
  */
 function updateDateDisplay(datePicker, wrapper, display) {
   if (datePicker.value) {
-    display.textContent = formatDateForDisplay(datePicker.value);
-    wrapper.classList.add('has-value');
-    $("datepicker-wrapper").style.borderColor = "";
-    $("due-date-error").innerHTML = "";
+    const formatted = formatDateForDisplay(datePicker.value);
+    updateDisplayText(display, formatted);
+    addHasValueClass(wrapper);
+    clearDatePickerErrors();
   } else {
-    wrapper.classList.remove('has-value');
+    removeHasValueClass(wrapper);
   }
 }
 
 /**
- * Bind change/input listeners to a date picker to keep UI in sync.
+ * Create sync function for date picker.
  * @param {HTMLInputElement} datePicker
+ * @param {HTMLElement} wrapper
+ * @param {HTMLElement} display
+ * @returns {Function}
+ */
+function createSyncFunction(datePicker, wrapper, display) {
+  return () => updateDateDisplay(datePicker, wrapper, display);
+}
+
+/**
+ * Bind date picker events.
+ * @param {HTMLInputElement} datePicker
+ * @param {HTMLElement} wrapper
+ * @param {HTMLElement} display
  * @returns {void}
  */
 function bindDatePickerEvents(datePicker, wrapper, display) {
-  const sync = () => updateDateDisplay(datePicker, wrapper, display);
+  const sync = createSyncFunction(datePicker, wrapper, display);
   datePicker.addEventListener('change', sync);
   datePicker.addEventListener('input', sync);
   sync();
 }
 
 /**
- * Wire the datepicker wrapper so pointer interactions open the native date picker (or focus fallback).
- * Prevents default to avoid losing focus and supports browsers without `showPicker()`.
+ * Get datepicker wrapper element.
+ * @returns {HTMLElement|null}
+ */
+function getDatePickerWrapper() {
+  return document.getElementById('datepicker-wrapper');
+}
+
+/**
+ * Get datepicker input element.
+ * @returns {HTMLInputElement|null}
+ */
+function getDatePickerInput() {
+  return /** @type {HTMLInputElement} */(document.getElementById('datepicker'));
+}
+
+/**
+ * Check if event is left mouse button.
+ * @param {PointerEvent} ev
+ * @returns {boolean}
+ */
+function isLeftMouseButton(ev) {
+  return typeof ev.button !== 'number' || ev.button === 0;
+}
+
+/**
+ * Prevent event default and propagation.
+ * @param {Event} ev
+ * @returns {void}
+ */
+function preventEventDefaults(ev) {
+  ev.preventDefault();
+  ev.stopPropagation();
+}
+
+/**
+ * Set input type to date.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function setInputTypeDate(input) {
+  input.type = 'date';
+}
+
+/**
+ * Check if showPicker is available.
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+function hasShowPicker(input) {
+  return typeof input.showPicker === 'function';
+}
+
+/**
+ * Show date picker or focus input.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function showPickerOrFocus(input) {
+  try {
+    if (hasShowPicker(input)) {
+      input.showPicker();
+    } else {
+      input.focus();
+    }
+  } catch (_) {
+    // Ignore errors
+  }
+}
+
+/**
+ * Handle wrapper pointer down event.
+ * @param {PointerEvent} ev
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function handleWrapperPointerDown(ev, input) {
+  if (!isLeftMouseButton(ev)) return;
+  
+  preventEventDefaults(ev);
+  setInputTypeDate(input);
+  showPickerOrFocus(input);
+}
+
+/**
+ * Setup datepicker wrapper functionality.
  * @returns {void}
  */
 function setupDatePickerWrapper() {
-const wrapper = document.getElementById('datepicker-wrapper');
-const input   = /** @type {HTMLInputElement} */(document.getElementById('datepicker'));
-if (wrapper && input) {
-  wrapper.addEventListener('pointerdown', (ev) => {
-    if (typeof ev.button === 'number' && ev.button !== 0) return;
-    ev.preventDefault();
-    ev.stopPropagation();
-    input.type = 'date';
-    try {
-      if (typeof input.showPicker === 'function') {
-        input.showPicker(); 
-      } else {
-        input.focus(); 
-      }
-    } catch (_) {
-    }
-  }, { passive: false });
-}
+  const wrapper = getDatePickerWrapper();
+  const input = getDatePickerInput();
+  
+  if (wrapper && input) {
+    wrapper.addEventListener('pointerdown', (ev) => {
+      handleWrapperPointerDown(ev, input);
+    }, { passive: false });
+  }
 }
 
 /**
- * Handle clicks on priority buttons; ensures single active and updates `selectedPriority`.
+ * Get all priority buttons.
+ * @returns {NodeListOf<Element>}
+ */
+function getAllPriorityButtons() {
+  return document.querySelectorAll(".priority-button");
+}
+
+/**
+ * Remove active class from all priority buttons.
  * @returns {void}
  */
-document.querySelectorAll(".priority-button").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".priority-button").forEach((btn) => {
-      btn.classList.remove("active");
-    });
-    button.classList.add("active");
-    selectedPriority = button.classList.contains("urgent-button") ? "urgent" : button.classList.contains("medium-button") ? "medium" : "low";
+function clearAllPriorityActive() {
+  getAllPriorityButtons().forEach((btn) => {
+    btn.classList.remove("active");
   });
-});
+}
 
 /**
- * Reset priority buttons to default (medium) and active state.
+ * Add active class to button.
+ * @param {Element} button
+ * @returns {void}
+ */
+function setButtonActive(button) {
+  button.classList.add("active");
+}
+
+/**
+ * Determine priority from button classes.
+ * @param {Element} button
+ * @returns {string}
+ */
+function getPriorityFromButton(button) {
+  if (button.classList.contains("urgent-button")) return "urgent";
+  if (button.classList.contains("medium-button")) return "medium";
+  return "low";
+}
+
+/**
+ * Update selected priority variable.
+ * @param {string} priority
+ * @returns {void}
+ */
+function updateSelectedPriority(priority) {
+  selectedPriority = priority;
+}
+
+/**
+ * Handle priority button click.
+ * @param {Element} button
+ * @returns {void}
+ */
+function handlePriorityClick(button) {
+  clearAllPriorityActive();
+  setButtonActive(button);
+  const priority = getPriorityFromButton(button);
+  updateSelectedPriority(priority);
+}
+
+/**
+ * Add click listener to priority button.
+ * @param {Element} button
+ * @returns {void}
+ */
+function addPriorityClickListener(button) {
+  button.addEventListener("click", () => handlePriorityClick(button));
+}
+
+/**
+ * Setup priority button listeners.
+ * @returns {void}
+ */
+function setupPriorityButtons() {
+  getAllPriorityButtons().forEach(addPriorityClickListener);
+}
+
+/**
+ * Get medium priority button.
+ * @returns {Element|null}
+ */
+function getMediumButton() {
+  return document.querySelector(".medium-button");
+}
+
+/**
+ * Reset priority selection to medium.
  * @returns {void}
  */
 function resetPrioritySelection() {
-  document.querySelectorAll(".priority-button").forEach((btn) => btn.classList.remove("active"));
-  selectedPriority = "medium";
-  const mediumButton = document.querySelector(".medium-button");
-  if (mediumButton) mediumButton.classList.add("active");
-}
-
-/**
- * Category list item selection: sets label, hides dropdown, resets error styles.
- * @returns {void}
- */
-$("category-selection").querySelectorAll("li").forEach((item) => {
-  item.addEventListener("click", () => {
-    const value = item.getAttribute("data-value") ?? "";
-    $("category-select").querySelector("span").textContent = value;
-    $("category-selection").classList.add("d-none");
-    $("category-icon").classList.remove("arrow-up");
-    $("category-icon").classList.add("arrow-down");
-    $("category-select").style.borderColor = "";
-    $("category-selection-error").innerHTML = "";
-  });
-});
-
-/**
- * Global click handler to close dropdowns or commit edits when clicking outside.
- * @param {MouseEvent} event
- * @returns {void}
- */
-document.addEventListener("click", (event) => {
-  handleCategoryClickOutside(event);
-  handleAssignedClickOutside(event);
-});
-
-/**
- * Toggle visibility of the category selection dropdown and arrow icon state.
- * @returns {void}
- */
-$("category-select").addEventListener("click", () => {
-  $("category-selection").classList.toggle("d-none");
-  $("category-icon").classList.toggle("arrow-down");
-  $("category-icon").classList.toggle("arrow-up");
-});
-
-/**
- * Show/hide subtask control buttons depending on whether the input has text.
- * @param {InputEvent} event
- * @returns {void}
- */
-$("sub-input").addEventListener("input", function () {
-  if (this.value !== "") {
-    $("subtask-plus-box").classList.add("d-none");
-    $("subtask-func-btn").classList.remove("d-none");
-  } else {
-    $("subtask-plus-box").classList.remove("d-none");
-    $("subtask-func-btn").classList.add("d-none");
+  clearAllPriorityActive();
+  updateSelectedPriority("medium");
+  const mediumButton = getMediumButton();
+  if (mediumButton) {
+    setButtonActive(mediumButton);
   }
-});
+}
+
+// Initialize priority buttons
+setupPriorityButtons();
 
 /**
- * Reveal subtask action buttons when hovering a subtask list item.
- * @param {MouseEvent} event
- * @returns {void}
+ * Get category selection items.
+ * @returns {NodeListOf<Element>}
  */
-$("subtask-list").addEventListener("mouseover", (event) => {
-  const item = event.target.closest(".subtask-item");
-  item?.querySelector(".subtask-func-btn")?.classList.remove("d-none");
-});
-
-$("subtask-list").addEventListener("mouseout", (event) => {
-  const item = event.target.closest(".subtask-item");
-  item?.querySelector(".subtask-func-btn")?.classList.add("d-none");
-});
-
-/**
- * Hide subtask action buttons when the pointer leaves a subtask list item.
- * @param {MouseEvent} event
- * @returns {void}
- */
-
-/**
- * Clear error styles while typing in the Add Task title input.
- * @param {InputEvent} event
- * @returns {void}
- */
-$("addtask-title").addEventListener("input", function () {
-  this.style.borderColor = "";
-  $("addtask-error").innerHTML = "";
-});
-
-/**
- * Clear the Add Task title and description inputs and reset related error styles.
- * Also clears any inline error messages.
- * @returns {void}
- */
-function clearTitleAndDescription() {
-  $("addtask-title").value = "";
-  $("addtask-title").style.borderColor = "";
-  $("addtask-error").innerHTML = "";
-  $("addtask-textarea").value = "";
+function getCategoryItems() {
+  return $("category-selection").querySelectorAll("li");
 }
 
 /**
- * Reset the date picker value and visual state.
- * Removes the `has-value` class, clears border color and any due-date error message.
- * @returns {void}
+ * Get category value from item.
+ * @param {Element} item
+ * @returns {string}
  */
-function clearDatepicker() {
-  const datePicker = $("datepicker");
-  const wrapper = $("datepicker-wrapper");
-  if (datePicker) {
-    datePicker.value = "";
-    wrapper?.classList.remove("has-value");
-  }
-  $("datepicker-wrapper").style.borderColor = "";
-  $("due-date-error").innerHTML = "";
+function getCategoryValue(item) {
+  return item.getAttribute("data-value") ?? "";
 }
 
 /**
- * Reset the task category selection UI to its default prompt and clear errors.
- * Sets the visible label to "Select task category" and clears border color and error text.
+ * Update category select text.
+ * @param {string} value
  * @returns {void}
  */
-function clearCategory() {
-  $("category-select").querySelector("span").textContent = "Select task category";
+function updateCategorySelectText(value) {
+  $("category-select").querySelector("span").textContent = value;
+}
+
+/**
+ * Hide category dropdown.
+ * @returns {void}
+ */
+function hideCategoryDropdown() {
+  $("category-selection").classList.add("d-none");
+}
+
+/**
+ * Reset category icon to down arrow.
+ * @returns {void}
+ */
+function resetCategoryIcon() {
+  $("category-icon").classList.remove("arrow-up");
+  $("category-icon").classList.add("arrow-down");
+}
+
+/**
+ * Clear category error styles.
+ * @returns {void}
+ */
+function clearCategoryErrors() {
   $("category-select").style.borderColor = "";
   $("category-selection-error").innerHTML = "";
 }
 
 /**
- * Clear all current subtasks and reset the subtask input/controls UI.
- * Empties the `subtasks` array, clears the input, toggles control visibility, and re-renders the list.
+ * Handle category item click.
+ * @param {Element} item
+ * @returns {void}
+ */
+function handleCategoryItemClick(item) {
+  const value = getCategoryValue(item);
+  updateCategorySelectText(value);
+  hideCategoryDropdown();
+  resetCategoryIcon();
+  clearCategoryErrors();
+}
+
+/**
+ * Setup category item listeners.
+ * @returns {void}
+ */
+function setupCategoryItems() {
+  getCategoryItems().forEach((item) => {
+    item.addEventListener("click", () => handleCategoryItemClick(item));
+  });
+}
+
+/**
+ * Handle global click events.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
+function handleGlobalClick(event) {
+  handleCategoryClickOutside(event);
+  handleAssignedClickOutside(event);
+}
+
+/**
+ * Toggle category dropdown visibility.
+ * @returns {void}
+ */
+function toggleCategoryDropdown() {
+  $("category-selection").classList.toggle("d-none");
+}
+
+/**
+ * Toggle category icon state.
+ * @returns {void}
+ */
+function toggleCategoryIcon() {
+  $("category-icon").classList.toggle("arrow-down");
+  $("category-icon").classList.toggle("arrow-up");
+}
+
+/**
+ * Handle category select click.
+ * @returns {void}
+ */
+function handleCategorySelectClick() {
+  toggleCategoryDropdown();
+  toggleCategoryIcon();
+}
+
+// Initialize category and global listeners
+setupCategoryItems();
+document.addEventListener("click", handleGlobalClick);
+$("category-select").addEventListener("click", handleCategorySelectClick);
+
+/**
+ * Check if input has text.
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+function inputHasText(input) {
+  return input.value !== "";
+}
+
+/**
+ * Show subtask function buttons.
+ * @returns {void}
+ */
+function showSubtaskFuncButtons() {
+  $("subtask-plus-box").classList.add("d-none");
+  $("subtask-func-btn").classList.remove("d-none");
+}
+
+/**
+ * Hide subtask function buttons.
+ * @returns {void}
+ */
+function hideSubtaskFuncButtons() {
+  $("subtask-plus-box").classList.remove("d-none");
+  $("subtask-func-btn").classList.add("d-none");
+}
+
+/**
+ * Handle subtask input change.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function handleSubtaskInputChange(input) {
+  if (inputHasText(input)) {
+    showSubtaskFuncButtons();
+  } else {
+    hideSubtaskFuncButtons();
+  }
+}
+
+/**
+ * Get subtask item from event target.
+ * @param {EventTarget} target
+ * @returns {Element|null}
+ */
+function getSubtaskItem(target) {
+  return target.closest(".subtask-item");
+}
+
+/**
+ * Get subtask function button from item.
+ * @param {Element} item
+ * @returns {Element|null}
+ */
+function getSubtaskFuncButton(item) {
+  return item?.querySelector(".subtask-func-btn");
+}
+
+/**
+ * Show subtask function button.
+ * @param {Element} button
+ * @returns {void}
+ */
+function showSubtaskButton(button) {
+  button?.classList.remove("d-none");
+}
+
+/**
+ * Hide subtask function button.
+ * @param {Element} button
+ * @returns {void}
+ */
+function hideSubtaskButton(button) {
+  button?.classList.add("d-none");
+}
+
+/**
+ * Handle subtask mouseover.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
+function handleSubtaskMouseover(event) {
+  const item = getSubtaskItem(event.target);
+  const button = getSubtaskFuncButton(item);
+  showSubtaskButton(button);
+}
+
+/**
+ * Handle subtask mouseout.
+ * @param {MouseEvent} event
+ * @returns {void}
+ */
+function handleSubtaskMouseout(event) {
+  const item = getSubtaskItem(event.target);
+  const button = getSubtaskFuncButton(item);
+  hideSubtaskButton(button);
+}
+
+// Initialize subtask input and hover listeners
+$("sub-input").addEventListener("input", function () {
+  handleSubtaskInputChange(this);
+});
+$("subtask-list").addEventListener("mouseover", handleSubtaskMouseover);
+$("subtask-list").addEventListener("mouseout", handleSubtaskMouseout);
+
+/**
+ * Clear title input border color.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function clearTitleBorderColor(input) {
+  input.style.borderColor = "";
+}
+
+/**
+ * Clear title error message.
+ * @returns {void}
+ */
+function clearTitleError() {
+  $("addtask-error").innerHTML = "";
+}
+
+/**
+ * Handle title input change.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function handleTitleInputChange(input) {
+  clearTitleBorderColor(input);
+  clearTitleError();
+}
+
+/**
+ * Clear title input value.
+ * @returns {void}
+ */
+function clearTitleValue() {
+  $("addtask-title").value = "";
+}
+
+/**
+ * Clear description input.
+ * @returns {void}
+ */
+function clearDescriptionValue() {
+  $("addtask-textarea").value = "";
+}
+
+/**
+ * Clear title and description inputs.
+ * @returns {void}
+ */
+function clearTitleAndDescription() {
+  clearTitleValue();
+  clearTitleBorderColor($("addtask-title"));
+  clearTitleError();
+  clearDescriptionValue();
+}
+
+/**
+ * Clear datepicker value.
+ * @returns {void}
+ */
+function clearDatePickerValue() {
+  const datePicker = $("datepicker");
+  if (datePicker) {
+    datePicker.value = "";
+  }
+}
+
+/**
+ * Clear datepicker wrapper class.
+ * @returns {void}
+ */
+function clearDatePickerWrapperClass() {
+  const wrapper = $("datepicker-wrapper");
+  wrapper?.classList.remove("has-value");
+}
+
+/**
+ * Clear datepicker error styles.
+ * @returns {void}
+ */
+function clearDatePickerErrorStyles() {
+  $("datepicker-wrapper").style.borderColor = "";
+  $("due-date-error").innerHTML = "";
+}
+
+/**
+ * Reset datepicker to default state.
+ * @returns {void}
+ */
+function clearDatepicker() {
+  clearDatePickerValue();
+  clearDatePickerWrapperClass();
+  clearDatePickerErrorStyles();
+}
+
+/**
+ * Reset category select text.
+ * @returns {void}
+ */
+function resetCategorySelectText() {
+  $("category-select").querySelector("span").textContent = "Select task category";
+}
+
+/**
+ * Clear category error styles.
+ * @returns {void}
+ */
+function clearCategoryErrorStyles() {
+  $("category-select").style.borderColor = "";
+  $("category-selection-error").innerHTML = "";
+}
+
+/**
+ * Reset category selection to default.
+ * @returns {void}
+ */
+function clearCategory() {
+  resetCategorySelectText();
+  clearCategoryErrorStyles();
+}
+
+/**
+ * Empty subtasks array.
+ * @returns {void}
+ */
+function emptySubtasksArray() {
+  subtasks.length = 0;
+}
+
+/**
+ * Clear subtask input value.
+ * @returns {void}
+ */
+function clearSubtaskInput() {
+  $("sub-input").value = "";
+}
+
+/**
+ * Reset subtask control visibility.
+ * @returns {void}
+ */
+function resetSubtaskControls() {
+  $("subtask-func-btn").classList.add("d-none");
+  $("subtask-plus-box").classList.remove("d-none");
+}
+
+/**
+ * Clear all subtasks and reset UI.
  * @returns {void}
  */
 function clearSubtasks() {
-  subtasks.length = 0;
-  $("sub-input").value = "";
-  $("subtask-func-btn").classList.add("d-none");
-  $("subtask-plus-box").classList.remove("d-none");
+  emptySubtasksArray();
+  clearSubtaskInput();
+  resetSubtaskControls();
   renderSubtasks();
 }
 
 /**
- * Reset assigned contacts selection and hide the contact list.
- * Calls `clearAssignedContacts()`, resets the dataset on the select box, and hides the list container.
+ * Reset assigned select box dataset.
+ * @returns {void}
+ */
+function resetAssignedSelectBox() {
+  const asb = $("assigned-select-box");
+  if (asb) {
+    asb.dataset.selected = "[]";
+  }
+}
+
+/**
+ * Hide contact list box.
+ * @returns {void}
+ */
+function hideContactListBox() {
+  $("contact-list-box").classList.add("d-none");
+}
+
+/**
+ * Clear assigned contacts selection.
  * @returns {void}
  */
 function clearAssigned() {
   clearAssignedContacts();
-  const asb = $("assigned-select-box");
-  if (asb) asb.dataset.selected = "[]";
-  $("contact-list-box").classList.add("d-none");
+  resetAssignedSelectBox();
+  hideContactListBox();
 }
+
+// Initialize title input listener
+$("addtask-title").addEventListener("input", function () {
+  handleTitleInputChange(this);
+});
 
 /**
  * Attach edit click listeners for all subtask edit icons.

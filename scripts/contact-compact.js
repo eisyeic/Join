@@ -2,13 +2,18 @@
  * @file Contacts (compact): details view, edit overlay, validation, and Firebase updates.
  * Functions follow single-responsibility and are kept ≤14 lines each. Public APIs unchanged.
  */
-/** Initialize contact module: observers, click guards, escape handling. */
+/** Initialize contact module: observers, click guards, escape handling */
 (function initContact() {
+  setupAllContactHandlers();
+})()
+
+/** Setup all contact event handlers */
+function setupAllContactHandlers() {
   setupMobileNavbarObserver();
   setupClickGuard();
   setupOverlayCloseHandler();
   setupEscapeHandler();
-})();
+};
 
 /** Rolling color index used for new contacts. */
 window.colorIndex = 0;
@@ -211,25 +216,68 @@ function applyDetailsLayout(d,a,name,email,phone,colorIndex){
 }
 
 /**
- * Show contact details in the details pane and handle mobile layout.
+ * Show contact details in the details pane and handle mobile layout
  * @returns {void}
  */
 function showContactDetails(name, email, phone, colorIndex, id) {
-  setCurrentContact(name,email,phone,colorIndex,id);
-  const d = $("contact-details"), a = $("add-new-contact-container");
+  updateContactState(name, email, phone, colorIndex, id);
+  updateContactDisplay(name, email, phone, colorIndex, id);
+}
+
+/** Update contact state */
+function updateContactState(name, email, phone, colorIndex, id) {
+  setCurrentContact(name, email, phone, colorIndex, id);
   markActiveContact(id);
-  renderDetails(d,name,email,phone,colorIndex);
-  applyDetailsLayout(d,a,name,email,phone,colorIndex);
+}
+
+/** Update contact display */
+function updateContactDisplay(name, email, phone, colorIndex, id) {
+  const elements = getDetailsElements();
+  renderDetails(elements.details, name, email, phone, colorIndex);
+  applyDetailsLayout(elements.details, elements.addContainer, name, email, phone, colorIndex);
+}
+
+/** Get details elements */
+function getDetailsElements() {
+  return {
+    details: $("contact-details"),
+    addContainer: $("add-new-contact-container")
+  };
 }
 
 /**
- * Mobile back: hide details, show add-contact panel.
+ * Mobile back: hide details, show add-contact panel
  * @returns {void}
  */
 function detailsMobileBack() {
-  const d = $("contact-details"), a = $("add-new-contact-container");
-  d.classList.remove("mobile-visible"); d.classList.add("d-none");
-  a.classList.remove("d-none"); removeDetailsMobileNavbar?.();
+  const elements = getMobileBackElements();
+  hideMobileDetails(elements.details);
+  showAddContactPanel(elements.addContainer);
+  cleanupMobileNavbar();
+}
+
+/** Get mobile back elements */
+function getMobileBackElements() {
+  return {
+    details: $("contact-details"),
+    addContainer: $("add-new-contact-container")
+  };
+}
+
+/** Hide mobile details */
+function hideMobileDetails(details) {
+  details.classList.remove("mobile-visible");
+  details.classList.add("d-none");
+}
+
+/** Show add contact panel */
+function showAddContactPanel(addContainer) {
+  addContainer.classList.remove("d-none");
+}
+
+/** Cleanup mobile navbar */
+function cleanupMobileNavbar() {
+  removeDetailsMobileNavbar?.();
 }
 
 /** Show the mobile navbar in contact details view. */
@@ -321,18 +369,37 @@ function prepareEditOverlay(){
 }
 
 /**
- * Opens the Edit-Contact overlay with prefilled fields.
+ * Opens the Edit-Contact overlay with prefilled fields
  * @param {Event} e
  * @returns {void}
  */
 function openEditContact(e) {
+  if (!shouldOpenEditOverlay(e)) return;
+  
+  executeEditOverlayOpen(e);
+}
+
+/** Check if edit overlay should open */
+function shouldOpenEditOverlay(e) {
   const ev = getNormalizedEvent(e);
-  if (!ev) return;
-  ev.stopPropagation?.(); ev.preventDefault?.();
+  if (!ev) return false;
+  
   const target = ev.target instanceof Element ? ev.target : null;
-  if (!isAllowedEditTrigger(target) || _editOverlayClosing) return;
+  return isAllowedEditTrigger(target) && !_editOverlayClosing;
+}
+
+/** Execute edit overlay opening */
+function executeEditOverlayOpen(e) {
+  const ev = getNormalizedEvent(e);
+  preventEventDefaults(ev);
   armClickAndNavbarGuards();
   prepareEditOverlay();
+}
+
+/** Prevent event defaults */
+function preventEventDefaults(ev) {
+  ev.stopPropagation?.();
+  ev.preventDefault?.();
 }
 
 /** Copy values from edit form into currentContact. */
@@ -353,8 +420,14 @@ function getContactUpdateData() {
   };
 }
 
-/** After successful update: refresh UI and close overlay safely. */
+/** After successful update: refresh UI and close overlay safely */
 function handleUpdateSuccess() {
+  refreshContactDetails();
+  closeEditOverlaySafely();
+}
+
+/** Refresh contact details display */
+function refreshContactDetails() {
   showContactDetails(
     currentContact.name,
     currentContact.email,
@@ -362,22 +435,50 @@ function handleUpdateSuccess() {
     currentContact.colorIndex,
     currentContact.id
   );
-  _editOverlayClosing = true;
-  toggleEditContact();
-  _suppressMobileNavbar = true;
-  setTimeout(() => { _editOverlayClosing = false; _suppressMobileNavbar = false; }, 350);
 }
 
-/** Persist the edited contact to Firebase and update UI on success. */
+/** Close edit overlay safely */
+function closeEditOverlaySafely() {
+  setOverlayClosingState();
+  toggleEditContact();
+  suppressMobileNavbarTemporarily();
+}
+
+/** Set overlay closing state */
+function setOverlayClosingState() {
+  _editOverlayClosing = true;
+  _suppressMobileNavbar = true;
+}
+
+/** Suppress mobile navbar temporarily */
+function suppressMobileNavbarTemporarily() {
+  setTimeout(() => {
+    _editOverlayClosing = false;
+    _suppressMobileNavbar = false;
+  }, 350);
+}
+
+/** Persist the edited contact to Firebase and update UI on success */
 function updateContactInFirebase() {
-  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js')
-    .then(({ getDatabase, ref, update }) => import('./firebase.js').then(({ app }) => ({ getDatabase, ref, update, app })))
-    .then(({ getDatabase, ref, update, app }) => {
-      const db = getDatabase(app);
-      const contactRef = ref(db, `contacts/${currentContact.id}`);
-      const updateData = getContactUpdateData();
-      update(contactRef, updateData).then(() => handleUpdateSuccess());
-    });
+  loadFirebaseModules()
+    .then(modules => performFirebaseUpdate(modules))
+    .then(() => handleUpdateSuccess());
+}
+
+/** Load Firebase modules */
+function loadFirebaseModules() {
+  return import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js')
+    .then(({ getDatabase, ref, update }) => 
+      import('./firebase.js').then(({ app }) => ({ getDatabase, ref, update, app })));
+}
+
+/** Perform Firebase update */
+function performFirebaseUpdate(modules) {
+  const { getDatabase, ref, update, app } = modules;
+  const db = getDatabase(app);
+  const contactRef = ref(db, `contacts/${currentContact.id}`);
+  const updateData = getContactUpdateData();
+  return update(contactRef, updateData);
 }
 
 /**

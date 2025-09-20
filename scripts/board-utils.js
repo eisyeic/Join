@@ -1,6 +1,6 @@
 /**
  * @file Board utilities: search, filtering, placeholders, and column management.
- * All functions are short (≤14 lines) and single-purpose.
+ * All functions follow Single Responsibility Principle.
  */
 
 export { 
@@ -11,13 +11,41 @@ export {
   updatePlaceholderForColumn 
 };
 
-// Minimum characters required to trigger search filtering
+// Constants
 const MIN_SEARCH_CHARS = 3;
-// Current search term used to filter tasks
 let currentSearchTerm = "";
 
+// Column mappings
+const columnMap = {
+  todo: "to-do-column",
+  inProgress: "in-progress-column", 
+  awaitFeedback: "await-feedback-column",
+  done: "done-column",
+};
+
+const LOGICAL_TO_DOM = {
+  todo: "to-do-column",
+  inProgress: "in-progress-column",
+  awaitFeedback: "await-feedback-column", 
+  done: "done-column"
+};
+
+const DOM_TO_LOGICAL = {
+  "to-do-column": "todo",
+  "in-progress-column": "inProgress",
+  "await-feedback-column": "awaitFeedback",
+  "done-column": "done"
+};
+
+const placeholderTexts = {
+  "to-do-column": "No tasks to do",
+  "in-progress-column": "No tasks in progressing",
+  "await-feedback-column": "No tasks await feedback",
+  "done-column": "No tasks done",
+};
+
 /**
- * Debounce a function by waiting `wait` ms after the last call.
+ * Create debounced version of a function.
  * @template {(...a:any[])=>any} F
  * @param {F} fn
  * @param {number} [wait=200]
@@ -31,13 +59,14 @@ function debounce(fn, wait = 200) {
   });
 }
 
-// Placeholder text per column DOM id
-const placeholderTexts = {
-  "to-do-column": "No tasks to do",
-  "in-progress-column": "No tasks in progressing",
-  "await-feedback-column": "No tasks await feedback",
-  "done-column": "No tasks done",
-};
+/**
+ * Get column element by ID.
+ * @param {string} columnId
+ * @returns {HTMLElement}
+ */
+function getColumnElement(columnId) {
+  return $(columnId);
+}
 
 /**
  * Count task cards in a column (excluding placeholders).
@@ -51,16 +80,44 @@ function countTaskCards(column) {
 }
 
 /**
- * Append a placeholder element to a column.
+ * Find existing placeholder in column.
+ * @param {HTMLElement} column
+ * @returns {Element|null}
+ */
+function findExistingPlaceholder(column) {
+  return column.querySelector(".no-tasks");
+}
+
+/**
+ * Create placeholder element.
+ * @param {string} columnId
+ * @returns {HTMLElement}
+ */
+function createPlaceholderElement(columnId) {
+  const ph = document.createElement("div");
+  ph.classList.add("no-tasks");
+  ph.textContent = placeholderTexts[columnId] || "No tasks";
+  return ph;
+}
+
+/**
+ * Add placeholder to column.
  * @param {HTMLElement} column
  * @param {string} columnId
  * @returns {void}
  */
-function appendPlaceholder(column, columnId) {
-  const ph = document.createElement("div");
-  ph.classList.add("no-tasks");
-  ph.textContent = placeholderTexts[columnId] || "No tasks";
-  column.appendChild(ph);
+function addPlaceholder(column, columnId) {
+  const placeholder = createPlaceholderElement(columnId);
+  column.appendChild(placeholder);
+}
+
+/**
+ * Remove placeholder from column.
+ * @param {Element} placeholder
+ * @returns {void}
+ */
+function removePlaceholder(placeholder) {
+  placeholder.remove();
 }
 
 /**
@@ -69,40 +126,121 @@ function appendPlaceholder(column, columnId) {
  * @returns {void}
  */
 function checkAndShowPlaceholder(columnId) {
-  const column = $(columnId);
+  const column = getColumnElement(columnId);
   const count = countTaskCards(column);
-  const existing = column.querySelector(".no-tasks");
-  if (count === 0 && !existing) appendPlaceholder(column, columnId);
-  else if (count > 0 && existing) existing.remove();
+  const existing = findExistingPlaceholder(column);
+  
+  if (count === 0 && !existing) {
+    addPlaceholder(column, columnId);
+  } else if (count > 0 && existing) {
+    removePlaceholder(existing);
+  }
 }
 
 /**
- * Run search filtering from input value.
+ * Extract and normalize search term from input.
+ * @param {HTMLInputElement} input
+ * @returns {string}
+ */
+function extractSearchTerm(input) {
+  return (input.value || "").toLowerCase().trim();
+}
+
+/**
+ * Check if search term meets minimum length requirement.
+ * @param {string} term
+ * @returns {boolean}
+ */
+function isValidSearchTerm(term) {
+  return term.length >= MIN_SEARCH_CHARS;
+}
+
+/**
+ * Update current search term.
+ * @param {string} term
+ * @returns {void}
+ */
+function updateCurrentSearchTerm(term) {
+  currentSearchTerm = term;
+}
+
+/**
+ * Execute search filtering from input value.
  * @param {HTMLInputElement} input
  * @returns {void}
  */
 function runSearch(input) {
-  const term = (input.value || "").toLowerCase().trim();
-  if (term.length >= MIN_SEARCH_CHARS) {
-    currentSearchTerm = term;
+  const term = extractSearchTerm(input);
+  
+  if (isValidSearchTerm(term)) {
+    updateCurrentSearchTerm(term);
     filterTasks(term);
   } else {
-    currentSearchTerm = "";
+    updateCurrentSearchTerm("");
     filterTasks("");
   }
 }
 
 /**
- * Bind input and button events for search.
+ * Add input event listener.
+ * @param {HTMLInputElement} input
+ * @param {Function} handler
+ * @returns {void}
+ */
+function addInputListener(input, handler) {
+  input.addEventListener("input", handler);
+}
+
+/**
+ * Add keypress event listener.
+ * @param {HTMLInputElement} input
+ * @param {Function} handler
+ * @returns {void}
+ */
+function addKeypressListener(input, handler) {
+  input.addEventListener("keypress", handler);
+}
+
+/**
+ * Add click event listener to button.
+ * @param {HTMLElement|null} button
+ * @param {Function} handler
+ * @returns {void}
+ */
+function addClickListener(button, handler) {
+  button?.addEventListener("click", handler);
+}
+
+/**
+ * Bind all search events to input and button.
  * @param {HTMLInputElement} input
  * @param {HTMLElement|null} button
  * @returns {void}
  */
 function bindSearchEvents(input, button) {
   const debounced = debounce(() => runSearch(input), 200);
-  input.addEventListener("input", debounced);
-  input.addEventListener("keypress", (e) => { if (e.key === "Enter") runSearch(input); });
-  button?.addEventListener("click", () => runSearch(input));
+  const enterHandler = (e) => { if (e.key === "Enter") runSearch(input); };
+  const clickHandler = () => runSearch(input);
+  
+  addInputListener(input, debounced);
+  addKeypressListener(input, enterHandler);
+  addClickListener(button, clickHandler);
+}
+
+/**
+ * Get search input element.
+ * @returns {HTMLInputElement|null}
+ */
+function getSearchInput() {
+  return $("search-input");
+}
+
+/**
+ * Get search button element.
+ * @returns {HTMLElement|null}
+ */
+function getSearchButton() {
+  return $("search-btn");
 }
 
 /**
@@ -110,9 +248,81 @@ function bindSearchEvents(input, button) {
  * @returns {void}
  */
 function setupSearchHandlers() {
-  const input = $("search-input");
+  const input = getSearchInput();
   if (!input) return;
-  bindSearchEvents(input, $("search-btn"));
+  
+  const button = getSearchButton();
+  bindSearchEvents(input, button);
+}
+
+/**
+ * Get all task elements.
+ * @returns {NodeListOf<Element>}
+ */
+function getAllTasks() {
+  return document.querySelectorAll(".ticket");
+}
+
+/**
+ * Get task title text.
+ * @param {Element} taskEl
+ * @returns {string}
+ */
+function getTaskTitle(taskEl) {
+  return taskEl.querySelector(".ticket-title")?.textContent.toLowerCase() || "";
+}
+
+/**
+ * Get task description text.
+ * @param {Element} taskEl
+ * @returns {string}
+ */
+function getTaskDescription(taskEl) {
+  return taskEl.querySelector(".ticket-text")?.textContent.toLowerCase() || "";
+}
+
+/**
+ * Check if task matches search term.
+ * @param {Element} taskEl
+ * @param {string} searchTerm
+ * @returns {boolean}
+ */
+function taskMatchesSearch(taskEl, searchTerm) {
+  const title = getTaskTitle(taskEl);
+  const description = getTaskDescription(taskEl);
+  return title.includes(searchTerm) || description.includes(searchTerm);
+}
+
+/**
+ * Set task visibility.
+ * @param {Element} taskEl
+ * @param {boolean} visible
+ * @returns {void}
+ */
+function setTaskVisibility(taskEl, visible) {
+  /** @type {HTMLElement} */ (taskEl).style.display = visible ? "" : "none";
+}
+
+/**
+ * Apply visibility filter to single task.
+ * @param {Element} taskEl
+ * @param {string} searchTerm
+ * @returns {void}
+ */
+function filterSingleTask(taskEl, searchTerm) {
+  const matches = taskMatchesSearch(taskEl, searchTerm);
+  const shouldShow = matches || searchTerm === "";
+  setTaskVisibility(taskEl, shouldShow);
+}
+
+/**
+ * Apply visibility filter to all tasks.
+ * @param {NodeListOf<Element>} tasks
+ * @param {string} searchTerm
+ * @returns {void}
+ */
+function filterTaskVisibility(tasks, searchTerm) {
+  tasks.forEach((taskEl) => filterSingleTask(taskEl, searchTerm));
 }
 
 /**
@@ -121,27 +331,17 @@ function setupSearchHandlers() {
  * @returns {void}
  */
 function filterTasks(searchTerm) {
-  const allTasks = document.querySelectorAll(".ticket");
+  const allTasks = getAllTasks();
   filterTaskVisibility(allTasks, searchTerm);
   updateAllPlaceholders();
 }
 
 /**
- * Apply visibility filter to tasks based on term.
- * @param {NodeListOf<Element>} tasks
- * @param {string} searchTerm
- * @returns {void}
+ * Get all column IDs from column map.
+ * @returns {string[]}
  */
-function filterTaskVisibility(tasks, searchTerm) {
-  tasks.forEach((taskEl) => {
-    const title =
-      taskEl.querySelector(".ticket-title")?.textContent.toLowerCase() || "";
-    const description =
-      taskEl.querySelector(".ticket-text")?.textContent.toLowerCase() || "";
-    const matches = title.includes(searchTerm) || description.includes(searchTerm);
-    /** @type {HTMLElement} */ (taskEl).style.display =
-      matches || searchTerm === "" ? "" : "none";
-  });
+function getAllColumnIds() {
+  return Object.values(columnMap);
 }
 
 /**
@@ -149,93 +349,159 @@ function filterTaskVisibility(tasks, searchTerm) {
  * @returns {void}
  */
 function updateAllPlaceholders() {
-  const columnMap = {
-    todo: "to-do-column",
-    inProgress: "in-progress-column", 
-    awaitFeedback: "await-feedback-column",
-    done: "done-column",
-  };
-  for (const key in columnMap) updatePlaceholderForColumn(columnMap[key]);
+  const columnIds = getAllColumnIds();
+  columnIds.forEach(columnId => updatePlaceholderForColumn(columnId));
 }
 
 /**
- * Count visible tasks in a column (style.display not 'none').
+ * Get all ticket elements in column.
+ * @param {HTMLElement} column
+ * @returns {Element[]}
+ */
+function getColumnTickets(column) {
+  return Array.from(column.querySelectorAll(".ticket"));
+}
+
+/**
+ * Check if element is visible.
+ * @param {Element} el
+ * @returns {boolean}
+ */
+function isElementVisible(el) {
+  return /** @type {HTMLElement} */ (el).style.display !== "none";
+}
+
+/**
+ * Count visible tasks in a column.
  * @param {HTMLElement} column
  * @returns {number}
  */
 function countVisibleTasks(column) {
-  return Array.from(column.querySelectorAll(".ticket")).filter(
-    (el) => /** @type {HTMLElement} */ (el).style.display !== "none"
-  ).length;
+  const tickets = getColumnTickets(column);
+  return tickets.filter(isElementVisible).length;
 }
 
 /**
- * Ensure placeholder based on visible tasks in one column.
+ * Get column element by ID.
+ * @param {string} columnId
+ * @returns {HTMLElement|null}
+ */
+function getColumnById(columnId) {
+  return document.getElementById(columnId);
+}
+
+/**
+ * Update placeholder for single column based on visible tasks.
  * @param {string} columnId
  * @returns {void}
  */
 function updatePlaceholderForColumn(columnId) {
-  const column = document.getElementById(columnId);
+  const column = getColumnById(columnId);
+  if (!column) return;
+  
   const count = countVisibleTasks(column);
-  const ph = column.querySelector(".no-tasks");
-  if (count === 0 && !ph) appendPlaceholder(column, columnId);
-  else if (count > 0 && ph) ph.remove();
+  const ph = findExistingPlaceholder(column);
+  
+  if (count === 0 && !ph) {
+    addPlaceholder(column, columnId);
+  } else if (count > 0 && ph) {
+    removePlaceholder(ph);
+  }
 }
 
-/** Filtert Tasks anhand Suchbegriff und aktualisiert Platzhalter. */
-function filterTasks(searchTerm) {
-  const allTasks = document.querySelectorAll(".ticket");
-  allTasks.forEach((taskEl) => {
-    const title = taskEl.querySelector(".ticket-title")?.textContent.toLowerCase() || "";
-    const description = taskEl.querySelector(".ticket-text")?.textContent.toLowerCase() || "";
-    const matches = title.includes(searchTerm) || description.includes(searchTerm);
-    taskEl.style.display = matches || searchTerm === "" ? "" : "none";
-  });
-  updateAllPlaceholders();
-}
 
-/** Aktualisiert Platzhalter in allen Spalten. */
-function updateAllPlaceholders() {
-  for (const key in columnMap) updatePlaceholderForColumn(columnMap[key]);
-}
 
 /**
- * Zählt sichtbare Tasks in einer Spalte (display != none).
- * @param {HTMLElement} column
- * @returns {number}
+ * Get task element by ID.
+ * @param {string} taskId
+ * @returns {HTMLElement|null}
  */
-function countVisibleTasks(column) {
-  return Array.from(column.querySelectorAll('.ticket')).filter(
-    (el) => /** @type {HTMLElement} */ (el).style.display !== 'none'
-  ).length;
-}
-
-/** Aktualisiert Platzhalter für eine Spalte anhand sichtbarer Tasks. */
-function updatePlaceholderForColumn(columnId) {
-  const column = document.getElementById(columnId);
-  const visible = countVisibleTasks(column);
-  const placeholder = column.querySelector('.no-tasks');
-  if (visible === 0 && !placeholder) appendPlaceholder(column, columnId);
-  else if (visible > 0 && placeholder) placeholder.remove();
+function getTaskElement(taskId) {
+  return document.getElementById(String(taskId));
 }
 
 /**
- * Verschiebt eine Task-Karte in die Zielspalte (logisch).
+ * Find parent column of task element.
+ * @param {HTMLElement} taskEl
+ * @returns {HTMLElement|null}
+ */
+function findTaskParentColumn(taskEl) {
+  return taskEl?.closest('.task-list') || taskEl?.parentElement || null;
+}
+
+/**
+ * Convert logical column name to DOM ID.
+ * @param {string} targetLogical
+ * @returns {string}
+ */
+function getTargetDomId(targetLogical) {
+  return LOGICAL_TO_DOM[targetLogical] || targetLogical;
+}
+
+/**
+ * Get target column element.
+ * @param {string} domId
+ * @returns {HTMLElement|null}
+ */
+function getTargetColumn(domId) {
+  return document.getElementById(domId);
+}
+
+/**
+ * Move task element to new column.
+ * @param {HTMLElement} taskEl
+ * @param {HTMLElement} newColumnEl
+ * @returns {void}
+ */
+function moveTaskToColumn(taskEl, newColumnEl) {
+  newColumnEl.appendChild(taskEl);
+}
+
+/**
+ * Move task DOM element to target logical column.
  * @param {string} taskId
  * @param {string} targetLogical
  * @returns {{taskEl:HTMLElement|null, oldColumnEl:HTMLElement|null, newColumnEl:HTMLElement|null}}
  */
 function moveTaskDomByLogical(taskId, targetLogical) {
-  const taskEl = document.getElementById(String(taskId));
-  const oldColumnEl = taskEl?.closest('.task-list') || taskEl?.parentElement || null;
-  const newDomId = LOGICAL_TO_DOM[targetLogical] || targetLogical;
-  const newColumnEl = document.getElementById(newDomId);
-  if (taskEl && newColumnEl) newColumnEl.appendChild(taskEl);
+  const taskEl = getTaskElement(taskId);
+  const oldColumnEl = taskEl ? findTaskParentColumn(taskEl) : null;
+  const newDomId = getTargetDomId(targetLogical);
+  const newColumnEl = getTargetColumn(newDomId);
+  
+  if (taskEl && newColumnEl) {
+    moveTaskToColumn(taskEl, newColumnEl);
+  }
+  
   return { taskEl, oldColumnEl, newColumnEl };
 }
 
 /**
- * Sync: Attribute, DB und Platzhalter nach Move.
+ * Update task element's column attribute.
+ * @param {string} taskId
+ * @param {string} newColumnId
+ * @returns {void}
+ */
+function updateTaskAttribute(taskId, newColumnId) {
+  const el = getTaskElement(taskId);
+  if (el) {
+    el.dataset.column = DOM_TO_LOGICAL[newColumnId] || el.dataset.column;
+  }
+}
+
+/**
+ * Update placeholders for both columns.
+ * @param {HTMLElement} oldColumnEl
+ * @param {HTMLElement} newColumnEl
+ * @returns {void}
+ */
+function updateBothColumnPlaceholders(oldColumnEl, newColumnEl) {
+  checkAndShowPlaceholder(oldColumnEl.id);
+  checkAndShowPlaceholder(newColumnEl.id);
+}
+
+/**
+ * Synchronize after task move operation.
  * @param {string} taskId
  * @param {HTMLElement|null} oldColumnEl
  * @param {HTMLElement|null} newColumnEl
@@ -243,16 +509,15 @@ function moveTaskDomByLogical(taskId, targetLogical) {
  */
 function syncAfterMove(taskId, oldColumnEl, newColumnEl) {
   if (!(oldColumnEl && newColumnEl)) return;
-  const el = document.getElementById(String(taskId));
-  if (el) el.dataset.column = DOM_TO_LOGICAL[newColumnEl.id] || el.dataset.column;
+  
+  updateTaskAttribute(taskId, newColumnEl.id);
   updateTaskColumn(String(taskId), newColumnEl.id);
-  checkAndShowPlaceholder(oldColumnEl.id);
-  checkAndShowPlaceholder(newColumnEl.id);
+  updateBothColumnPlaceholders(oldColumnEl, newColumnEl);
   resetColumnBackgrounds();
 }
 
 /**
- * Public API: Task in neue logische Spalte verschieben & persistieren.
+ * Public API: Move task to new logical column and persist.
  * @param {string|number} taskId
  * @param {string} targetLogical
  * @returns {void}

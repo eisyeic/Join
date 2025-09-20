@@ -30,19 +30,64 @@ export function isoToDDMMYYYY(s) {
 }
 
 /**
- * Bind date input handlers once (id: #datepicker).
+ * Bind date input handlers once (id: #datepicker)
  * @returns {void}
  */
 export function ensureDateHandlersBound() {
-  const input = /** @type {HTMLInputElement|null} */(document.getElementById('datepicker'));
-  if (!input || input.dataset.editHandlersBound === '1') return;
-  const wrapper = document.getElementById('datepicker-wrapper');
-  const display = document.getElementById('date-display');
-  const placeholder = document.getElementById('date-placeholder');
-  bindDateFocus(input, display);
-  bindDateBlur(input, wrapper, display, placeholder);
-  bindDateWrapperClick(input, display);
-  observeDisplayToSyncInput(input, display);
+  const input = getDateInput();
+  if (!input || isAlreadyBound(input)) return;
+  
+  const elements = getDateElements();
+  bindAllDateHandlers(input, elements);
+  markAsBound(input);
+}
+
+/**
+ * Gets date input element
+ * @returns {HTMLInputElement|null}
+ */
+function getDateInput() {
+  return document.getElementById('datepicker');
+}
+
+/**
+ * Checks if handlers are already bound
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+function isAlreadyBound(input) {
+  return input.dataset.editHandlersBound === '1';
+}
+
+/**
+ * Gets all date-related elements
+ * @returns {Object}
+ */
+function getDateElements() {
+  return {
+    wrapper: document.getElementById('datepicker-wrapper'),
+    display: document.getElementById('date-display'),
+    placeholder: document.getElementById('date-placeholder')
+  };
+}
+
+/**
+ * Binds all date handlers
+ * @param {HTMLInputElement} input
+ * @param {Object} elements
+ */
+function bindAllDateHandlers(input, elements) {
+  bindDateFocus(input, elements.display);
+  bindDateBlur(input, elements.wrapper, elements.display, elements.placeholder);
+  bindDateWrapperClick(input, elements.display);
+  observeDisplayToSyncInput(input, elements.display);
+}
+
+/**
+ * Marks input as bound
+ * @param {HTMLInputElement} input
+ */
+function markAsBound(input) {
   input.dataset.editHandlersBound = '1';
 }
 
@@ -64,7 +109,7 @@ export function bindDateFocus(input, display) {
 }
 
 /**
- * On blur: normalize value and reflect UI label/placeholder.
+ * On blur: normalize value and reflect UI label/placeholder
  * @param {HTMLInputElement} input
  * @param {HTMLElement|null} wrapper
  * @param {HTMLElement|null} display
@@ -73,38 +118,111 @@ export function bindDateFocus(input, display) {
  */
 export function bindDateBlur(input, wrapper, display, placeholder) {
   input.addEventListener('blur', () => {
-    const raw = input.value.trim();
-    const iso = resolveIsoFromRaw(raw);
-    const ddmmyyyy = iso ? isoToDDMMYYYY(iso) : '';
-    input.type = 'date';
-    input.value = iso || '';
-    applyDateUIState(wrapper, display, placeholder, ddmmyyyy);
+    const processedDate = processDateOnBlur(input);
+    updateDateUI(wrapper, display, placeholder, processedDate.ddmmyyyy);
   });
 }
 
 /**
- * Open native picker synchronously in a user gesture.
+ * Processes date value on blur
+ * @param {HTMLInputElement} input
+ * @returns {Object}
+ */
+function processDateOnBlur(input) {
+  const raw = input.value.trim();
+  const iso = resolveIsoFromRaw(raw);
+  const ddmmyyyy = iso ? isoToDDMMYYYY(iso) : '';
+  
+  input.type = 'date';
+  input.value = iso || '';
+  
+  return { iso, ddmmyyyy };
+}
+
+/**
+ * Updates date UI elements
+ * @param {HTMLElement|null} wrapper
+ * @param {HTMLElement|null} display
+ * @param {HTMLElement|null} placeholder
+ * @param {string} ddmmyyyy
+ */
+function updateDateUI(wrapper, display, placeholder, ddmmyyyy) {
+  applyDateUIState(wrapper, display, placeholder, ddmmyyyy);
+}
+
+/**
+ * Open native picker synchronously in a user gesture
  * @param {HTMLInputElement} input
  * @param {HTMLElement|null} display
  * @returns {void}
  */
 export function bindDateWrapperClick(input, display) {
-  const wrapper = document.getElementById('datepicker-wrapper');
+  const wrapper = getDateWrapper();
   if (!wrapper) return;
+  
   wrapper.addEventListener('pointerdown', (ev) => {
-    if (typeof ev.button === 'number' && ev.button !== 0) return;
-    ev.preventDefault();
-    ev.stopPropagation();
-    input.type = 'date';
-    if (display && !/^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
-      const iso = ddmmyyyyToISO(display.textContent || "");
-      if (iso) input.value = iso;
-    }
-    try {
-      if (typeof input.showPicker === 'function') input.showPicker();
-      else input.focus();
-    } catch (_) {}
+    if (!isValidPointerEvent(ev)) return;
+    
+    handleWrapperClick(ev, input, display);
   }, { passive: false });
+}
+
+/**
+ * Gets date wrapper element
+ * @returns {HTMLElement|null}
+ */
+function getDateWrapper() {
+  return document.getElementById('datepicker-wrapper');
+}
+
+/**
+ * Validates pointer event
+ * @param {PointerEvent} ev
+ * @returns {boolean}
+ */
+function isValidPointerEvent(ev) {
+  return !(typeof ev.button === 'number' && ev.button !== 0);
+}
+
+/**
+ * Handles wrapper click event
+ * @param {PointerEvent} ev
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement|null} display
+ */
+function handleWrapperClick(ev, input, display) {
+  ev.preventDefault();
+  ev.stopPropagation();
+  
+  prepareInputForPicker(input, display);
+  openDatePicker(input);
+}
+
+/**
+ * Prepares input for date picker
+ * @param {HTMLInputElement} input
+ * @param {HTMLElement|null} display
+ */
+function prepareInputForPicker(input, display) {
+  input.type = 'date';
+  if (display && !/^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
+    const iso = ddmmyyyyToISO(display.textContent || "");
+    if (iso) input.value = iso;
+  }
+}
+
+/**
+ * Opens date picker
+ * @param {HTMLInputElement} input
+ */
+function openDatePicker(input) {
+  try {
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+    } else {
+      input.focus();
+    }
+  } catch (_) {}
 }
 
 /**
@@ -144,7 +262,7 @@ export function resolveIsoFromRaw(raw) {
 }
 
 /**
- * Apply visual state for date UI wrapper/label/placeholder.
+ * Apply visual state for date UI wrapper/label/placeholder
  * @param {HTMLElement|null} wrapper
  * @param {HTMLElement|null} display
  * @param {HTMLElement|null} placeholder
@@ -152,10 +270,46 @@ export function resolveIsoFromRaw(raw) {
  * @returns {void}
  */
 export function applyDateUIState(wrapper, display, placeholder, ddmmyyyy) {
-  const has = !!ddmmyyyy;
-  wrapper?.classList.toggle('has-value', has);
-  if (display) display.textContent = ddmmyyyy;
-  if (placeholder) placeholder.style.display = has ? 'none' : '';
+  const hasValue = hasDateValue(ddmmyyyy);
+  updateWrapperState(wrapper, hasValue);
+  updateDisplayText(display, ddmmyyyy);
+  updatePlaceholderVisibility(placeholder, hasValue);
+}
+
+/**
+ * Checks if date has value
+ * @param {string} ddmmyyyy
+ * @returns {boolean}
+ */
+function hasDateValue(ddmmyyyy) {
+  return !!ddmmyyyy;
+}
+
+/**
+ * Updates wrapper state
+ * @param {HTMLElement|null} wrapper
+ * @param {boolean} hasValue
+ */
+function updateWrapperState(wrapper, hasValue) {
+  wrapper?.classList.toggle('has-value', hasValue);
+}
+
+/**
+ * Updates display text
+ * @param {HTMLElement|null} display
+ * @param {string} text
+ */
+function updateDisplayText(display, text) {
+  if (display) display.textContent = text;
+}
+
+/**
+ * Updates placeholder visibility
+ * @param {HTMLElement|null} placeholder
+ * @param {boolean} hasValue
+ */
+function updatePlaceholderVisibility(placeholder, hasValue) {
+  if (placeholder) placeholder.style.display = hasValue ? 'none' : '';
 }
 
 /**
@@ -195,14 +349,44 @@ export function getAssignedArray(task) {
 }
 
 /**
- * Render initials list or hide container if empty.
+ * Render initials list or hide container if empty
  * @param {HTMLElement} box
  * @param {any[]} assigned
  * @returns {void}
  */
 export function renderInitials(box, assigned) {
-  if (!assigned.length) return hideInitialsBox(box);
+  if (!assigned.length) {
+    hideInitialsBox(box);
+    return;
+  }
+  
+  showInitialsBox(box, assigned);
+}
+
+/**
+ * Shows initials box with content
+ * @param {HTMLElement} box
+ * @param {any[]} assigned
+ */
+function showInitialsBox(box, assigned) {
+  setInitialsContent(box, assigned);
+  makeBoxVisible(box);
+}
+
+/**
+ * Sets initials content
+ * @param {HTMLElement} box
+ * @param {any[]} assigned
+ */
+function setInitialsContent(box, assigned) {
   box.innerHTML = assigned.map(initialsHtmlFromPerson).join("");
+}
+
+/**
+ * Makes box visible
+ * @param {HTMLElement} box
+ */
+function makeBoxVisible(box) {
   box.classList.remove("d-none");
 }
 
@@ -286,16 +470,57 @@ export function getSelectedIds(selectBox) {
 }
 
 /**
- * Toggle list item selected state and its check icon.
+ * Toggle list item selected state and its check icon
  * @param {HTMLElement} li
  * @param {Set<string>} idSet
  * @returns {void}
  */
 export function toggleLiSelected(li, idSet) {
-  const isSel = idSet.has(li.id);
-  li.classList.toggle("selected", isSel);
+  const isSelected = determineSelectionState(li, idSet);
+  updateListItemState(li, isSelected);
+  updateCheckIcon(li, isSelected);
+}
+
+/**
+ * Determines if item is selected
+ * @param {HTMLElement} li
+ * @param {Set<string>} idSet
+ * @returns {boolean}
+ */
+function determineSelectionState(li, idSet) {
+  return idSet.has(li.id);
+}
+
+/**
+ * Updates list item selected state
+ * @param {HTMLElement} li
+ * @param {boolean} isSelected
+ */
+function updateListItemState(li, isSelected) {
+  li.classList.toggle("selected", isSelected);
+}
+
+/**
+ * Updates check icon based on selection
+ * @param {HTMLElement} li
+ * @param {boolean} isSelected
+ */
+function updateCheckIcon(li, isSelected) {
   const img = li.querySelector("img");
-  if (img) img.src = isSel ? "./assets/icons/add_task/check_white.svg" : "./assets/icons/add_task/check_default.svg";
+  if (img) {
+    img.src = getCheckIconPath(isSelected);
+  }
+}
+
+/**
+ * Gets appropriate check icon path
+ * @param {boolean} isSelected
+ * @returns {string}
+ */
+function getCheckIconPath(isSelected) {
+  return isSelected 
+    ? "./assets/icons/add_task/check_white.svg" 
+    : "./assets/icons/add_task/check_default.svg";
 }
 
 /** Resolve contact by id using global collections. */

@@ -2,10 +2,34 @@
  * Toggles profile dropdown visibility and manages click handlers
  */
 function toggleProfileNavbar() {
-  const profileNavbar = $("profile-navbar");
+  const profileNavbar = getProfileNavbar();
   if (!profileNavbar) return;
-  profileNavbar.classList.toggle("d-none");
-  if (isProfileNavbarVisible(profileNavbar)) {
+  toggleNavbarVisibility(profileNavbar);
+  manageClickHandlers(profileNavbar);
+}
+
+/**
+ * Gets profile navbar element
+ * @returns {HTMLElement|null} Profile navbar element
+ */
+function getProfileNavbar() {
+  return $("profile-navbar");
+}
+
+/**
+ * Toggles navbar visibility
+ * @param {HTMLElement} navbar - Profile navbar element
+ */
+function toggleNavbarVisibility(navbar) {
+  navbar.classList.toggle("d-none");
+}
+
+/**
+ * Manages click handlers based on navbar visibility
+ * @param {HTMLElement} navbar - Profile navbar element
+ */
+function manageClickHandlers(navbar) {
+  if (isProfileNavbarVisible(navbar)) {
     setupOutsideClickHandler();
   } else {
     removeOutsideClickHandler();
@@ -57,20 +81,16 @@ function toggleHidden(element, hidden) {
  * Shows navigation for authenticated users
  */
 function showAuthedNav() {
-  toggleHidden(qs(".nav"), false);
-  toggleHidden(qs(".nav-box"), false);
-  toggleHidden(qs(".nav-login-box"), true);
-  toggleHidden(qs(".nav-login-box-mobile"), true);
+  const navElements = getNavigationElements();
+  toggleNavigationVisibility(navElements, true);
 }
 
 /**
  * Shows navigation for anonymous users
  */
 function showAnonNav() {
-  toggleHidden(qs(".nav"), true);
-  toggleHidden(qs(".nav-box"), true);
-  toggleHidden(qs(".nav-login-box"), false);
-  toggleHidden(qs(".nav-login-box-mobile"), false);
+  const navElements = getNavigationElements();
+  toggleNavigationVisibility(navElements, false);
 }
 
 /**
@@ -80,15 +100,24 @@ function showAnonNav() {
 function closeProfileNavbar(ev) {
   if (!ev) return;
   
-  const profileNavbar = $("profile-navbar");
+  const profileNavbar = getProfileNavbar();
   if (!profileNavbar) return;
   
-  const toggle = findProfileToggle();
-  const target = ev.target;
-  
-  if (shouldCloseNavbar(profileNavbar, toggle, target)) {
+  if (shouldCloseOnClick(ev, profileNavbar)) {
     hideProfileNavbar(profileNavbar);
   }
+}
+
+/**
+ * Determines if navbar should close based on click event
+ * @param {Event} ev - Click event
+ * @param {HTMLElement} navbar - Profile navbar element
+ * @returns {boolean} True if should close
+ */
+function shouldCloseOnClick(ev, navbar) {
+  const toggle = findProfileToggle();
+  const target = ev.target;
+  return shouldCloseNavbar(navbar, toggle, target);
 }
 
 /**
@@ -121,7 +150,16 @@ function getNavigationElements() {
  * @param {Object|null} user - User object or null
  */
 function applyHeaderNavByAuth(user) {
-  const showNav = !!user;
+  const showNav = determineNavVisibility(user);
   const navElements = getNavigationElements();
   toggleNavigationVisibility(navElements, showNav);
+}
+
+/**
+ * Determines navigation visibility based on user
+ * @param {Object|null} user - User object or null
+ * @returns {boolean} True if navigation should be visible
+ */
+function determineNavVisibility(user) {
+  return !!user;
 }

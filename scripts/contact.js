@@ -5,15 +5,22 @@
 
 // Contact management
 /**
- * Initialize contact module.
+ * Initialize contact module
  * @returns {void}
  */
 (function initContact() {
+  setupAllEventHandlers();
+})()
+
+/**
+ * Sets up all event handlers
+ */
+function setupAllEventHandlers() {
   setupMobileNavbarObserver();
   setupClickGuard();
   setupOverlayCloseHandler();
   setupEscapeHandler();
-})();
+};
 
 window.showContactDetails = showContactDetails;
 window.detailsMobileBack = detailsMobileBack;
@@ -219,25 +226,96 @@ function applyDetailsLayout(d,a,name,email,phone,colorIndex){
 }
 
 /**
- * Show contact details in the details pane and handle mobile layout.
+ * Show contact details in the details pane and handle mobile layout
  * @returns {void}
  */
 function showContactDetails(name, email, phone, colorIndex, id) {
-  setCurrentContact(name,email,phone,colorIndex,id);
-  const d = $("contact-details"), a = $("add-new-contact-container");
-  markActiveContact(id);
-  renderDetails(d,name,email,phone,colorIndex);
-  applyDetailsLayout(d,a,name,email,phone,colorIndex);
+  updateCurrentContact(name, email, phone, colorIndex, id);
+  updateContactUI(name, email, phone, colorIndex, id);
 }
 
 /**
- * Mobile back action: hide details, show add-contact panel.
+ * Updates current contact data
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {string} id
+ */
+function updateCurrentContact(name, email, phone, colorIndex, id) {
+  setCurrentContact(name, email, phone, colorIndex, id);
+}
+
+/**
+ * Updates contact UI elements
+ * @param {string} name
+ * @param {string} email
+ * @param {string} phone
+ * @param {number} colorIndex
+ * @param {string} id
+ */
+function updateContactUI(name, email, phone, colorIndex, id) {
+  const elements = getDetailsElements();
+  markActiveContact(id);
+  renderDetails(elements.details, name, email, phone, colorIndex);
+  applyDetailsLayout(elements.details, elements.addContainer, name, email, phone, colorIndex);
+}
+
+/**
+ * Gets details UI elements
+ * @returns {Object}
+ */
+function getDetailsElements() {
+  return {
+    details: $("contact-details"),
+    addContainer: $("add-new-contact-container")
+  };
+}
+
+/**
+ * Mobile back action: hide details, show add-contact panel
  * @returns {void}
  */
 function detailsMobileBack() {
-  const d = $("contact-details"), a = $("add-new-contact-container");
-  d.classList.remove("mobile-visible"); d.classList.add("d-none");
-  a.classList.remove("d-none"); removeDetailsMobileNavbar?.();
+  const elements = getMobileBackElements();
+  hideMobileDetails(elements.details);
+  showAddContainer(elements.addContainer);
+  cleanupMobileNavbar();
+}
+
+/**
+ * Gets elements for mobile back action
+ * @returns {Object}
+ */
+function getMobileBackElements() {
+  return {
+    details: $("contact-details"),
+    addContainer: $("add-new-contact-container")
+  };
+}
+
+/**
+ * Hides mobile details view
+ * @param {HTMLElement} details
+ */
+function hideMobileDetails(details) {
+  details.classList.remove("mobile-visible");
+  details.classList.add("d-none");
+}
+
+/**
+ * Shows add container
+ * @param {HTMLElement} addContainer
+ */
+function showAddContainer(addContainer) {
+  addContainer.classList.remove("d-none");
+}
+
+/**
+ * Cleans up mobile navbar
+ */
+function cleanupMobileNavbar() {
+  removeDetailsMobileNavbar?.();
 }
 
 /** Show the mobile navbar in contact details view. */
@@ -327,18 +405,47 @@ function prepareEditOverlay(){
 }
 
 /**
- * Opens the Edit-Contact overlay with prefilled fields.
+ * Opens the Edit-Contact overlay with prefilled fields
  * @param {Event} e
  * @returns {void}
  */
 function openEditContact(e) {
+  if (!shouldOpenEditOverlay(e)) return;
+  
+  setupEditOverlay(e);
+}
+
+/**
+ * Determines if edit overlay should open
+ * @param {Event} e
+ * @returns {boolean}
+ */
+function shouldOpenEditOverlay(e) {
   const ev = getNormalizedEvent(e);
-  if (!ev) return;
-  ev.stopPropagation?.(); ev.preventDefault?.();
+  if (!ev) return false;
+  
   const target = ev.target instanceof Element ? ev.target : null;
-  if (!isAllowedEditTrigger(target) || _editOverlayClosing) return;
+  return isAllowedEditTrigger(target) && !_editOverlayClosing;
+}
+
+/**
+ * Sets up and opens edit overlay
+ * @param {Event} e
+ */
+function setupEditOverlay(e) {
+  const ev = getNormalizedEvent(e);
+  preventEventDefaults(ev);
   armClickAndNavbarGuards();
   prepareEditOverlay();
+}
+
+/**
+ * Prevents event defaults
+ * @param {Event} ev
+ */
+function preventEventDefaults(ev) {
+  ev.stopPropagation?.();
+  ev.preventDefault?.();
 }
 
 // Make openEditContact globally available
@@ -434,55 +541,148 @@ function validateEditNameField(name) {
 
 
 /**
- * Validates and saves the edited contact; updates Firebase and guards against menu re-open.
+ * Validates and saves the edited contact; updates Firebase and guards against menu re-open
  * @returns {void}
  */
 function saveEditedContact() {
-  const ev = (typeof window !== 'undefined' && window.event) ? window.event : null;
-  if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+  handleSaveEvent();
+  setupSaveGuards();
+  
+  if (!validateEditContactForm()) return;
+  
+  processSaveContact();
+}
+
+/**
+ * Handles save event
+ */
+function handleSaveEvent() {
+  const ev = getCurrentWindowEvent();
+  if (ev && typeof ev.stopPropagation === 'function') {
+    ev.stopPropagation();
+  }
+}
+
+/**
+ * Gets current window event
+ * @returns {Event|null}
+ */
+function getCurrentWindowEvent() {
+  return (typeof window !== 'undefined' && window.event) ? window.event : null;
+}
+
+/**
+ * Sets up save guards
+ */
+function setupSaveGuards() {
+  activateClickGuard();
+  activateNavbarSuppression();
+}
+
+/**
+ * Activates click guard
+ */
+function activateClickGuard() {
   _swallowNextDocClick = true;
   setTimeout(() => { _swallowNextDocClick = false; }, 300);
-  _suppressMobileNavbar = true; setTimeout(()=>{ _suppressMobileNavbar = false; }, 350);
+}
 
-  if (!validateEditContactForm()) {
-    return;
-  }
+/**
+ * Activates navbar suppression
+ */
+function activateNavbarSuppression() {
+  _suppressMobileNavbar = true;
+  setTimeout(() => { _suppressMobileNavbar = false; }, 350);
+}
+
+/**
+ * Processes contact save
+ */
+function processSaveContact() {
   getUpdatedContactData();
   updateContactInFirebase();
 }
 
 /**
- * Deletes the current contact and navigates back in the mobile layout.
+ * Deletes the current contact and navigates back in the mobile layout
  * @param {Event} event
  * @returns {void}
  */
 function deleteContactAndGoBack(event) {
+  handleDeleteEvent(event);
+  executeContactDeletion();
+}
+
+/**
+ * Handles delete event
+ * @param {Event} event
+ */
+function handleDeleteEvent(event) {
   event.stopPropagation();
+}
+
+/**
+ * Executes contact deletion and navigation
+ */
+function executeContactDeletion() {
   deleteContact();
   detailsMobileBack();
 }
 
 /**
- * Builds a compact contact row as HTML.
+ * Builds a compact contact row as HTML
  * @param {{name:string,email:string,phone:string,colorIndex?:number,initials?:string}} key
  * @param {string} id
- * @returns {string} HTML string for the contact row.
+ * @returns {string} HTML string for the contact row
  */
 function getContactPerson(key, id) {
-  let savedColorIndex = key.colorIndex;
-  if (!savedColorIndex) {
-    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
-  }
-  const initials = key.initials || getInitials(key.name);
-  
-  return window.contactPersonTemplate({
+  const contactData = prepareContactData(key, id);
+  return generateContactHTML(contactData);
+}
+
+/**
+ * Prepares contact data for rendering
+ * @param {Object} key
+ * @param {string} id
+ * @returns {Object}
+ */
+function prepareContactData(key, id) {
+  return {
     name: key.name,
     email: key.email,
     phone: key.phone,
-    initials: initials,
-    savedColorIndex: savedColorIndex,
+    initials: getContactInitials(key),
+    savedColorIndex: getContactColorIndex(key, id),
     id: id
-  });
+  };
+}
+
+/**
+ * Gets contact initials
+ * @param {Object} key
+ * @returns {string}
+ */
+function getContactInitials(key) {
+  return key.initials || getInitials(key.name);
+}
+
+/**
+ * Gets contact color index
+ * @param {Object} key
+ * @param {string} id
+ * @returns {number}
+ */
+function getContactColorIndex(key, id) {
+  return key.colorIndex || ((id.charCodeAt(0) % 15) + 1);
+}
+
+/**
+ * Generates contact HTML
+ * @param {Object} contactData
+ * @returns {string}
+ */
+function generateContactHTML(contactData) {
+  return window.contactPersonTemplate(contactData);
 }
 
 // Make getContactPerson globally available
