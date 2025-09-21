@@ -296,3 +296,31 @@ function autoAddNewSubtaskIfPending(target) {
   const outside = !(subInput.contains(target) || (funcBox && funcBox.contains(target)));
   if (outside) document.getElementById('sub-check')?.click();
 }
+
+/**
+ * Clear all form fields and reset to default state.
+ * @returns {void}
+ */
+function clearAddTaskForm() {
+  clearTitleAndDescription();
+  clearDatepicker();
+  clearCategory();
+  resetPrioritySelection();
+  clearAssigned();
+  clearSubtasks();
+}
+
+/**
+ * Setup cancel button event listener.
+ * @returns {void}
+ */
+function setupCancelButton() {
+  const cancelButton = $("cancel-button");
+  if (cancelButton) {
+    cancelButton.addEventListener("click", clearAddTaskForm);
+  }
+}
+
+// Setup cancel button
+document.addEventListener("addtask:template-ready", setupCancelButton);
+setupCancelButton();

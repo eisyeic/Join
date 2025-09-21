@@ -134,6 +134,48 @@ function findPlusMinusButton(ticket) {
 }
 
 /**
+ * Gets current column for a ticket
+ * @param {HTMLElement} ticket
+ * @returns {string}
+ */
+function getCurrentColumnForTicket(ticket) {
+  return ticket.dataset.column || ticket.closest('[data-column]')?.dataset.column || 'todo';
+}
+
+/**
+ * Normalizes column name
+ * @param {string} columnName
+ * @returns {string}
+ */
+function normalizeColumnName(columnName) {
+  const mapping = {
+    'todo': 'todo',
+    'in-progress': 'inProgress',
+    'inProgress': 'inProgress',
+    'await-feedback': 'awaitFeedback',
+    'awaitFeedback': 'awaitFeedback',
+    'done': 'done'
+  };
+  return mapping[columnName] || 'todo';
+}
+
+/**
+ * Gets move targets for current column
+ * @param {string} currentColumn
+ * @returns {Array<{col: string, label: string}>}
+ */
+function getMoveTargetsFor(currentColumn) {
+  const allTargets = [
+    { col: 'todo', label: 'To Do' },
+    { col: 'inProgress', label: 'In Progress' },
+    { col: 'awaitFeedback', label: 'Await Feedback' },
+    { col: 'done', label: 'Done' }
+  ];
+  const normalized = normalizeColumnName(currentColumn);
+  return allTargets.filter(target => target.col !== normalized);
+}
+
+/**
  * Handles plus/minus button click
  * @param {Event} e
  * @param {HTMLElement} btn
@@ -377,7 +419,6 @@ function renderNoSubtasks(container){ container.innerHTML = "<b>no subtasks</b>"
 function createBaseOverlayElement() {
   const overlay = document.createElement("div");
   overlay.className = "move-overlay";
-  overlay.setAttribute("role", "menu");
   return overlay;
 }
 
@@ -425,7 +466,7 @@ function getArrowIcon(direction) {
  * @returns {string}
  */
 function createMoveOptionHTML(target, icon) {
-  return `<button type="button" class="move-option" data-col="${target.col}" role="menuitem" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 0;color:inherit;cursor:pointer;text-align:left;width:100%;"><img src="./assets/icons/board/${icon}" alt="" width="16" height="16"><span>${target.label}</span></button>`;
+  return `<div class="move-option" data-col="${target.col}" style="cursor:pointer;color:white;font-size:16px;padding:8px;border-radius:4px;display:flex;align-items:center;margin-bottom:8px;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'" onmouseout="this.style.backgroundColor='transparent'"><img src="./assets/icons/board/${icon}" alt="" width="16" height="16" style="filter:brightness(0) invert(1);margin-right:8px;">${target.label}</div>`;
 }
 
 /**
@@ -433,7 +474,7 @@ function createMoveOptionHTML(target, icon) {
  * @returns {string}
  */
 function createMoveOverlayTitle() {
-  return `<div class="move-overlay__title">Move to</div>`;
+  return ``;
 }
 
 /**
@@ -493,14 +534,32 @@ function createMoveOverlay(taskId, currentColumn){
  * @param {HTMLElement} overlay
  * @param {string} taskId
  */
-function attachMoveOverlayHandlers(overlay, taskId){ /* ... */ }
+function attachMoveOverlayHandlers(overlay, taskId) {
+  overlay.addEventListener('click', (e) => {
+    const button = e.target.closest('.move-option');
+    if (button) {
+      const targetColumn = button.dataset.col;
+      if (targetColumn && window.moveTask) {
+        window.moveTask(taskId, targetColumn);
+      }
+      closeMoveOverlay();
+    }
+  });
+}
 
 /**
  * Positions the overlay near an anchor element, clamped to the viewport.
  * @param {HTMLElement} anchorEl
  * @param {HTMLElement} overlay
  */
-function placeOverlay(anchorEl, overlay){ /* ... */ }
+function placeOverlay(anchorEl, overlay) {
+  const ticket = anchorEl.closest('.ticket');
+  ticket.style.position = 'relative';
+  overlay.style.position = 'absolute';
+  overlay.style.right = '-106px';
+  overlay.style.top = '0px';
+  ticket.appendChild(overlay);
+}
 
 /**
  * Opens (or toggles) the move overlay anchored to the plus/minus button.
@@ -508,12 +567,46 @@ function placeOverlay(anchorEl, overlay){ /* ... */ }
  * @param {string} taskId
  * @param {string} currentColumn
  */
-function openMoveOverlay(anchorEl, taskId, currentColumn) { /* ... */ }
+function openMoveOverlay(anchorEl, taskId, currentColumn) {
+  if (_currentMoveOverlay) {
+    closeMoveOverlay();
+    return;
+  }
+  
+  const overlay = createMoveOverlay(taskId, currentColumn);
+  attachMoveOverlayHandlers(overlay, taskId);
+  placeOverlay(anchorEl, overlay);
+  
+  _currentMoveOverlay = overlay;
+  
+  // Close on outside click
+  const handleOutsideClick = (e) => {
+    if (!overlay.contains(e.target)) {
+      closeMoveOverlay();
+    }
+  };
+  
+  setTimeout(() => {
+    document.addEventListener('click', handleOutsideClick);
+    _moveOverlayCleanup = () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, 0);
+}
 
 /**
  * Closes the active move overlay (if any).
  */
-function closeMoveOverlay() { /* ... */ }
+function closeMoveOverlay() {
+  if (_currentMoveOverlay) {
+    _currentMoveOverlay.remove();
+    _currentMoveOverlay = null;
+  }
+  if (_moveOverlayCleanup) {
+    _moveOverlayCleanup();
+    _moveOverlayCleanup = null;
+  }
+}
 
 // --------------------------------------------------
 // Ticket Creation & Rendering
