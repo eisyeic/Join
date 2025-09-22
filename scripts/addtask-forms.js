@@ -4,7 +4,11 @@
  * @returns {void}
  */
 function addPriorityClickListener(button) {
-  button.addEventListener("click", () => handlePriorityClick(button));
+  button.addEventListener("click", () => {
+    if (typeof handlePriorityClick === 'function') {
+      handlePriorityClick(button);
+    }
+  });
 }
 
 /**
@@ -12,7 +16,8 @@ function addPriorityClickListener(button) {
  * @returns {void}
  */
 function setupPriorityButtons() {
-  getAllPriorityButtons().forEach(addPriorityClickListener);
+  const buttons = document.querySelectorAll(".priority-button");
+  buttons.forEach(addPriorityClickListener);
 }
 
 /**
@@ -28,16 +33,15 @@ function getMediumButton() {
  * @returns {void}
  */
 function resetPrioritySelection() {
-  clearAllPriorityActive();
-  updateSelectedPriority("medium");
+  if (typeof clearAllPriorityActive === 'function') clearAllPriorityActive();
+  if (typeof updateSelectedPriority === 'function') updateSelectedPriority("medium");
   const mediumButton = getMediumButton();
-  if (mediumButton) {
+  if (mediumButton && typeof setButtonActive === 'function') {
     setButtonActive(mediumButton);
   }
 }
 
-// Initialize priority buttons
-setupPriorityButtons();
+
 
 /**
  * Get category selection items.
@@ -150,7 +154,7 @@ function handleCategorySelectClick() {
   toggleCategoryIcon();
 }
 
-// Initialize category and global listeners
+/** Initialize category and global listeners */
 setupCategoryItems();
 document.addEventListener("click", handleGlobalClick);
 $("category-select").addEventListener("click", handleCategorySelectClick);
@@ -253,7 +257,7 @@ function handleSubtaskMouseout(event) {
   hideSubtaskButton(button);
 }
 
-// Initialize subtask input and hover listeners
+/** Initialize subtask input and hover listeners */
 $("sub-input").addEventListener("input", function () {
   handleSubtaskInputChange(this);
 });

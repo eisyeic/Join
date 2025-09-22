@@ -1,3 +1,21 @@
+/** Import required modules and variables */
+import {
+  getDatabase,
+  ref,
+  update,
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { app } from "./firebase.js";
+
+const db = getDatabase(app);
+
+/** Get mappings from global scope or define fallbacks */
+const DOM_TO_LOGICAL = window.DOM_TO_LOGICAL || {
+  "to-do-column": "todo",
+  "in-progress-column": "inProgress",
+  "await-feedback-column": "awaitFeedback",
+  "done-column": "done",
+};
+
 /**
  * Update task column attribute.
  * @param {HTMLElement} taskElement
@@ -68,6 +86,9 @@ function updateTaskColumn(taskId, newColumnId) {
   
   return update(dbRef, updateData).catch(handleUpdateError);
 }
+
+/** Export function for use in other modules */
+window.updateTaskColumn = updateTaskColumn;
 
 /**
  * Check if overflow should be shown.

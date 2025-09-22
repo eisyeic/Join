@@ -526,18 +526,7 @@ function clearEditFormErrors() {
   clearFieldError("edit-phone-input");
 }
 
-/**
- * Validates the name field; sets UI error if invalid.
- * @param {string} name
- * @returns {boolean}
- */
-function validateEditNameField(name) {
-  if (!name) {
-    showFieldError("edit-name-input", "Name is required");
-    return false;
-  }
-  return true;
-}
+
 
 
 /**

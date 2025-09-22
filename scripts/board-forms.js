@@ -1,3 +1,56 @@
+/** Import required variables and functions from board-compact.js */
+let columnMap, DOM_TO_LOGICAL, LOGICAL_TO_DOM;
+
+/**
+ * Initialize column map if not available.
+ * @returns {void}
+ */
+function initializeColumnMap() {
+  if (typeof columnMap === 'undefined') {
+    columnMap = {
+      todo: "to-do-column",
+      inProgress: "in-progress-column", 
+      awaitFeedback: "await-feedback-column",
+      done: "done-column",
+    };
+  }
+}
+
+/**
+ * Initialize DOM to logical mapping if not available.
+ * @returns {void}
+ */
+function initializeDomToLogical() {
+  if (typeof DOM_TO_LOGICAL === 'undefined') {
+    DOM_TO_LOGICAL = {
+      "to-do-column": "todo",
+      "in-progress-column": "inProgress",
+      "await-feedback-column": "awaitFeedback",
+      "done-column": "done",
+    };
+  }
+}
+
+/**
+ * Initialize logical to DOM mapping if not available.
+ * @returns {void}
+ */
+function initializeLogicalToDom() {
+  if (typeof LOGICAL_TO_DOM === 'undefined') {
+    LOGICAL_TO_DOM = {
+      todo: "to-do-column",
+      inProgress: "in-progress-column",
+      awaitFeedback: "await-feedback-column",
+      review: "await-feedback-column",
+      done: "done-column",
+    };
+  }
+}
+
+initializeColumnMap();
+initializeDomToLogical();
+initializeLogicalToDom();
+
 /**
  * Check if search term is valid.
  * @param {string} term
@@ -177,8 +230,10 @@ function filterTasks(searchTerm) {
  * @returns {void}
  */
 function updateAllPlaceholders() {
-  for (const key in columnMap) {
-    updatePlaceholderForColumn(columnMap[key]);
+  if (typeof columnMap !== 'undefined') {
+    for (const key in columnMap) {
+      updatePlaceholderForColumn(columnMap[key]);
+    }
   }
 }
 
@@ -212,12 +267,16 @@ function updatePlaceholderForColumn(columnId) {
   if (!column) return;
   
   const visibleTasks = getVisibleTasks(column);
-  const placeholder = findPlaceholder(column);
   
-  if (visibleTasks.length === 0 && !placeholder) {
-    appendPlaceholder(column, columnId);
-  } else if (visibleTasks.length > 0 && placeholder) {
-    removePlaceholder(placeholder);
+  if (visibleTasks.length === 0) {
+    if (typeof checkAndShowPlaceholder === 'function') {
+      checkAndShowPlaceholder(columnId);
+    }
+  } else {
+    const placeholder = column.querySelector('.no-tasks');
+    if (placeholder) {
+      placeholder.remove();
+    }
   }
 }
 
@@ -257,15 +316,7 @@ function getNewColumnElement(newDomId) {
   return document.getElementById(newDomId);
 }
 
-/**
- * Move task to new column.
- * @param {HTMLElement} taskEl
- * @param {HTMLElement} newColumnEl
- * @returns {void}
- */
-function moveTaskToNewColumn(taskEl, newColumnEl) {
-  newColumnEl.appendChild(taskEl);
-}
+
 
 /**
  * Move task DOM by logical column.
@@ -280,7 +331,7 @@ function moveTaskDomByLogical(taskId, targetLogical) {
   const newColumnEl = getNewColumnElement(newDomId);
   
   if (taskEl && newColumnEl) {
-    moveTaskToNewColumn(taskEl, newColumnEl);
+    moveTaskToColumn(taskEl, newColumnEl);
   }
   
   return { taskEl, oldColumnEl, newColumnEl };
@@ -306,8 +357,10 @@ function updateTaskDataset(taskId, logical) {
  * @returns {void}
  */
 function updateBothPlaceholders(oldColumnId, newColumnId) {
-  checkAndShowPlaceholder(oldColumnId);
-  checkAndShowPlaceholder(newColumnId);
+  if (typeof checkAndShowPlaceholder === 'function') {
+    checkAndShowPlaceholder(oldColumnId);
+    checkAndShowPlaceholder(newColumnId);
+  }
 }
 
 /**
@@ -327,6 +380,26 @@ function syncAfterMove(taskId, oldColumnEl, newColumnEl) {
   updateTaskColumn(String(taskId), domId);
   updateBothPlaceholders(oldColumnEl.id, newColumnEl.id);
   resetColumnBackgrounds();
+}
+
+/**
+ * Move task to column (fallback if not available from board-compact.js).
+ * @param {HTMLElement} taskElement
+ * @param {HTMLElement} newColumn
+ * @returns {void}
+ */
+function moveTaskToColumn(taskElement, newColumn) {
+  if (newColumn && taskElement) {
+    newColumn.appendChild(taskElement);
+  }
+}
+
+/**
+ * Reset column backgrounds (placeholder function).
+ * @returns {void}
+ */
+function resetColumnBackgrounds() {
+  // This function should be implemented based on your drag & drop styling needs
 }
 
 /**

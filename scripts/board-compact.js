@@ -384,4 +384,81 @@ function moveTaskToColumn(taskElement, newColumn) {
   newColumn.appendChild(taskElement);
 }
 
+/**
+ * Move task DOM and update attributes.
+ * @param {HTMLElement} taskElement
+ * @param {HTMLElement} newColumn
+ * @returns {void}
+ */
+function moveTaskDom(taskElement, newColumn) {
+  moveTaskToColumn(taskElement, newColumn);
+  taskElement.dataset.column = DOM_TO_LOGICAL[newColumn.id] || taskElement.dataset.column;
+}
+
+/**
+ * Store dragged task ID.
+ * @param {DragEvent} event
+ * @returns {void}
+ */
+function onTaskDragStart(event) {
+  const taskId = event.target.id;
+  event.dataTransfer.setData("text/plain", taskId);
+}
+
+/**
+ * Allow drop on valid targets.
+ * @param {DragEvent} event
+ * @returns {void}
+ */
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+/**
+ * Handle task drop.
+ * @param {DragEvent} event
+ * @returns {void}
+ */
+function drop(event) {
+  event.preventDefault();
+  const { taskId, taskElement, newColumn, oldColumn } = getDropContext(event);
+  
+  if (!(taskId && taskElement && newColumn)) return;
+  if (oldColumn === newColumn) return;
+  
+  moveTaskDom(taskElement, newColumn);
+  
+  if (oldColumn) {
+    checkAndShowPlaceholder(oldColumn.id);
+  }
+  checkAndShowPlaceholder(newColumn.id);
+  
+  if (typeof updateTaskColumn === 'function') {
+    updateTaskColumn(taskId, newColumn.id);
+  }
+}
+
+/**
+ * Initialize drag and drop listeners.
+ * @returns {void}
+ */
+function initDnDListeners() {
+  const columns = document.querySelectorAll('.task-list');
+  columns.forEach(column => {
+    column.addEventListener('dragover', allowDrop);
+    column.addEventListener('drop', drop);
+  });
+}
+
+/** Make drop function global for HTML ondrop attributes */
+window.drop = drop;
+
+/** Export functions for use in other modules */
+window.moveTaskToColumn = moveTaskToColumn;
+window.checkAndShowPlaceholder = checkAndShowPlaceholder;
+window.columnMap = columnMap;
+window.DOM_TO_LOGICAL = DOM_TO_LOGICAL;
+window.LOGICAL_TO_DOM = LOGICAL_TO_DOM;
+window.initDnDListeners = initDnDListeners;
+
 
