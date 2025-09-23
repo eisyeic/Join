@@ -5,7 +5,6 @@
  * Expected globals:
  *  - $: (id: string) => HTMLElement
  *  - renderSubtasks: () => void
- *  - flatpickr
  */
  /** @type {string[]} */ 
 window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
@@ -15,25 +14,6 @@ window.SubtaskIO = window.SubtaskIO || {
   remove(index) { subtasks.splice(index, 1); },
   rerender() { renderSubtasks(); addEditEvents(); }
 };
-
-/** @typedef {'urgent' | 'medium' | 'low'} Priority */
-/** @type {Priority} */ 
-let selectedPriority = "medium";
-/**
- * Initialize flatpickr on #datepicker.
- * @see https://flatpickr.js.org/events/
- */
-let picker = flatpickr("#datepicker", {
-  minDate: "today",
-  dateFormat: "d/m/Y",
-  disableMobile: true,
-  onChange(selectedDates, dateStr) {
-    if (selectedDates && selectedDates.length > 0 && dateStr) {
-      $("datepicker-wrapper").style.borderColor = "";
-      $("due-date-error").innerHTML = "";
-    }
-  },
-});
 
 /**
  * Open the native datepicker by clicking the wrapper.

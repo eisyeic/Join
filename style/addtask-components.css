@@ -25,7 +25,7 @@
 }
 
 .assigned-select-box:hover,
-:has(input:focus) {
+.assigned-select-box:has(input:focus) {
   border-color: var(--main-color);
 }
 
@@ -256,4 +256,74 @@ span {
 
 .subtask-item:active {
   background-color: #fff;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.date-input {
+  position: relative;
+  display: inline-block;
+}
+
+.date-input input[type="date"] {
+  padding-right: 30px; 
+}
+
+.date-input::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: url("../assets/icons/add_task/event.svg") no-repeat center;
+  background-size: contain;
+  pointer-events: none; 
+}
+
+/* Usage in HTML:
+   <div class="date-input" id="datepicker-wrapper" data-placeholder="dd/mm/yyyy">
+     <input type="date" id="datepicker" required />
+   </div>
+*/
+
+/* --- Date input: custom placeholder overlay (requires input[required]) --- */
+.date-input {
+  position: relative; /* ensure positioning context for ::before */
+}
+
+/* Show placeholder text pulled from wrapper attribute: data-placeholder="dd/mm/yyyy" */
+.date-input::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--style-color);
+  pointer-events: none; /* don't block clicks */
+  font-size: inherit;
+  line-height: 1;
+}
+
+/* Hide fake placeholder when focusing the input or when it has a valid value */
+.date-input:has(input[type="date"]:focus)::before,
+.date-input:has(input[type="date"]:valid)::before {
+  content: "";
+}
+
+/* Make the native date text transparent until a value is chosen, so placeholder is visible */
+.date-input input[type="date"] {
+  color: transparent;
+}
+.date-input input[type="date"]:focus,
+.date-input input[type="date"]:valid {
+  color: initial;
 }
