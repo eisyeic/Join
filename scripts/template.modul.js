@@ -530,6 +530,19 @@ function createMoveOverlay(taskId, currentColumn){
 }
 
 /**
+ * Moves task to target column
+ * @param {string} taskId
+ * @param {string} targetColumn
+ */
+function moveTask(taskId, targetColumn) {
+  if (typeof window.moveTaskDomByLogical === 'function') {
+    window.moveTaskDomByLogical(taskId, targetColumn);
+  } else if (typeof window.updateTaskColumn === 'function') {
+    window.updateTaskColumn(taskId, targetColumn);
+  }
+}
+
+/**
  * Attaches click handlers for overlay actions (move up/down/to column).
  * @param {HTMLElement} overlay
  * @param {string} taskId
@@ -539,8 +552,8 @@ function attachMoveOverlayHandlers(overlay, taskId) {
     const button = e.target.closest('.move-option');
     if (button) {
       const targetColumn = button.dataset.col;
-      if (targetColumn && window.moveTask) {
-        window.moveTask(taskId, targetColumn);
+      if (targetColumn) {
+        moveTask(taskId, targetColumn);
       }
       closeMoveOverlay();
     }
@@ -556,7 +569,7 @@ function placeOverlay(anchorEl, overlay) {
   const ticket = anchorEl.closest('.ticket');
   ticket.style.position = 'relative';
   overlay.style.position = 'absolute';
-  overlay.style.right = '-106px';
+  overlay.style.right = '0';
   overlay.style.top = '0px';
   ticket.appendChild(overlay);
 }
@@ -745,3 +758,5 @@ export function renderSubtasks(task) {
     renderNoSubtasks(container);
   }
 }
+/** Make moveTask globally available */
+window.moveTask = moveTask;

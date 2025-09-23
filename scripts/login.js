@@ -55,6 +55,9 @@ function setupLoginEventListeners() {
  */
 function handleLogin() {
   const credentials = getLoginCredentials();
+  if (!validateEmail(credentials.email)) {
+    return showEmailError();
+  }
   if (!validatePassword(credentials.password)) {
     return showPasswordError();
   }
@@ -73,12 +76,29 @@ function getLoginCredentials() {
 }
 
 /**
+ * Validates email format
+ * @param {string} email - Email to validate
+ * @returns {boolean} True if valid
+ */
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+/**
  * Validates password length
  * @param {string} password - Password to validate
  * @returns {boolean} True if valid
  */
 function validatePassword(password) {
   return password.length >= 6;
+}
+
+/**
+ * Shows email validation error
+ */
+function showEmailError() {
+  displayAuthError($("errorMessage"), $("login-email"));
 }
 
 /**

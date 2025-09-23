@@ -156,6 +156,7 @@ function handleCategorySelectClick() {
 
 /** Initialize category and global listeners */
 setupCategoryItems();
+setupPriorityButtons();
 document.addEventListener("click", handleGlobalClick);
 $("category-select").addEventListener("click", handleCategorySelectClick);
 
