@@ -1,16 +1,3 @@
-/* eslint-env browser */
-/**
- * @file Auth UI logic: login/sign-up flows, password toggles, email validation,
- *       guest login, theme animation, and basic error rendering.
- *
- * External dependencies:
- *  - Firebase Auth v10.12.0 (createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile)
- *  - `auth` instance from ./firebase.js
- *
- * Expected globals:
- *  - $: (id: string) => HTMLElement                      // shorthand for getElementById
- *  - CSS classes/variables used in the DOM and stylesheets (e.g., 'd-none', '--error-color')
- */
 
 // Firebase Imports
 import {

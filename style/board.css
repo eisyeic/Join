@@ -240,7 +240,7 @@
   height: 31px;
   background-size: cover;
   border-radius: 50%;
-  color: white;
+  color: rgb(255, 255, 255);
   font-size: 14px;
   display: flex;
   align-items: center;

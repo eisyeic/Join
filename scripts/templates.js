@@ -1,19 +1,3 @@
-/**
- * @typedef {Object} Contact
- * @property {string} name
- * @property {string} [email]
- * @property {string} [phone]
- * @property {string} [initials]
- * @property {number} [colorIndex]
- */
-
-/**
- * Build a contact list item (compact row) as HTML string.
- * Color index falls back to a stable hash of the id.
- * @param {Contact} key
- * @param {string} id
- * @returns {string} HTML
- */
 function getContactPerson(key, id) {
   let savedColorIndex = key.colorIndex;
   if (!savedColorIndex) {
@@ -199,7 +183,7 @@ function getTaskMainTemplate() {
       <!-- date choose -->
       <div class="due-date">
         <span class="label-main">Due Date</span>
-        <div class="date-input" id="datepicker-wrapper" data-placeholder="dd/mm/yyyy">
+        <div class="date-input" id="datepicker-wrapper" data-placeholder="dd.mm.yyyy">
           <input type="date" id="datepicker" required/>
         </div>
         <div class="addtask-error" id="due-date-error"></div>

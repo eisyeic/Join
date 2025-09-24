@@ -6,9 +6,7 @@ function clearAddFormInputs() {
   $("name-new-contact").value = "";
   $("email-new-contact").value = "";
   $("phone-new-contact").value = "";
-  clearFieldError("name-new-contact");
-  clearFieldError("email-new-contact");
-  clearFieldError("phone-new-contact");
+  clearAddFormErrors();
 }
 
 /**

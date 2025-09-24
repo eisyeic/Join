@@ -108,12 +108,14 @@ function setTitleAndDescription(task) {
 function setDueDateField(task) {
   const dateEl = document.getElementById("datepicker");
   if (!dateEl) return;
+
   const d = task.dueDate ? new Date(task.dueDate) : null;
   if (d && !Number.isNaN(d.getTime())) {
     const dd = String(d.getDate()).padStart(2, "0");
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const yyyy = String(d.getFullYear());
-    /** @type {HTMLInputElement} */ (dateEl).value = `${dd}/${mm}/${yyyy}`;
+    // Always format yyyy-MM-dd for type="date"
+    /** @type {HTMLInputElement} */ (dateEl).value = `${yyyy}-${mm}-${dd}`;
   } else {
     /** @type {HTMLInputElement} */ (dateEl).value = task.dueDate || "";
   }
@@ -242,4 +244,3 @@ window.deleteTaskFromDatabase = async function(taskId) {
   const db = RTDB.getDatabase(app);
   await RTDB.remove(RTDB.ref(db, `tasks/${taskId}`));
 };
-

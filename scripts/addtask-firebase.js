@@ -1,10 +1,8 @@
-import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { app, auth } from "./firebase.js";
-
-let db = getDatabase(app);
 let loadedContacts = {};
 let currentEditingTaskId = "";
+
+// All Firebase access must go through this namespace (provided by firebase.modul.js)
+const FirebaseActions = (window.FirebaseActions ||= {});
 
 /**
  * @typedef {Object} Subtask
@@ -53,15 +51,6 @@ window.getCurrentEditingTaskId = function () {
   return currentEditingTaskId;
 };
 
-
-/**
- * Initializes the Add Task module: loads contacts, sets up listeners, and ensures the UI is ready.
- * @returns {void}
- */
-function initAddTask() {
-  loadContactsAndRender();
-  // add other top-level startup calls here
-}
 
 /**
  * Resolves the active editing id from in-memory state, global helpers, or DOM dataset.
@@ -199,28 +188,10 @@ function setError(msgId, borderId, msg) {
 }
 
 /**
- * Auth listener to project user initials into the UI when available.
- */
-onAuthStateChanged(auth, (user) => {
-  if (window.updateUserInitials) {
-    window.updateUserInitials(user);
-  }
-});
-
-/**
  * Loads contacts from Firebase and renders them into the contact list box.
  * @returns {void}
  */
-function loadContactsAndRender() {
-  let contactListBox = $("contact-list-box");
-  contactListBox.innerHTML = "";
-  get(ref(db, "contacts")).then((snapshot) => {
-    if (snapshot.exists()) {
-      loadedContacts = snapshot.val();
-      renderContacts(loadedContacts, contactListBox);
-    }
-  });
-}
+
 
 /**
  * Filters the contact list as the user types in the contact input and re-renders the list.
@@ -407,11 +378,12 @@ async function handleEditOkClick() {
   if (!validateFormData(taskData)) return;
   const taskId = getEditingId();
   if (!taskId) return sendTaskToFirebase(taskData);
-  const snap = await get(ref(db, `tasks/${taskId}`));
-  if (snap.exists()) {
-    const oldTask = snap.val();
-    taskData.column = oldTask?.column ?? taskData.column;
-  }
+  try {
+    if (typeof FirebaseActions.loadTaskById === "function") {
+      const oldTask = await FirebaseActions.loadTaskById(taskId);
+      if (oldTask) taskData.column = oldTask.column ?? taskData.column;
+    }
+  } catch (e) { console.warn("Konnte alten Task nicht laden:", e); }
   updateTaskInFirebase(taskId, taskData);
 }
 window.handleEditOkClick = handleEditOkClick;
@@ -444,10 +416,10 @@ if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
  * @returns {void}
  */
 function sendTaskToFirebase(taskData) {
-  const tasksRef = ref(db, "tasks");
-  const newRef = push(tasksRef);
-  const task = { ...taskData, createdAt: new Date().toISOString() };
-  set(newRef, task)
+  if (typeof FirebaseActions.createTask !== "function") {
+    return console.error("FirebaseActions.createTask ist nicht verfügbar");
+  }
+  FirebaseActions.createTask(taskData)
     .then(() => { showBanner(); finishCreateFlow(); })
     .catch((e) => console.error("Fehler beim Speichern:", e));
 }
@@ -459,7 +431,6 @@ function sendTaskToFirebase(taskData) {
  * @returns {void}
  */
 function updateTaskInFirebase(taskId, taskData) {
-  const taskRef = ref(db, `tasks/${taskId}`);
   const toSave = {
     column: taskData.column,
     title: taskData.title,
@@ -471,12 +442,10 @@ function updateTaskInFirebase(taskId, taskData) {
     subtasks: taskData.subtasks,
     updatedAt: new Date().toISOString(),
   };
-  update(taskRef, toSave)
+  if (typeof FirebaseActions.updateTask !== "function") {
+    return console.error("FirebaseActions.updateTask ist nicht verfügbar");
+  }
+  FirebaseActions.updateTask(taskId, toSave)
     .then(() => { showBanner(); finishUpdateFlow(); })
     .catch((e) => console.error("Fehler beim Aktualisieren:", e));
 }
-
-/**
- * Run initialization immediately on script load.
- */
-initAddTask();

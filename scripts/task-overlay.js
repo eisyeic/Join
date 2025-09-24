@@ -93,13 +93,56 @@ function renderCategory(category) {
 
 /**
  * Render title, description and due date.
- * @param {{title?:string,description?:string,dueDate?:string}} task
+ * @param {{title?:string,description?:string,dueDate?:string|number|Date}} task
  * @returns {void}
  */
 function renderTitleDescDate(task) {
   $("overlay-title").innerHTML = task.title || "";
   $("overlay-description").textContent = task.description || "";
-  $("overlay-due-date").textContent = task.dueDate || "";
+  $("overlay-due-date").textContent = formatDueDateDisplay(task.dueDate);
+}
+
+/**
+ * Formats a date-like value for overlay display as dd.mm.yyyy.
+ * Accepts ISO (yyyy-mm-dd or ISO datetime), dd/mm/yyyy, timestamps, or Date.
+ * Returns empty string if value is missing.
+ * @param {string|number|Date|undefined|null} raw
+ * @returns {string}
+ */
+function formatDueDateDisplay(raw) {
+  if (raw == null || raw === "") return "";
+  let d = null;
+
+  const isValidDate = (x) => x instanceof Date && !Number.isNaN(x.getTime());
+
+  if (raw instanceof Date) {
+    d = raw;
+  } else if (typeof raw === "number") {
+    d = new Date(raw);
+  } else if (typeof raw === "string") {
+    const s = raw.trim();
+    // dd/mm/yyyy
+    const mDMY = s.match(/^([0-3]?\d)\/(0?\d|1[0-2])\/(\d{4})$/);
+    if (mDMY) {
+      const dd = parseInt(mDMY[1], 10);
+      const mm = parseInt(mDMY[2], 10) - 1;
+      const yyyy = parseInt(mDMY[3], 10);
+      d = new Date(yyyy, mm, dd);
+    } else if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+      // yyyy-mm-dd or ISO datetime
+      const [y, m, day] = s.slice(0, 10).split("-").map((n) => parseInt(n, 10));
+      d = new Date(y, m - 1, day);
+    } else {
+      d = new Date(s);
+    }
+  }
+
+  if (!isValidDate(d)) return String(raw);
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = String(d.getFullYear());
+  return `${dd}.${mm}.${yyyy}`;
 }
 
 /**
