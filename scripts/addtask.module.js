@@ -1,61 +1,20 @@
 let loadedContacts = {};
 let currentEditingTaskId = "";
-
-// All Firebase access must go through this namespace (provided by firebase.modul.js)
 const FirebaseActions = (window.FirebaseActions ||= {});
 
-/**
- * @typedef {Object} Subtask
- * @property {string} name - Subtask title.
- * @property {boolean} checked - Completion state.
- */
+// Safe `$` fallback if global helper isn't loaded yet
+const $ = (typeof window.$ === 'function') ? window.$ : (id) => document.getElementById(id);
 
-/**
- * @typedef {Object} AssignedContact
- * @property {string} id
- * @property {string} [name]
- * @property {number} [colorIndex]
- * @property {string} initials
- */
-
-/**
- * @typedef {Object} TaskData
- * @property {('todo'|'inProgress'|'done')} column
- * @property {string} title
- * @property {string} description
- * @property {string} dueDate
- * @property {string} category
- * @property {string} priority
- * @property {Subtask[]} subtasks
- * @property {AssignedContact[]} [assignedContacts]
- * @property {string} [editingId]
- * @property {string} [createdAt]
- * @property {string} [updatedAt]
- */
-
-/**
- * Sets the current editing task ID and updates the wrapper dataset attribute.
- * @param {string} id - The task ID to set as currently editing.
- */
 window.setCurrentEditingTaskId = function (id) {
   currentEditingTaskId = id || "";
   const wrapper = document.querySelector('.addtask-wrapper');
   if (wrapper) wrapper.dataset.editingId = currentEditingTaskId;
 };
 
-/**
- * Returns the task id that is currently being edited.
- * @returns {string}
- */
 window.getCurrentEditingTaskId = function () {
   return currentEditingTaskId;
 };
 
-
-/**
- * Resolves the active editing id from in-memory state, global helpers, or DOM dataset.
- * @returns {string}
- */
 function getEditingId() {
   return (
     currentEditingTaskId ||
@@ -67,21 +26,12 @@ function getEditingId() {
   );
 }
 
-/**
- * Normalize a contact record by id.
- * @param {string} id
- * @returns {{id:string,name?:string,colorIndex?:number,initials:string}}
- */
 function mapContact(id) {
   const c = loadedContacts[id] || {};
   const initials = c.initials || (c.name ? c.name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase() : "");
   return { id, name: c.name || String(id), colorIndex: c.colorIndex ?? 1, initials };
 }
 
-/**
- * Read selected contact ids from the dataset.
- * @returns {string[]}
- */
 function getIdsFromDataset() {
   try {
     const raw = $("assigned-select-box")?.dataset.selected || "[]";
@@ -92,10 +42,6 @@ function getIdsFromDataset() {
   }
 }
 
-/**
- * Collect assigned contacts from UI (selected lis or dataset).
- * @returns {Array<{id:string,name?:string,colorIndex?:number,initials:string}>}
- */
 function getAssignedContactsFromUI() {
   const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
   if (selectedLis.length > 0) return Array.from(selectedLis, li => mapContact(li.id));
@@ -103,12 +49,41 @@ function getAssignedContactsFromUI() {
   return ids.map(mapContact);
 }
 
+function bindDynamicElements() {
+  const contactInput = $("contact-input");
+  if (contactInput && !contactInput.dataset.bound) {
+    contactInput.addEventListener("input", onContactInput);
+    contactInput.dataset.bound = "1";
+  }
 
-/**
- * Reads core task fields from the Add Task form and returns the base task payload
- * (without assignedContacts or editingId meta fields).
- * @returns {TaskData}
- */
+  const createBtn = $("create-button");
+  if (createBtn && !createBtn.dataset.bound) {
+    createBtn.addEventListener("click", handleCreateClick);
+    createBtn.dataset.bound = "1";
+  }
+
+  const okBtn = $("ok-button");
+  if (okBtn && !okBtn.dataset.bound) {
+    okBtn.addEventListener("click", handleEditOkClick);
+    okBtn.dataset.bound = "1";
+  }
+
+  const editOkBtn = $("edit-ok-button");
+  if (editOkBtn && !editOkBtn.dataset.bound) {
+    editOkBtn.addEventListener("click", handleEditOkClick);
+    editOkBtn.dataset.bound = "1";
+  }
+}
+
+function maybeRenderContacts() {
+  const box = $("contact-list-box");
+  if (!box) return; // Template noch nicht da
+  box.innerHTML = "";
+  if (loadedContacts && Object.keys(loadedContacts).length) {
+    renderContacts(loadedContacts, box);
+  }
+}
+
 function baseTaskFromForm() {
   return {
     column: "todo",
@@ -121,9 +96,6 @@ function baseTaskFromForm() {
   };
 }
 
-/**
- * Shows the slide-in confirmation banner and dims the overlay.
- */
 function showBanner() {
   const overlay = $("overlay-bg");
   const banner = $("slide-in-banner");
@@ -131,9 +103,6 @@ function showBanner() {
   if (banner) banner.classList.add("visible");
 }
 
-/**
- * Hides the slide-in confirmation banner and restores overlay opacity.
- */
 function hideBanner() {
   const overlay = $("overlay-bg");
   const banner = $("slide-in-banner");
@@ -141,9 +110,6 @@ function hideBanner() {
   if (overlay) overlay.style.display = "none";
 }
 
-/**
- * Completes the create-task flow: hides banner, resets UI, and navigates to board if needed.
- */
 function finishCreateFlow() {
   setTimeout(() => {
     hideBanner();
@@ -154,9 +120,6 @@ function finishCreateFlow() {
   }, 1200);
 }
 
-/**
- * Completes the update-task flow: hides banner/overlay and returns to board when appropriate.
- */
 function finishUpdateFlow() {
   setTimeout(() => {
     hideBanner();
@@ -167,36 +130,17 @@ function finishUpdateFlow() {
   }, 900);
 }
 
-/**
- * Clears all validation error messages in the Add Task form.
- */
 function resetFormErrors() {
   $("addtask-error").innerHTML = "";
   $("due-date-error").innerHTML = "";
   $("category-selection-error").innerHTML = "";
 }
 
-/**
- * Renders a single validation error and optionally highlights a field border.
- * @param {string} msgId - Element id that displays the message
- * @param {string} borderId - Element id whose border should turn into error color
- * @param {string} msg - Text to display
- */
 function setError(msgId, borderId, msg) {
   $(msgId).innerHTML = msg;
   if (borderId) $(borderId).style.borderColor = "var(--error-color)";
 }
 
-/**
- * Loads contacts from Firebase and renders them into the contact list box.
- * @returns {void}
- */
-
-
-/**
- * Filters the contact list as the user types in the contact input and re-renders the list.
- * @param {InputEvent} e
- */
 function onContactInput(e) {
   const value = String(e.target.value || "").trim().toLowerCase();
   const listBox = $("contact-list-box");
@@ -217,16 +161,6 @@ function onContactInput(e) {
   renderContacts(filtered, listBox);
 }
 
-const contactInput = $("contact-input");
-if (contactInput) {
-  contactInput.addEventListener("input", onContactInput);
-}
-
-/**
- * Renders a contact dictionary into list items inside the provided container.
- * @param {Object.<string, {name:string,initials:string,colorIndex:number}>} contacts
- * @param {HTMLElement} container
- */
 function renderContacts(contacts, container) {
   for (const id in contacts) {
     const contact = contacts[id];
@@ -235,12 +169,6 @@ function renderContacts(contacts, container) {
   }
 }
 
-/**
- * Creates a single contact list item element with avatar and checkbox UI.
- * @param {{name:string,initials:string,colorIndex:number}} contact
- * @param {string} id
- * @returns {HTMLLIElement}
- */
 function createContactListItem(contact, id) {
   let li = document.createElement("li");
   li.id = id;
@@ -257,10 +185,6 @@ function createContactListItem(contact, id) {
   return li;
 }
 
-/**
- * Attaches selection toggle behavior to a contact list item and updates the initials strip.
- * @param {HTMLLIElement} li
- */
 function addContactListItemListener(li) {
   li.addEventListener("click", () => {
     li.classList.toggle("selected");
@@ -273,11 +197,6 @@ function addContactListItemListener(li) {
   });
 }
 
-/**
- * Renders the initials of all currently selected contacts below the selector.
- * Clones the `.contact-initial` nodes from the selected list items into `#contact-initials`.
- * @returns {void}
- */
 function renderSelectedContactInitials() {
   let selectedLis = document.querySelectorAll("#contact-list-box li.selected");
   let contactInitialsBox = document.getElementById("contact-initials");
@@ -292,11 +211,6 @@ function renderSelectedContactInitials() {
   });
 }
 
-
-/**
- * Aggregates the full task payload from the form, including assigned contacts and editing id.
- * @returns {TaskData}
- */
 function collectFormData() {
   const base = baseTaskFromForm();
   return {
@@ -306,11 +220,6 @@ function collectFormData() {
   };
 }
 
-/**
- * Validates the title field.
- * @param {{title:string}} data
- * @returns {boolean}
- */
 function validateTitle(data) {
   if (!data.title) {
     setError("addtask-error", "addtask-title", "This field is required");
@@ -319,11 +228,6 @@ function validateTitle(data) {
   return true;
 }
 
-/**
- * Validates the due date field.
- * @param {{dueDate:string}} data
- * @returns {boolean}
- */
 function validateDueDate(data) {
   if (!data.dueDate) {
     setError("due-date-error", "datepicker-wrapper", "Please select a due date");
@@ -332,11 +236,6 @@ function validateDueDate(data) {
   return true;
 }
 
-/**
- * Validates the category dropdown selection.
- * @param {{category:string}} data
- * @returns {boolean}
- */
 function validateCategory(data) {
   if (data.category === "Select task category") {
     setError("category-selection-error", "category-select", "Please choose category");
@@ -345,20 +244,10 @@ function validateCategory(data) {
   return true;
 }
 
-/**
- * Validates that a priority has been selected.
- * @param {{priority:string}} data
- * @returns {boolean}
- */
 function validatePriority(data) {
   return !!data.priority;
 }
 
-/**
- * Runs all form validators, mutating the UI error state, and returns the combined result.
- * @param {Object} data
- * @returns {boolean}
- */
 function validateFormData(data) {
   resetFormErrors();
   let ok = true;
@@ -369,10 +258,6 @@ function validateFormData(data) {
   return ok;
 }
 
-/**
- * Handles saving when editing: validates, preserves column, and updates the task.
- * @returns {Promise<void>}
- */
 async function handleEditOkClick() {
   const taskData = collectFormData();
   if (!validateFormData(taskData)) return;
@@ -388,10 +273,6 @@ async function handleEditOkClick() {
 }
 window.handleEditOkClick = handleEditOkClick;
 
-/**
- * Handles creating a new task from the Add Task form after validation.
- * @returns {void}
- */
 function handleCreateClick() {
   const data = collectFormData();
   if (!validateFormData(data)) return;
@@ -399,22 +280,6 @@ function handleCreateClick() {
   if (!window.location.pathname.endsWith("addtask.html")) window.toggleAddTaskBoard();
 }
 
-const createBtn = $("create-button");
-if (createBtn) createBtn.addEventListener("click", handleCreateClick);
-
-/**
- * Wires explicit click handlers for save/edit OK buttons to prevent double triggers (no global delegation).
- */
-const okBtn = $("ok-button");
-if (okBtn) okBtn.addEventListener("click", handleEditOkClick);
-const editOkBtn = $("edit-ok-button");
-if (editOkBtn) editOkBtn.addEventListener("click", handleEditOkClick);
-
-/**
- * Persists a new task to Firebase under /tasks and triggers the create flow UI.
- * @param {TaskData} taskData
- * @returns {void}
- */
 function sendTaskToFirebase(taskData) {
   if (typeof FirebaseActions.createTask !== "function") {
     return console.error("FirebaseActions.createTask ist nicht verfügbar");
@@ -424,12 +289,6 @@ function sendTaskToFirebase(taskData) {
     .catch((e) => console.error("Fehler beim Speichern:", e));
 }
 
-/**
- * Updates an existing task in Firebase and triggers the update flow UI.
- * @param {string} taskId
- * @param {TaskData} taskData
- * @returns {void}
- */
 function updateTaskInFirebase(taskId, taskData) {
   const toSave = {
     column: taskData.column,
@@ -449,3 +308,37 @@ function updateTaskInFirebase(taskId, taskData) {
     .then(() => { showBanner(); finishUpdateFlow(); })
     .catch((e) => console.error("Fehler beim Aktualisieren:", e));
 }
+
+(function loadContactsAndRender() {
+  const fetchContacts = () => {
+    if (typeof FirebaseActions.fetchContacts === "function") {
+      FirebaseActions.fetchContacts()
+        .then((contacts) => {
+          loadedContacts = contacts || {};
+          maybeRenderContacts();
+        })
+        .catch((e) => console.error("Fehler beim Laden der Kontakte:", e));
+    } else {
+      console.warn("FirebaseActions.fetchContacts ist nicht verfügbar (firebase.module.js geladen?)");
+    }
+  };
+
+  const init = () => {
+    bindDynamicElements();
+    maybeRenderContacts();
+    // Falls noch nicht geladen, laden
+    if (!loadedContacts || !Object.keys(loadedContacts).length) fetchContacts();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+
+  // Nachträgliches Einfügen des Templates abfangen
+  document.addEventListener("addtask:template-ready", () => {
+    bindDynamicElements();
+    maybeRenderContacts();
+  });
+})();

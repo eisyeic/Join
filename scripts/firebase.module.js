@@ -46,26 +46,3 @@ if (typeof window !== "undefined") {
     deleteTask,
   };
 }
-
-(function loadContactsAndRender() {
-  const run = () => {
-    let contactListBox = $("contact-list-box");
-    if (!contactListBox) return;
-    contactListBox.innerHTML = "";
-    if (typeof FirebaseActions.fetchContacts === "function") {
-      FirebaseActions.fetchContacts()
-        .then((contacts) => {
-          loadedContacts = contacts || {};
-          renderContacts(loadedContacts, contactListBox);
-        })
-        .catch((e) => console.error("Fehler beim Laden der Kontakte:", e));
-    } else {
-      console.warn("FirebaseActions.fetchContacts ist nicht verfügbar (firebase.modul.js geladen?)");
-    }
-  };
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", run, { once: true });
-  } else {
-    run();
-  }
-})();

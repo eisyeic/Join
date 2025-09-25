@@ -4,7 +4,7 @@ import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { renderAssignedContacts, renderSubtasks } from "./template.modul.js";
+import { renderAssignedContacts, renderSubtasks } from "./template.module.js";
 
 /**
  * Firebase Realtime Database instance.

@@ -23,15 +23,6 @@ function getContactPerson(key, id) {
 /** @type {Partial<Contact>} */
 let currentContact = {};
 
-/**
- * Render the desktop contact details view into the given container.
- * @param {string} name
- * @param {string} email
- * @param {string} phone
- * @param {number} colorIndex
- * @param {HTMLElement} detailSection
- * @returns {void}
- */
 function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
   detailSection.innerHTML = /*html*/ `
         <div class="contact-single-person-content-head">

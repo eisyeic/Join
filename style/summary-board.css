@@ -56,6 +56,7 @@ h5 {
   display: flex;
   justify-content: space-between;
   position: relative;
+  height: 221px;
 }
 
 .task-dashboard-bottom-row {
@@ -127,6 +128,7 @@ h5 {
   align-items: center;
   flex-direction: column;
   gap: 13px;
+  width: 320px;
 }
 
 .task-tile-board-overview {

@@ -79,6 +79,7 @@
 
   .task-tile-urgent-right-section {
     gap: 16px;
+    width: auto;
     align-items: start;
   }
 

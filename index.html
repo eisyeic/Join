@@ -6,13 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
   <meta http-equiv="Permissions-Policy" content="unload=*" />
+  
   <title>Join App</title>
-  <script src="./script.js" defer></script>
-  <script type="module" src="./scripts/login.js"></script>
-  <!-- Checkbox images preload -->
-  <link rel="preload" href="./assets/icons/login/checkbox_hover.svg" as="image" />
-  <link rel="preload" href="./assets/icons/login/checkbox_checked.svg" as="image" />
-  <link rel="preload" href="./assets/icons/login/check_hover_checked.svg" as="image" />
   <link rel="shortcut icon" href="./assets/icons/login/logo_blue.svg" type="image/x-icon" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./style/login.css" />
@@ -21,6 +16,14 @@
   <link rel="prerender" href="./board.html">
   <link rel="prerender" href="./addtask.html">
   <link rel="prerender" href="./contact.html">
+
+  <!-- Checkbox images preload -->
+  <link rel="preload" href="./assets/icons/login/checkbox_hover.svg" as="image" />
+  <link rel="preload" href="./assets/icons/login/checkbox_checked.svg" as="image" />
+  <link rel="preload" href="./assets/icons/login/check_hover_checked.svg" as="image" />
+  
+  <script src="./scripts/login.js" defer></script>
+  <script src="./scripts/login.module.js" type="module"></script>
 </head>
 
 <body>

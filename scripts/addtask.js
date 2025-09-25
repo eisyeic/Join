@@ -1,30 +1,15 @@
-/* eslint-disable no-undef */
-/**
- * @file Add-Task UI interactions: datepicker, priorities, categories, assigned contacts dropdown, and subtask CRUD. JSDoc-annotated only.
- *
- * Expected globals:
- *  - $: (id: string) => HTMLElement
- *  - renderSubtasks: () => void
- */
- /** @type {string[]} */ 
 window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
 let subtasks = window.subtasks; 
 window.SubtaskIO = window.SubtaskIO || {
   set(index, value) { subtasks[index] = value; },
   remove(index) { subtasks.splice(index, 1); },
-  rerender() { renderSubtasks(); addEditEvents(); }
+  rerender() { renderSubtasks(); }
 };
 
-/**
- * Open the native datepicker by clicking the wrapper.
- */
 $("datepicker-wrapper").addEventListener("click", () => {
   document.querySelector("#datepicker")?.click();
 });
 
-/**
- * Priority buttons: set active state and update `selectedPriority`.
- */
 document.querySelectorAll(".priority-button").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".priority-button").forEach((btn) => {
@@ -35,12 +20,9 @@ document.querySelectorAll(".priority-button").forEach((button) => {
   });
 });
 
-/**
- * Reset the entire Add-Task form priority to "medium".
- */
 function resetPrioritySelection() {
   document.querySelectorAll(".priority-button").forEach((btn) => btn.classList.remove("active"));
-  selectedPriority = /** @type {Priority} */ ("medium");
+  selectedPriority = ("medium");
   const mediumButton = document.querySelector(".medium-button");
   if (mediumButton) mediumButton.classList.add("active");
 }
@@ -71,9 +53,6 @@ $("assigned-select-box").addEventListener("click", () => {
   }
 });
 
-/**
- * Handle category option clicks and update the select label.
- */
 $("category-selection").querySelectorAll("li").forEach((item) => {
   item.addEventListener("click", () => {
     const value = item.getAttribute("data-value") ?? "";
@@ -86,19 +65,12 @@ $("category-selection").querySelectorAll("li").forEach((item) => {
   });
 });
 
-/**
- * Global click: close dropdowns if clicking outside their areas.
- * @param {MouseEvent} event
- */
 document.addEventListener("click", (event) => {
   handleCategoryClickOutside(event);
   handleAssignedClickOutside(event);
 });
 
-/**
- * Close category dropdown if the click was outside category elements.
- * @param {MouseEvent} event
- */
+
 function handleCategoryClickOutside(event) {
   const target = /** @type {Node} */ (event.target);
   const isInsideCategory = $("category-select").contains(target) || $("category-selection").contains(target);
@@ -109,10 +81,6 @@ function handleCategoryClickOutside(event) {
   }
 }
 
-/**
- * Close assigned contacts dropdown if the click was outside assigned elements.
- * @param {MouseEvent} event
- */
 function handleAssignedClickOutside(event) {
   const target = /** @type {Node} */ (event.target);
   const isInsideAssigned = $("assigned-select-box").contains(target) || $("contact-list-box").contains(target);
@@ -130,19 +98,12 @@ function handleAssignedClickOutside(event) {
   }
 }
 
-
-/**
- * Toggle the category dropdown when clicking the select.
- */
 $("category-select").addEventListener("click", () => {
   $("category-selection").classList.toggle("d-none");
   $("category-icon").classList.toggle("arrow-down");
   $("category-icon").classList.toggle("arrow-up");
 });
 
-/**
- * Toggle subtask input action buttons based on content presence.
- */
 $("sub-input").addEventListener("input", function () {
   if (this.value !== "") {
     $("subtask-plus-box").classList.add("d-none");
@@ -153,33 +114,21 @@ $("sub-input").addEventListener("input", function () {
   }
 });
 
-/**
- * Reveal subtask controls on hover.
- */
 $("subtask-list").addEventListener("mouseover", (event) => {
   const item = event.target.closest(".subtask-item");
   item?.querySelector(".subtask-func-btn")?.classList.remove("d-none");
 });
 
-/**
- * Hide subtask controls when leaving the item.
- */
 $("subtask-list").addEventListener("mouseout", (event) => {
   const item = event.target.closest(".subtask-item");
   item?.querySelector(".subtask-func-btn")?.classList.add("d-none");
 });
 
-/**
- * Clear title error styles on user input.
- */
 $("addtask-title").addEventListener("input", function () {
   this.style.borderColor = "";
   $("addtask-error").innerHTML = "";
 });
 
-/**
- * Reset the entire Add Task form to defaults.
- */
 $("cancel-button").addEventListener("click", () => {
   $("addtask-title").value = "";
   $("addtask-title").style.borderColor = "";
@@ -203,9 +152,6 @@ $("cancel-button").addEventListener("click", () => {
   resetPrioritySelection();
 });
 
-/**
- * Remove all selected contacts and clear the initials box.
- */
 function clearAssignedContacts() {
   document.querySelectorAll("#contact-list-box li.selected").forEach((li) => {
     li.classList.remove("selected");
@@ -216,9 +162,6 @@ function clearAssignedContacts() {
   if (contactInitialsBox) contactInitialsBox.innerHTML = "";
 }
 
-/**
- * Attach edit click listeners for all subtask edit icons.
- */
 function addEditEvents() {
   document.querySelectorAll(".subtask-edit-icon").forEach((editBtn) => {
     editBtn.addEventListener("click", () => enterEditMode(editBtn));
@@ -226,24 +169,15 @@ function addEditEvents() {
 }
 window.addEditEvents = addEditEvents;
 
-/**
- * Put a subtask item into edit mode and bind Enter-to-save.
- * @param {HTMLElement} editBtn
- */
 function enterEditMode(editBtn) {
   const item = editBtn.closest(".subtask-item");
   const input = item?.querySelector(".subtask-edit-input");
   if (!item || !input) return;
-  showEditFields(item, /** @type {HTMLInputElement} */ (input));
-  setupEnterKeyToSave(/** @type {HTMLInputElement} */ (input), item);
+  showEditFields(item, (input));
+  setupEnterKeyToSave((input), item);
 }
 window.enterEditMode = enterEditMode;
 
-/**
- * Reveal edit input fields of a subtask item and focus the input.
- * @param {HTMLElement} item
- * @param {HTMLInputElement} input
- */
 function showEditFields(item, input) {
   item.querySelector(".subtask-text")?.classList.add("d-none");
   input.classList.remove("d-none");
@@ -257,26 +191,18 @@ function showEditFields(item, input) {
   item.querySelector(".subtask-save-icon")?.classList.remove("d-none");
 }
 
-/**
- * Bind Enter key to save subtask edit.
- * @param {HTMLInputElement} input
- * @param {HTMLElement} item
- */
 function setupEnterKeyToSave(input, item) {
   const handler = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const saveBtn = item.querySelector(".subtask-save-icon");
-      if (saveBtn) saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
+      if (saveBtn) saveEditedSubtask((saveBtn));
       input.removeEventListener("keydown", handler);
     }
   };
   input.addEventListener("keydown", handler);
 }
 
-/**
- * Add a subtask via the check icon.
- */
 $("sub-check").addEventListener("click", () => {
   const subtaskText = $("sub-input").value.trim();
   if (!subtaskText) return;
@@ -287,9 +213,6 @@ $("sub-check").addEventListener("click", () => {
   renderSubtasks();
 });
 
-/**
- * Add a subtask when pressing Enter in the input.
- */
 $("sub-input").addEventListener("keydown", function (event) {
   if (event.key !== "Enter") return;
   event.preventDefault();
@@ -302,10 +225,6 @@ $("sub-input").addEventListener("keydown", function (event) {
   renderSubtasks();
 });
 
-/**
- * Attach delete click listeners for all .subtask-delete-icon after a render.
- * (Note: if unused elsewhere, consider delegated click handlers.)
- */
 function deleteEvent() {
   document.querySelectorAll(".subtask-delete-icon").forEach((deleteBtn) => {
     deleteBtn.addEventListener("click", () => {
@@ -321,18 +240,12 @@ function deleteEvent() {
   });
 }
 
-/**
- * Clear the new-subtask input via the clear (X) icon.
- */
 $("sub-clear").addEventListener("click", () => {
   $("sub-input").value = "";
   $("subtask-func-btn").classList.add("d-none");
   $("subtask-plus-box").classList.remove("d-none");
 });
 
-/**
- * Provide a default suggestion on plus click if there are no subtasks yet.
- */
 $("sub-plus").addEventListener("click", () => {
   if (subtasks.length === 0) {
     $("sub-input").value = "Contact Form";
@@ -341,17 +254,13 @@ $("sub-plus").addEventListener("click", () => {
   }
 });
 
-/**
- * Persist an edited subtask triggered by clicking the save icon.
- * @param {HTMLElement} saveBtn
- */
 function saveEditedSubtask(saveBtn) {
   const item = saveBtn.closest(".subtask-item");
   if (!item) return;
   const index = Number(item.getAttribute("data-index"));
   const input = item.querySelector(".subtask-edit-input");
   if (!Number.isFinite(index) || !input) return;
-  const newValue = /** @type {HTMLInputElement} */ (input).value.trim();
+  const newValue = (input).value.trim();
   if (!newValue) {
     subtasks.splice(index, 1);
   } else {
@@ -362,35 +271,24 @@ function saveEditedSubtask(saveBtn) {
 }
 window.saveEditedSubtask = saveEditedSubtask;
 
-/**
- * Delegated save click for subtask items.
- */
 $("subtask-list").addEventListener("click", (event) => {
   if (event.target.classList?.contains("subtask-save-icon")) {
-    saveEditedSubtask(/** @type {HTMLElement} */ (event.target));
+    saveEditedSubtask((event.target));
   }
 });
 
-/**
- * Auto-save editing subtask when clicking outside its bounds.
- */
-/**
- * Auto-save editing subtask when clicking outside its bounds.
- * Zusätzlich: Wenn außerhalb von #sub-input geklickt wird und es Text gibt,
- * den #sub-check-Button auslösen (aber nicht während eines Edit-Modus).
- */
 document.addEventListener('pointerdown', (event) => {
-  const target = /** @type {Node} */ (event.target);
+  const target = (event.target);
   const editingItems = document.querySelectorAll('.subtask-item.editing');
   const hadEditing = editingItems.length > 0;
   editingItems.forEach((subtaskItem) => {
     if (!subtaskItem.contains(target)) {
       const saveBtn = subtaskItem.querySelector('.subtask-save-icon');
-      if (saveBtn) window.saveEditedSubtask(/** @type {HTMLElement} */ (saveBtn));
+      if (saveBtn) window.saveEditedSubtask((saveBtn));
     }
   });
   if (!hadEditing) {
-    const subInput = /** @type {HTMLInputElement|null} */ (document.getElementById('sub-input'));
+    const subInput = (document.getElementById('sub-input'));
     if (subInput && subInput.value.trim() && !subInput.contains(target)) {
       const funcBox = document.getElementById('subtask-func-btn');
       if (!funcBox || !funcBox.contains(target)) {
@@ -400,10 +298,6 @@ document.addEventListener('pointerdown', (event) => {
   }
 }, true);
 
-
-/**
- * Replace a <template id="addtask-template"> with its rendered content and dispatch 'addtask:template-ready'.
- */
 (function injectAddTaskTemplate() {
   const render = () => {
     const tpl = document.getElementById("addtask-template");
@@ -423,11 +317,6 @@ document.addEventListener('pointerdown', (event) => {
   }
 })();
 
-/**
- * Limit avatars displayed in a container to a maximum and append exactly one "+x" badge. Idempotent.
- * @param {HTMLElement} container
- * @param {number} [max=5]
- */
 function capAssignedInitialsIn(container, max = 5) {
   if (!container) return;
   const chips = Array.from(container.children).filter(el => el.nodeType === 1 && el.getAttribute('data-plus-badge') !== 'true');
@@ -447,10 +336,6 @@ function capAssignedInitialsIn(container, max = 5) {
   container.appendChild(plus);
 }
 
-/**
- * Apply capping to all elements with the ".contact-initials" class on the page.
- * @param {number} [max=5]
- */
 function applyCapToAllInitials(max = 5) {
   document.querySelectorAll('.contact-initials').forEach(box => capAssignedInitialsIn(box, max));
 }
@@ -460,9 +345,6 @@ if (document.readyState === 'loading') {
   applyCapToAllInitials(5);
 }
 
-/**
- * Observe the DOM and re-apply initials capping when ".contact-initials" nodes are added.
- */
 (function observeInitials() {
   let scheduled = false;
   const schedule = () => {
@@ -481,3 +363,67 @@ if (document.readyState === 'loading') {
   });
   obs.observe(document.documentElement, { childList: true, subtree: true });
 })();
+
+function closeCategoryDropdown(scope) {
+  const panel = scope.querySelector('#category-selection');
+  const icon = scope.querySelector('#category-icon');
+  if (panel) panel.classList.add('d-none');
+  if (icon) {
+    icon.classList.remove('arrow-up');
+    icon.classList.add('arrow-down');
+  }
+}
+
+function closeAssignedDropdown(scope) {
+  const list = scope.querySelector('#contact-list-box');
+  const icon = scope.querySelector('#assigned-icon');
+  if (list) list.classList.add('d-none');
+  if (typeof applyAssignedInitialsCap === 'function') applyAssignedInitialsCap();
+  const initialsBox = scope.querySelector('#contact-initials');
+  if (initialsBox) {
+    const selected = scope.querySelectorAll('#contact-list-box li.selected');
+    initialsBox.classList.toggle('d-none', selected.length === 0);
+  }
+  if (icon) {
+    icon.classList.remove('arrow-up');
+    icon.classList.add('arrow-down');
+  }
+}
+
+
+function setupDropdownOutsideCloseIn(container) {
+  if (!container || container.dataset.outsideCloserAttached === '1') return;
+  const onClickCapture = (e) => {
+    const t = e.target;
+    if (!container.contains(t)) return;
+    const catSelect = container.querySelector('#category-select'), catPanel = container.querySelector('#category-selection'), asSelect = container.querySelector('#assigned-select-box'), asList = container.querySelector('#contact-list-box');
+    const inCat = (catSelect && catSelect.contains(t)) || (catPanel && catPanel.contains(t)), inAs = (asSelect && asSelect.contains(t)) || (asList && asList.contains(t));
+    if ((catSelect || catPanel) && !inCat) closeCategoryDropdown(container);
+    if ((asSelect || asList) && !inAs) closeAssignedDropdown(container);
+  };
+  container.addEventListener('click', onClickCapture, { capture: true });
+  container.dataset.outsideCloserAttached = '1';
+}
+
+function handleSubtaskClickOutside(event, editMode = false) {
+  const scope = event.currentTarget || document;
+  const subZone = scope.querySelector('.subtask-select');
+  if (subZone && subZone.contains(event.target)) return;
+  const input = scope.querySelector('#sub-input');
+  if (!editMode && input && input.value.trim()) {
+    if (typeof window.addSubtask === 'function') window.addSubtask(input.value.trim());
+    input.value = '';
+  }
+  const func = scope.querySelector('#subtask-func-btn');
+  const plus = scope.querySelector('#subtask-plus-box');
+  if (func) func.classList.add('d-none');
+  if (plus) plus.classList.remove('d-none');
+  if (input) input.blur();
+}
+
+setupDropdownOutsideCloseIn($('overlay-add-task'));
+
+setupDropdownOutsideCloseIn($('task-overlay'));
+
+const editWrapper = document.querySelector('#task-overlay .edit-addtask-wrapper');
+if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
