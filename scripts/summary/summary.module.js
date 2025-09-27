@@ -19,10 +19,6 @@ function getGreeting() {
   return "Good Evening";
 }
 
-function $(id) {
-  return document.getElementById(id);
-}
-
 function loadTaskCounts() {
   const tasksRef = ref(db, "tasks");
   onValue(tasksRef, (snapshot) => {
@@ -149,8 +145,8 @@ function updateUserInterface(user) {
       elements.greeting.style.fontSize = "48px";
       elements.greeting.style.fontWeight = "400";
     }
-    if (elements.initials && window.updateUserInitials) {
-      window.updateUserInitials(user);
+    if (elements.initials && updateUserInitials) {
+      updateUserInitials(user);
     }
   }
 }

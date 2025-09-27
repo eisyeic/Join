@@ -1,8 +1,3 @@
-
-/**
- * Render the "Task To-do" summary tile for mobile.
- * @returns {void}
- */
 function getMobileTaskTodo() {
   document.getElementById("mobile-task-to-do").innerHTML = /*html*/ `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
@@ -19,10 +14,6 @@ function getMobileTaskTodo() {
           </div>`;
 }
 
-/**
- * Render the "Task on Board" summary tile for mobile.
- * @returns {void}
- */
 function getMobileTaskOnBoard() {
   document.getElementById("mobile-task-on-board").innerHTML = /*html*/ `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
@@ -39,10 +30,6 @@ function getMobileTaskOnBoard() {
           </div>`;
 }
 
-/**
- * Return the full Add-Task form markup.
- * @returns {string} HTML
- */
 function getTaskMainTemplate() {
   return `
     <!-- task title -->
@@ -160,8 +147,17 @@ function getSubtasksTemplate() {
   `;
 }
 
-
-
-
-
-
+function getSubtaskItemTemplate(subtask, index) {
+  return `
+      <li class="subtask-item" data-index="${index}">
+        <span class="subtask-text">${subtask}</span>
+        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
+        <div class="subtask-func-btn d-none">
+          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
+          <div class="vertical-spacer first-spacer"></div>
+          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
+          <div class="vertical-spacer second-spacer d-none"></div>
+          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
+        </div>
+      </li>`;
+}

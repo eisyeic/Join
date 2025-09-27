@@ -14,6 +14,8 @@ function bindDatepickerClick(){
   if (el.dataset && el.dataset.dpBound === '1') return;
   el.addEventListener("click", () => {
     document.querySelector("#datepicker")?.click();
+    $("datepicker-wrapper").style.borderColor = '';
+    $("due-date-error").innerHTML = '';
   });
   if (el.dataset) el.dataset.dpBound = '1';
 }
@@ -36,10 +38,9 @@ function resetPrioritySelection() {
 function bindAddTaskEvents() {
   const on = (el, type, handler, key) => {
     if (!el) return;
-    // Build a safe data-* attribute name: data-bound-<type>-<key>
     const mark = `bound-${type}-${key || ''}`.replace(/[^a-z0-9_-]/gi, '_');
     const attr = `data-${mark}`;
-    if (el.getAttribute(attr) === '1') return; // already bound
+    if (el.getAttribute(attr) === '1') return; 
     el.addEventListener(type, handler);
     el.setAttribute(attr, '1');
   };
@@ -235,7 +236,8 @@ if (document.readyState === 'loading') {
 const contactInitialsBox = document.querySelector(".contact-initials"); 
 const MAX_VISIBLE_INITIALS = 3;
 function applyAssignedInitialsCap() {
-  capAssignedInitialsIn(contactInitialsBox, MAX_VISIBLE_INITIALS);
+  // Cap all current initials containers consistently
+  applyCapToAllInitials(MAX_VISIBLE_INITIALS);
 }
 
 window.applyAssignedInitialsCap = applyAssignedInitialsCap;
@@ -419,9 +421,9 @@ function applyCapToAllInitials(max = 5) {
   document.querySelectorAll('.contact-initials').forEach(box => capAssignedInitialsIn(box, max));
 }
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => applyCapToAllInitials(5));
+  document.addEventListener('DOMContentLoaded', () => applyCapToAllInitials(MAX_VISIBLE_INITIALS));
 } else {
-  applyCapToAllInitials(5);
+  applyCapToAllInitials(MAX_VISIBLE_INITIALS);
 }
 
 (function observeInitials() {
@@ -429,7 +431,7 @@ if (document.readyState === 'loading') {
   const schedule = () => {
     if (scheduled) return;
     scheduled = true;
-    requestAnimationFrame(() => { scheduled = false; applyCapToAllInitials(5); });
+    requestAnimationFrame(() => { scheduled = false; applyCapToAllInitials(MAX_VISIBLE_INITIALS); });
   };
   const obs = new MutationObserver(records => {
     for (const r of records) {
@@ -548,6 +550,7 @@ if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
   }
 })();
 
+
 /**
  * Render the editable subtasks list (titles only).
  * Accepts `window.subtasks` or a global `subtasks` and normalizes to string[].
@@ -569,20 +572,7 @@ function renderSubtasks() {
   window.subtasks = normalized;
 
   $("subtask-list").innerHTML = normalized
-    .map(
-      (subtask, index) => `
-      <li class="subtask-item" data-index="${index}">
-        <span class="subtask-text">${subtask}</span>
-        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
-        <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
-          <div class="vertical-spacer first-spacer"></div>
-          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-          <div class="vertical-spacer second-spacer d-none"></div>
-          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
-        </div>
-      </li>`
-    )
+    .map((subtask, index) => getSubtaskItemTemplate(subtask, index))
     .join("");
   addEditEvents();
   deleteEvent();
@@ -597,4 +587,18 @@ function getAddtaskTemplate() {
     ${getCategoryTemplate()}
     ${getSubtasksTemplate()}
   `;
+}
+
+function showBanner() {
+  const overlay = $("overlay-bg");
+  const banner = $("slide-in-banner");
+  if (overlay) overlay.style.display = "block";
+  if (banner) banner.classList.add("visible");
+}
+
+function hideBanner() {
+  const overlay = $("overlay-bg");
+  const banner = $("slide-in-banner");
+  if (banner) banner.classList.remove("visible");
+  if (overlay) overlay.style.display = "none";
 }
