@@ -1,4 +1,4 @@
-import { db, ref, get, set, push, update, onValue } from "./firebase.js";
+import { db, ref, get, set, push, update, onValue } from "../firebase.js";
 
 async function fetchContacts() {
   const snap = await get(ref(db, "contacts"));

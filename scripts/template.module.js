@@ -1,8 +1,8 @@
-import { renderAssignedInitials } from "./board.js";
-import { renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
+import { renderAssignedInitials } from "./board/board.js";
+import { renderSubtaskProgress, getLabelClass } from "./board/task-overlay.js";
 
-let _currentMoveOverlay = null;
-let _moveOverlayCleanup = null;
+let currentMoveOverlay = null;
+let moveOverlayCleanup = null;
 function truncateForCard(text, max = 50) {
   const s = (text || "").trim();
   if (s.length <= max) return s;
@@ -138,7 +138,7 @@ function registerGlobalOverlayCleanup(overlay){
   document.addEventListener("keydown", onKey);
   ["scroll","wheel","touchmove"].forEach(t=>document.addEventListener(t,onAny,{capture:true,passive:true}));
   window.addEventListener("resize", onAny);
-  _moveOverlayCleanup=()=>{
+  moveOverlayCleanup=()=>{
     document.removeEventListener("click", onDocClick, {capture:true});
     document.removeEventListener("keydown", onKey);
     ["scroll","wheel","touchmove"].forEach(t=>document.removeEventListener(t,onAny,{capture:true}));
@@ -152,7 +152,7 @@ function animateClose(el, after){
   el.addEventListener("transitionend", onEnd, {once:true}); setTimeout(onEnd, 240);
 }
 
-function runMoveOverlayCleanup(){ if(_moveOverlayCleanup){ _moveOverlayCleanup(); _moveOverlayCleanup=null; } }
+function runMoveOverlayCleanup(){ if(moveOverlayCleanup){ moveOverlayCleanup(); moveOverlayCleanup=null; } }
 
 function getSiblingTicket(el, dir){
   let sib = dir==="prev" ? el.previousElementSibling : el.nextElementSibling;
@@ -176,35 +176,21 @@ export function createTaskElement(task, taskId) {
   return ticket;
 }
 
-export function renderAssignedContacts(task) {
-  const contacts = resolveContacts(task);
-  retryUntilFound("overlay-members", (container)=>{
-    renderContactsTo((container), contacts);
-  });
-}
-
-window.renderAssignedContacts = renderAssignedContacts;
-
-export function renderSubtasks(task) {
-  const container = ($("overlay-subtasks"));
-  if (task.subtasks && task.subtasks.length) container.innerHTML = toSubtasksHtml(task.subtasks);
-  else renderNoSubtasks(container);
-}
 
 function openMoveOverlay(anchorEl, taskId, currentColumn) {
-  if (_currentMoveOverlay && _currentMoveOverlay.dataset.taskId === String(taskId)) { closeMoveOverlay(); return; }
+  if (currentMoveOverlay && currentMoveOverlay.dataset.taskId === String(taskId)) { closeMoveOverlay(); return; }
   closeMoveOverlay();
   const overlay = createMoveOverlay(taskId, currentColumn);
   attachMoveOverlayHandlers(overlay, taskId);
   placeOverlay(anchorEl, overlay);
   animateOpen(overlay);
   registerGlobalOverlayCleanup(overlay);
-  _currentMoveOverlay = overlay;
+  currentMoveOverlay = overlay;
 }
 
 function closeMoveOverlay() {
-  if (_currentMoveOverlay) {
-    const el = _currentMoveOverlay; _currentMoveOverlay = null;
+  if (currentMoveOverlay) {
+    const el = currentMoveOverlay; currentMoveOverlay = null;
     animateClose(el, ()=>{ el.remove(); runMoveOverlayCleanup(); });
     return;
   }

@@ -149,6 +149,7 @@ function showLoginForm() {
     ["name", "sign-up-email", "sign-up-password", "confirm-password"],
     errorSignUpBox
   );
+  confirmEl.classList.toggle("checked");
   initializePasswordFields("login");
 }
 

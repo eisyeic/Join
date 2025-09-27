@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { auth } from "./firebase.js";
+import { auth } from "../firebase.js";
 
 /** External UI/validation helpers (global). */
 /** @type {(box:HTMLElement|null, ...els:(HTMLElement|null|undefined)[])=>void} */

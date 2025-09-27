@@ -4,7 +4,6 @@ import {
   ref,
   get,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { renderAssignedContacts, renderSubtasks } from "./template.module.js";
 
 /**
  * Firebase Realtime Database instance.
@@ -63,6 +62,18 @@ async function fetchTask(taskId) {
   const task = snap.val();
   task.id = taskId;
   return task;
+}
+
+function renderAssignedContacts(task) {
+  const contacts = resolveContacts(task);
+  retryUntilFound("overlay-members", (container)=>{
+    renderContactsTo((container), contacts);
+  });
+}
+function renderSubtasks(task) {
+  const container = ($("overlay-subtasks"));
+  if (task.subtasks && task.subtasks.length) container.innerHTML = toSubtasksHtml(task.subtasks);
+  else renderNoSubtasks(container);
 }
 
 /**

@@ -1,20 +1,20 @@
 window.colorIndex = 0;
 
-let _editOverlayClosing = false;
-let _swallowNextDocClick = false;
-let _suppressMobileNavbar = false;
-let _navbarLockObserver = null;
+let editOverlayClosing = false;
+let swallowNextDocClick = false;
+let suppressMobileNavbar = false;
+let navbarLockObserver = null;
 function ensureMobileNavbarLockObserver(){
-  if (_navbarLockObserver) return;
+  if (navbarLockObserver) return;
   const el = document.getElementById('single-person-content-mobile-navbar');
   if (!el) return;
-  _navbarLockObserver = new MutationObserver(() => {
-    if (_suppressMobileNavbar && !el.classList.contains('d-none')) {
+  navbarLockObserver = new MutationObserver(() => {
+    if (suppressMobileNavbar && !el.classList.contains('d-none')) {
       el.classList.add('d-none');
     }
   });
-  _navbarLockObserver.observe(el, { attributes:true, attributeFilter:['class'] });
-  if (_suppressMobileNavbar && !el.classList.contains('d-none')) {
+  navbarLockObserver.observe(el, { attributes:true, attributeFilter:['class'] });
+  if (suppressMobileNavbar && !el.classList.contains('d-none')) {
     el.classList.add('d-none');
   }
 }
@@ -33,10 +33,10 @@ document.addEventListener('DOMContentLoaded', ensureMobileNavbarLockObserver);
 })();
 
 document.addEventListener('click', function(e){
-  if (_swallowNextDocClick) {
+  if (swallowNextDocClick) {
     e.stopPropagation();
     e.preventDefault();
-    _swallowNextDocClick = false;
+    swallowNextDocClick = false;
   }
 }, { capture: true });
 
@@ -77,7 +77,7 @@ function resetNavbarIfOverlayClosed() {
   // Timing: nach event bubbling/layout
   setTimeout(() => {
     if (!isEditOverlayOpen()) {
-      _suppressMobileNavbar = false;
+      suppressMobileNavbar = false;
       removeDetailsMobileNavbar?.();
     }
   }, 0);
@@ -118,7 +118,7 @@ function detailsMobileBack() {
 function addDetailsMobileNavbar() {
   const el = $("single-person-content-mobile-navbar");
   if (!el) return;
-  if (_suppressMobileNavbar) { el.classList.add('d-none'); return; }
+  if (suppressMobileNavbar) { el.classList.add('d-none'); return; }
   if (el.classList.contains("d-none")) el.classList.remove("d-none");
 }
 
@@ -155,28 +155,28 @@ function populateEditForm(elements) {
 
 function openEditContact(e) {
   const ev = e || (typeof window !== 'undefined' && window.event ? window.event : null);
-  if (!ev) return;
-  if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
-  if (typeof ev.preventDefault === 'function') ev.preventDefault();
-  _swallowNextDocClick = true;
-  setTimeout(() => { _swallowNextDocClick = false; }, 250);
   const target = ev && ev.target instanceof Element ? ev.target : null;
-  const isFromContactList = target && target.closest('.contact-person');
-  if (isFromContactList) {
-    return;
-  }
+
+  // If an Event is present, tame it; otherwise allow programmatic/inline calls
   if (ev) {
+    if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    if (typeof ev.preventDefault === 'function') ev.preventDefault();
+    swallowNextDocClick = true;
+    setTimeout(() => { swallowNextDocClick = false; }, 250);
+
+    const isFromContactList = target && target.closest('.contact-person');
+    if (isFromContactList) return;
+
     const allowed = target && (
       target.closest('#single-person-content-mobile-navbar') ||
       target.closest('#edit-contact-button') ||
-      target.closest('[data-role="edit-contact-trigger"]')
+      target.closest('[data-role="edit-contact-trigger"]') ||
+      target.closest('.contact-single-person-content-head-edit-box')
     );
-    if (!allowed) {
-      return;
-    }
+    if (!allowed) return;
   }
-  if (_editOverlayClosing) return;
-  _suppressMobileNavbar = true;
+  if (editOverlayClosing) return;
+  suppressMobileNavbar = true;
   removeDetailsMobileNavbar();
   const elements = getEditFormElements();
   populateEditForm(elements);
@@ -207,17 +207,17 @@ function handleUpdateSuccess() {
     currentContact.colorIndex,
     currentContact.id
   );
-  _editOverlayClosing = true;
+  editOverlayClosing = true;
   toggleEditContact();
-  _suppressMobileNavbar = true;
-  setTimeout(() => { _editOverlayClosing = false; _suppressMobileNavbar = false; }, 350);
+  suppressMobileNavbar = true;
+  setTimeout(() => { editOverlayClosing = false; suppressMobileNavbar = false; }, 350);
 }
 
 function updateContactInFirebase() {
   import(
     "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
   ).then(({ getDatabase, ref, update }) => {
-    import("./firebase.js").then(({ app }) => {
+    import("../firebase.js").then(({ app }) => {
       const db = getDatabase(app);
       const contactRef = ref(db, `contacts/${currentContact.id}`);
       const updateData = getContactUpdateData();
@@ -404,13 +404,119 @@ function validateEditContactForm() {
 function saveEditedContact() {
   const ev = (typeof window !== 'undefined' && window.event) ? window.event : null;
   if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
-  _swallowNextDocClick = true;
+  swallowNextDocClick = true;
   setTimeout(() => { _swallowNextDocClick = false; }, 300);
-  _suppressMobileNavbar = true; setTimeout(()=>{ _suppressMobileNavbar = false; }, 350);
+  suppressMobileNavbar = true; setTimeout(()=>{ _suppressMobileNavbar = false; }, 350);
 
   if (!validateEditContactForm()) {
     return;
   }
   getUpdatedContactData();
   updateContactInFirebase();
+}
+
+/**
+ * Build a standardized inline error message HTML.
+ * @param {string} message
+ * @returns {string} HTML
+ */
+function getErrorMessage(message) {
+  return /*html*/ `<p class="error-message">${message}</p>`;
+}
+
+function getContactPerson(key, id) {
+  let savedColorIndex = key.colorIndex;
+  if (!savedColorIndex) {
+    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
+  }
+  const initials = key.initials || getInitials(key.name);
+  return /*html*/ `
+        <div class="contact-placeholder">
+            <img src="./assets/contacts/img/Vector 10.svg" />
+        </div>
+        <div class="contact-person" onclick="showContactDetails('${key.name}', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
+            <div class="contact-person-icon">
+                <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
+                <p>${initials}</p>
+            </div>
+            <div class="contact-person-name">
+                <h5>${key.name}</h5>
+                <a>${key.email}</a>
+            </div>
+        </div>`;
+}
+
+/** @type {Partial<Contact>} */
+let currentContact = {};
+
+function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
+  detailSection.innerHTML = /*html*/ `
+        <div class="contact-single-person-content-head">
+            <div class="contact-person-icon-big">
+                <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
+                <h3>${getInitials(name)}</h3>
+            </div>
+            <div class="contact-single-person-content-head-name">
+                <h3>${name}</h3>
+                <div class="contact-single-person-content-head-edit-container">
+                    <div class="contact-single-person-content-head-edit-box" id="edit-contact-button" data-role="edit-contact-trigger" onclick="openEditContact(event)">
+                        <img class="regular-image" src="./assets/contacts/icons/pen_thin.svg" />
+                        <p>Edit</p>
+                    </div>
+                    <div class="contact-single-person-content-head-trash-box" onclick="deleteContact()">
+                        <img class="regular-image" src="./assets/contacts/icons/trash_thin.svg" />
+                        <p>Delete</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="contact-single-person-content-info">
+            <h4>Contact Information</h4>
+            <h6>Email</h6>
+            <a>${email}</a>
+            <h6>Phone</h6>
+            <span>${phone}</span>
+        </div>`;
+}
+
+function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
+  detailSection.innerHTML = ``;
+  detailSection.innerHTML = /*html*/ `
+    <div class="contact-single-person-content-mobile-headline">
+        <h5>Contact Information</h5>
+        <a class="help-a-tag-back-button" onclick="detailsMobileBack()">
+            <img src="./assets/general_elements/icons/arrow_left.svg">
+        </a>
+    </div>
+    <div class="contact-single-person-content-head">
+        <div class="contact-person-icon-big">
+            <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
+            <h3>${getInitials(name)}</h3>
+        </div>
+        <div class="contact-single-person-content-head-name">
+            <h4>${name}</h4>
+        </div>
+    </div>
+    <div class="contact-single-person-content-info">
+        <h6>Email</h6>
+        <a>${email}</a>
+        <h6>Phone</h6>
+        <span>${phone}</span>
+    </div>
+    <div class="single-person-content-mobile-bottom" onclick="addDetailsMobileNavbar(), removeDetailsMobileNavbar(event)">
+        <div class="white-point"></div>
+        <div class="white-point"></div>
+        <div class="white-point"></div>
+    </div>
+    <div class="single-person-content-mobile-navbar d-none" id="single-person-content-mobile-navbar" onclick="removeDetailsMobileNavbar(event)">
+        <div class="single-person-content-mobile-navbar-content" onclick="openEditContact()">
+            <img src="./assets/contacts/icons/pen_thin.svg" alt="Edit Icon">
+            <p>Edit</p>
+        </div>
+        <div class="single-person-content-mobile-navbar-content" onclick="deleteContactAndGoBack(event)">
+            <img src="./assets/contacts/icons/trash_thin.svg" alt="Delete Icon">
+            <p>Delete</p>
+        </div>
+    </div>
+    `;
 }

@@ -1,115 +1,10 @@
-function getContactPerson(key, id) {
-  let savedColorIndex = key.colorIndex;
-  if (!savedColorIndex) {
-    savedColorIndex = (id.charCodeAt(0) % 15) + 1;
-  }
-  const initials = key.initials || getInitials(key.name);
-  return /*html*/ `
-        <div class="contact-placeholder">
-            <img src="./assets/contacts/img/Vector 10.svg" />
-        </div>
-        <div class="contact-person" onclick="showContactDetails('${key.name}', '${key.email}', '${key.phone}', ${savedColorIndex}, '${id}')">
-            <div class="contact-person-icon">
-                <img src="./assets/general_elements/icons/color${savedColorIndex}.svg" />
-                <p>${initials}</p>
-            </div>
-            <div class="contact-person-name">
-                <h5>${key.name}</h5>
-                <a>${key.email}</a>
-            </div>
-        </div>`;
-}
-
-/** @type {Partial<Contact>} */
-let currentContact = {};
-
-function getContactDetails(name, email, phone, colorIndex, detailSection, id) {
-  detailSection.innerHTML = /*html*/ `
-        <div class="contact-single-person-content-head">
-            <div class="contact-person-icon-big">
-                <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
-                <h3>${getInitials(name)}</h3>
-            </div>
-            <div class="contact-single-person-content-head-name">
-                <h3>${name}</h3>
-                <div class="contact-single-person-content-head-edit-container">
-                    <div class="contact-single-person-content-head-edit-box" onclick="openEditContact()">
-                        <img class="regular-image" src="./assets/contacts/icons/pen_thin.svg" />
-                        <p>Edit</p>
-                    </div>
-                    <div class="contact-single-person-content-head-trash-box" onclick="deleteContact()">
-                        <img class="regular-image" src="./assets/contacts/icons/trash_thin.svg" />
-                        <p>Delete</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="contact-single-person-content-info">
-            <h4>Contact Information</h4>
-            <h6>Email</h6>
-            <a>${email}</a>
-            <h6>Phone</h6>
-            <span>${phone}</span>
-        </div>`;
-}
-
-/**
- * Render the mobile contact details layout into the given container.
- * @param {string} name
- * @param {string} email
- * @param {string} phone
- * @param {number} colorIndex
- * @param {HTMLElement} detailSection
- * @returns {void}
- */
-function getNewLayoutDetails(name, email, phone, colorIndex, detailSection) {
-  detailSection.innerHTML = ``;
-  detailSection.innerHTML = /*html*/ `
-    <div class="contact-single-person-content-mobile-headline">
-        <h5>Contact Information</h5>
-        <a class="help-a-tag-back-button" onclick="detailsMobileBack()">
-            <img src="./assets/general_elements/icons/arrow_left.svg">
-        </a>
-    </div>
-    <div class="contact-single-person-content-head">
-        <div class="contact-person-icon-big">
-            <img src="./assets/general_elements/icons/color${colorIndex}.svg" />
-            <h3>${getInitials(name)}</h3>
-        </div>
-        <div class="contact-single-person-content-head-name">
-            <h4>${name}</h4>
-        </div>
-    </div>
-    <div class="contact-single-person-content-info">
-        <h6>Email</h6>
-        <a>${email}</a>
-        <h6>Phone</h6>
-        <span>${phone}</span>
-    </div>
-    <div class="single-person-content-mobile-bottom" onclick="addDetailsMobileNavbar(), removeDetailsMobileNavbar(event)">
-        <div class="white-point"></div>
-        <div class="white-point"></div>
-        <div class="white-point"></div>
-    </div>
-    <div class="single-person-content-mobile-navbar d-none" id="single-person-content-mobile-navbar" onclick="removeDetailsMobileNavbar(event)">
-        <div class="single-person-content-mobile-navbar-content" onclick="openEditContact()">
-            <img src="./assets/contacts/icons/pen_thin.svg" alt="Edit Icon">
-            <p>Edit</p>
-        </div>
-        <div class="single-person-content-mobile-navbar-content" onclick="deleteContactAndGoBack(event)">
-            <img src="./assets/contacts/icons/trash_thin.svg" alt="Delete Icon">
-            <p>Delete</p>
-        </div>
-    </div>
-    `;
-}
 
 /**
  * Render the "Task To-do" summary tile for mobile.
  * @returns {void}
  */
 function getMobileTaskTodo() {
-  $("mobile-task-to-do").innerHTML = /*html*/ `
+  document.getElementById("mobile-task-to-do").innerHTML = /*html*/ `
     <div class="task-tile-todo" onclick="location.href='board.html'" id="task-tile-todo">
             <div class="task-tile-todo-content">
               <div class="task-tile-icon-container">
@@ -129,7 +24,7 @@ function getMobileTaskTodo() {
  * @returns {void}
  */
 function getMobileTaskOnBoard() {
-  $("mobile-task-on-board").innerHTML = /*html*/ `
+  document.getElementById("mobile-task-on-board").innerHTML = /*html*/ `
     <div class="task-tile-board-overview" onclick="location.href='board.html'" id="task-tile-board-overview">
             <div class="task-tile-board-overview-content">
               <div class="task-tile-icon-container">
@@ -142,15 +37,6 @@ function getMobileTaskOnBoard() {
             </div>
             <h5>Task on Board</h5>
           </div>`;
-}
-
-/**
- * Build a standardized inline error message HTML.
- * @param {string} message
- * @returns {string} HTML
- */
-function getErrorMessage(message) {
-  return /*html*/ `<p class="error-message">${message}</p>`;
 }
 
 /**
@@ -274,111 +160,8 @@ function getSubtasksTemplate() {
   `;
 }
 
-function getAddtaskTemplate() {
-  return `
-    ${getTaskMainTemplate()}
-    ${getPriorityTemplate()}
-    ${getAssignedTemplate()}
-    ${getCategoryTemplate()}
-    ${getSubtasksTemplate()}
-  `;
-}
 
-/**
- * Render the editable subtasks list (titles only).
- * Accepts `window.subtasks` or a global `subtasks` and normalizes to string[].
- * Calls external helpers `addEditEvents()` and `deleteEvent()`.
- * @returns {void}
- */
-function renderSubtasks() {
-  const normalized = (
-    window.subtasks || typeof subtasks !== "undefined"
-      ? window.subtasks || subtasks
-      : []
-  )
-    .map((st) => (typeof st === "string" ? st : st && st.name ? st.name : ""))
-    .filter(Boolean);
 
-  try {
-    subtasks = normalized;
-  } catch (_) {}
-  window.subtasks = normalized;
 
-  $("subtask-list").innerHTML = normalized
-    .map(
-      (subtask, index) => `
-      <li class="subtask-item" data-index="${index}">
-        <span class="subtask-text">${subtask}</span>
-        <input class="subtask-edit-input d-none" type="text" id="sub${index}" value="${subtask}" />
-        <div class="subtask-func-btn d-none">
-          <img class="subtask-edit-icon" src="./assets/icons/add_task/edit_default.svg" alt="Edit"/>
-          <div class="vertical-spacer first-spacer"></div>
-          <img class="subtask-delete-icon" src="./assets/icons/add_task/delete_default.svg" alt="Delete" />
-          <div class="vertical-spacer second-spacer d-none"></div>
-          <img class="subtask-save-icon d-none" src="./assets/icons/add_task/sub_check_def.svg" alt="Save" />
-        </div>
-      </li>`
-    )
-    .join("");
-  addEditEvents();
-  deleteEvent();
-}
 
-/**
- * Build the contact dropdown option template used in "Assigned to".
- * @param {Required<Pick<Contact, "name"|"initials"|"colorIndex">>} contact
- * @returns {string} HTML
- */
-function createContactListItemTemplate(contact) {
-  return `
-    <div>
-      <div class="contact-initial" style="background-image: url(./assets/icons/contact/color${contact.colorIndex}.svg)">
-        ${contact.initials}
-      </div>
-      ${contact.name}
-    </div>
-    <img src="./assets/icons/add_task/check_default.svg" alt="checkbox" />
-  `;
-}
 
-/**
- * Build plain error message content (used by some components).
- * @param {string} message
- * @returns {string}
- */
-function createErrorMessageTemplate(message) {
-  return message;
-}
-
-if (typeof window !== "undefined") {
-  // @ts-ignore make helpers available for legacy inline usage
-  window.createContactListItemTemplate = createContactListItemTemplate;
-  // @ts-ignore
-  window.createErrorMessageTemplate = createErrorMessageTemplate;
-}
-
-/**
- * Inject the Add-Task template into `.addtask-wrapper` if empty.
- * Dispatches `addtask:template-ready` once rendered.
- * Self-invoking to run ASAP and on DOMContentLoaded if needed.
- * @returns {void}
- */
-(function injectAddTaskTemplate() {
-  const render = (root = document) => {
-    const container = root.querySelector(".addtask-wrapper");
-    if (!container) return false;
-    if (container.dataset.rendered === "1" || container.childElementCount > 0)
-      return true;
-    container.innerHTML = getAddtaskTemplate();
-    container.dataset.rendered = "1";
-    document.dispatchEvent(new CustomEvent("addtask:template-ready"));
-    return true;
-  };
-  if (!render()) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", render, { once: true });
-    } else {
-      render();
-    }
-  }
-})();

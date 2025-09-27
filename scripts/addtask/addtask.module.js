@@ -2,9 +2,6 @@ let loadedContacts = {};
 let currentEditingTaskId = "";
 const FirebaseActions = (window.FirebaseActions ||= {});
 
-// Safe `$` fallback if global helper isn't loaded yet
-const $ = (typeof window.$ === 'function') ? window.$ : (id) => document.getElementById(id);
-
 window.setCurrentEditingTaskId = function (id) {
   currentEditingTaskId = id || "";
   const wrapper = document.querySelector('.addtask-wrapper');
@@ -84,6 +81,19 @@ function maybeRenderContacts() {
   }
 }
 
+const PRIORITY_DEFAULT = "medium";
+
+function selectedPriority() {
+  const checked = document.querySelector('input[name="priority"]:checked');
+  if (checked && checked.value) return String(checked.value).toLowerCase();
+  const activeBtn = document.querySelector('.priority-btn.active, .priority-button.active');
+  if (activeBtn) {
+    const v = (activeBtn.dataset.priority || activeBtn.getAttribute('data-priority') || '').toLowerCase();
+    if (v) return v;
+  }
+  return PRIORITY_DEFAULT;
+}
+
 function baseTaskFromForm() {
   return {
     column: "todo",
@@ -91,7 +101,7 @@ function baseTaskFromForm() {
     description: $("addtask-textarea").value.trim(),
     dueDate: $("datepicker").value.trim(),
     category: $("category-select").querySelector("span").textContent,
-    priority: selectedPriority,
+    priority: selectedPriority(),
     subtasks: subtasks.map((name) => ({ name, checked: false })),
   };
 }
@@ -326,17 +336,13 @@ function updateTaskInFirebase(taskId, taskData) {
   const init = () => {
     bindDynamicElements();
     maybeRenderContacts();
-    // Falls noch nicht geladen, laden
     if (!loadedContacts || !Object.keys(loadedContacts).length) fetchContacts();
   };
-
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init, { once: true });
   } else {
     init();
   }
-
-  // Nachträgliches Einfügen des Templates abfangen
   document.addEventListener("addtask:template-ready", () => {
     bindDynamicElements();
     maybeRenderContacts();

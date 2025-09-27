@@ -7,7 +7,7 @@ import {
   child
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { app, auth } from "./firebase.js";
+import { app, auth } from "../firebase.js";
 
 onAuthStateChanged(auth, handleAuthChange);
 
