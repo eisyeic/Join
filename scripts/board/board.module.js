@@ -14,7 +14,7 @@ const db = getDatabase(app);
 
 function debounce(fn, wait = 200) {
   let t;
-  return /** @type {F} */ ((...args) => {
+  return ((...args) => {
     clearTimeout(t);
     t = setTimeout(() => fn(...args), wait);
   });
