@@ -13,16 +13,30 @@
  */
 
 /**
+ * Clear all Add-Contact form input values only.
+ * @returns {void}
+ */
+function clearAddFormInputValues() {
+  $("name-new-contact").value = "";
+  $("email-new-contact").value = "";
+  $("phone-new-contact").value = "";
+}
+
+/**
  * Clear all Add-Contact form inputs and remove any error states.
  * @returns {void}
  */
 function clearAddFormInputs() {
-  $("name-new-contact").value = "";
-  $("email-new-contact").value = "";
-  $("phone-new-contact").value = "";
-  clearFieldError("name-new-contact");
-  clearFieldError("email-new-contact");
-  clearFieldError("phone-new-contact");
+  clearAddFormInputValues();
+  clearAddFormErrors();
+}
+
+/**
+ * Show the Add-Contact overlay element.
+ * @returns {void}
+ */
+function showAddContactOverlay() {
+  $("contact-overlay-close-add").classList.remove("d-none");
 }
 
 /**
@@ -31,8 +45,16 @@ function clearAddFormInputs() {
  * @returns {void}
  */
 function openAddContact() {
-  $("contact-overlay-close-add").classList.remove("d-none");
+  showAddContactOverlay();
   clearAddFormInputs();
+}
+
+/**
+ * Hide the Add-Contact overlay element.
+ * @returns {void}
+ */
+function hideAddContactOverlay() {
+  $("contact-overlay-close-add").classList.add("d-none");
 }
 
 /**
@@ -41,24 +63,40 @@ function openAddContact() {
  * @returns {void}
  */
 function closeAddContact() {
-  $("contact-overlay-close-add").classList.add("d-none");
+  hideAddContactOverlay();
   clearAddFormInputs();
 }
 
 /**
- * Toggle visibility of the Add-Contact overlay.
+ * Toggle visibility of the Add-Contact overlay element only.
  * @returns {void}
  */
-function toggleAddContact() {
+function toggleAddContactOverlay() {
   $("contact-overlay-close-add").classList.toggle("d-none");
 }
 
 /**
- * Toggle visibility of the Edit-Contact overlay.
+ * Toggle visibility of the Edit-Contact overlay element only.
+ * @returns {void}
+ */
+function toggleEditContactOverlay() {
+  $("contact-overlay-close-edit").classList.toggle("d-none");
+}
+
+/**
+ * Toggle visibility of the Add-Contact overlay (legacy function for compatibility).
+ * @returns {void}
+ */
+function toggleAddContact() {
+  toggleAddContactOverlay();
+}
+
+/**
+ * Toggle visibility of the Edit-Contact overlay (legacy function for compatibility).
  * @returns {void}
  */
 function toggleEditContact() {
-  $("contact-overlay-close-edit").classList.toggle("d-none");
+  toggleEditContactOverlay();
 }
 
 /**
