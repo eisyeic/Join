@@ -1,193 +1,257 @@
-let loadedContacts = {};
-// Hoisted DOM references (assigned when used)
-let elContactListBox;          // #contact-list-box
-let elAssignedSelectBox;       // #assigned-select-box
-let elAssignedIcon;            // #assigned-icon
-let elContactInitials;         // .contact-initials container
+/**
+ * @file Contacts UI logic for the Add Task flow.
+ * All functions follow single-responsibility and keep implementations short.
+ * External deps: bindOnce, mapContact, FirebaseActions, applyAssignedInitialsCap, Templates.contactListItem
+ */
 
+/**
+ * @typedef {Object} Contact
+ * @property {string} name       - Full display name of the contact.
+ * @property {string} initials   - Initials shown inside the avatar bubble.
+ * @property {number} colorIndex - Index used to resolve contact color SVG.
+ */
+
+// --- Module-level state ---
+/**
+ * Contacts keyed by id, filled by 'addtask:contacts-loaded' or Firebase fetch.
+ * @type {Record<string, Contact>}
+ */
+let loadedContacts = {};
+/** @type {HTMLElement|null} */
+let elContactListBox;
+/** @type {HTMLElement|null} */
+let elAssignedSelectBox;
+/** @type {HTMLElement|null} */
+let elAssignedIcon;
+/** @type {HTMLElement|null} */
+let elContactInitials;
+
+// --- Helpers ---
+/** Resolve and cache frequently accessed DOM elements. */
+function setEls(){
+  elContactListBox = document.getElementById('contact-list-box');
+  elAssignedSelectBox = document.getElementById('assigned-select-box');
+  elAssignedIcon = document.getElementById('assigned-icon');
+  elContactInitials = document.getElementById('contact-initials');
+}
+/**
+ * Remove `d-none` to make an element visible.
+ * @param {HTMLElement|null} el
+ */
+function showEl(el){ if(el) el.classList.remove('d-none'); }
+/**
+ * Add `d-none` to hide an element.
+ * @param {HTMLElement|null} el
+ */
+function hideEl(el){ if(el) el.classList.add('d-none'); }
+/**
+ * Clear all child HTML of an element.
+ * @param {HTMLElement|null} el
+ */
+function clearEl(el){ if(el) el.innerHTML = ''; }
+/**
+ * Whether the given object has at least one own key.
+ * @param {Object} obj
+ * @returns {boolean}
+ */
+function hasAny(obj){ return !!obj && Object.keys(obj).length>0; }
+/**
+ * Check if a node is inside a given parent element.
+ * @param {Node} node
+ * @param {HTMLElement|null} parent
+ * @returns {boolean}
+ */
+function isInside(node, parent){ return !!parent && parent.contains(node); }
+
+/** Initialize contacts from custom event and attempt a first render. */
 document.addEventListener('addtask:contacts-loaded', (e) => {
   loadedContacts = (e?.detail && e.detail.contacts) || {};
   try { maybeRenderContacts(); } catch {}
 });
-
+/** Render the contacts list if data is present. */
 function maybeRenderContacts() {
-  elContactListBox = document.getElementById('contact-list-box');
+  setEls();
   if (!elContactListBox) return;
-  elContactListBox.innerHTML = '';
-  let data = loadedContacts || {};
-  if (Object.keys(data).length) {
-    renderContacts(data, elContactListBox);
-  }
+  clearEl(elContactListBox);
+  if (hasAny(loadedContacts)) renderContacts(loadedContacts, elContactListBox);
 }
-
+/**
+ * Input handler for contact search field.
+ * @param {InputEvent} e
+ */
 function onContactInput(e) {
-  const value = String(e.target.value || "").trim().toLowerCase();
-  elContactListBox = document.getElementById("contact-list-box");
-  elContactListBox.classList.remove("d-none");
-  const filtered = {};
-  if (value.length === 0) {
-    Object.assign(filtered, loadedContacts);
-  } else {
-    for (const id in loadedContacts) {
-      const contact = loadedContacts[id];
-      const nameParts = String(contact.name || "").trim().toLowerCase().split(" ");
-      if (nameParts.some((part) => part.startsWith(value))) {
-        filtered[id] = contact;
-      }
-    }
-  }
-  elContactListBox.innerHTML = "";
+  const value = String(e.target.value || '').trim().toLowerCase();
+  applyContactFilter(value);
+}
+/**
+ * Apply a case-insensitive prefix filter and re-render.
+ * @param {string} value
+ */
+function applyContactFilter(value){
+  setEls();
+  if (!elContactListBox) return;
+  showEl(elContactListBox);
+  const filtered = filterContactsByPrefix(loadedContacts, value);
+  clearEl(elContactListBox);
   renderContacts(filtered, elContactListBox);
 }
-
-function renderContacts(contacts, container) {
-  Object.entries(contacts)
-    .sort(([, a], [, b]) => a.name.localeCompare(b.name, "de", { sensitivity: "base" }))
-    .forEach(([id, contact]) => {
-      const li = createContactListItem(contact, id);
-      container.appendChild(li);
-    });
+/**
+ * Pure filter: keep contacts whose name has any word starting with `value`.
+ * @param {Record<string, Contact>} contacts
+ * @param {string} value
+ * @returns {Record<string, Contact>}
+ */
+function filterContactsByPrefix(contacts, value){
+  if (!value) return { ...contacts };
+  const out = {};
+  for (const id in contacts){
+    const n = String(contacts[id].name||'').toLowerCase().split(' ');
+    if (n.some(p=>p.startsWith(value))) out[id]=contacts[id];
+  }
+  return out;
 }
-
+/**
+ * Create a contact <li> element with inner HTML provided by the template.
+ * @param {Contact} contact
+ * @param {string} id
+ * @returns {HTMLLIElement}
+ */
 function createContactListItem(contact, id) {
-  let li = document.createElement("li");
+  const li = document.createElement('li');
   li.id = id;
-  li.innerHTML = `
-    <div>
-      <div class="contact-initial" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
-        ${contact.initials}
-      </div>
-      ${contact.name}
-    </div>
-    <img src="./assets/icons/add_task/check_default.svg" alt="checkbox" />
-  `;
-  addContactListItemListener(li);
+  li.innerHTML = contactListItemHTML(contact, id);
   return li;
 }
-
-function addContactListItemListener(li) {
-  li.addEventListener("click", () => {
-    li.classList.toggle("selected");
-    let checkboxIcon = li.querySelector("img");
-    let isSelected = li.classList.contains("selected");
-    checkboxIcon.src = isSelected
-      ? "./assets/icons/add_task/check_white.svg"
-      : "./assets/icons/add_task/check_default.svg";
-    renderSelectedContactInitials();
-  });
+/**
+ * Resolve HTML using external template if present, otherwise default.
+ * @param {Contact} contact
+ * @param {string} id
+ * @returns {string}
+ */
+function contactListItemHTML(contact, id){
+  const ext = window.Templates && typeof Templates.contactListItem === 'function';
+  return ext ? Templates.contactListItem(contact, id) : defaultContactListItemTemplate(contact);
+}
+/**
+ * Render contacts into the given container and attach item behavior.
+ * @param {Record<string, Contact>} contacts
+ * @param {HTMLElement} container
+ */
+function renderContacts(contacts, container) {
+  Object.entries(contacts)
+    .sort(([,a],[,b])=>a.name.localeCompare(b.name,'de',{sensitivity:'base'}))
+    .forEach(([id, c]) => { const li=createContactListItem(c,id); container.appendChild(li); attachContactListener(li); });
 }
 
+
+/**
+ * Attach click behavior to a contact list item (select + initials refresh).
+ * @param {HTMLLIElement} li
+ */
+function attachContactListener(li) {
+  li.addEventListener('click', () => { toggleLiSelection(li); updateCheckbox(li); renderSelectedContactInitials(); });
+}
+/** Toggle the selected state on a list item. */
+function toggleLiSelection(li){ li.classList.toggle('selected'); }
+/**
+ * Sync checkbox icon with current selected state.
+ * @param {HTMLLIElement} li
+ */
+function updateCheckbox(li){ const img=li.querySelector('img'); const s=li.classList.contains('selected'); if(img) img.src = s? './assets/icons/add_task/check_white.svg':'./assets/icons/add_task/check_default.svg'; }
+
+/** Clone initials from selected items and show them in the initials box. */
 function renderSelectedContactInitials() {
-  const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
-  elContactInitials = document.getElementById("contact-initials");
+  const selected = document.querySelectorAll('#contact-list-box li.selected');
+  elContactInitials = document.getElementById('contact-initials');
   if (!elContactInitials) return;
-  elContactInitials.innerHTML = "";
-
-  selectedLis.forEach((li) => {
-    const initialsEl = li.querySelector(".contact-initial");
-    if (initialsEl) elContactInitials.appendChild(initialsEl.cloneNode(true));
-  });
+  clearEl(elContactInitials);
+  selected.forEach(li => { const ini = li.querySelector('.contact-initial'); if (ini) elContactInitials.appendChild(ini.cloneNode(true)); });
 }
-
+/**
+ * Read preselected ids from the assigned select box dataset.
+ * @returns {string[]}
+ */
 function getIdsFromDataset() {
-  try {
-    const raw = document.getElementById("assigned-select-box")?.dataset.selected || "[]";
-    const ids = JSON.parse(raw);
-    return Array.isArray(ids) ? ids : [];
-  } catch {
-    return [];
-  }
+  try { const raw = document.getElementById('assigned-select-box')?.dataset.selected || '[]'; const ids = JSON.parse(raw); return Array.isArray(ids)? ids:[]; } catch { return []; }
 }
-
+/**
+ * Return assigned contacts based on UI selection or dataset fallback.
+ * @returns {Array<ReturnType<typeof mapContact>>}
+ */
 function getAssignedContactsFromUI() {
-  const selectedLis = document.querySelectorAll("#contact-list-box li.selected");
-  if (selectedLis.length > 0) return Array.from(selectedLis, li => mapContact(li.id));
-  const ids = getIdsFromDataset();
-  return ids.map(mapContact);
+  const selected = document.querySelectorAll('#contact-list-box li.selected');
+  if (selected.length) return Array.from(selected, li=>mapContact(li.id));
+  return getIdsFromDataset().map(mapContact);
 }
 
-(function loadContactsAndRender() {
-  let bootstrapped = false;
+let contactsBootstrapped = false;
+/** Check whether the contacts list element exists in the DOM. */
+function uiAvailable(){ return !!document.getElementById('contact-list-box'); }
+/** One-time bootstrap: bind dynamic elements, render, and fetch if needed. */
+function bootstrapContacts(){ if(!uiAvailable()||contactsBootstrapped) return; contactsBootstrapped=true; bindDynamicElements(); maybeRenderContacts(); fetchContactsIfEmpty(); }
+/**
+ * Fetch contacts via FirebaseActions if none are loaded yet.
+ */
+function fetchContactsIfEmpty(){ if(hasAny(loadedContacts)) return; const api=window.FirebaseActions; const loader = api && typeof api.fetchContacts==='function' ? api.fetchContacts() : Promise.resolve({}); loader.then(c=>{ loadedContacts=c||{}; maybeRenderContacts(); }).catch(e=>console.error('Fehler beim Laden der Kontakte:', e)); }
+/** Initialize contacts module on DOM ready and on template-ready. */
+function initContactsOnReady(){ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bootstrapContacts, {once:true}); } else { bootstrapContacts(); } document.addEventListener('addtask:template-ready', bootstrapContacts); }
+initContactsOnReady();
 
-  function uiAvailable() {
-    return !!document.getElementById('contact-list-box');
-  }
-
-  function init() {
-    if (!uiAvailable()) return;
-    if (bootstrapped) return;
-    bootstrapped = true;
-
-    bindDynamicElements();
-    maybeRenderContacts();
-
-    if (!loadedContacts || !Object.keys(loadedContacts).length) {
-      const api = window.FirebaseActions;
-      const loader = api && typeof api.fetchContacts === 'function'
-        ? api.fetchContacts()
-        : Promise.resolve({});
-      loader
-        .then((contacts) => {
-          loadedContacts = contacts || {};
-          maybeRenderContacts();
-        })
-        .catch((e) => console.error('Fehler beim Laden der Kontakte:', e));
-    }
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
-  document.addEventListener('addtask:template-ready', init);
-})();
-
+/** Toggle the visibility of the assigned contacts dropdown list. */
 function toggleAssignedList() {
-  elContactListBox = document.getElementById('contact-list-box');
+  setEls();
   if (!elContactListBox) return;
-  elContactListBox.classList.toggle('d-none');
-  const visible = !elContactListBox.classList.contains('d-none');
-  elAssignedIcon = document.getElementById('assigned-icon');
-  elAssignedIcon?.classList.toggle('arrow-up', visible);
-  elAssignedIcon?.classList.toggle('arrow-down', !visible);
-  elContactInitials = document.querySelector('.contact-initials');
-  if (visible) elContactInitials?.classList.add('d-none');
-  else handleAssignedInitials(elContactListBox, elContactInitials);
+  const willShow = elContactListBox.classList.contains('d-none');
+  setAssignedListVisibility(willShow);
+  afterAssignedToggle(willShow);
 }
-
+/**
+ * Show/hide the assigned list and update the arrow icon.
+ * @param {boolean} show
+ */
+function setAssignedListVisibility(show){
+  setEls();
+  elContactListBox.classList.toggle('d-none', !show);
+  if (elAssignedIcon){ elAssignedIcon.classList.toggle('arrow-up', show); elAssignedIcon.classList.toggle('arrow-down', !show); }
+}
+/**
+ * Adjust initials box visibility after list toggle.
+ * @param {boolean} show
+ */
+function afterAssignedToggle(show){
+  const box = document.querySelector('.contact-initials');
+  if (show) box?.classList.add('d-none'); else handleAssignedInitials(elContactListBox, box);
+}
+/**
+ * Show/hide initials box based on selection count; apply visual cap.
+ * @param {HTMLElement} list
+ * @param {HTMLElement|null} box
+ */
 function handleAssignedInitials(list, box) {
   const sel = list.querySelectorAll('li.selected');
   if (box) box.classList.toggle('d-none', sel.length === 0);
   if (typeof applyAssignedInitialsCap === 'function') applyAssignedInitialsCap();
 }
-
+/** Bind click handler for opening/closing the assigned list. */
 function bindAssignedToggle() {
   elAssignedSelectBox = document.getElementById('assigned-select-box');
   bindOnce(elAssignedSelectBox, 'click', toggleAssignedList, 'assigned');
 }
-
+/**
+ * Close the assigned list when clicking outside of trigger and list.
+ * @param {EventTarget} t
+ */
 function closeAssignedIfOutside(t) {
-  elAssignedSelectBox = document.getElementById('assigned-select-box');
-  elContactListBox = document.getElementById('contact-list-box');
+  setEls();
   if (!elAssignedSelectBox || !elContactListBox) return;
-  const inside = elAssignedSelectBox.contains(t) || elContactListBox.contains(t);
+  const inside = isInside(t, elAssignedSelectBox) || isInside(t, elContactListBox);
   if (inside) return;
-  elContactListBox.classList.add('d-none');
+  setAssignedListVisibility(false);
   handleAssignedInitials(elContactListBox, document.querySelector('.contact-initials'));
-  elAssignedIcon = document.getElementById('assigned-icon');
-  elAssignedIcon?.classList.remove('arrow-up');
-  elAssignedIcon?.classList.add('arrow-down');
 }
-
-function clearAssignedContacts() {
-  document.querySelectorAll("#contact-list-box li.selected").forEach((li) => {
-    li.classList.remove("selected");
-    const checkboxIcon = li.querySelectorAll("img")[0];
-    if (checkboxIcon) checkboxIcon.src = "./assets/icons/add_task/check_default.svg";
-  });
-  elContactInitials = document.getElementById('contact-initials');
-  if (elContactInitials) {
-    elContactInitials.classList.add('d-none');
-    elContactInitials.innerHTML = '';
-  }
-}
+/** Deselect all contacts and reset initials box UI. */
+function clearAssignedContacts() { deselectAllContacts(); resetInitialsBox(); }
+/** Remove selection state and reset the checkbox icon for all selected lis. */
+function deselectAllContacts(){ document.querySelectorAll('#contact-list-box li.selected').forEach(li=>{ li.classList.remove('selected'); const img=li.querySelector('img'); if(img) img.src='./assets/icons/add_task/check_default.svg'; }); }
+/** Hide and clear the initials box container. */
+function resetInitialsBox(){ elContactInitials = document.getElementById('contact-initials'); if(!elContactInitials) return; elContactInitials.classList.add('d-none'); clearEl(elContactInitials); }

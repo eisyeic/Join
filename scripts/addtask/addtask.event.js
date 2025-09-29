@@ -1,176 +1,384 @@
+/**
+ * @file Event bindings and UI logic for the Add Task form.
+ * Single-responsibility functions, centralized DOM refs, minimal side effects.
+ * Depends on global helpers: bindOnce, renderSubtasks, clearAssignedContacts,
+ * resetPrioritySelection, saveEditedSubtask, picker (date picker instance).
+ */
 document.addEventListener('addtask:template-ready', bindDatepickerClick);
 
+// --- Module-level element refs ---
+/** @type {HTMLElement|null} */
+let elDatepickerWrapper;
+/** @type {HTMLInputElement|null} */
+let elDatepicker;
+/** @type {HTMLElement|null} */
+let elDueDateError;
+/** @type {HTMLElement|null} */
+let elAddtaskError;
+/** @type {HTMLInputElement|null} */
+let elAddtaskTitle;
+/** @type {HTMLTextAreaElement|null} */
+let elAddtaskTextarea;
+/** @type {HTMLElement|null} */
+let elCategorySelect;
+/** @type {HTMLElement|null} */
+let elCategorySelection;
+/** @type {HTMLElement|null} */
+let elCategoryIcon;
+/** @type {HTMLElement|null} */
+let elCategorySelectionError;
+/** @type {HTMLInputElement|null} */
+let elSubInput;
+/** @type {HTMLElement|null} */
+let elSubtaskFuncBtn;
+/** @type {HTMLElement|null} */
+let elSubtaskPlusBox;
+/** @type {HTMLElement|null} */
+let elSubtaskList;
+/** @type {HTMLElement|null} */
+let elSubCheck;
+/** @type {HTMLElement|null} */
+let elSubClear;
+/** @type {HTMLElement|null} */
+let elSubPlus;
+/** @type {HTMLElement|null} */
+let elCancelButton;
+
+/** Resolve and cache all DOM references for reuse. */
+function setEls(){
+  elDatepickerWrapper = document.getElementById('datepicker-wrapper');
+  elDatepicker = document.getElementById('datepicker');
+  elDueDateError = document.getElementById('due-date-error');
+  elAddtaskError = document.getElementById('addtask-error');
+  elAddtaskTitle = document.getElementById('addtask-title');
+  elAddtaskTextarea = document.getElementById('addtask-textarea');
+  elCategorySelect = document.getElementById('category-select');
+  elCategorySelection = document.getElementById('category-selection');
+  elCategoryIcon = document.getElementById('category-icon');
+  elCategorySelectionError = document.getElementById('category-selection-error');
+  elSubInput = document.getElementById('sub-input');
+  elSubtaskFuncBtn = document.getElementById('subtask-func-btn');
+  elSubtaskPlusBox = document.getElementById('subtask-plus-box');
+  elSubtaskList = document.getElementById('subtask-list');
+  elSubCheck = document.getElementById('sub-check');
+  elSubClear = document.getElementById('sub-clear');
+  elSubPlus = document.getElementById('sub-plus');
+  elCancelButton = document.getElementById('cancel-button');
+  elAssignedSelectBox = document.getElementById('assigned-select-box');
+  elContactListBox = document.getElementById('contact-list-box');
+}
+
+/** Bind click on datepicker wrapper to open the picker and clear errors. */
 function bindDatepickerClick(){
-  const el = $("datepicker-wrapper");
+  const el = document.getElementById('datepicker-wrapper');
   if (!el) return; 
   if (el.dataset && el.dataset.dpBound === '1') return;
-  el.addEventListener("click", () => {
-    document.querySelector("#datepicker")?.click();
-    $("datepicker-wrapper").style.borderColor = '';
-    $("due-date-error").innerHTML = '';
-  });
+  el.addEventListener('click', openDatepickerAndClearErrors);
   if (el.dataset) el.dataset.dpBound = '1';
 }
+
+/** Ensure datepicker binding runs after DOM is ready. */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bindDatepickerClick, { once: true });
 } else {
   bindDatepickerClick();
 }
 
+/** Trigger datepicker click and reset its error/validation state. */
+function openDatepickerAndClearErrors(){
+  document.querySelector('#datepicker')?.click();
+  setEls();
+  if (elDatepickerWrapper) elDatepickerWrapper.style.borderColor = '';
+  if (elDueDateError) elDueDateError.innerHTML = '';
+}
+
+/**
+ * Set category text in the select element.
+ * @param {string} value
+ */
+function setCategory(value){
+  setEls();
+  const span = elCategorySelect?.querySelector('span');
+  if (span) span.textContent = value;
+}
+
+/** Hide category dropdown and normalize icon state. */
+function hideCategoryDropdown(){
+  setEls();
+  elCategorySelection?.classList.add('d-none');
+  elCategoryIcon?.classList.remove('arrow-up');
+  elCategoryIcon?.classList.add('arrow-down');
+}
+
+/** Clear validation styling and error text for category selection. */
+function clearCategoryValidation(){
+  setEls();
+  if (elCategorySelect) elCategorySelect.style.borderColor = '';
+  if (elCategorySelectionError) elCategorySelectionError.innerHTML = '';
+}
+
+/** Remove active class from all priority buttons. */
+function clearPriorityActive(){
+  document.querySelectorAll('.priority-button').forEach(b => b.classList.remove('active'));
+}
+
+/**
+ * Mark the given priority button as active.
+ * @param {HTMLElement} button
+ */
+function activatePriority(button){ button.classList.add('active'); }
+
+/**
+ * Derive and store the selected priority from the clicked button.
+ * @param {HTMLElement} button
+ */
+function setSelectedPriority(button){
+  window.selectedPriority = button.classList.contains('urgent-button') ? 'urgent'
+    : button.classList.contains('medium-button') ? 'medium' : 'low';
+}
+
+/** Clear title, description and related error styles. */
+function resetTitleAndDescription(){
+  setEls();
+  if (elAddtaskTitle) { elAddtaskTitle.value=''; elAddtaskTitle.style.borderColor=''; }
+  if (elAddtaskError) elAddtaskError.innerHTML='';
+  if (elAddtaskTextarea) elAddtaskTextarea.value='';
+}
+
+/** Clear datepicker value and error state. */
+function resetDueDate(){
+  setEls();
+  try { picker.clear(); } catch { if (elDatepicker) elDatepicker.value=''; }
+  if (elDatepickerWrapper) elDatepickerWrapper.style.borderColor='';
+  if (elDueDateError) elDueDateError.innerHTML='';
+}
+
+/** Reset category UI to its default "Select task category" state. */
+function resetCategoryUI(){
+  setEls();
+  if (elCategorySelect) {
+    elCategorySelect.querySelector('span').textContent = 'Select task category';
+    elCategorySelect.style.borderColor='';
+  }
+  if (elCategorySelectionError) elCategorySelectionError.innerHTML='';
+}
+
+/** Reset subtask input/controls and re-render an empty list. */
+function resetSubtasksUI(){
+  setEls();
+  if (Array.isArray(subtasks)) subtasks.length = 0;
+  if (elSubInput) elSubInput.value='';
+  elSubtaskFuncBtn?.classList.add('d-none');
+  elSubtaskPlusBox?.classList.remove('d-none');
+  if (typeof renderSubtasks==='function') renderSubtasks();
+}
+
+/** Clear assigned contacts selection and hide the list. */
+function resetAssignedUI(){
+  setEls();
+  if (elAssignedSelectBox) elAssignedSelectBox.dataset.selected = '[]';
+  elContactListBox?.classList.add('d-none');
+  if (typeof clearAssignedContacts==='function') clearAssignedContacts();
+}
+
 // --- Priority ---
+/** Bind click handlers for priority buttons (urgent/medium/low). */
 function bindPriorityButtons() {
   document.querySelectorAll('.priority-button').forEach((btn) => {
     bindOnce(btn, 'click', () => handlePriorityClick(btn), 'prio');
   });
 }
+/**
+ * Handle priority click by clearing, activating and storing selection.
+ * @param {HTMLElement} button
+ */
 function handlePriorityClick(button) {
-  document.querySelectorAll('.priority-button').forEach(b => b.classList.remove('active'));
-  button.classList.add('active');
-  window.selectedPriority = button.classList.contains('urgent-button') ? 'urgent'
-    : button.classList.contains('medium-button') ? 'medium' : 'low';
+  clearPriorityActive();
+  activatePriority(button);
+  setSelectedPriority(button);
 }
 
 // --- Category selection ---
+/**
+ * Apply clicked category value and close the dropdown.
+ * @param {MouseEvent} e
+ */
 function onCategoryItemClick(e) {
   const li = e.currentTarget;
   const v = li.getAttribute('data-value') ?? '';
-  const span = $("category-select")?.querySelector('span');
-  if (span) span.textContent = v;
-  $("category-selection")?.classList.add('d-none');
-  $("category-icon")?.classList.remove('arrow-up');
-  $("category-icon")?.classList.add('arrow-down');
-  const cs = $("category-select"); if (cs) cs.style.borderColor = '';
-  const err = $("category-selection-error"); if (err) err.innerHTML = '';
+  setCategory(v);
+  hideCategoryDropdown();
+  clearCategoryValidation();
 }
 
+/** Bind click handlers to category list items. */
 function bindCategorySelection() {
-  const panel = $("category-selection");
+  setEls();
+  const panel = elCategorySelection;
   if (!panel) return;
   panel.querySelectorAll('li').forEach((li) => li.addEventListener('click', onCategoryItemClick));
 }
+/** Toggle visibility of the category dropdown panel. */
 function toggleCategoryPanel() {
-  const panel = $("category-selection"), icon = $("category-icon");
+  setEls();
+  const panel = elCategorySelection, icon = elCategoryIcon;
   if (!panel || !icon) return;
   panel.classList.toggle('d-none');
   icon.classList.toggle('arrow-down');
   icon.classList.toggle('arrow-up');
 }
+/** Bind the category field to open/close its dropdown. */
 function bindCategoryToggle() {
-  bindOnce($("category-select"), 'click', toggleCategoryPanel, 'category');
+  setEls();
+  bindOnce(elCategorySelect, 'click', toggleCategoryPanel, 'category');
 }
 
 // --- Outside closers ---
+/**
+ * Close category dropdown when clicking outside of trigger/panel.
+ * @param {EventTarget} t
+ */
 function closeCategoryIfOutside(t) {
-  const sel = $("category-select"), panel = $("category-selection");
+  setEls();
+  const sel = elCategorySelect, panel = elCategorySelection;
   if (!sel || !panel) return;
   const inside = sel.contains(t) || panel.contains(t);
   if (!inside) {
     panel.classList.add('d-none');
-    $("category-icon")?.classList.remove('arrow-up');
-    $("category-icon")?.classList.add('arrow-down');
+    elCategoryIcon?.classList.remove('arrow-up');
+    elCategoryIcon?.classList.add('arrow-down');
   }
 }
 
+/** Global outside-click handler for closing UI panels. */
 function outsideHandler(e) {
   const t = e.target;
   closeCategoryIfOutside(t);
   closeAssignedIfOutside(t);
 }
+/** Attach the global click listener that closes open panels. */
 function bindOutsideClosers() {
   document.removeEventListener('click', outsideHandler);
   document.addEventListener('click', outsideHandler);
 }
 
 // --- Subtasks ---
+/** Toggle subtask controls visibility based on input value. */
 function onSubInputToggle() {
-  const plus = $("subtask-plus-box"), func = $("subtask-func-btn");
+  setEls();
+  const plus = elSubtaskPlusBox, func = elSubtaskFuncBtn;
   if (!plus || !func) return;
   const show = this.value !== '';
   plus.classList.toggle('d-none', show);
   func.classList.toggle('d-none', !show);
 }
+/** Bind input event on subtask field to toggle controls. */
 function bindSubInputToggle() {
-  bindOnce($("sub-input"), 'input', onSubInputToggle, 'sub-input');
+  setEls();
+  bindOnce(elSubInput, 'input', onSubInputToggle, 'sub-input');
 }
+/** Show/hide per-item subtask function buttons on hover. */
 function bindSubListHover() {
-  const list = $("subtask-list");
+  setEls();
+  const list = elSubtaskList;
   bindOnce(list, 'mouseover', (e) => e.target.closest('.subtask-item')?.querySelector('.subtask-func-btn')?.classList.remove('d-none'), 'sub-over');
   bindOnce(list, 'mouseout', (e) => e.target.closest('.subtask-item')?.querySelector('.subtask-func-btn')?.classList.add('d-none'), 'sub-out');
 }
+/** Clear title field validation while typing. */
 function onTitleInputClear() {
+  setEls();
   this.style.borderColor = '';
-  const err = $("addtask-error"); if (err) err.innerHTML = '';
+  if (elAddtaskError) elAddtaskError.innerHTML = '';
 }
+/** Bind input handler for clearing title validation state. */
 function bindTitleInputClear() {
-  bindOnce($("addtask-title"), 'input', onTitleInputClear, 'title');
+  setEls();
+  bindOnce(elAddtaskTitle, 'input', onTitleInputClear, 'title');
 }
+/** Reset the entire Add Task form to its pristine state. */
 function onCancelClick() {
-  $("addtask-title").value = '';
-  $("addtask-title").style.borderColor = '';
-  $("addtask-error").innerHTML = '';
-  $("addtask-textarea").value = '';
-  try { picker.clear(); } catch { $("datepicker").value = ''; }
-  $("datepicker-wrapper").style.borderColor = '';
-  $("due-date-error").innerHTML = '';
-  $("category-select").querySelector('span').textContent = 'Select task category';
-  $("category-select").style.borderColor = '';
-  $("category-selection-error").innerHTML = '';
-  subtasks.length = 0; $("sub-input").value = '';
-  $("subtask-func-btn").classList.add('d-none');
-  $("subtask-plus-box").classList.remove('d-none');
-  renderSubtasks(); clearAssignedContacts();
-  const asb = $("assigned-select-box"); if (asb) asb.dataset.selected = '[]';
-  $("contact-list-box").classList.add('d-none');
+  resetTitleAndDescription();
+  resetDueDate();
+  resetCategoryUI();
+  resetSubtasksUI();
+  resetAssignedUI();
   resetPrioritySelection();
 }
+/** Bind the Cancel button to reset the form. */
 function bindCancelButton() {
-  bindOnce($("cancel-button"), 'click', onCancelClick, 'cancel');
+  setEls();
+  bindOnce(elCancelButton, 'click', onCancelClick, 'cancel');
 }
+/** Add a subtask from the input field and refresh the list. */
 function onSubCheckClick() {
-  const v = $("sub-input")?.value.trim();
+  setEls();
+  const v = elSubInput?.value.trim();
   if (!v) return;
   subtasks.push(v);
-  $("sub-input").value = '';
-  $("subtask-func-btn").classList.add('d-none');
-  $("subtask-plus-box").classList.remove('d-none');
+  if (elSubInput) elSubInput.value = '';
+  elSubtaskFuncBtn.classList.add('d-none');
+  elSubtaskPlusBox.classList.remove('d-none');
   renderSubtasks();
 }
+/** Bind the "+"/check button to add subtasks. */
 function bindSubtaskAdd() {
-  bindOnce($("sub-check"), 'click', onSubCheckClick, 'subcheck');
+  setEls();
+  bindOnce(elSubCheck, 'click', onSubCheckClick, 'subcheck');
 }
+/**
+ * Add a subtask when Enter is pressed in the input field.
+ * @param {KeyboardEvent} e
+ */
 function onSubInputEnter(e) {
   if (e.key !== 'Enter') return;
   e.preventDefault();
   const v = this.value.trim(); if (!v) return;
   subtasks.push(v); this.value = '';
-  $("subtask-func-btn").classList.add('d-none');
-  $("subtask-plus-box").classList.remove('d-none');
+  setEls();
+  elSubtaskFuncBtn.classList.add('d-none');
+  elSubtaskPlusBox.classList.remove('d-none');
   renderSubtasks();
 }
+/** Bind Enter-key handler on the subtask input. */
 function bindSubInputEnter() {
-  bindOnce($("sub-input"), 'keydown', onSubInputEnter, 'subenter');
+  setEls();
+  bindOnce(elSubInput, 'keydown', onSubInputEnter, 'subenter');
 }
+/** Clear the subtask input and restore default controls visibility. */
 function onSubClearClick() {
-  $("sub-input").value = '';
-  $("subtask-func-btn").classList.add('d-none');
-  $("subtask-plus-box").classList.remove('d-none');
+  setEls();
+  elSubInput.value = '';
+  elSubtaskFuncBtn.classList.add('d-none');
+  elSubtaskPlusBox.classList.remove('d-none');
 }
+/** Bind the clear (X) button for the subtask input. */
 function bindSubClear() {
-  bindOnce($("sub-clear"), 'click', onSubClearClick, 'subclear');
+  setEls();
+  bindOnce(elSubClear, 'click', onSubClearClick, 'subclear');
 }
+/** Prefill subtask input and reveal function buttons on first use. */
 function onSubPlusClick() {
+  setEls();
   if (subtasks.length !== 0) return;
-  $("sub-input").value = 'Contact Form';
-  $("subtask-plus-box").classList.add('d-none');
-  $("subtask-func-btn").classList.remove('d-none');
+  elSubInput.value = 'Contact Form';
+  elSubtaskPlusBox.classList.add('d-none');
+  elSubtaskFuncBtn.classList.remove('d-none');
 }
+/** Bind the initial "+" button to start adding subtasks. */
 function bindSubPlus() {
-  bindOnce($("sub-plus"), 'click', onSubPlusClick, 'subplus');
+  setEls();
+  bindOnce(elSubPlus, 'click', onSubPlusClick, 'subplus');
 }
+/**
+ * Save edits of a subtask when its save icon is clicked.
+ * @param {MouseEvent} e
+ */
 function onSubListSaveClick(e) {
   if (!e.target.classList?.contains('subtask-save-icon')) return;
   saveEditedSubtask((e.target));
 }
+/** Bind delegated click handler on the subtask list to save edits. */
 function bindSubListSaveClick() {
-  bindOnce($("subtask-list"), 'click', onSubListSaveClick, 'sublist');
+  setEls();
+  bindOnce(elSubtaskList, 'click', onSubListSaveClick, 'sublist');
 }

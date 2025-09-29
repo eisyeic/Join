@@ -1,3 +1,5 @@
+
+
 /**
  * Switch overlay to edit mode and preload form.
  * @param {any} task
@@ -232,15 +234,3 @@ function syncAssignedSelectionToList() {
   });
 }
 
-/**
- * Remove a task and its category mirrors.
- * @param {string} taskId
- * @returns {Promise<void>}
- */
-window.deleteTaskFromDatabase = async function(taskId) {
-  if (!taskId) throw new Error("Missing taskId");
-  const RTDB = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-  const { app } = await import("../firebase.js");
-  const db = RTDB.getDatabase(app);
-  await RTDB.remove(RTDB.ref(db, `tasks/${taskId}`));
-};

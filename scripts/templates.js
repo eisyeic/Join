@@ -161,3 +161,13 @@ function getSubtaskItemTemplate(subtask, index) {
         </div>
       </li>`;
 }
+
+function defaultContactListItemTemplate(contact){
+  return `<div>
+            <div class="contact-initial" style="background-image: url(../assets/icons/contact/color${contact.colorIndex}.svg)">
+              ${contact.initials}
+            </div>
+              ${contact.name}
+          </div>
+            <img src="./assets/icons/add_task/check_default.svg" alt="checkbox" />`;
+}
