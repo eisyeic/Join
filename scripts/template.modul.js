@@ -4,7 +4,7 @@
  */
 
 import { renderAssignedInitials } from "./board.js";
-import { renderSubtaskProgress, getLabelClass } from "./task-overlay.js";
+import { renderSubtaskProgress, getLabelClass } from "./task-overlay-core.js";
 
 /**
  * Subtask structure.
