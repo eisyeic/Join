@@ -1,9 +1,14 @@
+
+
+let HEADER_KEY = "headerTextCache";
+let HEADER_EL_ID = "person-icon-header-text";
+
 /**
  * Toggle the profile dropdown visibility and bind/unbind outside click handler.
  * @returns {void}
  */
 function toggleProfileNavbar() {
-  const profileNavbar = $("profile-navbar");
+  let profileNavbar = document.getElementById("profile-navbar");
   if (!profileNavbar) return;
   profileNavbar.classList.toggle("d-none");
   if (!profileNavbar.classList.contains("d-none")) {
@@ -20,106 +25,62 @@ function toggleProfileNavbar() {
  */
 function closeProfileNavbar(ev) {
   if (!ev) return;
-  const profileNavbar = $("profile-navbar");
+  let profileNavbar = document.getElementById("profile-navbar");
   if (!profileNavbar) return;
-  const toggle = document.getElementById("profile-toggle") || document.querySelector("[data-profile-toggle]") || document.querySelector('img[alt="Guest Icon"]');
-  const target = ev.target;
-  const inside = profileNavbar.contains(target);
-  const onToggle = toggle && (toggle === target || toggle.contains(target));
+  let toggle = document.getElementById("profile-toggle") || document.querySelector("[data-profile-toggle]") || document.querySelector('img[alt="Guest Icon"]');
+  let target = ev.target;
+  let inside = profileNavbar.contains(target);
+  let onToggle = toggle && (toggle === target || toggle.contains(target));
   if (!inside && !onToggle) {
     profileNavbar.classList.add("d-none");
     document.removeEventListener("click", closeProfileNavbar);
   }
 }
 
-/**
- * Initialize header initials opacity and restore cached value on DOMContentLoaded.
- * @returns {void}
- */
-(() => {
-  const style = document.createElement("style");
-  style.textContent = `#person-icon-header-text { opacity: 0; }`;
-  document.head.appendChild(style);
-})();
+/** Initialize header initials opacity (hidden by default). */ 
+(() => { let s = document.createElement("style"); s.textContent = 
+  `#person-icon-header-text{opacity:0;}`; document.head.appendChild(s); })();
 
-/** @typedef {{displayName?: string, email?: string}} User */
-
-/** LocalStorage key for caching header text. */
- /** @type {string} */
-const HEADER_KEY = "headerTextCache";
-
-/** DOM id of the header initials element. */
- /** @type {string} */
-const HEADER_EL_ID = "person-icon-header-text";
-
-/**
- * Get the header element that displays the user's initials.
- * @returns {HTMLElement|null} The header element or null if not found.
- */
+/** Get the header initials element. */
 function getHeaderEl() {
   return document.getElementById(HEADER_EL_ID);
 }
 
-/**
- * Build a base string to derive initials from (name > email local-part).
- * @param {User} user - The authenticated user object.
- * @returns {string} Display name or email local-part; empty string if none.
- */
+/** Build base string for initials (name > email local-part). */
 function getUserBase(user) {
-  const name = (user.displayName || "").trim();
+  let name = (user.displayName || "").trim();
   if (name) return name;
-  const email = user.email || "";
+  let email = user.email || "";
   return email.split("@")[0] || "";
 }
 
-/**
- * Split a base string into alphanumeric name parts (Unicode-aware).
- * @param {string} base - Source string for name parsing.
- * @returns {string[]} Non-empty parts.
- */
+/** Split base into alphanumeric name parts (Unicode-aware). */
 function nameParts(base) {
   return base.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 }
 
-/**
- * Compute initials from name parts (first letters of first two parts).
- * @param {string[]} parts - Parsed name parts.
- * @returns {string} Uppercased initials or empty string.
- */
+/** Compute initials from name parts (first letters). */
 function initialsFromParts(parts) {
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   if (parts.length === 1) return parts[0][0].toUpperCase();
   return "";
 }
 
-/**
- * Clear the header UI and remove any cached value.
- * @param {HTMLElement} el - Header target element.
- * @returns {void}
- */
+/** Clear header UI and remove cached value. */
 function clearHeader(el) {
   localStorage.removeItem(HEADER_KEY);
   el.textContent = "";
   el.style.fontSize = "";
 }
 
-/**
- * Determine font size for the initials.
- * @param {string} initials - Computed initials.
- * @returns {string} CSS font-size value.
- */
+/** Determine font size for initials. */
 function fontSizeForInitials(initials) {
   return initials.length === 2 ? "22px" : "30px";
 }
 
-/**
- * Apply initials to the header element and cache them.
- * @param {HTMLElement} el - Header target element.
- * @param {string} initials - Computed initials to display.
- * @returns {void}
- */
+/** Apply initials to header and cache them. */
 function applyHeader(el, initials) {
-  const prevText = el.textContent || "";
+  let prevText = el.textContent || "";
 
   if (prevText === initials ) {
     // schon gesetzt – nur sicherstellen, dass es sichtbar ist
@@ -140,10 +101,10 @@ function applyHeader(el, initials) {
  */
 window.updateUserInitials = function (user) {
   if (!user) return;
-  const el = getHeaderEl();
+  let el = getHeaderEl();
   if (!el) return;
-  const base = getUserBase(user);
-  const initials = initialsFromParts(nameParts(base));
+  let base = getUserBase(user);
+  let initials = initialsFromParts(nameParts(base));
   if (!initials) return clearHeader(el);
   applyHeader(el, initials);
 };
@@ -154,7 +115,7 @@ window.updateUserInitials = function (user) {
  */
 window.clearHeaderTextCache = function () {
   localStorage.removeItem("headerTextCache");
-  const el = $("person-icon-header-text");
+  let el = document.getElementById("person-icon-header-text");
   if (el) {
     el.textContent = "";
     el.style.fontSize = "";
@@ -168,23 +129,14 @@ window.clearHeaderTextCache = function () {
  * @returns {void}
  */
 function setHeaderUIForAuth(isLoggedIn) {
-  const headerMenu = document.querySelector("[data-role='header-menu']") || document.querySelector("#header-menu") || document.querySelector("#person-icon-header");
-  const headerLogin = document.querySelector("[data-role='header-login']") || document.querySelector("#header-login");
+  let headerMenu = document.querySelector("[data-role='header-menu']") || document.querySelector("#header-menu") || document.querySelector("#person-icon-header");
+  let headerLogin = document.querySelector("[data-role='header-login']") || document.querySelector("#header-login");
   if (headerMenu) headerMenu.classList.toggle("d-none", !isLoggedIn);
   if (headerLogin) headerLogin.classList.toggle("d-none", isLoggedIn);
 }
 
-const FIREBASE_MODULE_PATH = "./scripts/firebase.js";
-const REDIRECT = "index.html";
-
-/**
- * Determine whether the current page is public (no auth required).
- * @returns {boolean}
- */
-function isPublicPage() {
-  const p = location.pathname.replace(/\/+$/, "").toLowerCase();
-  return /(?:^|\/)(index|privacy-policy|legal-notice|help)(?:\.html)?$/.test(p) || p === "";
-}
+let FIREBASE_MODULE_PATH = "./scripts/firebase.js";
+let REDIRECT = "index.html";
 
 /** @typedef {{ displayName?: string, email?: string }} User */
 
@@ -233,11 +185,7 @@ function showAnonNav() {
   toggleHidden(qs(".nav-login-box-mobile"), false);
 }
 
-/**
- * Clear initials UI (and leave cache clearing to external helper).
- * @param {HTMLElement|null} el
- * @returns {void}
- */
+/** Clear initials UI (visual only). */
 function resetInitials(el) {
   if (!el) return;
   el.textContent = "";
@@ -250,9 +198,9 @@ function resetInitials(el) {
  * @returns {void}
  */
 function redirectIfNotPublic() {
-  if (typeof isPublicPage === "function" && !isPublicPage()) {
-    location.replace("index.html");
-  }
+  let p = location.pathname.replace(/\/+$/, "").toLowerCase();
+  let isPublic = /(?:^|\/)(index|privacy-policy|legal-notice|help)(?:\.html)?$/.test(p) || p === "";
+  if (!isPublic) location.replace("index.html");
 }
 
 /**
@@ -261,7 +209,7 @@ function redirectIfNotPublic() {
  * @returns {void}
  */
 function handleAuthChange(user) {
-  const el = getInitialsEl();
+  let el = getInitialsEl();
   if (user) {
     window.updateUserInitials?.(user);
     if (el) el.style.opacity = "1";
@@ -280,7 +228,7 @@ function handleAuthChange(user) {
  */
 async function initAuthUI() {
   try {
-    const [{ auth }, { onAuthStateChanged }] = await Promise.all([
+    let [{ auth }, { onAuthStateChanged }] = await Promise.all([
       import(FIREBASE_MODULE_PATH),
       import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"),
     ]);
@@ -300,14 +248,11 @@ async function initAuthUI() {
  * @returns {boolean}
  */
 function isIndexPage() {
-  const p = location.pathname.toLowerCase();
+  let p = location.pathname.toLowerCase();
   return p === "/" || p.endsWith("/index.html");
 }
 
-/**
- * Get the header initials element.
- * @returns {HTMLElement|null}
- */
+/** Get the header initials element. */
 function getHeaderEl() {
   return document.getElementById("person-icon-header-text");
 }
@@ -320,7 +265,7 @@ function getHeaderEl() {
 function onUserAuthenticated(user) {
   applyHeaderNavByAuth?.(user);
   window.updateUserInitials?.(user);
-  const el = getHeaderEl();
+  let el = getHeaderEl();
   if (el) el.style.opacity = "1";
 }
 
@@ -331,13 +276,15 @@ function onUserAuthenticated(user) {
 function onUserUnauthenticated() {
   applyHeaderNavByAuth?.(null);
   localStorage.removeItem("headerTextCache");
-  const el = getHeaderEl();
+  let el = getHeaderEl();
   if (el) {
     el.textContent = "";
     el.style.fontSize = "";
     el.style.opacity = "0";
   }
-  if (!isPublicPage()) location.replace("index.html");
+  let p = location.pathname.replace(/\/+$/, "").toLowerCase();
+  let isPublic = /(?:^|\/)(index|privacy-policy|legal-notice|help)(?:\.html)?$/.test(p) || p === "";
+  if (!isPublic) location.replace("index.html");
 }
 
 /**
@@ -359,7 +306,7 @@ function handleAuthStateChange(user) {
  */
 (async () => {
   try {
-    const [{ auth }, { onAuthStateChanged }] = await Promise.all([
+    let [{ auth }, { onAuthStateChanged }] = await Promise.all([
       import(FIREBASE_MODULE_PATH),
       import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"),
     ]);
@@ -378,7 +325,7 @@ async function doLogout() {
   if (window.__loggingOut) return;
   window.__loggingOut = true;
   try {
-    const [{ auth }, { signOut }] = await Promise.all([import(FIREBASE_MODULE_PATH), import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")]);
+    let [{ auth }, { signOut }] = await Promise.all([import(FIREBASE_MODULE_PATH), import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")]);
     document.getElementById("profile-navbar")?.classList.add("d-none");
     window.clearHeaderTextCache?.();
     await signOut(auth);
@@ -398,7 +345,7 @@ function attachLogoutListener() {
   if (window.__logoutListenerAttached) return; // Guard
   window.__logoutListenerAttached = true;
   document.addEventListener("click", (e) => {
-    const el = e.target.closest("[data-logout]");
+    let el = e.target.closest("[data-logout]");
     if (!el) return;
     e.preventDefault();
     doLogout();
@@ -413,11 +360,11 @@ attachLogoutListener();
  * @returns {void}
  */
 function applyHeaderNavByAuth(user) {
-  const showNav = !!user;
-  const nav = document.querySelector(".nav");
-  const navBox = document.querySelector(".nav-box");
-  const navLoginBox = document.querySelector(".nav-login-box");
-  const navLoginBoxMobile = document.querySelector(".nav-login-box-mobile");
+  let showNav = !!user;
+  let nav = document.querySelector(".nav");
+  let navBox = document.querySelector(".nav-box");
+  let navLoginBox = document.querySelector(".nav-login-box");
+  let navLoginBoxMobile = document.querySelector(".nav-login-box-mobile");
   nav?.classList.toggle("d-none", !showNav);
   navBox?.classList.toggle("d-none", !showNav);
   navLoginBox?.classList.toggle("d-none", showNav);
