@@ -321,6 +321,5 @@ function setupCancelButton() {
   }
 }
 
-// Setup cancel button
 document.addEventListener("addtask:template-ready", setupCancelButton);
 setupCancelButton();

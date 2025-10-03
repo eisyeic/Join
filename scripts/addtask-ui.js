@@ -354,16 +354,18 @@ function handleCategoryClickOutside(event) {
 }
 
 /**
- * Initialize the native date picker widgets if present.
+ * Setup date picker click handler for mobile compatibility.
  * @returns {void}
  */
 function setupDatePicker() {
-  const datePicker = document.getElementById('datepicker');
   const wrapper = document.getElementById('datepicker-wrapper');
-  const display = document.getElementById('date-display');
-  if (!(datePicker && wrapper && display)) return;
-  setDatePickerMin(/** @type {HTMLInputElement} */(datePicker));
-  bindDatePickerEvents(/** @type {HTMLInputElement} */(datePicker), wrapper, display);
+  const input = document.getElementById('datepicker');
+  if (wrapper && input) {
+    wrapper.onclick = () => {
+      input.focus();
+      input.showPicker?.();
+    };
+  }
 }
 
 /**
@@ -398,3 +400,6 @@ function onDocumentPointerDown(event) {
   const hadEdits = commitEditingSubtasksOutside(target);
   if (!hadEdits) autoAddNewSubtaskIfPending(target);
 }
+
+document.addEventListener("addtask:template-ready", setupDatePicker);
+setupDatePicker();

@@ -18,6 +18,7 @@
  * @property {string} [id]
  */
 
+// Global variables
 /** 
  * Currently selected contact (managed elsewhere).
  * @type {Contact}

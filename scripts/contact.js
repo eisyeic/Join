@@ -3,6 +3,12 @@
  * Each function has one clear purpose. Public APIs unchanged.
  */
 
+// Global variables
+let _editOverlayClosing = false;
+let _swallowNextDocClick = false;
+let _suppressMobileNavbar = false;
+let _navbarLockObserver = null;
+
 // Initialize contact module
 (function initContact() {
   setupAllEventHandlers();
@@ -19,12 +25,6 @@ window.openEditContact = openEditContact;
 window.getContactPerson = getContactPerson;
 window.getInitials = getInitials;
 window.colorIndex = 0;
-
-// Module state
-let _editOverlayClosing = false;
-let _swallowNextDocClick = false;
-let _suppressMobileNavbar = false;
-let _navbarLockObserver = null;
 
 // Event handlers setup
 function setupAllEventHandlers() {

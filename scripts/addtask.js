@@ -4,6 +4,13 @@
  * @typedef {Object} SubtaskItem
  * @property {string} name
  */
+
+// Global variables
+window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
+let subtasks = window.subtasks;
+let selectedPriority = "medium";
+const contactInitialsBox = document.querySelector(".contact-initials");
+
 window.renderSubtasks = renderSubtasks;
 
 /**
@@ -27,14 +34,7 @@ document.addEventListener('addtask:template-ready', setupDatePicker());
  * @param {CustomEvent} event
  * @returns {void}
  */
-document.addEventListener('addtask:template-ready', setupDatePickerWrapper());
-
-
-// Global variables
-window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
-let subtasks = window.subtasks;
-let selectedPriority = "medium";
-const contactInitialsBox = document.querySelector(".contact-initials"); 
+document.addEventListener('addtask:template-ready', setupDatePickerWrapper()); 
 
 /**
  * Set subtask value by index.

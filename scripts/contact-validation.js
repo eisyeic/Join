@@ -208,6 +208,7 @@ function getFieldMapping() {
 function setErrorMessage(fieldId, message) {
   const fieldMapping = getFieldMapping();
   if (fieldMapping[fieldId]) {
+    const $ = (id) => document.getElementById(id);
     $(fieldMapping[fieldId]).innerHTML = getErrorMessage(message);
   }
 }
@@ -244,6 +245,7 @@ function showFieldError(fieldId, message) {
  * @returns {Object}
  */
 function getFieldElements(fieldId) {
+  const $ = (id) => document.getElementById(id);
   return {
     field: $(fieldId),
     placeholder: $(fieldId + "-placeholder")
@@ -275,6 +277,7 @@ function applyErrorStyles(elements) {
 function clearErrorMessage(fieldId) {
   const fieldMapping = getFieldMapping();
   if (fieldMapping[fieldId]) {
+    const $ = (id) => document.getElementById(id);
     $(fieldMapping[fieldId]).innerHTML = "";
   }
 }
@@ -334,6 +337,7 @@ function getErrorMessage(message) {
  * @returns {void}
  */
 function attachValidators(){
+  const $ = (id) => document.getElementById(id);
   $("edit-phone-input").addEventListener("keydown", validatePhoneInput);
   $("phone-new-contact").addEventListener("keydown", validatePhoneInput);
   $("name-new-contact").addEventListener("keydown", validateNameInput);
@@ -349,6 +353,37 @@ function setupInputValidators(){
 }
 setupInputValidators();
 
+/**
+ * Validates the edit contact form
+ * @returns {boolean} True if form is valid
+ */
+function validateEditContactForm() {
+  const name = document.getElementById("edit-name-input").value.trim();
+  const email = document.getElementById("edit-email-input").value.trim();
+  const phone = document.getElementById("edit-phone-input").value.trim();
+  
+  let isValid = true;
+  
+  if (!name) {
+    showFieldError("edit-name-input", "Name is required");
+    isValid = false;
+  }
+  
+  if (!email) {
+    showFieldError("edit-email-input", "Email is required");
+    isValid = false;
+  } else if (!isValidEmail(email)) {
+    showFieldError("edit-email-input", "Please enter a valid email");
+    isValid = false;
+  }
+  
+  if (!phone) {
+    showFieldError("edit-phone-input", "Phone is required");
+    isValid = false;
+  }
+  
+  return isValid;
+}
 
 /** Export functions for use in other modules */
 if (typeof window !== 'undefined') {
@@ -359,5 +394,5 @@ if (typeof window !== 'undefined') {
   window.showFieldError = showFieldError;
   window.clearFieldError = clearFieldError;
   window.getErrorMessage = getErrorMessage;
+  window.validateEditContactForm = validateEditContactForm;
 }
-
