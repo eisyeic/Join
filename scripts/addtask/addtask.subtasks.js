@@ -4,31 +4,48 @@
  */
 
 /**
- * Normalize subtask input values into a clean string array.
- * @param {Array<string|{name:string}>} input
- * @returns {string[]}
+ * Normalize subtask input values into a consistent object array.
+ * Accepts arrays or Firebase object maps.
+ * @param {Array<string|{name:string,checked?:boolean}>|Object<string,{name:string,checked?:boolean}>} input
+ * @returns {{name:string, checked:boolean}[]}
  */
 function normalizeSubtasks(input) {
-  if (!input || typeof input === "undefined") return [];
-  return input
-    .map((st) => (typeof st === "string" ? st : st && st.name ? st.name : ""))
+  if (!input) return [];
+  const arr = Array.isArray(input)
+    ? input
+    : (typeof input === 'object' ? Object.values(input) : []);
+  return arr
+    .map((st) => {
+      if (typeof st === 'string') return { name: st, checked: false };
+      const name = typeof st?.name === 'string' ? st.name : '';
+      const checked = !!st?.checked;
+      return name ? { name, checked } : null;
+    })
     .filter(Boolean);
 }
 
+let SUBTASK_ROOT = document; // default render root; can be set to overlay container
+
 /**
  * Render the subtask list into the DOM.
- * @param {string[]} list
+ * @param {({name:string,checked:boolean}|string)[]} list
+ * @param {Document|HTMLElement} root
  */
-function renderSubtaskList(list) {
+function renderSubtaskList(list, root = SUBTASK_ROOT) {
   const items = Array.isArray(list) ? list : [];
-  document.getElementById("subtask-list").innerHTML = items.map((s, i) => getSubtaskItemTemplate(s, i)).join("");
+  const el = (root || document).querySelector('#subtask-list');
+  if (!el) return;
+  el.innerHTML = items
+    .map((s, i) => getSubtaskItemTemplate(typeof s === 'string' ? s : (s?.name ?? ''), i))
+    .join('');
 }
 
 /** Normalize, update and render the current subtasks with edit/delete events. */
 function renderSubtasks() {
   let normalized = normalizeSubtasks(subtasks);
   subtasks = normalized;
-  renderSubtaskList(normalized);
+  window.subtasks = subtasks; // keep global in sync
+  renderSubtaskList(normalized, SUBTASK_ROOT);
   addEditEvents();
   deleteEvent();
 }
@@ -123,18 +140,30 @@ function saveEditedSubtask(saveBtn) {
   const input = item.querySelector('.subtask-edit-input');
   if (!Number.isFinite(index) || !input) return;
   const value = input.value.trim();
-  if (!value) subtasks.splice(index, 1);
-  else subtasks[index] = value;
+  if (!value) {
+    subtasks.splice(index, 1);
+  } else {
+    const prev = subtasks[index];
+    const prevChecked = typeof prev === 'object' ? !!prev.checked : false;
+    subtasks[index] = { name: value, checked: prevChecked };
+  }
   renderSubtasks();
 }
 
 /** Global subtasks array, shared across modules. */
-window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : []; 
-let subtasks = window.subtasks; 
+window.subtasks = Array.isArray(window.subtasks) ? window.subtasks : [];
+let subtasks = normalizeSubtasks(window.subtasks);
+window.subtasks = subtasks;
 
 /** Utility object for external subtask manipulation. */
 window.SubtaskIO = window.SubtaskIO || {
   set(index, value) { subtasks[index] = value; },
   remove(index) { subtasks.splice(index, 1); },
-  rerender() { renderSubtasks(); }
+  rerender() { renderSubtasks(); },
+  /** Set the render root (e.g., overlay container element) */
+  setRoot(rootEl) { SUBTASK_ROOT = rootEl || document; },
+  /** Load subtasks from a raw list or Firebase map and render */
+  load(rawList) { subtasks = normalizeSubtasks(rawList); window.subtasks = subtasks; renderSubtasks(); },
+  /** Alias for semantic clarity */
+  setAll(rawList) { this.load(rawList); }
 };
