@@ -1,28 +1,4 @@
-/**
- * @module addtask-ui
- * @description UI helpers for AddTask (initials capping, template injection, dropdown handling)
- * @typedef {Object} Subtask
- * @property {string} name - Title of the subtask
- * @callback DomReadyCallback
- * @returns {void}
- * @global
- * @function $
- * @description Shortcut that returns an element by id (provided globally).
- * @param {string} id
- * @returns {HTMLElement}
- * @global
- * @function buildSubtasksHTML
- * @description Builds the HTML string for the subtask list from an array of strings. Provided externally.
- * @param {string[]} subtasks
- * @returns {string}
- */
-
-/**
- * @global
- * @name window.capAssignedInitialsIn
- * @type {(container: HTMLElement, max?: number) => void}
- * @description Global alias for {@link capAssignedInitialsIn} (legacy compatibility).
- */
+// UI helpers for AddTask (initials capping, template injection, dropdown handling)
 window.capAssignedInitialsIn = capAssignedInitialsIn;
 window.applyCapToAllInitials = applyCapToAllInitials;
 window.applyAssignedInitialsCap = applyAssignedInitialsCap;
@@ -360,10 +336,30 @@ function handleCategoryClickOutside(event) {
 function setupDatePicker() {
   const wrapper = document.getElementById('datepicker-wrapper');
   const input = document.getElementById('datepicker');
+  const placeholder = document.getElementById('date-placeholder');
+  const display = document.getElementById('date-display');
+  
   if (wrapper && input) {
-    wrapper.onclick = () => {
-      input.focus();
-      input.showPicker?.();
+    // Click handler für wrapper - fokussiert nur das Input
+    wrapper.onclick = (e) => {
+      if (e.target !== input) {
+        input.focus();
+        input.click();
+      }
+    };
+    
+    // Change handler für Datumsanzeige
+    input.onchange = () => {
+      if (input.value) {
+        const date = new Date(input.value);
+        const formattedDate = date.toLocaleDateString('en-GB');
+        if (display) display.textContent = formattedDate;
+        if (placeholder) placeholder.style.display = 'none';
+        if (display) display.style.display = 'block';
+      } else {
+        if (placeholder) placeholder.style.display = 'block';
+        if (display) display.style.display = 'none';
+      }
     };
   }
 }
