@@ -52,7 +52,6 @@ import { app } from "../firebase.js";
 let db = getDatabase(app);
 
 /** @type {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").Database} */
-// const db is already declared above; type left here for context.
 
 /** @type {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").DatabaseReference|undefined} */ let tasksRef;
 /** @type {import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").DatabaseReference|undefined} */ let newRef;
@@ -198,11 +197,8 @@ window.updateTaskInFirebase = function updateTaskInFirebase(taskId, taskData) {
     priority: taskData.priority,
     assignedContacts: taskData.assignedContacts,
     subtasks: taskData.subtasks,
-    updatedAt: new Date().toISOString(),
-  };
-  updateTask(taskId, toSave)
-    .then(() => { showBanner(); finishUpdateFlow(); })
-    .catch((e) => console.error("Fehler beim Aktualisieren:", e));
+    updatedAt: new Date().toISOString(), };
+  updateTask(taskId, toSave) .then(() => { showBanner(); finishUpdateFlow(); }).catch((e) => console.error("Fehler beim Aktualisieren:", e));
 }
 
 /**
@@ -210,7 +206,7 @@ window.updateTaskInFirebase = function updateTaskInFirebase(taskId, taskData) {
  * @returns {void}
  */
 window.handleCreateClick = function handleCreateClick() {
-  const data = collectFormData();
+  let data = collectFormData();
   if (!validateFormData(data)) return;
   sendTaskToFirebase(data);
   if (!window.location.pathname.endsWith("addtask.html")) window.toggleAddTaskBoard();

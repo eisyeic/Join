@@ -7,9 +7,9 @@
  * Clear all validation error messages in the form.
  */
 function resetFormErrors() {
-  const e1 = document.getElementById("addtask-error"); if (e1) e1.innerHTML = "";
-  const e2 = document.getElementById("due-date-error"); if (e2) e2.innerHTML = "";
-  const e3 = document.getElementById("category-selection-error"); if (e3) e3.innerHTML = "";
+  let e1 = document.getElementById("addtask-error"); if (e1) e1.innerHTML = "";
+  let e2 = document.getElementById("due-date-error"); if (e2) e2.innerHTML = "";
+  let e3 = document.getElementById("category-selection-error"); if (e3) e3.innerHTML = "";
 }
 
 /**
@@ -19,10 +19,10 @@ function resetFormErrors() {
  * @param {string} msg - Error message to display.
  */
 function setError(msgId, borderId, msg) {
-  const msgEl = document.getElementById(msgId);
+  let msgEl = document.getElementById(msgId);
   if (msgEl) msgEl.innerHTML = msg;
   if (borderId) {
-    const borderEl = document.getElementById(borderId);
+    let borderEl = document.getElementById(borderId);
     if (borderEl) borderEl.style.borderColor = "var(--error-color)";
   }
 }

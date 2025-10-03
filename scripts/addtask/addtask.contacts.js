@@ -80,7 +80,7 @@ function maybeRenderContacts() {
  * @param {InputEvent} e
  */
 function onContactInput(e) {
-  const value = String(e.target.value || '').trim().toLowerCase();
+  let value = String(e.target.value || '').trim().toLowerCase();
   applyContactFilter(value);
 }
 /**
@@ -91,7 +91,7 @@ function applyContactFilter(value){
   setEls();
   if (!elContactListBox) return;
   showEl(elContactListBox);
-  const filtered = filterContactsByPrefix(loadedContacts, value);
+  let filtered = filterContactsByPrefix(loadedContacts, value);
   clearEl(elContactListBox);
   renderContacts(filtered, elContactListBox);
 }
@@ -103,9 +103,9 @@ function applyContactFilter(value){
  */
 function filterContactsByPrefix(contacts, value){
   if (!value) return { ...contacts };
-  const out = {};
-  for (const id in contacts){
-    const n = String(contacts[id].name||'').toLowerCase().split(' ');
+  let out = {};
+  for (let id in contacts){
+    let n = String(contacts[id].name||'').toLowerCase().split(' ');
     if (n.some(p=>p.startsWith(value))) out[id]=contacts[id];
   }
   return out;
@@ -117,7 +117,7 @@ function filterContactsByPrefix(contacts, value){
  * @returns {HTMLLIElement}
  */
 function createContactListItem(contact, id) {
-  const li = document.createElement('li');
+  let li = document.createElement('li');
   li.id = id;
   li.innerHTML = contactListItemHTML(contact, id);
   return li;
@@ -129,7 +129,7 @@ function createContactListItem(contact, id) {
  * @returns {string}
  */
 function contactListItemHTML(contact, id){
-  const ext = window.Templates && typeof Templates.contactListItem === 'function';
+  let ext = window.Templates && typeof Templates.contactListItem === 'function';
   return ext ? Templates.contactListItem(contact, id) : defaultContactListItemTemplate(contact);
 }
 /**
@@ -140,7 +140,7 @@ function contactListItemHTML(contact, id){
 function renderContacts(contacts, container) {
   Object.entries(contacts)
     .sort(([,a],[,b])=>a.name.localeCompare(b.name,'de',{sensitivity:'base'}))
-    .forEach(([id, c]) => { const li=createContactListItem(c,id); container.appendChild(li); attachContactListener(li); });
+    .forEach(([id, c]) => { let li=createContactListItem(c,id); container.appendChild(li); attachContactListener(li); });
 }
 
 
@@ -157,29 +157,29 @@ function toggleLiSelection(li){ li.classList.toggle('selected'); }
  * Sync checkbox icon with current selected state.
  * @param {HTMLLIElement} li
  */
-function updateCheckbox(li){ const img=li.querySelector('img'); const s=li.classList.contains('selected'); if(img) img.src = s? './assets/icons/add_task/check_white.svg':'./assets/icons/add_task/check_default.svg'; }
+function updateCheckbox(li){ let img=li.querySelector('img'); let s=li.classList.contains('selected'); if(img) img.src = s? './assets/icons/add_task/check_white.svg':'./assets/icons/add_task/check_default.svg'; }
 
 /** Clone initials from selected items and show them in the initials box. */
 function renderSelectedContactInitials() {
-  const selected = document.querySelectorAll('#contact-list-box li.selected');
+  let selected = document.querySelectorAll('#contact-list-box li.selected');
   elContactInitials = document.getElementById('contact-initials');
   if (!elContactInitials) return;
   clearEl(elContactInitials);
-  selected.forEach(li => { const ini = li.querySelector('.contact-initial'); if (ini) elContactInitials.appendChild(ini.cloneNode(true)); });
+  selected.forEach(li => { let ini = li.querySelector('.contact-initial'); if (ini) elContactInitials.appendChild(ini.cloneNode(true)); });
 }
 /**
  * Read preselected ids from the assigned select box dataset.
  * @returns {string[]}
  */
 function getIdsFromDataset() {
-  try { const raw = document.getElementById('assigned-select-box')?.dataset.selected || '[]'; const ids = JSON.parse(raw); return Array.isArray(ids)? ids:[]; } catch { return []; }
+  try { let raw = document.getElementById('assigned-select-box')?.dataset.selected || '[]'; let ids = JSON.parse(raw); return Array.isArray(ids)? ids:[]; } catch { return []; }
 }
 /**
  * Return assigned contacts based on UI selection or dataset fallback.
  * @returns {Array<ReturnType<typeof mapContact>>}
  */
 function getAssignedContactsFromUI() {
-  const selected = document.querySelectorAll('#contact-list-box li.selected');
+  let selected = document.querySelectorAll('#contact-list-box li.selected');
   if (selected.length) return Array.from(selected, li=>mapContact(li.id));
   return getIdsFromDataset().map(mapContact);
 }
@@ -192,7 +192,7 @@ function bootstrapContacts(){ if(!uiAvailable()||contactsBootstrapped) return; c
 /**
  * Fetch contacts via FirebaseActions if none are loaded yet.
  */
-function fetchContactsIfEmpty(){ if(hasAny(loadedContacts)) return; const api=window.FirebaseActions; const loader = api && typeof api.fetchContacts==='function' ? api.fetchContacts() : Promise.resolve({}); loader.then(c=>{ loadedContacts=c||{}; maybeRenderContacts(); }).catch(e=>console.error('Fehler beim Laden der Kontakte:', e)); }
+function fetchContactsIfEmpty(){ if(hasAny(loadedContacts)) return; let api=window.FirebaseActions; let loader = api && typeof api.fetchContacts==='function' ? api.fetchContacts() : Promise.resolve({}); loader.then(c=>{ loadedContacts=c||{}; maybeRenderContacts(); }).catch(e=>console.error('Fehler beim Laden der Kontakte:', e)); }
 /** Initialize contacts module on DOM ready and on template-ready. */
 function initContactsOnReady(){ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bootstrapContacts, {once:true}); } else { bootstrapContacts(); } document.addEventListener('addtask:template-ready', bootstrapContacts); }
 initContactsOnReady();
@@ -201,7 +201,7 @@ initContactsOnReady();
 function toggleAssignedList() {
   setEls();
   if (!elContactListBox) return;
-  const willShow = elContactListBox.classList.contains('d-none');
+  let willShow = elContactListBox.classList.contains('d-none');
   setAssignedListVisibility(willShow);
   afterAssignedToggle(willShow);
 }
@@ -219,7 +219,7 @@ function setAssignedListVisibility(show){
  * @param {boolean} show
  */
 function afterAssignedToggle(show){
-  const box = document.querySelector('.contact-initials');
+  let box = document.querySelector('.contact-initials');
   if (show) box?.classList.add('d-none'); else handleAssignedInitials(elContactListBox, box);
 }
 /**
@@ -228,7 +228,7 @@ function afterAssignedToggle(show){
  * @param {HTMLElement|null} box
  */
 function handleAssignedInitials(list, box) {
-  const sel = list.querySelectorAll('li.selected');
+  let sel = list.querySelectorAll('li.selected');
   if (box) box.classList.toggle('d-none', sel.length === 0);
   if (typeof applyAssignedInitialsCap === 'function') applyAssignedInitialsCap();
 }
@@ -244,7 +244,7 @@ function bindAssignedToggle() {
 function closeAssignedIfOutside(t) {
   setEls();
   if (!elAssignedSelectBox || !elContactListBox) return;
-  const inside = isInside(t, elAssignedSelectBox) || isInside(t, elContactListBox);
+  let inside = isInside(t, elAssignedSelectBox) || isInside(t, elContactListBox);
   if (inside) return;
   setAssignedListVisibility(false);
   handleAssignedInitials(elContactListBox, document.querySelector('.contact-initials'));
@@ -252,6 +252,6 @@ function closeAssignedIfOutside(t) {
 /** Deselect all contacts and reset initials box UI. */
 function clearAssignedContacts() { deselectAllContacts(); resetInitialsBox(); }
 /** Remove selection state and reset the checkbox icon for all selected lis. */
-function deselectAllContacts(){ document.querySelectorAll('#contact-list-box li.selected').forEach(li=>{ li.classList.remove('selected'); const img=li.querySelector('img'); if(img) img.src='./assets/icons/add_task/check_default.svg'; }); }
+function deselectAllContacts(){ document.querySelectorAll('#contact-list-box li.selected').forEach(li=>{ li.classList.remove('selected'); let img=li.querySelector('img'); if(img) img.src='./assets/icons/add_task/check_default.svg'; }); }
 /** Hide and clear the initials box container. */
 function resetInitialsBox(){ elContactInitials = document.getElementById('contact-initials'); if(!elContactInitials) return; elContactInitials.classList.add('d-none'); clearEl(elContactInitials); }

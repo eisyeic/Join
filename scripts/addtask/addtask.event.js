@@ -70,7 +70,7 @@ function setEls(){
 
 /** Bind click on datepicker wrapper to open the picker and clear errors. */
 function bindDatepickerClick(){
-  const el = document.getElementById('datepicker-wrapper');
+  let el = document.getElementById('datepicker-wrapper');
   if (!el) return; 
   if (el.dataset && el.dataset.dpBound === '1') return;
   el.addEventListener('click', openDatepickerAndClearErrors);
@@ -98,7 +98,7 @@ function openDatepickerAndClearErrors(){
  */
 function setCategory(value){
   setEls();
-  const span = elCategorySelect?.querySelector('span');
+  let span = elCategorySelect?.querySelector('span');
   if (span) span.textContent = value;
 }
 
@@ -204,8 +204,8 @@ function handlePriorityClick(button) {
  * @param {MouseEvent} e
  */
 function onCategoryItemClick(e) {
-  const li = e.currentTarget;
-  const v = li.getAttribute('data-value') ?? '';
+  let li = e.currentTarget;
+  let v = li.getAttribute('data-value') ?? '';
   setCategory(v);
   hideCategoryDropdown();
   clearCategoryValidation();
@@ -214,14 +214,14 @@ function onCategoryItemClick(e) {
 /** Bind click handlers to category list items. */
 function bindCategorySelection() {
   setEls();
-  const panel = elCategorySelection;
+  let panel = elCategorySelection;
   if (!panel) return;
   panel.querySelectorAll('li').forEach((li) => li.addEventListener('click', onCategoryItemClick));
 }
 /** Toggle visibility of the category dropdown panel. */
 function toggleCategoryPanel() {
   setEls();
-  const panel = elCategorySelection, icon = elCategoryIcon;
+  let panel = elCategorySelection, icon = elCategoryIcon;
   if (!panel || !icon) return;
   panel.classList.toggle('d-none');
   icon.classList.toggle('arrow-down');
@@ -240,9 +240,9 @@ function bindCategoryToggle() {
  */
 function closeCategoryIfOutside(t) {
   setEls();
-  const sel = elCategorySelect, panel = elCategorySelection;
+  let sel = elCategorySelect, panel = elCategorySelection;
   if (!sel || !panel) return;
-  const inside = sel.contains(t) || panel.contains(t);
+  let inside = sel.contains(t) || panel.contains(t);
   if (!inside) {
     panel.classList.add('d-none');
     elCategoryIcon?.classList.remove('arrow-up');
@@ -252,7 +252,7 @@ function closeCategoryIfOutside(t) {
 
 /** Global outside-click handler for closing UI panels. */
 function outsideHandler(e) {
-  const t = e.target;
+  let t = e.target;
   closeCategoryIfOutside(t);
   closeAssignedIfOutside(t);
 }
@@ -266,9 +266,9 @@ function bindOutsideClosers() {
 /** Toggle subtask controls visibility based on input value. */
 function onSubInputToggle() {
   setEls();
-  const plus = elSubtaskPlusBox, func = elSubtaskFuncBtn;
+  let plus = elSubtaskPlusBox, func = elSubtaskFuncBtn;
   if (!plus || !func) return;
-  const show = this.value !== '';
+  let show = this.value !== '';
   plus.classList.toggle('d-none', show);
   func.classList.toggle('d-none', !show);
 }
@@ -280,7 +280,7 @@ function bindSubInputToggle() {
 /** Show/hide per-item subtask function buttons on hover. */
 function bindSubListHover() {
   setEls();
-  const list = elSubtaskList;
+  let list = elSubtaskList;
   bindOnce(list, 'mouseover', (e) => e.target.closest('.subtask-item')?.querySelector('.subtask-func-btn')?.classList.remove('d-none'), 'sub-over');
   bindOnce(list, 'mouseout', (e) => e.target.closest('.subtask-item')?.querySelector('.subtask-func-btn')?.classList.add('d-none'), 'sub-out');
 }
@@ -312,7 +312,7 @@ function bindCancelButton() {
 /** Add a subtask from the input field and refresh the list. */
 function onSubCheckClick() {
   setEls();
-  const v = elSubInput?.value.trim();
+  let v = elSubInput?.value.trim();
   if (!v) return;
   subtasks.push(v);
   if (elSubInput) elSubInput.value = '';
@@ -332,7 +332,7 @@ function bindSubtaskAdd() {
 function onSubInputEnter(e) {
   if (e.key !== 'Enter') return;
   e.preventDefault();
-  const v = this.value.trim(); if (!v) return;
+  let v = this.value.trim(); if (!v) return;
   subtasks.push(v); this.value = '';
   setEls();
   elSubtaskFuncBtn.classList.add('d-none');

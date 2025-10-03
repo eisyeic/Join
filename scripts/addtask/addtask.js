@@ -17,11 +17,11 @@ if (typeof window.selectedPriority === 'undefined') window.selectedPriority = 'm
 
 /** Reset priority buttons/radio inputs and set selection to "medium". */
 function resetPrioritySelection() {
+  let mediumButton = document.querySelector(".medium-button");
   document.querySelectorAll(".priority-button").forEach((btn) => btn.classList.remove("active"));
   window.selectedPriority = 'medium';
-  const mediumButton = document.querySelector(".medium-button");
   if (mediumButton) mediumButton.classList.add("active");
-  const mediumRadio = document.querySelector('input[name="priority"][value="medium"]');
+  let mediumRadio = document.querySelector('input[name="priority"][value="medium"]');
   if (mediumRadio) mediumRadio.checked = true;
 }
 
@@ -34,8 +34,8 @@ function resetPrioritySelection() {
  */
 function bindOnce(el, type, handler, key) {
   if (!el) return;
-  const mark = `bound-${type}-${key || ''}`.replace(/[^a-z0-9_-]/gi, '_');
-  const attr = `data-${mark}`;
+  let mark = `bound-${type}-${key || ''}`.replace(/[^a-z0-9_-]/gi, '_');
+  let attr = `data-${mark}`;
   if (el.getAttribute && el.getAttribute(attr) === '1') return;
   el.addEventListener(type, handler);
   if (el.setAttribute) el.setAttribute(attr, '1');
@@ -92,10 +92,10 @@ if (document.readyState === 'loading') {
  * @returns {boolean} whether there were any editing items
  */
 function saveOpenSubtaskEditsOutside(target){
-  const items = document.querySelectorAll('.subtask-item.editing');
+  let items = document.querySelectorAll('.subtask-item.editing');
   items.forEach((it) => {
     if (!it.contains(target)) {
-      const btn = it.querySelector('.subtask-save-icon');
+      let btn = it.querySelector('.subtask-save-icon');
       if (btn) window.saveEditedSubtask(btn);
     }
   });
@@ -107,22 +107,22 @@ function saveOpenSubtaskEditsOutside(target){
  * @param {EventTarget} target
  */
 function autoAcceptTypingSubtask(target){
-  const input = document.getElementById('sub-input');
+  let input = document.getElementById('sub-input');
   if (!input || !input.value.trim() || input.contains(target)) return;
-  const funcBox = document.getElementById('subtask-func-btn');
+  let funcBox = document.getElementById('subtask-func-btn');
   if (!funcBox || !funcBox.contains(target)) document.getElementById('sub-check')?.click();
 }
 
 /** Outside-click behavior: save open edits or accept the typed subtask. */
 document.addEventListener('pointerdown', (event) => {
-  const t = event.target;
-  const hadEditing = saveOpenSubtaskEditsOutside(t);
+  let t = event.target;
+  let hadEditing = saveOpenSubtaskEditsOutside(t);
   if (!hadEditing) autoAcceptTypingSubtask(t);
 }, true);
 
 /** Enable outside-close for overlay shells (add-task overlay and task overlay). */
-{ const el = $('overlay-add-task'); if (el) setupDropdownOutsideCloseIn(el); }
-{ const el = $('task-overlay');     if (el) setupDropdownOutsideCloseIn(el); }
+{ let el = document.getElementById('overlay-add-task'); if (el) setupDropdownOutsideCloseIn(el); }
+{ let el = document.getElementById('task-overlay');     if (el) setupDropdownOutsideCloseIn(el); }
 
 /** Programmatically clear the Add Task form by triggering the Cancel button. */
 window.clearAddTask = function clearAddTask() {
@@ -131,10 +131,10 @@ window.clearAddTask = function clearAddTask() {
 
 /** Observe overlay visibility and clear the form whenever it closes. */
 function installClearOnOverlayClose(){
-  const overlay = document.getElementById('overlay-add-task');
+  let overlay = document.getElementById('overlay-add-task');
   if (!overlay || overlay.__clearOnCloseInstalled) return;
-  const onClosed = () => clearAddTask();
-  const mo = new MutationObserver(() => {
+  let onClosed = () => clearAddTask();
+  let mo = new MutationObserver(() => {
     if (overlay.classList.contains('d-none')) onClosed();
   });
   mo.observe(overlay, { attributes: true, attributeFilter: ['class'] });
@@ -144,7 +144,7 @@ function installClearOnOverlayClose(){
 installClearOnOverlayClose();
 
 /** Set up outside-close for the edit wrapper inside the task overlay (if present). */
-const editWrapper = document.querySelector('#task-overlay .edit-addtask-wrapper');
+let editWrapper = document.querySelector('#task-overlay .edit-addtask-wrapper');
 if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
 
 /**
@@ -153,7 +153,7 @@ if (editWrapper) setupDropdownOutsideCloseIn(editWrapper);
  * @returns {boolean}
  */
 function isAddTaskContainerReady(root=document){
-  const c = root.querySelector('.addtask-wrapper');
+  let c = root.querySelector('.addtask-wrapper');
   if (!c) return false;
   return c.dataset.rendered === '1' || c.childElementCount > 0;
 }
@@ -164,7 +164,7 @@ function isAddTaskContainerReady(root=document){
  * @returns {boolean}
  */
 function renderAddTaskInto(root=document){
-  const c = root.querySelector('.addtask-wrapper');
+  let c = root.querySelector('.addtask-wrapper');
   if (!c) return false;
   if (isAddTaskContainerReady(root)) return true;
   c.innerHTML = getAddtaskTemplate();
@@ -207,7 +207,7 @@ let currentEditingTaskId = "";
  */
 window.setCurrentEditingTaskId = function (id) {
   currentEditingTaskId = id || "";
-  const wrapper = document.querySelector('.addtask-wrapper');
+  let wrapper = document.querySelector('.addtask-wrapper');
   if (wrapper) wrapper.dataset.editingId = currentEditingTaskId;
 };
 
@@ -230,21 +230,21 @@ function getEditingId() {
 
 /** Bind the contact filter input exactly once. */
 function bindContactInputOnce(){
-  const el = document.getElementById('contact-input');
+  let el = document.getElementById('contact-input');
   if (el && !el.dataset.bound) { el.addEventListener('input', onContactInput); el.dataset.bound = '1'; }
 }
 
 /** Bind the Create button (only once). */
 function bindCreateButtonOnce(){
-  const el = document.getElementById('create-button');
+  let el = document.getElementById('create-button');
   if (el && !el.dataset.bound) { el.addEventListener('click', handleCreateClick); el.dataset.bound = '1'; }
 }
 
 /** Bind both OK buttons used in Edit flow (only once each). */
 function bindOkButtonsOnce(){
-  const ok = document.getElementById('ok-button');
+  let ok = document.getElementById('ok-button');
   if (ok && !ok.dataset.bound) { ok.addEventListener('click', handleEditOkClick); ok.dataset.bound = '1'; }
-  const editOk = document.getElementById('edit-ok-button');
+  let editOk = document.getElementById('edit-ok-button');
   if (editOk && !editOk.dataset.bound) { editOk.addEventListener('click', handleEditOkClick); editOk.dataset.bound = '1'; }
 }
 
@@ -256,7 +256,7 @@ function bindDynamicElements() {
 }
 
 /** Default priority when nothing is selected. */
-const PRIORITY_DEFAULT = 'medium';
+let PRIORITY_DEFAULT = 'medium';
 
 /** Try to get the priority via a global function or string value. */
 function getSelectedPriorityFromWindow(){
@@ -268,15 +268,15 @@ function getSelectedPriorityFromWindow(){
 
 /** Read selected priority from radio inputs, if present. */
 function getSelectedPriorityFromRadio(){
-  const checked = document.querySelector('input[name="priority"]:checked');
+  let checked = document.querySelector('input[name="priority"]:checked');
   return checked?.value?.toLowerCase();
 }
 
 /** Read selected priority from the active priority button, if present. */
 function getSelectedPriorityFromActiveBtn(){
-  const btn = document.querySelector('.priority-btn.active, .priority-button.active');
+  let btn = document.querySelector('.priority-btn.active, .priority-button.active');
   if (!btn) return;
-  const v = (btn.dataset.priority || btn.getAttribute('data-priority') || '').toLowerCase();
+  let v = (btn.dataset.priority || btn.getAttribute('data-priority') || '').toLowerCase();
   return v || undefined;
 }
 
@@ -298,10 +298,9 @@ function getSelectedPriority(){
  * @returns {{column: string, title: string, description: string, dueDate: string, category: string, priority: ('urgent'|'medium'|'low'), subtasks: Array<{name:string, checked:boolean}>}}
  */
 function baseTaskFromForm() {
-  // Robust normalization of global `subtasks` to avoid `.map` on non-arrays
-  const raw = (typeof subtasks !== 'undefined') ? subtasks : [];
-  const arr = Array.isArray(raw) ? raw : (raw && typeof raw === 'object' ? Object.values(raw) : []);
-  const normalized = arr.map((s) => (
+  let raw = (typeof subtasks !== 'undefined') ? subtasks : [];
+  let arr = Array.isArray(raw) ? raw : (raw && typeof raw === 'object' ? Object.values(raw) : []);
+  let normalized = arr.map((s) => (
     typeof s === 'string' ? { name: s, checked: false } : { name: String(s?.name ?? ''), checked: !!s?.checked }
   ));
 
@@ -343,7 +342,7 @@ function finishUpdateFlow() {
  * @returns {ReturnType<typeof baseTaskFromForm> & {assignedContacts: any, editingId: string}}
  */
 function collectFormData() {
-  const base = baseTaskFromForm();
+  let base = baseTaskFromForm();
   return {
     ...base,
     assignedContacts: getAssignedContactsFromUI(),

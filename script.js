@@ -1,11 +1,4 @@
 /**
- * Shorthand for document.getElementById.
- * @param {string} id
- * @returns {HTMLElement|null}
- */
-let $ = (id) => document.getElementById(id);
-
-/**
  * Toggle the profile dropdown visibility and bind/unbind outside click handler.
  * @returns {void}
  */

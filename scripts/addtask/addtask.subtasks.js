@@ -3,6 +3,8 @@
  * Provides normalization, rendering, editing, deleting and saving logic.
  */
 
+let SUBTASK_ROOT = document; // default render root; can be set to overlay container
+
 /**
  * Normalize subtask input values into a consistent object array.
  * Accepts arrays or Firebase object maps.
@@ -11,20 +13,18 @@
  */
 function normalizeSubtasks(input) {
   if (!input) return [];
-  const arr = Array.isArray(input)
+  let arr = Array.isArray(input)
     ? input
     : (typeof input === 'object' ? Object.values(input) : []);
   return arr
     .map((st) => {
       if (typeof st === 'string') return { name: st, checked: false };
-      const name = typeof st?.name === 'string' ? st.name : '';
-      const checked = !!st?.checked;
+      let name = typeof st?.name === 'string' ? st.name : '';
+      let checked = !!st?.checked;
       return name ? { name, checked } : null;
     })
     .filter(Boolean);
 }
-
-let SUBTASK_ROOT = document; // default render root; can be set to overlay container
 
 /**
  * Render the subtask list into the DOM.
@@ -32,8 +32,8 @@ let SUBTASK_ROOT = document; // default render root; can be set to overlay conta
  * @param {Document|HTMLElement} root
  */
 function renderSubtaskList(list, root = SUBTASK_ROOT) {
-  const items = Array.isArray(list) ? list : [];
-  const el = (root || document).querySelector('#subtask-list');
+  let items = Array.isArray(list) ? list : [];
+  let el = (root || document).querySelector('#subtask-list');
   if (!el) return;
   el.innerHTML = items
     .map((s, i) => getSubtaskItemTemplate(typeof s === 'string' ? s : (s?.name ?? ''), i))
@@ -68,8 +68,8 @@ function onEditClick(e){ enterEditMode(e.currentTarget); }
  * @param {HTMLElement} editBtn
  */
 function enterEditMode(editBtn) {
-  const item = editBtn.closest('.subtask-item');
-  const input = item?.querySelector('.subtask-edit-input');
+  let item = editBtn.closest('.subtask-item');
+  let input = item?.querySelector('.subtask-edit-input');
   if (!item || !input) return;
   showEditFields(item, input);
   setupEnterKeyToSave(input, item);
@@ -99,10 +99,10 @@ function showEditFields(item, input) {
  * @param {HTMLElement} item
  */
 function setupEnterKeyToSave(input, item) {
-  const handler = (e) => {
+  let handler = (e) => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
-    const btn = item.querySelector('.subtask-save-icon');
+    let btn = item.querySelector('.subtask-save-icon');
     if (btn) saveEditedSubtask(btn);
     input.removeEventListener('keydown', handler);
   };
@@ -121,9 +121,9 @@ function deleteEvent() {
  * @param {HTMLElement} btn
  */
 function onDeleteClick(btn){
-  const item = btn.closest('.subtask-item');
+  let item = btn.closest('.subtask-item');
   if (!item) return;
-  const index = Number(item.getAttribute('data-index'));
+  let index = Number(item.getAttribute('data-index'));
   if (!Number.isFinite(index)) return;
   subtasks.splice(index, 1);
   renderSubtasks();
@@ -134,17 +134,17 @@ function onDeleteClick(btn){
  * @param {HTMLElement} saveBtn
  */
 function saveEditedSubtask(saveBtn) {
-  const item = saveBtn.closest('.subtask-item');
+  let item = saveBtn.closest('.subtask-item');
   if (!item) return;
-  const index = Number(item.getAttribute('data-index'));
-  const input = item.querySelector('.subtask-edit-input');
+  let index = Number(item.getAttribute('data-index'));
+  let input = item.querySelector('.subtask-edit-input');
   if (!Number.isFinite(index) || !input) return;
-  const value = input.value.trim();
+  let value = input.value.trim();
   if (!value) {
     subtasks.splice(index, 1);
   } else {
-    const prev = subtasks[index];
-    const prevChecked = typeof prev === 'object' ? !!prev.checked : false;
+    let prev = subtasks[index];
+    let prevChecked = typeof prev === 'object' ? !!prev.checked : false;
     subtasks[index] = { name: value, checked: prevChecked };
   }
   renderSubtasks();

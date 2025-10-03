@@ -9,7 +9,7 @@ function capAssignedInitialsIn(container, max = 5) {
    * @param {number} [max=5]
    */
   if (!container) return;
-  const chips = getInitialChips(container);
+  let chips = getInitialChips(container);
   showAllChips(chips);
   let plus = container.querySelector('[data-plus-badge="true"]');
   if (chips.length <= max) { removePlusBadge(plus); return; }
@@ -33,7 +33,7 @@ function hideOverflowChips(chips, max){ for (let i = max; i < chips.length; i++)
 function removePlusBadge(plus){ plus?.remove(); }
 /** Create a new plus-badge element. */
 function createPlusBadge(){
-  const plus = document.createElement('div');
+  let plus = document.createElement('div');
   plus.setAttribute('data-plus-badge','true');
   plus.className = 'assigned-plus-badge';
   return plus;
@@ -57,7 +57,7 @@ if (document.readyState === 'loading') {
 }
 
 /** Maximum initials to show before collapsing into a +N badge. */
-const MAX_VISIBLE_INITIALS = 3;
+let MAX_VISIBLE_INITIALS = 3;
 /** Apply initials cap using the default max visible constant. */
 function applyAssignedInitialsCap() {
   applyCapToAllInitials(MAX_VISIBLE_INITIALS);
@@ -69,20 +69,19 @@ window.applyAssignedInitialsCap = applyAssignedInitialsCap;
  /** Observe DOM mutations and reapply initials cap when new nodes appear. */
 (function observeInitials() {
   let scheduled = false;
-  const schedule = () => {
-    if (scheduled) return;
-    scheduled = true;
+  let schedule = () => {
     requestAnimationFrame(() => { scheduled = false; applyCapToAllInitials(MAX_VISIBLE_INITIALS); });
   };
-  const handler = (records) => {
-    for (const r of records) {
+  let handler = (records) => {
+    for (let r of records) {
       if (r.type !== 'childList') continue;
       if (hasContactInitialsNode(r)) { schedule(); break; }
     }
   };
-  const obs = new MutationObserver(handler);
+  let obs = new MutationObserver(handler);
   obs.observe(document.documentElement, { childList: true, subtree: true });
 })();
+
 /**
  * Check if a mutation record added nodes that contain .contact-initials.
  * @param {MutationRecord} record
@@ -97,8 +96,8 @@ function hasContactInitialsNode(record){
  * @param {HTMLElement} scope
  */
 function closeCategoryDropdown(scope) {
-  const panel = scope.querySelector('#category-selection');
-  const icon = scope.querySelector('#category-icon');
+  let panel = scope.querySelector('#category-selection');
+  let icon = scope.querySelector('#category-icon');
   if (panel) panel.classList.add('d-none');
   if (icon) {
     icon.classList.remove('arrow-up');
@@ -116,20 +115,20 @@ function closeAssignedDropdown(scope) {
   normalizeAssignedIcon(scope);
 }
 /** Hide the assigned contacts list. */
-function hideAssignedList(scope){ const list = scope.querySelector('#contact-list-box'); if (list) list.classList.add('d-none'); }
+function hideAssignedList(scope){ let list = scope.querySelector('#contact-list-box'); if (list) list.classList.add('d-none'); }
 /**
  * Ensure the initials box is shown/hidden based on selection count.
  * @param {HTMLElement} scope
  */
 function ensureInitialsVisibility(scope){
   if (typeof applyAssignedInitialsCap === 'function') applyAssignedInitialsCap();
-  const box = scope.querySelector('#contact-initials');
+  let box = scope.querySelector('#contact-initials');
   if (!box) return;
-  const count = scope.querySelectorAll('#contact-list-box li.selected').length;
+  let count = scope.querySelectorAll('#contact-list-box li.selected').length;
   box.classList.toggle('d-none', count === 0);
 }
 /** Reset assigned icon to arrow-down state. */
-function normalizeAssignedIcon(scope){ const icon = scope.querySelector('#assigned-icon'); if (!icon) return; icon.classList.remove('arrow-up'); icon.classList.add('arrow-down'); }
+function normalizeAssignedIcon(scope){ let icon = scope.querySelector('#assigned-icon'); if (!icon) return; icon.classList.remove('arrow-up'); icon.classList.add('arrow-down'); }
 
 /**
  * Attach an outside-click handler to close dropdowns inside a container.
@@ -137,7 +136,7 @@ function normalizeAssignedIcon(scope){ const icon = scope.querySelector('#assign
  */
 function setupDropdownOutsideCloseIn(container) {
   if (!container || container.dataset.outsideCloserAttached === '1') return;
-  const onClickCapture = makeOutsideCloser(container);
+  let onClickCapture = makeOutsideCloser(container);
   container.addEventListener('click', onClickCapture, { capture: true });
   container.dataset.outsideCloserAttached = '1';
 }
@@ -148,13 +147,13 @@ function setupDropdownOutsideCloseIn(container) {
  */
 function makeOutsideCloser(container){
   return (e) => {
-    const t = e.target; if (!container.contains(t)) return;
-    const catSel = container.querySelector('#category-select');
-    const catPanel = container.querySelector('#category-selection');
-    const asSel = container.querySelector('#assigned-select-box');
-    const asList = container.querySelector('#contact-list-box');
-    const inCat = (catSel && catSel.contains(t)) || (catPanel && catPanel.contains(t));
-    const inAs = (asSel && asSel.contains(t)) || (asList && asList.contains(t));
+    let t = e.target; if (!container.contains(t)) return;
+    let catSel = container.querySelector('#category-select');
+    let catPanel = container.querySelector('#category-selection');
+    let asSel = container.querySelector('#assigned-select-box');
+    let asList = container.querySelector('#contact-list-box');
+    let inCat = (catSel && catSel.contains(t)) || (catPanel && catPanel.contains(t));
+    let inAs = (asSel && asSel.contains(t)) || (asList && asList.contains(t));
     if ((catSel || catPanel) && !inCat) closeCategoryDropdown(container);
     if ((asSel || asList) && !inAs) closeAssignedDropdown(container);
   };
@@ -166,7 +165,7 @@ function makeOutsideCloser(container){
  * @param {boolean} [editMode=false]
  */
 function handleSubtaskClickOutside(event, editMode = false) {
-  const scope = event.currentTarget || document;
+  let scope = event.currentTarget || document;
   if (isInsideSubtaskZone(scope, event.target)) return;
   maybeAddTypedSubtask(scope, editMode);
   resetSubtaskControls(scope);
@@ -178,7 +177,7 @@ function handleSubtaskClickOutside(event, editMode = false) {
  * @returns {boolean}
  */
 function isInsideSubtaskZone(scope, target){
-  const subZone = scope.querySelector('.subtask-select');
+  let subZone = scope.querySelector('.subtask-select');
   return !!(subZone && subZone.contains(target));
 }
 /**
@@ -187,16 +186,16 @@ function isInsideSubtaskZone(scope, target){
  * @param {boolean} editMode
  */
 function maybeAddTypedSubtask(scope, editMode){
-  const input = scope.querySelector('#sub-input');
+  let input = scope.querySelector('#sub-input');
   if (editMode || !input || !input.value.trim()) return;
   if (typeof window.addSubtask === 'function') window.addSubtask(input.value.trim());
   input.value = '';
 }
 /** Reset visibility of subtask controls and blur the input. */
 function resetSubtaskControls(scope){
-  const func = scope.querySelector('#subtask-func-btn');
-  const plus = scope.querySelector('#subtask-plus-box');
-  const input = scope.querySelector('#sub-input');
+  let func = scope.querySelector('#subtask-func-btn');
+  let plus = scope.querySelector('#subtask-plus-box');
+  let input = scope.querySelector('#sub-input');
   if (func) func.classList.add('d-none');
   if (plus) plus.classList.remove('d-none');
   if (input) input.blur();
@@ -204,16 +203,16 @@ function resetSubtaskControls(scope){
 
 /** Show the overlay banner. */
 function showBanner() {
-  const overlay = document.getElementById('overlay-bg');
-  const banner = document.getElementById('slide-in-banner');
+  let overlay = document.getElementById('overlay-bg');
+  let banner = document.getElementById('slide-in-banner');
   if (overlay) overlay.style.display = 'block';
   if (banner) banner.classList.add('visible');
 }
 
 /** Hide the overlay banner. */
 function hideBanner() {
-  const overlay = document.getElementById('overlay-bg');
-  const banner = document.getElementById('slide-in-banner');
+  let overlay = document.getElementById('overlay-bg');
+  let banner = document.getElementById('slide-in-banner');
   if (banner) banner.classList.remove('visible');
   if (overlay) overlay.style.display = 'none';
 }

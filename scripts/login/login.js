@@ -1,24 +1,24 @@
 /* =================== DOM CONSTANTS =================== */
-/** @type {HTMLElement|null} */ const layoutEl           = document.getElementById("layout");
-/** @type {HTMLElement|null} */ const logoWhite          = document.getElementById("logo-white");
-/** @type {HTMLElement|null} */ const logoBlue           = document.getElementById("logo-blue");
+/** @type {HTMLElement|null} */ let layoutEl           = document.getElementById("layout");
+/** @type {HTMLElement|null} */ let logoWhite          = document.getElementById("logo-white");
+/** @type {HTMLElement|null} */ let logoBlue           = document.getElementById("logo-blue");
 
-/** @type {HTMLElement|null} */ const loginBox           = document.getElementById("login-box");
-/** @type {HTMLElement|null} */ const loginBtn           = document.getElementById("login-button");
-/** @type {HTMLElement|null} */ const guestBtn           = document.getElementById("guest-button");
+/** @type {HTMLElement|null} */ let loginBox           = document.getElementById("login-box");
+/** @type {HTMLElement|null} */ let loginBtn           = document.getElementById("login-button");
+/** @type {HTMLElement|null} */ let guestBtn           = document.getElementById("guest-button");
 
-/** @type {HTMLElement|null} */ const signUpBox          = document.getElementById("sign-up-box");
-/** @type {HTMLElement|null} */ const signUpBtn          = document.getElementById("sign-up-button");
-/** @type {HTMLElement|null} */ const signUpPageBtn      = document.getElementById("sign-up-page-button");
-/** @type {HTMLElement|null} */ const signUpBottomBtn    = document.getElementById("sign-up-bottom-button");
-/** @type {HTMLElement|null} */ const signUpBottomMobile = document.getElementById("sign-up-bottom-box-mobile");
-/** @type {HTMLElement|null} */ const signUpTopRightBox  = document.getElementById("sign-up-top-right-box");
+/** @type {HTMLElement|null} */ let signUpBox          = document.getElementById("sign-up-box");
+/** @type {HTMLElement|null} */ let signUpBtn          = document.getElementById("sign-up-button");
+/** @type {HTMLElement|null} */ let signUpPageBtn      = document.getElementById("sign-up-page-button");
+/** @type {HTMLElement|null} */ let signUpBottomBtn    = document.getElementById("sign-up-bottom-button");
+/** @type {HTMLElement|null} */ let signUpBottomMobile = document.getElementById("sign-up-bottom-box-mobile");
+/** @type {HTMLElement|null} */ let signUpTopRightBox  = document.getElementById("sign-up-top-right-box");
 
-/** @type {HTMLElement|null} */ const goBackBtn          = document.getElementById("go-back");
-/** @type {HTMLElement|null} */ const confirmEl          = document.getElementById("confirm");
+/** @type {HTMLElement|null} */ let goBackBtn          = document.getElementById("go-back");
+/** @type {HTMLElement|null} */ let confirmEl          = document.getElementById("confirm");
 
-/** @type {HTMLElement|null} */ const errorMessageBox    = document.getElementById("errorMessage");
-/** @type {HTMLElement|null} */ const errorSignUpBox     = document.getElementById("error-sign-up");
+/** @type {HTMLElement|null} */ let errorMessageBox    = document.getElementById("errorMessage");
+/** @type {HTMLElement|null} */ let errorSignUpBox     = document.getElementById("error-sign-up");
 
 /* =================== INIT =================== */
 
@@ -34,7 +34,7 @@ let currentMode = "login";
  */
 function updateSignUpBtnState() {
   if (!signUpBtn) return;
-  const enabled = !!confirmEl?.classList.contains("checked");
+  let enabled = !!confirmEl?.classList.contains("checked");
   signUpBtn.style.pointerEvents = enabled ? "" : "none";
 }
 
@@ -149,7 +149,7 @@ function showLoginForm() {
     ["name", "sign-up-email", "sign-up-password", "confirm-password"],
     errorSignUpBox
   );
-  confirmEl.classList.toggle("checked");
+  confirmEl.classList.remove("checked");
   initializePasswordFields("login");
 }
 
@@ -181,14 +181,14 @@ function updateSignUpBoxDisplay() {
  * @returns {void}
  */
 function initializePasswordFields(context) {
-  const fields = {
+  let fields = {
     login: [["login-password", "togglePassword"]],
     "sign-up": [
       ["sign-up-password", "toggle-sign-up-password"],
       ["confirm-password", "toggle-confirm-password"],
     ],
   };
-  const errorBox = context === "login" ? errorMessageBox : errorSignUpBox;
+  let errorBox = context === "login" ? errorMessageBox : errorSignUpBox;
   fields[context].forEach(([inputId, toggleId]) =>
     setupPasswordToggle(inputId, toggleId, /** @type {HTMLElement|null} */ (errorBox))
   );
@@ -202,8 +202,8 @@ function initializePasswordFields(context) {
  * @returns {void}
  */
 function setupPasswordToggle(inputId, toggleId, errorBox) {
-  const input  = /** @type {HTMLInputElement|null} */ (document.getElementById(inputId));
-  const toggle = /** @type {HTMLElement|null}    */ (document.getElementById(toggleId));
+  let input  = /** @type {HTMLInputElement|null} */ (document.getElementById(inputId));
+  let toggle = /** @type {HTMLElement|null}    */ (document.getElementById(toggleId));
   if (!input || !toggle) return;
   let isVisible = false;
   toggle.onclick = () =>
@@ -264,13 +264,13 @@ function updatePasswordIcon(input, toggle, isVisible) {
  */
 function setupEmailValidation() {
   /** @type {Array<[string,string]>} */
-  const pairs = [
+  let pairs = [
     ["login-email", "errorMessage"],
     ["sign-up-email", "error-sign-up"],
   ];
   pairs.forEach(([inputId, errorId]) => {
-    const input    = /** @type {HTMLInputElement|null} */ (document.getElementById(inputId));
-    const errorBox = /** @type {HTMLElement|null}      */ (document.getElementById(errorId));
+    let input    = /** @type {HTMLInputElement|null} */ (document.getElementById(inputId));
+    let errorBox = /** @type {HTMLElement|null}      */ (document.getElementById(errorId));
     if (!input || !errorBox) return;
     input.addEventListener("blur",  () => validateEmailFormat(input, errorBox));
     input.addEventListener("input", () => clearFieldError(input, errorBox));
@@ -284,8 +284,8 @@ function setupEmailValidation() {
  * @returns {void}
  */
 function validateEmailFormat(input, errorBox) {
-  const email = input.value.trim();
-  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let email = input.value.trim();
+  let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (email && !pattern.test(email)) {
     showError(errorBox, "Check your email. Please try again.");
     if (input.parentElement) input.parentElement.style.borderColor = "var(--error-color)";
@@ -361,7 +361,7 @@ function displayAuthError(el, pwInput, emailInput) {
  */
 function clearFormInputs(ids, errorBox) {
   ids.forEach((id) => {
-    const input = /** @type {HTMLInputElement|null} */ (document.getElementById(id));
+    let input = /** @type {HTMLInputElement|null} */ (document.getElementById(id));
     if (input) {
       input.value = "";
       if (input.parentElement) input.parentElement.style.borderColor = "";
