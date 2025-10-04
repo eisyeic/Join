@@ -322,11 +322,12 @@ b {
 }
 
 .ok-btn-box {
+  display: flex;
   padding: 24px;
+  justify-content: end;
 }
 
 .ok-button {
   display: flex;
-  justify-self: flex-end;
   width: 50px;
 }
