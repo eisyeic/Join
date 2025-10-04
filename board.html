@@ -22,60 +22,31 @@
     <link rel="stylesheet" href="./style/responsiv.css" />
     <link rel="stylesheet" href="./style/overlay-add-task-board.css" />
     <link rel="stylesheet" href="./style/task-overlay.css" />
-    <link rel="stylesheet" href="./style/addtask-components.css">
-    <link rel="stylesheet" href="./style/reponsiv-addtask.css">
     <link rel="stylesheet" href="./style/reponsiv-board.css" />
-    <link rel="stylesheet" href="./style/native-datepicker.css" />
 
     <link rel="prerender" href="/summary-board.html" />
     <link rel="prerender" href="./board.html" />
     <link rel="prerender" href="./addtask.html" />
     <link rel="prerender" href="./contact.html" />
 
-    <link
-      rel="preload"
-      href="./assets/icons/board/search_hover.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/board/search_click.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/add_task/check_default_hover.svg"
-      as="image"
-    />
-    <link
-      rel="preload"
-      href="./assets/icons/add_task/checked_hover.svg"
-      as="image"
-    />
-
     <script src="script.js" defer></script>
-    <script src="./scripts/nav.js"></script>
     <script src="scripts/templates.js" defer></script>
-    <script src="scripts/template-injector.js" defer></script>
-    <script type="module" src="./scripts/template.modul.js"></script>
-    <script type="module" src="./scripts/addtask-firebase.js"></script>
-
-    <script src="./scripts/addtask-ui.js" defer></script>
-    <script src="./scripts/addtask-contacts.js" defer></script>
-    <script src="./scripts/addtask.js" defer></script>
-    <script src="./scripts/addtask-board.js" defer></script>
-    <script type="module" src="./scripts/board.js"></script>
-    <script type="module" src="./scripts/task-overlay-core.js"></script>
-    <script type="module" src="./scripts/task-overlay-addtask.js"></script>
-    <script type="module" src="./scripts/task-edit-core.js"></script>
-    <script type="module" src="./scripts/task-edit-form.js"></script>
-    <script type="module" src="./scripts/task-edit-firebase.js"></script>
-    <script type="module" src="./scripts/task-edit-sync.js"></script>
-    <script src="./scripts/addtask-controlls.js" defer></script>
-    <script src="./scripts/addtask-forms.js" defer></script>
-    <script type="module" src="./scripts/board-controlls.js"></script>
-    <script src="./scripts/board-forms.js" defer></script>
-    <script src="./scripts/board-helpers.js" defer></script>
+    <script type="module" src="./scripts/board/board.module.js"></script>
+    <script src="./scripts/board/board.dnd.js"></script>
+    <script src="./scripts/board/board.move.js"></script>
+    <script src="./scripts/board/board.render.js"></script>
+    <script src="./scripts/board/task.overlay.js"></script>
+    <script src="./scripts/board/board.event.js"></script>
+    <script src="./scripts/board/task-edit-overlay.js"></script>
+    
+    <script type="module" src="./scripts/addtask/addtask.module.js"></script>
+    <script src="./scripts/addtask/addtask.js" defer></script>
+    <script src="./scripts/addtask/addtask.subtasks.js"></script>
+    <script src="./scripts/addtask/addtask.contacts.js"></script>
+    <script src="./scripts/addtask/addtask.ui.js"></script>
+    <script src="./scripts/addtask/addtask.validation.js"></script>
+    <script src="./scripts/addtask/addtask.event.js"></script>
+    
   </head>
 
   <body onclick="closeProfileNavbar()">
@@ -414,7 +385,7 @@
                 />
               </div>
             </div>
-            <div class="task-list" id="to-do-column" ondrop="drop(event)">
+            <div class="task-list" id="to-do-column">
               <div class="no-tasks">No tasks to do</div>
             </div>
           </div>
@@ -430,7 +401,7 @@
                 />
               </div>
             </div>
-            <div class="task-list" id="in-progress-column" ondrop="drop(event)">
+            <div class="task-list" id="in-progress-column">
               <div class="no-tasks">No tasks in progressing</div>
             </div>
           </div>
@@ -445,11 +416,7 @@
                 />
               </div>
             </div>
-            <div
-              class="task-list"
-              id="await-feedback-column"
-              ondrop="drop(event)"
-            >
+            <div class="task-list" id="await-feedback-column">
               <div class="no-tasks">No tasks await feedback</div>
             </div>
           </div>
@@ -458,7 +425,7 @@
             <div class="column-title-mobile">
               <div class="column-title">Done</div>
             </div>
-            <div class="task-list" id="done-column" ondrop="drop(event)">
+            <div class="task-list" id="done-column">
               <div class="no-tasks">No tasks done</div>
             </div>
           </div>

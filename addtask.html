@@ -22,23 +22,21 @@
     <link rel="stylesheet" href="./style/footer-nav.css" />
     <link rel="stylesheet" href="./style/responsiv.css" />
     <link rel="stylesheet" href="./style/reponsiv-addtask.css" />
-    <link rel="stylesheet" href="./style/native-datepicker.css" />
     <link rel="prerender" href="/summary-board.html" />
     <link rel="prerender" href="./board.html" />
     <link rel="prerender" href="./addtask.html" />
     <link rel="prerender" href="./contact.html" />
-
-    <script src="./script.js" defer></script>
-    <script src="./scripts/nav.js"></script>
-    <script src="./scripts/templates.js" defer></script>
-    <script src="./scripts/template-injector.js" defer></script>
-    <script type="module" src="./scripts/addtask-firebase.js"></script>
-    <script src="./scripts/addtask-ui.js" defer></script>
-    <script src="./scripts/addtask-contacts.js" defer></script>
-    <script src="./scripts/addtask.js" defer></script>
-    <script src="./scripts/addtask-forms.js" defer></script>
-    <script src="./scripts/addtask-controlls.js" defer></script>
-  </head>
+    
+    <script src="./script.js"></script>
+    <script src="./scripts/addtask/addtask.module.js" type="module"></script>
+    <script src="./scripts//templates.js" defer></script>
+    <script src="./scripts/addtask/addtask.js" defer></script>
+    <script src="./scripts/addtask/addtask.subtasks.js"></script>
+    <script src="./scripts/addtask/addtask.contacts.js"></script>
+    <script src="./scripts/addtask/addtask.ui.js"></script>
+    <script src="./scripts/addtask/addtask.validation.js"></script>
+    <script src="./scripts/addtask/addtask.event.js"></script>
+</head>
 
   <body onclick="closeProfileNavbar()">
     <header>

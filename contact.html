@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="ScreenOrientation" content="autoRotate:disabled" />
-    <meta http-equiv="Permissions-Policy" content="" />
+    <meta http-equiv="Permissions-Policy" content="unload=*" />
     <title>Contact</title>
     <link
       rel="shortcut icon"
@@ -26,19 +26,13 @@
     <link rel="prerender" href="./addtask.html" />
     <link rel="prerender" href="./contact.html" />
 
-    <script src="./scripts/permissions-fix.js"></script>
-    <script src="./script.js" defer></script>
-    <script src="./scripts/nav.js"></script>
-    <script src="./scripts/contact-validation.js" defer></script>
-    <script src="./scripts/contact.js" defer></script>
-    <script src="./scripts/add-contact.js" defer></script>
-
-    <script src="./scripts/templates.js" defer></script>
-    <script type="module" src="./scripts/date-helpers.js"></script>
-    <script type="module" src="./scripts/initials-helpers.js"></script>
-    <script type="module" src="./scripts/selection-helpers.js"></script>
-    <script type="module" src="./scripts/edit-overlay-helpers.js"></script>
-    <script type="module" src="./scripts/contact-firebase.js"></script>
+    <script src="./script.js"></script>
+    <script src="./scripts/contacts/contact.ui.js"></script>
+    <script src="./scripts/contacts/contact.ui.navbar.js"></script>
+    <script src="./scripts/contacts/contact.data.js"></script>
+    <script src="./scripts/contacts/contact.add.js"></script>
+    <script src="./scripts/templates.js"></script>
+    <script type="module" src="./scripts/contacts/contact.module.js"></script>
   </head>
 
   <body
