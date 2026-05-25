@@ -83,4 +83,6 @@ Or visit the **[Live Demo](https://join.dieter-foos.de)**.
 
 ## Authors
 
+**eisyeic
+**Miggy97G
 **Dieter Foos** — [Portfolio](https://dieter-foos.de) · [GitHub](https://github.com/dfo81) · [LinkedIn](https://www.linkedin.com/in/dieter-foos-7a13a63ba/)
